@@ -1,0 +1,39 @@
+# Test parameter file for DIRTY_v2
+#  created KDG 25 Jul 2006
+#  standard tau=1, constant density sphere
+#  with multiple stars
+#
+# Model parameters
+[Geometry]
+distance=100.0
+n_obs_angles=1
+obs_theta=0.
+obs_phi=0.
+n_stars=3
+star_file=example/multiple_stars.dat
+type=sphere
+radius=1.0
+# radial optical depth
+tau=1.0
+# filling factor & density control the clumpiness
+filling_factor=0.05
+density_ratio=1.0
+# this controls how to subdivide cells
+max_tau_per_cell=50.0
+# spherical or cubical clumps [choices are sphere/cube]
+clump_type=cube
+# size of grid (all dimensions equal)
+grid_size=50
+
+[Dust Grains]
+type=single_wavelenth
+wavelength=0.55
+albedo=0.6
+g=0.6
+
+[Run]
+num_photons=100000
+output_image_size=201
+output_filebase=example/multiple_stars_sphere_tau1
+type=single_wavelenth
+wavelength=0.55

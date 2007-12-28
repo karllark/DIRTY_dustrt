@@ -1,0 +1,48 @@
+# Test parameter file for DIRTY_v2
+#  created KDG 6 Jul 2006
+#  standard tau=1, constant density shell
+#
+# Model parameters
+[Geometry]
+distance=100.0
+n_obs_angles=1
+obs_theta=180.
+obs_phi=0.
+source_type=stars
+n_stars=1
+star_pos_x=0.
+star_pos_y=0.
+star_pos_z=47.5
+type=slab
+size_xy=100.
+size_z=100.
+slab_z1=55.
+slab_z2=150.
+slab_tau=1.
+# nonslab/slab density ratio
+nonslab_density_ratio=0.001
+# filling factor & density control the clumpiness
+filling_factor=0.2
+density_ratio=1.
+# this controls how to subdivide cells
+max_tau_per_cell=50.0
+# spherical or cubical clumps [choices are sphere/cube]
+clump_type=cube
+# size of grid (all dimensions equal)
+grid_size=11
+
+[Dust Grains]
+type=multi_wavelength
+file=/home/kgordon/ag_grid.dustgrains.dat
+wavelength=0.55
+albedo=0.5
+g=0.7
+
+[Run]
+num_photons=100
+verbose=2
+output_image_size=201
+output_filebase=example/standard_slab_tau1
+type=single_wavelenth
+wavelength=0.55
+abs_energy_storage=0
