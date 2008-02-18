@@ -83,16 +83,17 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 #endif
 
 	    // add back the previously saved radiation field density
-	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] +=
-	      geometry.grids[m].grid(i,j,k).save_radiation_field_density;
+	    if (doing_dust_emission)
+	      geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] +=
+		geometry.grids[m].grid(i,j,k).save_radiation_field_density;
+	  }
 
 // 	    int ans;
 // 	    cin >> ans;
-	  }
-
 	}
+    
   }
-
+  
   if (geometry.abs_energy_storage_type == 1) {
     cout << "no code written for storage_absorbed_energy_grid for disk storage" << endl;
     exit(8);

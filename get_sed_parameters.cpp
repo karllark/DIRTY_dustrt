@@ -69,11 +69,18 @@ void get_sed_parameters (ConfigFile& param_data,
     exit(8);
   }
 
-  // allocate the vector to store the transmitted stellar luminosity
-  int n_out_sed = 2;  // maybe allow this to be 4 if we are doing ERE emission
-  runinfo.out_sed_lum.resize(n_out_sed);
-  int k = 0;
-  for (k = 0; k < n_out_sed; k++) 
-    runinfo.out_sed_lum[k].resize(runinfo.wavelength.size(),0.0);
+  if (runinfo.do_global_output) {
+    runinfo.out_sed_lum_offset = 0;  // doing stellar direct/scattered storage
+
+    // allocate the vector to store the transmitted stellar/dust luminosity
+    int n_out_sed = 2;  // maybe allow this to be 4 if we are doing ERE emission
+    runinfo.out_sed_lum.resize(n_out_sed);
+    runinfo.out_sed_lum_unc.resize(n_out_sed);
+    int k = 0;
+    for (k = 0; k < n_out_sed; k++) {
+      runinfo.out_sed_lum[k].resize(runinfo.wavelength.size(),0.0);
+      runinfo.out_sed_lum_unc[k].resize(runinfo.wavelength.size(),0.0);
+    }
+  }
 
 }
