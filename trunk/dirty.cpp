@@ -15,7 +15,8 @@
 // 2006 Jun/KDG - added parameter file
 // 2006 Nov/KDG - added multiple wavelengths (empirical dust)
 // 2007 Apr/KDG - added dustgrains (from KM)
-// 2007 Dec/KDG - added 
+// 2007 Dec/KDG - added arbitary grid emission (for dust emission)
+// 2008 Jan/KDG - added global output
 // ======================================================================
 #include "dirty.h"
 
@@ -94,16 +95,25 @@ int main(int argc, char* argv[])
   geometry.emitted_energy_grid_initialized = 0;
 
   // do ERE part (no iteration needed)
+  //runinfo.out_sed_lum_offset += 2;  // increment to save ERE direct/scattered luminosity
+  //output.emission_type = "_ere"; // setup the emission_type string for dust emission
   //emit_ere_photons();
 
   // start RT+DE iteration (only if DE flag set)
   //    do DE part
   //    do DE/RT part
   // iterate until converged for max iterations reached
+
   int iter_num = 1;
   int iter_max = 1;
   int iter_done = 0;
-  if (!runinfo.do_dust_emission) iter_done = 1;
+  if (!runinfo.do_dust_emission) {
+    iter_done = 1;
+  } else {
+    runinfo.out_sed_lum_offset += 2;  // increment to save dust emission direct/scattered luminosity
+    output.emission_type = "_de"; // setup the emission_type string for dust emission
+  }
+
   while (!iter_done) {
     // get the dust emission at each point in the model
     get_dust_thermal_emission(geometry, runinfo, CurGrainModel);
@@ -136,9 +146,10 @@ int main(int argc, char* argv[])
     if (iter_num >= iter_max) iter_done = 1;
   }
 
-  // output final RT+DE images/totals
-  // TBD: loop over all wavelengths
-  // output_results(output, geometry);
+  // output final RT+DE images/totals [TBD]
+  // output global, multiwavelength luminosities
+  if (runinfo.do_global_output)
+    output_global_results(runinfo);
 
   return 0;
 

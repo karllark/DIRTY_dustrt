@@ -45,6 +45,7 @@ struct output_struct {
   int arrays_allocated; // 1=all arrays have been allocated
   long image_size[2]; // size of output images in pixels
   string file_base; // base name of output files
+  string emission_type; // string to identify the output type ("" if stellar)
   string type;  // type of output (ratio/flux current options)
 
   vector<one_output> outputs; // vector of outputs

@@ -32,9 +32,12 @@ void get_run_parameters (ConfigFile& param_data,
 
   output.file_base = param_data.SValue("Run","output_filebase");
   check_input_param("output_filebase",output.file_base,"dirty_test");
+  
+  // setup the emission_type string (added to file_base later) to be "" for stellar
+  output.emission_type = "";
 
   output.type = param_data.SValue("Run","output_type");
-  check_input_param("output_filebase",output.file_base,"ratio");
+  check_input_param("output_filebase",output.type,"ratio");
 
   runinfo.verbose = param_data.IValue("Run","verbose");
   if (runinfo.verbose == -99) runinfo.verbose = 0;  // set to no output if not initially set
@@ -47,6 +50,28 @@ void get_run_parameters (ConfigFile& param_data,
   runinfo.do_emission_grain = param_data.IValue("Run","do_emission_grain");
   if (runinfo.do_emission_grain == -99) runinfo.do_emission_grain = 0;  // set to no if not initially set
   check_input_param("do_emission_grain",runinfo.do_emission_grain,0,1);
+
+  // output info
+
+  runinfo.do_image_output = param_data.IValue("Run","do_image_output");
+  if (runinfo.do_image_output == -99) runinfo.do_image_output = 0;  // set to no if not initially set
+  check_input_param("do_image_output",runinfo.do_image_output,0,1);
+
+  runinfo.do_global_output = param_data.IValue("Run","do_global_output");
+  if (runinfo.do_global_output == -99) runinfo.do_global_output = 0;  // set to no if not initially set
+  check_input_param("do_global_output",runinfo.do_global_output,0,1);
+
+//   runinfo.global_output_fits = param_data.IValue("Run","global_output_fits");
+//   if (runinfo.global_output_fits == -99) runinfo.global_output_fits = 0;  // set to no if not initially set
+//   check_input_param("global_output_fits",runinfo.global_output_fits,0,1);
+
+  // check that at least one type of output is picked
+  if (!runinfo.do_image_output && !runinfo.do_global_output) {
+    cout << "Neither images nor global,multiwavelength output picked = no output!" << endl;
+    cout << "One or the other is required." << endl;
+    cout << "Add 'do_image_output=1' or 'do_global_output=1' to the 'Run' section of the parameter file." << endl;
+    exit(8);
+  }
 
   output.arrays_allocated = 0;
   output.num_outputs = geometry.num_observers;
