@@ -34,6 +34,7 @@ DIRTY_SRCS = dirty.cpp \
 	classify_scattered_photon.cpp \
 	next_scatter.cpp \
 	output_results.cpp \
+	output_global_results.cpp \
 	setup_absorbed_energy_grid.cpp \
 	store_absorbed_energy_grid.cpp \
 	get_dust_thermal_emission.cpp \
