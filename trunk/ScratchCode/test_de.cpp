@@ -28,7 +28,7 @@ int main (int argc, char * argv[]) {
   // Declare a vector of grain object. 
   vector <Grain> MyGrain(ncomp); 
   // Instantiate a Grain object and stick it into the first element of the vector. 
-  MyGrain[0].MakeGrain("CrossSections/PAHneu_30_mod.srt",
+  MyGrain[0].MakeGrain("CrossSections/AmC_121_large_longwave",
 		       "Calorimetry/Graphitic_Calorimetry.dat",
 		       MW,MS,"/home/misselt/Science/Dust/OpticalProperties/");
   // Get the wavelenght grid MyGrain[0] is defined on. 
@@ -76,7 +76,7 @@ int main (int argc, char * argv[]) {
   vector <float> albedo; 
   for (int i=0;i<nWave;i++) { 
     albedo.push_back(thiseffcsca[i]/(thiseffcsca[i]+thiseffcabs[i])); 
-    cout << thisWave[i] << " " << albedo[i] << " " << thiseffphfunc[i] << endl; 
+    //cout << thisWave[i] << " " << albedo[i] << " " << thiseffphfunc[i] << endl; 
   }
   // ****************************************************************************
 
@@ -95,14 +95,17 @@ int main (int argc, char * argv[]) {
   vector <float> thisTemp; 
 
   float Tlo,Thi;
-
+  
+  //thisSize = thisGrainModel.Size(2); 
+  //nSize = thisSize.size(); 
   thisCAbs = MyGrain[0].getCAbs(0); 
+  //thisCAbs = MyGrain[0].getCAbs(0); 
   thisTemp.push_back(EqTemp(thisWave,thisISRF,thisCAbs));
 
   for (int sz=1;sz<nSize;sz++) { 
    
+    //thisCAbs = thisGrainModel.CAbs(2,sz); 
     thisCAbs = MyGrain[0].getCAbs(sz); 
-
     // Should make Tlo,Thi a tunable parameter somehow...
     // Need to experiment on specifying this for stochastic portion. 
     Tlo = (0.3*thisTemp[sz-1]); // < 1.0) ? 1.0 : (thisTemp[sz-1]-10.0); 
@@ -117,6 +120,9 @@ int main (int argc, char * argv[]) {
 
   cout << "EQUILIBRIUM TEMPERATURE AT SIZE " << mysize << "(" 
        << thisSize[sizeid] << ") IS " << thisTemp[sizeid] << endl; 
+
+  for (int sz=0;sz<nSize;sz++) 
+    cout << thisSize[sz] << " " << thisTemp[sz] << endl; 
   // ****************************************************************************
 
 //   // ****************************************************************************

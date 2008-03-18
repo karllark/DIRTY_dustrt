@@ -38,8 +38,9 @@ private:
   vector <float> stoich;  // Stoichiometric contribution of ith element
   vector <string> atom;   // Name of ith element (eg. Si, C, O, etc...)
 
-  vector <float> size;    // Size grid in input file. 
-  vector <float> wave;    // Wave grid in input file. 
+  vector <float> size;    // Size grid.
+  vector <float> mass;    // Mass grid.
+  vector <float> wave;    // Wave grid. 
 
   vector <vector<float> > CAbs;   // Absorption cross sections
   vector <vector<float> > CSca;   // Scattering cross sections
@@ -79,6 +80,9 @@ public:
 
   // Return the vector of sizes
   inline vector <float> getSize(void) { return size; }
+
+  // Return the vector of masses
+  inline vector <float> getMass(void) { return mass; }
 
   // Return the vector of wavelengths
   inline vector <float> getWave(void) { return wave; }

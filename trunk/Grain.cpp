@@ -232,10 +232,12 @@ void Grain::MakeGrain(string const & fOpticalConstants,
   CAbs.resize(nsize); 
   CSca.resize(nsize);
   phFunc.resize(nsize);
+  mass.resize(nsize); 
   for (int sz=0;sz<nsize;sz++) {
     CAbs[sz].resize(nwave); 
     CSca[sz].resize(nwave); 
     phFunc[sz].resize(nwave);
+    mass[sz] = size[sz]*size[sz]*size[sz]*density;
   }
 
   // Loaded up our temporary 2d array, interpolated onto proper 
