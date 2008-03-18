@@ -21,6 +21,11 @@ class ConfigFile {
 
  private: 
   map<string,string> content_;
+  string _BadString;
+  double _BadDouble; 
+  float _BadFloat;
+  int _BadInt; 
+  long _BadLong;
   
  public:
   ConfigFile(string const& configFile);
@@ -31,6 +36,12 @@ class ConfigFile {
   float  FValue(string const& section, string const& entry) const; 
   int    IValue(string const& section, string const& entry) const;
   long   LValue(string const& section, string const& entry) const;
+
+  inline string BadString ( void ) { return _BadString; } 
+  inline bool BadFloat ( float _val ) { return _val != _val; } 
+  inline bool BadDouble ( double _val ) { return _val != _val; } 
+  inline int BadInt ( void ) { return _BadInt; } 
+  inline long BadLong ( void ) { return _BadLong; }
 
 };
 

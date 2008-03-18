@@ -54,6 +54,8 @@
  *                   KDG 30 Jun 2006
  *                      updated all functions to return null values
  *                      added LVALUE function for longs
+ *                   Putrid, Late 2007 sometime.  More robust handling
+ *                      of NaNs in _BadValues. 
  *
  **************************************************************/
 #include "ConfigFile.h"
@@ -61,6 +63,12 @@
 using namespace std;
 
 ConfigFile::ConfigFile(string const& configFile) {
+
+  _BadString = "NULL"; 
+  _BadFloat = strtof("NaN",NULL);
+  _BadDouble = strtod("NaN",NULL);
+  _BadInt = -99; 
+  _BadLong = -99; 
 
   ifstream file(configFile.c_str());
 
@@ -113,7 +121,8 @@ string ConfigFile::SValue(string const& section, string const& entry) const {
   map<string,string>::const_iterator ci = content_.find(section + '/' + entry);
 
   if (ci == content_.end()) {
-    return "NULL"; 
+    //return "NULL";
+    return _BadString; 
   } 
   return ci->second;
 }
@@ -123,7 +132,8 @@ float ConfigFile::FValue(string const& section, string const& entry) const {
   map<string,string>::const_iterator ci = content_.find(section + '/' + entry);
 
   if (ci == content_.end()){
-    return strtof("NaN",NULL);  // default value
+    return _BadFloat;
+    //return strtof("NaN",NULL);  // default value
   }
   return atof(ci->second.c_str());
 
@@ -134,7 +144,8 @@ double ConfigFile::DValue(string const& section, string const& entry) const {
   map<string,string>::const_iterator ci = content_.find(section + '/' + entry);
 
   if (ci == content_.end()){
-    return strtod("NaN",NULL);  // default value
+    return _BadDouble;
+    //return strtod("NaN",NULL);  // default value
   } 
   return atof(ci->second.c_str());
 
@@ -145,10 +156,9 @@ int ConfigFile::IValue(string const& section, string const& entry) const {
   map<string,string>::const_iterator ci = content_.find(section + '/' + entry);
 
   if (ci == content_.end()) {
-    // not correct - translated to a very negative integer...(KDG, 14 Jun 2007)
-    // commented out NaN return value (KDG 30 Sep 2007)
+    return _BadInt;
+    //return -99;
     //return int(strtof("NaN",NULL));  // default value ... have to check this...
-    return -99;  // default value
   }
   return atoi(ci->second.c_str());
 
@@ -159,7 +169,8 @@ long ConfigFile::LValue(string const& section, string const& entry) const {
   map<string,string>::const_iterator ci = content_.find(section + '/' + entry);
 
   if (ci == content_.end()) {
-    return -99;  // default value
+    return _BadLong;
+    //return -99;  // default value
   }
   return atol(ci->second.c_str());
 

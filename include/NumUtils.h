@@ -104,7 +104,7 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
   template <typename T> class Cube; 
   template <typename T> Matrix <T> mInvert(Matrix <T> A); 
   template <typename T> vector <T> poly_fit(vector <T> x, vector <T> y, 
-					    int ndegree, vector <T>& yfit);
+					    int ndegree, vector <T>& yfit, vector <T>& sigma);
   
   
   // ****************************************************************************
@@ -320,7 +320,7 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       v.erase(v.begin(),v.end());
       v.resize(u.size());
  
-      //      T slope,intercept; 
+      T slope,intercept; 
 
       typename vector <T>::iterator iu,iul,iuh,ir,ix,iv; 
       // Iterators point to begining of vectors.
@@ -408,6 +408,75 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       return ss.str();
     }
   // ****************************************************************************
+
+  // ****************************************************************************
+  // Do a polynomial fit to a set of data. Simple re-write of IDL poly_fit.pro
+  // TODO: add HAVEMEASUREERRORS.
+  template <typename T> vector <T> poly_fit(vector <T> x, 
+					    vector <T> y, 
+					    int ndegree, 
+					    vector <T>& yfit,
+					    vector <T>& sigma)
+    {
+
+      int m=ndegree+1;
+      int n=x.size();
+      //cout << m << " " << ndegree << endl; 
+      vector <T> param(m);
+      NumUtils::Matrix <T> covar(m,m);
+      
+      vector <T> b(m); 
+      vector <T> z(n,1.0);
+      T sdev=1.0,sdev2=1.0;
+      vector <T> wy=y; 
+      //cout << "in polyfit 1: " << param[0] << " " << param[1] << endl; 
+      if (yfit.size() != n) { 
+	cout << "Size of fit return not equal input vector sizes; poly_fit()" << endl; 
+	exit(8);
+      }
+      if (sigma.size() != m) { 
+	cout << "Size of parameter error array not equal to order+1; poly_fit()" << endl; 
+	exit(8); 
+      }
+
+      T sum; 
+      covar(0,0)=(T)n; 
+      b[0] = accumulate(wy.begin(),wy.end(),0.0); 
+      for (long p=1;p<=2*ndegree;p++) { 
+	// z=z*x
+	transform(z.begin(),z.end(),x.begin(),z.begin(),multiplies<T>());
+	// b[p] = wy*z
+	if (p < m) b[p]=inner_product(wy.begin(),wy.end(),z.begin(),0.0);
+	// sum = total(z)
+	T sum=accumulate(z.begin(),z.end(),0.0);
+	for (int j=( (0>(p-ndegree)) ? 0:(p-ndegree) );j<=( (ndegree<p) ? ndegree : p);j++) covar(j,p-j)=sum;
+      }
+      covar = mInvert(covar);
+      for (int j=0;j<m;j++) 
+	for (int i=0;i<m;i++) param[j] += b[i]*covar(i,j);
+      //vector <double> yfit(n,param[ndegree]);
+      for (int i=0;i<n;++i) yfit[i]=param[ndegree]; 
+      //for (int i=0;i<n;i++) yfit.push_back(param[ndegree]); 
+      for (int k=ndegree-1;k>=0;k--) {
+	transform(yfit.begin(),yfit.end(),x.begin(),yfit.begin(),multiplies<T>());
+	transform(yfit.begin(),yfit.end(),yfit.begin(), 
+		  bind2nd(plus<T>(),param[k]));
+      }
+      // Sigma == diagonal 
+      for (int i=0;i<m;i++) sigma[i] = (sqrt(abs(covar(i,i))));
+      // diff = yfit - y; chisq=SUM[(diff)^2]
+      vector <T> diff;
+      transform(yfit.begin(),yfit.end(),y.begin(),back_inserter(diff),minus<T>());
+      T chisq=accumulate(diff.begin(),diff.end(),0.0,NumUtils::sqSum<T>());
+      T var = (n > m) ? chisq/T(n-m) : 0.0; 
+      transform(sigma.begin(),sigma.end(),sigma.begin(),
+		bind2nd(plus<T>(),sqrt(chisq/(T)(n-m)))); 
+      T yerr = sqrt(var);
+
+      //cout << "in polyfit 2: " << param[0] << " " << param[1] << endl; 
+      return param; 
+    }
+  // ****************************************************************************
   
   // ****************************************************************************
   // Compute inverse of a matrix; stolen from the web... Forgot where...
@@ -462,59 +531,6 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
     }
   // ****************************************************************************
 
-  // ****************************************************************************
-  // Do a polynomial fit to a set of data. Simple re-write of IDL poly_fit.pro
-  // TODO: add HAVEMEASUREERRORS.
-  template <typename T> vector <T> poly_fit(vector <T> x, 
-					    vector <T> y, 
-					    int ndegree, 
-					    vector <T>& yfit)
-    {
-      int m=ndegree+1;
-      int n=x.size();
-      vector <T> param(m);
-      NumUtils::Matrix <T> covar(m,m);
-      vector <T> b(m); 
-      vector <T> z(n,1.0);
-      T sdev=1.0,sdev2=1.0;
-      vector <T> wy=y; 
-      vector <T> yfit_out;
-      T sum; 
-      covar(0,0)=n; 
-      b[0] = accumulate(wy.begin(),wy.end(),0.0); 
-      for (long p=1;p<=2*ndegree;p++) { 
-	// z=z*x
-	transform(z.begin(),z.end(),x.begin(),z.begin(),multiplies<T>());
-	// b[p] = wy*z
-	if (p < m) b[p]=inner_product(wy.begin(),wy.end(),z.begin(),0.0);
-	// sum = total(z)
-	T sum=accumulate(z.begin(),z.end(),0.0);
-	for (int j=( (0>(p-ndegree)) ? 0:(p-ndegree) );j<=( (ndegree<p) ? ndegree : p);j++) covar(j,p-j)=sum;
-      }
-      covar = mInvert(covar);
-      for (int j=0;j<m;j++) 
-	for (int i=0;i<m;i++) param[j] += b[i]*covar(i,j);
-      //vector <double> yfit(n,param[ndegree]);
-      for (int i=0;i<n;i++) yfit.push_back(param[ndegree]); 
-      for (int k=ndegree-1;k>=0;k--) {
-	transform(yfit.begin(),yfit.end(),x.begin(),yfit.begin(),multiplies<T>());
-	transform(yfit.begin(),yfit.end(),yfit.begin(), 
-		  bind2nd(plus<T>(),param[k]));
-      }
-      // Sigma == diagonal
-      vector <T> sigma; 
-      for (int i=0;i<m;i++) sigma.push_back(sqrt(abs(covar(i,i))));
-      // diff = yfit - y; chisq=SUM[(diff)^2]
-      vector <T> diff;
-      transform(yfit.begin(),yfit.end(),y.begin(),back_inserter(diff),minus<T>());
-      T chisq=accumulate(diff.begin(),diff.end(),0.0,NumUtils::sqSum<T>());
-      T var = (n > m) ? chisq/T(n-m) : 0.0; 
-      transform(sigma.begin(),sigma.end(),sigma.begin(),
-		bind2nd(plus<T>(),sqrt(chisq/T(n-m)))); 
-      T yerr = sqrt(var);
-      return param; 
-    }
-  // ****************************************************************************
 
 
   // ****************************************************************************
