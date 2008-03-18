@@ -89,6 +89,7 @@ extern void setup_emitted_grid_for_montecarlo (geometry_struct& geometry,
 					       GrainModel& CurGrainModel);
 
 // output global integrated quantities
-extern void output_global_results (runinfo_struct& runinfo);
+extern void output_global_results (runinfo_struct& runinfo,
+				   output_struct& output);
 
 #endif
