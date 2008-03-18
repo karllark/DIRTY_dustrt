@@ -75,6 +75,12 @@ public:
   inline int getNComp( void ) { return nComp; }
   inline float getNormalization( void ) { return TotalNormalization; }
   inline float getNormalization( int cmp ) { return Normalization[cmp]; }
+
+  // These functions interface with the Grain model to retrieve properties of 
+  // individual components of the model. 
+  //  - Need bound checking
+  inline vector <float> Size( int _cmp ) { return Component[_cmp].getSize(); } 
+  inline vector <float> CAbs( int _cmp, int _szid ) { return Component[_cmp].getCAbs(_szid); }
   
 private: 
 
