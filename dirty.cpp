@@ -149,7 +149,9 @@ int main(int argc, char* argv[])
   // output final RT+DE images/totals [TBD]
   // output global, multiwavelength luminosities
   if (runinfo.do_global_output)
-    output_global_results(runinfo);
+    output_global_results(runinfo, output);
+
+  cout << "end" << endl;
 
   return 0;
 
