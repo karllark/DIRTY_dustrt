@@ -7,6 +7,8 @@
 #include "mt_ran.h"         //  
 #include "GrainModel.h"   
 
+extern void ComputeEmission (vector <float> & J, GrainModel & GrainModel);
+
 using namespace std; 
 
 int main (int argc, char * argv[]) { 
@@ -90,6 +92,7 @@ int main (int argc, char * argv[]) {
   vector <float> thisISRF = MyISRF.getISRF(); 
   // ****************************************************************************
 
+
   // ****************************************************************************
   // Example of computing the Equilibrium temperature. 
   vector <float> thisTemp; 
@@ -117,12 +120,14 @@ int main (int argc, char * argv[]) {
     
   float mysize=0.0040*1.0e-4;
   int sizeid=NumUtils::index(mysize,thisSize); 
-
+  cout << "Calling compute emission " <<endl ;
+  ComputeEmission(thisISRF,thisGrainModel); 
+  
   cout << "EQUILIBRIUM TEMPERATURE AT SIZE " << mysize << "(" 
        << thisSize[sizeid] << ") IS " << thisTemp[sizeid] << endl; 
 
-  for (int sz=0;sz<nSize;sz++) 
-    cout << thisSize[sz] << " " << thisTemp[sz] << endl; 
+//   for (int sz=0;sz<nSize;sz++) 
+//     cout << thisSize[sz] << " " << thisTemp[sz] << endl; 
   // ****************************************************************************
 
 //   // ****************************************************************************

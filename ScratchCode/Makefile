@@ -8,6 +8,7 @@ NP_SRCS = test_de.cpp \
 	  ../Grain.cpp \
 	  EqTemp.cpp \
 	  TimeEvolution.cpp \
+	  ComputeEmission.cpp \
           ../GrainModel.cpp \
 	  mt_ran.cpp
 

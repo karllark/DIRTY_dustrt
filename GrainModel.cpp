@@ -46,7 +46,7 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
   iter iCAbsEff,iCScaEff,iphFuncEff,iTau,iAlbedo; 
   iter ithisCAbs,ithisCSca,ithisphFunc,ithisSize,ithisSizeDist;
 
-  int _thisNSize; 
+  //int _thisNSize; 
 
   // Constants that will multiply the mass integrals
   _MassConstants = (4.0/3.0)*(Constant::PI); 
@@ -107,6 +107,7 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
   Component.resize(nComp);
   Normalization.resize(nComp); 
   SizeDistribution.resize(nComp);
+  Temperature.resize(nComp);
   DustMass.resize(nComp);
   TotalDustMass = 0.0;
 
@@ -139,10 +140,10 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
 			     _thisA_min,_thisA_max); 
  
     // Get the size grid defined for this component.
-    _thisNSize = Component[cmp].getNSize(); 
-    _thisSize.resize(_thisNSize); 
-    _thisSize = Component[cmp].getSize(); 
-
+    //_thisNSize = Component[cmp].getNSize(); 
+    //_thisSize.resize(_thisNSize); 
+    //_thisSize = Component[cmp].getSize(); 
+    SizeDistribution[cmp].resize(Component[cmp].nsize); 
     // Get the Size Distribution information. 
     _thisSizeDistribution = _mcf.SValue(_thisSection,"Size Distribution"); 
  
@@ -172,8 +173,8 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
 	    _zda_coeff[12] = _mcf.FValue(_thisSection,"b4"); 
 	    _zda_coeff[13] = _mcf.FValue(_thisSection,"a4"); 
 	    _zda_coeff[14] = _mcf.FValue(_thisSection,"m4");
-	    SizeDistribution[cmp].resize(_thisSize.size()); 
-	    SizeDistribution[cmp] = getZDA_sdist(_zda_coeff,_thisSize);
+	    //SizeDistribution[cmp].resize(_thisSize.size()); 
+	    SizeDistribution[cmp] = getZDA_sdist(_zda_coeff,cmp);
 
 	  }
 	  break; 
@@ -207,8 +208,8 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
     }
 
     // Compute this components contribution to the total mass. 
-    for (uint sz=0;sz<_thisSize.size();sz++)
-      _integrand.push_back(_thisSize[sz]*_thisSize[sz]*_thisSize[sz]*SizeDistribution[cmp][sz]); 
+    for (uint sz=0;sz<Component[cmp].nsize;sz++)
+      _integrand.push_back(Component[cmp].size[sz]*Component[cmp].size[sz]*Component[cmp].size[sz]*SizeDistribution[cmp][sz]); 
     DustMass[cmp] = Normalization[cmp]*_MassConstants*Component[cmp].getDensity()*NumUtils::integrate(_thisSize,_integrand); 
     TotalDustMass += DustMass[cmp]; 
     _integrand.erase(_integrand.begin(),_integrand.end()); 
@@ -311,19 +312,20 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
 //                - b4*|a-a4|^m4
 //  with f(a) = A*g(a) and Int_(a_min)^(a_max) g(a) da = 1
 
-vector <float> GrainModel::getZDA_sdist(vector <float> coeff, vector <float> sz) 
-
+//vector <float> GrainModel::getZDA_sdist(vector <float> coeff, vector <float> sz) 
+vector <float> GrainModel::getZDA_sdist(vector <float> coeff, int cmp) 
 {
 
   float thissz;                     // Hold um copy of size at each point. 
-  vector <float> retvec(sz.size()); // The size distribution [um^-1]
+  vector <float> retvec(Component[cmp].size.size()); // The size distribution [um^-1]
   vector <float>::iterator isz;     // Iterator through size vector
   vector <float>::iterator iretvec; // Iterator through size dist vector
   
   // Set iterator to beginning of size dist vector. 
   iretvec = retvec.begin(); 
 
-  for (isz=sz.begin();isz!=sz.end();isz++) {
+  //for (isz=sz.begin();isz!=sz.end();isz++) {
+  for (isz=Component[cmp].size.begin();isz!=Component[cmp].size.end();isz++) {
     thissz = (*isz)*Constant::CM_UM;         // size[i] in [um]
     *iretvec = coeff[1];           // log(g) = c0
     if (!isnan(coeff[2]))          // b0 is defined
@@ -345,7 +347,7 @@ vector <float> GrainModel::getZDA_sdist(vector <float> coeff, vector <float> sz)
   // a numerical approximation to the normalized size distribution. 
   // This normalization will depend slightly on the choice of size grid, so we can't
   // simply incorporate it into Normalization[]
-  float _Nfac = 1.0/NumUtils::integrate(sz,retvec); 
+  float _Nfac = 1.0/NumUtils::integrate(Component[cmp].size,retvec); 
   transform(retvec.begin(),retvec.end(),retvec.begin(),bind2nd(multiplies<float>(),_Nfac)); 
 
   return retvec; 
@@ -384,6 +386,18 @@ float GrainModel::getTau( float a_wave)
   }
   
 
+}
+
+void GrainModel::ComputeTemperature ( vector <float> rField ) 
+{ 
+
+  for (int _cmp=0;_cmp<nComp;++_cmp) { // Component loop
+
+    for (int _sz=0;_sz<Component[_cmp].nsize;_sz++) { 
+      cout << EqTemp(Wave, rField, Component[_cmp].CAbs[_sz]) << endl; 
+    }
+  }
+    
 }
 
 

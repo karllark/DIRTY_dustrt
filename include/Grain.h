@@ -23,7 +23,9 @@ using namespace std;
 
 class Grain { // Begin Grain Class definition
 
-private: 
+private:
+
+protected: 
 
   int nsize;              // Number of sizes in file.
   int nwave;              // Number of wavelengths in file
@@ -56,6 +58,7 @@ public:
   Grain();
   ~Grain() {}; 
   
+  friend class GrainModel; 
   // Member Functions.
   // Really the constructor - make a member function so we can easily vectorize
   void MakeGrain(string const& fOpticalConstants, 
