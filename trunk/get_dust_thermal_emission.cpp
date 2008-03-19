@@ -4,6 +4,7 @@
 // to get the dust emission from each grid cell.
 //
 // 2007 Oct/KDG - written
+// 2008 Mar/KDG - updated calculation to do the units of the emitted energy correctly
 // ======================================================================
 #include "get_dust_thermal_emission.h"
 
@@ -55,19 +56,25 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	    tot_abs_energy += geometry.grids[m].grid(i,j,k).absorbed_energy[x];
 		
 	  if (tot_abs_energy > 0.) {
-	  // get the dust emission spectrum given the input wavlength vector and radiation field vector
-// 	  dust_thermal_emission(CurGrainModel, runinfo.wavelength,
-// 				geometry.grids[m].grid(i,j,k).absorbed_energy,
-// 				runinfo.do_emission_grain,
-// 				geometry.grids[m].grid(i,j,k).emitted_energy);
+	    // get the dust emission spectrum given the input wavlength vector and radiation field vector
+	    // emitted energy returned is in units of ergs s^-1 HI atom^-1
 
-	  // add to the emitted energy sums
-	  // **probably need to think about units**
+// 	    dust_thermal_emission(CurGrainModel, runinfo.wavelength,
+// 				  geometry.grids[m].grid(i,j,k).absorbed_energy,
+// 				  runinfo.do_emission_grain,
+// 				  geometry.grids[m].grid(i,j,k).emitted_energy);
+
+	    // add to the emitted energy sums
 	    for (z = 0; z < n_emit_components; z++)
 	      for (x = 0; x < runinfo.wavelength.size(); x++) {
 		// temp stuff
 		geometry.grids[m].grid(i,j,k).emitted_energy[z][x] = 1.0;
+
 		// perm stuff
+		// need to multiply the emitted energy passed back by dust_thermal_emission
+		// by the number of HI atoms in the cell to get the total emitted energy
+		geometry.grids[m].grid(i,j,k).emitted_energy[z][x] *= geometry.grids[m].grid(i,j,k).num_H;
+		// add up the emitted energy to the total emitted (per wavelength & component)
 		runinfo.emitted_lum[z][x] += geometry.grids[m].grid(i,j,k).emitted_energy[z][x];
 	      }
 	  }

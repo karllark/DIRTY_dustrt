@@ -34,6 +34,8 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 				 int doing_dust_emission)
 
 {
+  cout << "start saeg..." << endl;
+
   // constant for num_H calculation
   double num_H_const = runinfo.tau_to_h[index]/(Constant::PC_CM);
 
@@ -62,7 +64,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	  if ((geometry.grids[m].grid(i,j,k).dust_tau_per_pc > 0.0) &&
 	      (geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] > 0.0)) {
 	    // # of H atoms in cell
-	    double num_H = num_H_const*vol*geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
+	    geometry.grids[m].grid(i,j,k).num_H = num_H_const*vol*geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
 	    
 #ifdef DEBUG_SAEG
 	    cout << "dust tau/pc = " << geometry.grids[m].grid(i,j,k).dust_tau_per_pc << endl;
@@ -75,7 +77,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	    // convert the absorbed energy to radiation field density
 	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] *= 
 	      (runinfo.sed_lum[index]/output.outputs[0].total_num_photons)/
-	      (num_H*4.0*(Constant::PI)*runinfo.ave_C_abs[index]);
+	      (geometry.grids[m].grid(i,j,k).num_H*4.0*(Constant::PI)*runinfo.ave_C_abs[index]);
 
 #ifdef DEBUG_SAEG
 	    cout << "J(lambda) = " << geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] << endl;
@@ -100,4 +102,5 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
   }
   // nothing needed for geometry.abs_energy_storage_type == 0 (memory)
 
+  cout << "...end saeg." << endl;
 }

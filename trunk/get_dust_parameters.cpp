@@ -85,9 +85,9 @@ void get_dust_parameters (ConfigFile& param_data,
     // now get the tau, albedo, and g values
     runinfo.albedo = CurGrainModel.getAlbedo();
     runinfo.g = CurGrainModel.getphFuncEff();
-    runinfo.tau_to_tau_ref = CurGrainModel.getTau();
-    runinfo.tau_to_h = runinfo.tau_to_tau_ref;
-    runinfo.ave_C_abs = CurGrainModel.getCAbsEffNorm();
+    runinfo.tau_to_h = CurGrainModel.getTau(); // getTau returns tau/H I atom
+    runinfo.tau_to_tau_ref = runinfo.tau_to_h;
+    runinfo.ave_C_abs = CurGrainModel.getCAbsEffNorm();  // getCAbsEffNorm returns cm^2/H I atom
     float norm_tau = CurGrainModel.getTau(0.55*(Constant::UM_CM));
     int i;
 #ifdef DEBUG_GDP

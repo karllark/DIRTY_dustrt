@@ -7,6 +7,7 @@
 // 2004 Dec/KDG - updated with photon scattering
 // 2005 May/KDG - updated with output stuff
 // 2007 Apr/KDG - added dust grain model
+// 2008 Mar/KDG - add details for global output
 // ======================================================================
 
 #ifndef _DIRTY_
@@ -40,7 +41,8 @@ extern void get_dust_parameters (ConfigFile& param_data,
 
 // ger the sed parameters
 extern void get_sed_parameters (ConfigFile& param_data,
-				runinfo_struct& runinfo);
+				runinfo_struct& runinfo,
+				GrainModel& CurGrainModel);
 
 // sets up the dust grid 
 extern void setup_dust_grid (ConfigFile& param_data,
