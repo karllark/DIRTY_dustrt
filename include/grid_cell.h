@@ -3,6 +3,7 @@
 // Include files and function definitions.
 //
 // 2007 Mar/KDG - changed absorbed energy from float to double
+// 2008 Mar/KDG - added num_H to save the number of H atoms per cell
 // ======================================================================
 #ifndef _DIRTY_GRID_CELL_
 #define _DIRTY_GRID_CELL_
@@ -15,6 +16,7 @@ struct grid_cell {
   double save_radiation_field_density;    // save the existing radiation field density (needed for the self-absorption calculation)
   vector< vector<double> > emitted_energy;  // energy emitted in this cell as a function of wavelength
                                             // with ability to have emitted energy split into components
+  double num_H;  // number of HI atoms in this cell
 };
 
 #endif

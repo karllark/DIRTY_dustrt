@@ -4,6 +4,7 @@
 // dust emission cases).
 //
 // 2007 Nov/KDG - written
+// 2008 Mar/KDG - added setting of birth position (forgot it)
 // ======================================================================
 #include "new_photon_grid_source.h"
 
@@ -154,6 +155,9 @@ void new_photon_grid_source (photon_data& photon,
     random_obj.random_num()*(geometry.grids[grid_num].positions[1][y_val+1] - geometry.grids[grid_num].positions[1][y_val]);
   photon.position[2] = geometry.grids[grid_num].positions[2][z_val] +
     random_obj.random_num()*(geometry.grids[grid_num].positions[2][z_val+1] - geometry.grids[grid_num].positions[2][z_val]);
+
+  for (i = 0; i < 3; i++)
+    photon.birth_position[i] = photon.position[i];
 
   // now determine the position indexes of the photon
   determine_photon_position_index_initial(geometry, photon);

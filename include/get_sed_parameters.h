@@ -2,6 +2,7 @@
 #define _DIRTY_GET_SED_PARAMETERS_
 
 #include "runinfo_def.h"
+#include "GrainModel.h"   
 #include "ConfigFile.h"
 #include "DataFile.h"
 #include "NumUtils.h"

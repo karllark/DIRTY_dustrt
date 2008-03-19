@@ -79,6 +79,8 @@ void output_results (output_struct& output,
     }
     // save the result
     if (runinfo.do_global_output) {
+      cout << "runinfo.out_sed_lum_offset = " << runinfo.out_sed_lum_offset << endl;
+      cout << "geometry.wave_index = " << geometry.wave_index << endl;
       runinfo.out_sed_lum[0+runinfo.out_sed_lum_offset][geometry.wave_index] = stellar_sl;
       runinfo.out_sed_lum_unc[0+runinfo.out_sed_lum_offset][geometry.wave_index] =  stellar_sl*total_stellar_weight_err;
     }

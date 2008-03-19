@@ -17,6 +17,7 @@
 // 2007 Apr/KDG - added dustgrains (from KM)
 // 2007 Dec/KDG - added arbitary grid emission (for dust emission)
 // 2008 Jan/KDG - added global output
+// 2008 Mar/KDG - fixed global output to use a FITS ASCII table
 // ======================================================================
 #include "dirty.h"
 
@@ -66,7 +67,7 @@ int main(int argc, char* argv[])
   get_dust_parameters(param_data, CurGrainModel, runinfo);
   
   // read SED parameters
-  get_sed_parameters(param_data, runinfo);
+  get_sed_parameters(param_data, runinfo, CurGrainModel);
 
   // loop over all wavelengths
   int i;
@@ -150,8 +151,6 @@ int main(int argc, char* argv[])
   // output global, multiwavelength luminosities
   if (runinfo.do_global_output)
     output_global_results(runinfo, output);
-
-  cout << "end" << endl;
 
   return 0;
 

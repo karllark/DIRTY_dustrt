@@ -52,7 +52,6 @@ struct runinfo_struct {
 
   // output global values
   int do_global_output;  // set if global, multiwavelength output is desired
-/*   int global_output_fits;  // set to output global luminosites as a FITS table instead of an ASCII file */
   int out_sed_lum_offset; // offset for vector to all for ERE/Dust direct/scattered to be saved as well as stellar direct/scattered
   std::vector< std::vector<float> > out_sed_lum;  // allow for direct/scattered lum
   std::vector< std::vector<float> > out_sed_lum_unc;  // allow for direct/scattered lum uncertainties
