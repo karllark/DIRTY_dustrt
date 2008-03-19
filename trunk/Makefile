@@ -6,6 +6,7 @@
 
 DIRTY_SRCS = dirty.cpp \
 	ConfigFile.cpp \
+	EqTemp.cpp \
 	DataFile.cpp \
 	StringManip.cpp \
 	GrainModel.cpp \
