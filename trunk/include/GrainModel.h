@@ -21,9 +21,9 @@
   //                     parameter as a function of wavelength [Dimensionless].
   //    getAlbedo      - Get albedo (== CScaEff/(CScaEff+CAbsEff) as a function
   //                     of wavelength. 
-  //    getTau         - Get optical depth per H column as f(wave) [cm^2 H^-1].
+  //    getTau         - Get optical depth per H column as f(wave) [H^-1].
   //    getTau(W)      - Get optical depth per H column at wavelength W. W must 
-  //                     be in [cm]. Returned as [cm^2 H^-1]. 
+  //                     be in [cm]. Returned as [^-1]. 
   //    getMDust       - Get the mass of dust.  [gm H^-1].
   //    getMDust(i)    - Get the mass of dust for component i. [gm H^-1]
   //
@@ -40,10 +40,11 @@
 #include "ConfigFile.h"
 #include "Grain.h" 
 #include "StringManip.h"
+#include "EqTemp.h"
 
 using namespace std; 
 
-class GrainModel { 
+class GrainModel: protected Grain { 
 
 public:
 
@@ -75,12 +76,14 @@ public:
   inline int getNComp( void ) { return nComp; }
   inline float getNormalization( void ) { return TotalNormalization; }
   inline float getNormalization( int cmp ) { return Normalization[cmp]; }
-
+  void ComputeTemperature ( vector <float> rField );
   // These functions interface with the Grain model to retrieve properties of 
   // individual components of the model. 
   //  - Need bound checking
-  inline vector <float> Size( int _cmp ) { return Component[_cmp].getSize(); } 
-  inline vector <float> CAbs( int _cmp, int _szid ) { return Component[_cmp].getCAbs(_szid); }
+  inline vector <float> Size ( int _cmp ) { return Component[_cmp].getSize(); } 
+  inline vector <float> CAbs ( int _cmp, int _szid ) { return Component[_cmp].getCAbs(_szid); }
+  inline int nSize ( int _cmp ) { return Component[_cmp].getNSize(); }
+  inline vector <float> CAbs ( int _cmp, float _sz ) { return Component[_cmp].getCAbs(_sz); }
   
 private: 
 
@@ -91,10 +94,14 @@ private:
   string ModelName; 
   
   vector <vector<float> > SizeDistribution; 
+  vector <vector<float> > Temperature; 
+
   vector <float> Normalization; 
   float TotalNormalization;
   float TotalDustMass; 
   vector <float> DustMass; 
+
+  vector <float> ComponentTemperature; 
 
   // Effective quantities; f(wave), integrated and summed over size 
   // distribution for this grain model. 
@@ -104,7 +111,7 @@ private:
   vector <float> Tau; 
   vector <float> phFuncEff; 
 
-  vector <float> getZDA_sdist(vector <float> coeff, vector <float> sz); 
+  vector <float> getZDA_sdist(vector <float> coeff, int cmp); 
   
   // Map definitions.  
   // ModelID - Pre-defined allowed model types. 
