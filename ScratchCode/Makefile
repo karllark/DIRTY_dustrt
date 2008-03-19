@@ -6,7 +6,7 @@ NP_SRCS = test_de.cpp \
           ../StringManip.cpp \
           ../ConfigFile.cpp \
 	  ../Grain.cpp \
-	  EqTemp.cpp \
+	  ../EqTemp.cpp \
 	  TimeEvolution.cpp \
 	  ComputeEmission.cpp \
           ../GrainModel.cpp \
