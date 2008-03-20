@@ -95,36 +95,41 @@ int main (int argc, char * argv[]) {
 
   // ****************************************************************************
   // Example of computing the Equilibrium temperature. 
-  vector <float> thisTemp; 
+//   vector <float> thisTemp; 
 
-  float Tlo,Thi;
+//   float Tlo,Thi;
   
-  //thisSize = thisGrainModel.Size(2); 
-  //nSize = thisSize.size(); 
-  thisCAbs = MyGrain[0].getCAbs(0); 
-  //thisCAbs = MyGrain[0].getCAbs(0); 
-  thisTemp.push_back(EqTemp(thisWave,thisISRF,thisCAbs));
-
-  for (int sz=1;sz<nSize;sz++) { 
-   
-    //thisCAbs = thisGrainModel.CAbs(2,sz); 
-    thisCAbs = MyGrain[0].getCAbs(sz); 
-    // Should make Tlo,Thi a tunable parameter somehow...
-    // Need to experiment on specifying this for stochastic portion. 
-    Tlo = (0.3*thisTemp[sz-1]); // < 1.0) ? 1.0 : (thisTemp[sz-1]-10.0); 
-    Thi = (4.0*thisTemp[sz-1]); // > 2500.0) ? 2500.0 : (thisTemp[sz-1]+10.0);
+//   for (int c=0;c<3;c++) { 
     
-    thisTemp.push_back(EqTemp(thisWave,thisISRF,thisCAbs,((Tlo<0)?1.0:Tlo),((Thi>2500.0)?2500.0:Thi)));
-
-  }
+//     thisSize = thisGrainModel.Size(c); 
+//     nSize = thisSize.size(); 
+//     thisCAbs = thisGrainModel.CAbs(c,0); 
+//     thisCAbs = MyGrain[0].getCAbs(0);
+//     thisTemp.resize(nSize);
+//     thisTemp[0] = EqTemp(thisWave,thisISRF,thisCAbs);
     
-  float mysize=0.0040*1.0e-4;
-  int sizeid=NumUtils::index(mysize,thisSize); 
+//     for (int sz=1;sz<nSize;sz++) { 
+      
+//       thisCAbs = thisGrainModel.CAbs(c,sz); 
+//       //thisCAbs = MyGrain[0].getCAbs(sz); 
+//       // Should make Tlo,Thi a tunable parameter somehow...
+//       // Need to experiment on specifying this for stochastic portion. 
+//       Tlo = (0.3*thisTemp[sz-1]); // < 1.0) ? 1.0 : (thisTemp[sz-1]-10.0); 
+//       Thi = (4.0*thisTemp[sz-1]); // > 2500.0) ? 2500.0 : (thisTemp[sz-1]+10.0);
+      
+//       thisTemp[sz] = EqTemp(thisWave,thisISRF,thisCAbs,((Tlo<0)?1.0:Tlo),((Thi>2500.0)?2500.0:Thi));
+//       //      thisTemp.push_back(EqTemp(thisWave,thisISRF,thisCAbs,((Tlo<0)?1.0:Tlo),((Thi>2500.0)?2500.0:Thi)));
+      
+//     }
+//   }
+
+//   float mysize=0.0040*1.0e-4;
+//   int sizeid=NumUtils::index(mysize,thisSize); 
   cout << "Calling compute emission " <<endl ;
-  ComputeEmission(thisISRF,thisGrainModel); 
+  ComputeEmission(thisISRF, thisGrainModel ); 
   
-  cout << "EQUILIBRIUM TEMPERATURE AT SIZE " << mysize << "(" 
-       << thisSize[sizeid] << ") IS " << thisTemp[sizeid] << endl; 
+//   cout << "EQUILIBRIUM TEMPERATURE AT SIZE " << mysize << "(" 
+//        << thisSize[sizeid] << ") IS " << thisTemp[sizeid] << endl; 
 
 //   for (int sz=0;sz<nSize;sz++) 
 //     cout << thisSize[sz] << " " << thisTemp[sz] << endl; 
