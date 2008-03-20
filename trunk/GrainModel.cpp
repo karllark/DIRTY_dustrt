@@ -208,9 +208,9 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
     }
 
     // Compute this components contribution to the total mass. 
-    for (uint sz=0;sz<Component[cmp].nsize;sz++)
+    for (int sz=0;sz<Component[cmp].nsize;sz++)
       _integrand.push_back(Component[cmp].size[sz]*Component[cmp].size[sz]*Component[cmp].size[sz]*SizeDistribution[cmp][sz]); 
-    DustMass[cmp] = Normalization[cmp]*_MassConstants*Component[cmp].getDensity()*NumUtils::integrate(_thisSize,_integrand); 
+    DustMass[cmp] = Normalization[cmp]*_MassConstants*Component[cmp].getDensity()*NumUtils::integrate(Component[cmp].size,_integrand); 
     TotalDustMass += DustMass[cmp]; 
     _integrand.erase(_integrand.begin(),_integrand.end()); 
 
@@ -235,7 +235,7 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
     for (int cmp=0;cmp<nComp;cmp++) { // Loop over Chemical composition
       
       // Get size as well as Cs and g as f(a)
-      _thisSize = Component[cmp].getSize();         // size grid. 
+      //_thisSize = Component[cmp].getSize();         // size grid. 
       _thisCAbs = Component[cmp].w_getCAbs(wv);     // CAbs as f(a)
       _thisCSca = Component[cmp].w_getCSca(wv);     // CSca as f(a)
       _thisphFunc = Component[cmp].w_getphFunc(wv); // g as f(a)
@@ -254,7 +254,8 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
       ithisphFunc = _thisphFunc.begin()+1;             // begining of g+1
       ithisSizeDist = SizeDistribution[cmp].begin()+1; // beginning of SizeDistribution+1
 
-      for (ithisSize = _thisSize.begin()+1;ithisSize!=_thisSize.end();ithisSize++) { // Integration loop.
+      //for (ithisSize = _thisSize.begin()+1;ithisSize!=_thisSize.end();ithisSize++) { // Integration loop.
+      for (ithisSize = Component[cmp].size.begin()+1;ithisSize!=Component[cmp].size.end();ithisSize++) { // Integration loop.
 	// 1/2 dx
 	delta = 0.5*((*ithisSize) - *(ithisSize-1)); 
 	// C(abs,sca) = int(C(a)*f(a)da)

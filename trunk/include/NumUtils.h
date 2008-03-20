@@ -320,7 +320,7 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       v.erase(v.begin(),v.end());
       v.resize(u.size());
  
-      T slope,intercept; 
+      //T slope,intercept; 
 
       typename vector <T>::iterator iu,iul,iuh,ir,ix,iv; 
       // Iterators point to begining of vectors.
@@ -389,10 +389,13 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       // Wave is in CGS (cm), return in CGS: erg/cm^2/s/cm/st
       T c1 = 2.0*Constant::PLANCK*pow(Constant::LIGHT,2);
       T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*Temperature);
-      
-      vector <T> theBB; 
-      for (int i=0;i<wave.size();i++) 
-	theBB.push_back(c1/pow((wave[i]),5)*(1.0/(std::exp(c2/(wave[i])) - 1.0)));
+      typename vector <T>::iterator _itbeg,_itend,_it;
+
+      vector <T> theBB;
+      _itbeg = wave.begin();
+      _itend = wave.end();
+      for (_it=_itbeg;_it!=_itend;++_it) 
+	theBB.push_back(c1/pow((*_it),5)*(1.0/(std::exp(c2/(*_it)) - 1.0)));
       
       return theBB;
     }
