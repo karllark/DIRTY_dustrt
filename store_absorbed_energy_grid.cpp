@@ -34,8 +34,6 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 				 int doing_dust_emission)
 
 {
-  cout << "start saeg..." << endl;
-
   // constant for num_H calculation
   double num_H_const = runinfo.tau_to_h[index]/(Constant::PC_CM);
 
@@ -101,6 +99,4 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
     exit(8);
   }
   // nothing needed for geometry.abs_energy_storage_type == 0 (memory)
-
-  cout << "...end saeg." << endl;
 }

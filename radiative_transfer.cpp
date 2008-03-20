@@ -29,7 +29,7 @@ void radiative_transfer (geometry_struct& geometry,
       if ((geometry.n_photons > 100) && ((i % (geometry.n_photons/20)) == 0)) cout << "current # = " << i << endl;
     }
     // start the photon at the star position
-    new_photon(photon, geometry, random_obj);
+    new_photon(photon, geometry, runinfo, random_obj);
     photon.number = i;
 #ifdef DEBUG_RT
     if (photon.number > OUTNUM) cout << photon.number << " ";
@@ -62,7 +62,7 @@ void radiative_transfer (geometry_struct& geometry,
 #endif
 
     // classify stellar photon(s)
-    classify_stellar_photon(output, photon, geometry);
+    classify_stellar_photon(output, photon, geometry, runinfo);
 #ifdef DEBUG_RT
     if (photon.number > OUTNUM) cout << "cstp done; "; cout.flush();
 #endif
@@ -72,7 +72,7 @@ void radiative_transfer (geometry_struct& geometry,
     while (!escape) {
 
       // classify the scattered photon
-      classify_scattered_photon(output, photon, geometry);
+      classify_scattered_photon(output, photon, geometry, runinfo);
 #ifdef DEBUG_RT
       if (photon.number > OUTNUM) cout << "cscp done; "; cout.flush();
 #endif

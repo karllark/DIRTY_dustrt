@@ -10,6 +10,7 @@
 
 void new_photon_grid_source (photon_data& photon,
 			     geometry_struct& geometry,
+			     runinfo_struct& runinfo,
 			     random_dirty random_obj)
   
 
@@ -158,6 +159,12 @@ void new_photon_grid_source (photon_data& photon,
 
   for (i = 0; i < 3; i++)
     photon.birth_position[i] = photon.position[i];
+
+  // save the birth grain/emission type probabilities if needed for dust thermal emission part of dirty
+  if (runinfo.dust_thermal_emission && runinfo.do_emission_grain)
+    for (i = 0; i < runinfo.n_emission_grain_types; i++)
+      photon.birth_photon_type_prob[i] = geometry.grids[grid_num].grid(x_val,y_val,z_val).emitted_energy[i][geometry.wave_index];
+
 
   // now determine the position indexes of the photon
   determine_photon_position_index_initial(geometry, photon);

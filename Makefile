@@ -14,7 +14,7 @@ PROGRAM = dirty
 SOURCES = $(wildcard *.cpp)
 
 OBJECTS = ${SOURCES:.cpp=.o}
-CPPFLAGS = -I${INCDIR} -O3 
+CPPFLAGS = -I${INCDIR} -O2 -Wall -Wextra
 
 BUILDOBJ = $(CPP) $(CPPFLAGS)
 BUILDLNK = $(CPP) $(LDFLAGS)

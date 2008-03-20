@@ -32,6 +32,7 @@ void output_results (output_struct& output,
 {
   int i;
   
+  cout << "# outputs = " << output.num_outputs << endl;
   for (i = 0; i < output.num_outputs; i++) {
 
     if (runinfo.verbose >= 2) {
@@ -79,10 +80,11 @@ void output_results (output_struct& output,
     }
     // save the result
     if (runinfo.do_global_output) {
-      cout << "runinfo.out_sed_lum_offset = " << runinfo.out_sed_lum_offset << endl;
-      cout << "geometry.wave_index = " << geometry.wave_index << endl;
-      runinfo.out_sed_lum[0+runinfo.out_sed_lum_offset][geometry.wave_index] = stellar_sl;
-      runinfo.out_sed_lum_unc[0+runinfo.out_sed_lum_offset][geometry.wave_index] =  stellar_sl*total_stellar_weight_err;
+//       cout << output.num_outputs << " ";
+//       cout << runinfo.out_sed_lum.size() << " ";
+//       cout << runinfo.out_sed_lum_offset+(2*i) << endl;
+      runinfo.out_sed_lum[0+runinfo.out_sed_lum_offset+(2*i)][geometry.wave_index] = stellar_sl;
+      runinfo.out_sed_lum_unc[0+runinfo.out_sed_lum_offset+(2*i)][geometry.wave_index] =  stellar_sl*total_stellar_weight_err;
     }
 
     // compute total scattered weight uncertainty
@@ -109,8 +111,11 @@ void output_results (output_struct& output,
 
     // save the result
     if (runinfo.do_global_output) {
-      runinfo.out_sed_lum[1+runinfo.out_sed_lum_offset][geometry.wave_index] = scattered_sl;
-      runinfo.out_sed_lum_unc[1+runinfo.out_sed_lum_offset][geometry.wave_index] =  scattered_sl*total_scattered_weight_err;
+//       cout << runinfo.out_sed_lum.size() << " ";
+//       cout << 1+runinfo.out_sed_lum_offset+(2*i) << endl;
+      runinfo.out_sed_lum[1+runinfo.out_sed_lum_offset+(2*i)][geometry.wave_index] = scattered_sl;
+      runinfo.out_sed_lum_unc[1+runinfo.out_sed_lum_offset+(2*i)][geometry.wave_index] =  scattered_sl*total_scattered_weight_err;
+//       cout << "done." << endl;
     }
 
     // determine scattered flux
@@ -192,6 +197,15 @@ void output_results (output_struct& output,
 	ss << (i+1);
 	ss >> los_index;
 	filename += "_los" + los_index;
+      }
+      if (runinfo.dust_thermal_emission && (runinfo.n_emission_grain_types > 1)) {
+	// convert current integer grain_type index to a string
+	// should be a more elegant way to do this!
+	stringstream ss;
+	string grain_index;
+	ss << (i+1);
+	ss >> grain_index;
+	filename += "_ge" + grain_index;
       }
       if (runinfo.n_waves > 1) {
 	// convert current integer wavelength index to a string

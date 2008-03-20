@@ -85,6 +85,12 @@ extern void get_dust_thermal_emission (geometry_struct& geometry,
 				       runinfo_struct& runinfo, 
 				       GrainModel& CurGrainModel);
 
+// setup for the thermal dust emission output (used for separate grain/emission output)
+extern void setup_thermal_dust_emission_output (runinfo_struct& runinfo,
+						output_struct& de_output,
+						output_struct& output,
+						photon_data& photon);
+
 // setup the emitted grid for monte carlo radiative transfer
 extern void setup_emitted_grid_for_montecarlo (geometry_struct& geometry,
 					       runinfo_struct& runinfo,

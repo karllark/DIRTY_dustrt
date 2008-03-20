@@ -34,8 +34,16 @@ void initialize_output (output_struct& output,
     //   matrix specifically to rotate so the observer position is along the z-axis
     //   if the observer is put at the standard theta,phi location
     //   (need to check this)
-    float theta = geometry.observer_angles[0][i];
-    float phi = geometry.observer_angles[1][i];
+    float theta; 
+    float phi;
+
+    if (geometry.num_observers > 1) {
+      theta = geometry.observer_angles[0][i];
+      phi = geometry.observer_angles[1][i];
+    } else { // handle the case when the number of outputs is set by something other than multiple lines-of-sight
+      theta = geometry.observer_angles[0][0];
+      phi = geometry.observer_angles[1][0];
+    }
 
 #ifdef DEBUG_INITOUT
     cout << "observer (theta,phi) = (" << theta*180./M_PI << "," << phi*180./M_PI << ")" << endl;
