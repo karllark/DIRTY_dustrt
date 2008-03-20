@@ -23,6 +23,8 @@ struct runinfo_struct {
   int do_emission_grain; // do emission by grain type (0=no)
                          // if set, then the emission is split by grain type 
                          // and equilibrium/non-equilibrium
+  int dust_thermal_emission;  // set when doing thermal dust emission (used when do_emission_grain=1)
+  int n_emission_grain_types;  // number of grain emission types
 
   int empir_dust;  // set to 1 if empirical dust properties being used
   int model_dust;  // set to 1 if dust grain model properties being used

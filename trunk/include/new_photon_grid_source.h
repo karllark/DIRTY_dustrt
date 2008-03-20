@@ -7,6 +7,7 @@
 #include "geometry_def.h"
 #include "random_dirty.h"
 #include "photon_data.h"
+#include "runinfo_def.h"
 #include "debug.h"
 
 // determines the vector of positions and grid numbers given the photon

@@ -29,6 +29,7 @@ extern void initialize_output (output_struct& output,
 // generates photons for the single star case
 extern void new_photon (photon_data& photon,
 			geometry_struct& geometry,
+			runinfo_struct& runinfo,
 			random_dirty random_obj);
 
 // determines the first scattering site (forced)
@@ -50,12 +51,14 @@ extern void scatter_photon (geometry_struct& geometry,
 // classifies stellar photon into output
 extern void classify_stellar_photon (output_struct& output,
 				     photon_data& photon,
-				     geometry_struct& geometry);
+				     geometry_struct& geometry,
+				     runinfo_struct& runinfo);
 
 // classifies scattered photon into output
 extern void classify_scattered_photon (output_struct& output,
 				       photon_data& photon,
-				       geometry_struct& geometry);
+				       geometry_struct& geometry,
+				       runinfo_struct& runinfo);
 
 
 #endif

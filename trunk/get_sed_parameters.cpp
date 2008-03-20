@@ -76,10 +76,11 @@ void get_sed_parameters (ConfigFile& param_data,
     runinfo.out_sed_lum_offset = 0;  // doing stellar direct/scattered storage
 
     // allocate the vector to store the transmitted stellar/dust luminosity
-    int n_out_sed = 1;  // maybe allow this to be 2 if we are doing ERE emission
+    int n_out_sed = 2;  // set this to be 3 if we are doing ERE emission
     if (runinfo.do_dust_emission) 
 	n_out_sed += 2*CurGrainModel.getNComp();
-
+    n_out_sed *= 2;  // multiply by 2 to allow for direct and scattered
+    
     runinfo.out_sed_lum.resize(n_out_sed);
     runinfo.out_sed_lum_unc.resize(n_out_sed);
     int k = 0;

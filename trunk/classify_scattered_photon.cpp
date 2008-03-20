@@ -9,7 +9,8 @@
 
 void classify_scattered_photon (output_struct& output,
 				photon_data& photon,
-				geometry_struct& geometry)
+				geometry_struct& geometry,
+				runinfo_struct& runinfo)
 
 {
   int i;
@@ -30,6 +31,11 @@ void classify_scattered_photon (output_struct& output,
 
     // take into account the albedo for this scattering
     tmp_photon.scat_weight *= geometry.albedo;
+
+    // modify weight by probability the emission was due to a specific grain/emission type
+    // only used for dust emission part of dirty
+    if (runinfo.dust_thermal_emission && runinfo.do_emission_grain && (i > 0))
+      tmp_photon.scat_weight *= tmp_photon.birth_photon_type_prob[i];
 
     // update global values
     output.outputs[i].total_num_scattered_photons += 1.0;

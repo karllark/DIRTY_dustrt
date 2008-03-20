@@ -7,8 +7,11 @@
 
 struct photon_data { 
   double position[3]; // the physical location [parsec]
-  double birth_position[3];  // the birth physical location [parsec]
   double dir_cosines[3];    // the direction cosines describing the direction the photon is moving
+
+  double birth_position[3];  // the birth physical location [parsec]
+  // probability of the photon being emitted by different grain/emission types (used for dust thermal emission)
+  std::vector<double> birth_photon_type_prob;
 
   std::vector< std::vector<int> > position_index;  // vector of indexes for each grid photon is in
   std::vector<long> grid_number;      // in which grid is the photon located

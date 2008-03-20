@@ -14,6 +14,7 @@
 #include "output_def.h"
 #include "geometry_def.h"
 #include "photon_data.h"
+#include "runinfo_def.h"
 #include "debug.h"
 
 //**********************************************************************

@@ -108,11 +108,24 @@ int main(int argc, char* argv[])
   int iter_num = 1;
   int iter_max = 1;
   int iter_done = 0;
+
+  // setup a new output stucture to handle the different grain types
+  output_struct de_output;  // stucture with the output info (images, etc.)
+
   if (!runinfo.do_dust_emission) {
     iter_done = 1;
   } else {
-    runinfo.out_sed_lum_offset += 2;  // increment to save dust emission direct/scattered luminosity
-    output.emission_type = "_de"; // setup the emission_type string for dust emission
+    if (runinfo.do_emission_grain && (geometry.num_observers > 1)) {
+      cout << "not possible to do dust emission output of emission by grain type and" << endl;
+      cout << "multiple-lines-of-sight without new code." << endl;
+      cout << "Set do_emission_type=0 to get multiple-lines-of-sight and total IR emission." << endl;
+      exit(8);
+    } else if (runinfo.do_emission_grain)
+      setup_thermal_dust_emission_output(runinfo, de_output, output, photon);
+
+    // increment to save dust emission direct/scattered luminosity
+    runinfo.out_sed_lum_offset += 2;
+    runinfo.dust_thermal_emission = 1;
   }
 
   while (!iter_done) {
@@ -132,14 +145,14 @@ int main(int argc, char* argv[])
       get_dust_scat_parameters(i, runinfo, geometry);
 
       // do RT part
-      radiative_transfer(geometry, runinfo, output, photon, random_obj);
+      radiative_transfer(geometry, runinfo, de_output, photon, random_obj);
       
       // output RT results
-      output_results(output, geometry, runinfo, i);
+      output_results(de_output, geometry, runinfo, i);
       
       // store the result (either in memory or on disk)
       // remember to zero out the absorbed energy grid
-      store_absorbed_energy_grid(geometry, runinfo, output, i, 1);
+      store_absorbed_energy_grid(geometry, runinfo, de_output, i, 1);
     }
 
     iter_num++;
@@ -147,10 +160,9 @@ int main(int argc, char* argv[])
     if (iter_num >= iter_max) iter_done = 1;
   }
 
-  // output final RT+DE images/totals [TBD]
   // output global, multiwavelength luminosities
   if (runinfo.do_global_output)
-    output_global_results(runinfo, output);
+    output_global_results(runinfo, de_output);
 
   return 0;
 

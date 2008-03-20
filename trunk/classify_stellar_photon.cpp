@@ -12,7 +12,8 @@
 
 void classify_stellar_photon (output_struct& output,
 			      photon_data& photon,
-			      geometry_struct& geometry)
+			      geometry_struct& geometry,
+			      runinfo_struct& runinfo)
 
 {
   int i;
@@ -48,6 +49,11 @@ void classify_stellar_photon (output_struct& output,
     // the z-axis 
     rotate_zaxis_for_observer(output.outputs[i].rotate_transform,tmp_photon);
 
+    // modify weight by probability the emission was due to a specific grain/emission type
+    // only used for dust emission part of dirty
+    if (runinfo.dust_thermal_emission && runinfo.do_emission_grain && (i > 0))
+      tmp_photon.stellar_weight *= tmp_photon.birth_photon_type_prob[i];
+    
     // update global values
     output.outputs[i].total_num_photons += 1.0;
     output.outputs[i].total_stellar_weight += tmp_photon.stellar_weight;

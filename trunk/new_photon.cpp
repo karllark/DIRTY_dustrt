@@ -10,6 +10,7 @@
 
 void new_photon (photon_data& photon,
 		 geometry_struct& geometry,
+		 runinfo_struct& runinfo,
 		 random_dirty random_obj)
 
 {
@@ -23,7 +24,7 @@ void new_photon (photon_data& photon,
       new_photon_diffuse_source(photon, geometry, random_obj);
       break;
     case NEW_PHOTON_GRID:
-      new_photon_grid_source(photon, geometry, random_obj);
+      new_photon_grid_source(photon, geometry, runinfo, random_obj);
       break;
     default: 
       cout << "new_photon for input source type (" << geometry.source_type << ") not found [NEW CODE NEEDED]." << endl;

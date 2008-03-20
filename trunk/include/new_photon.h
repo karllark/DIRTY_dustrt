@@ -7,6 +7,7 @@
 #include "geometry_def.h"
 #include "random_dirty.h"
 #include "photon_data.h"
+#include "runinfo_def.h"
 #include "debug.h"
 
 // new photon for discrete stars
@@ -22,6 +23,7 @@ extern void new_photon_diffuse_source (photon_data& photon,
 // new photon for gird sources
 extern void new_photon_grid_source (photon_data& photon,
 				    geometry_struct& geometry,
+				    runinfo_struct& runinfo,
 				    random_dirty random_obj);
 
 #endif
