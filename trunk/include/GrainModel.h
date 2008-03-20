@@ -56,6 +56,7 @@ public:
   // Create a specific GrainModel object
   void MakeGrainModel ( ConfigFile & ModelConfigFile , vector <float> & MasterWave); 
 
+  inline vector <float> getSizeDistribution ( int _cmp ) { return SizeDistribution[_cmp]; }
   inline vector <float> getCAbsEff( void ) { return CAbsEff; } 
   inline vector <float> getCAbsEffNorm( void ) { 
     vector <float> CAbsEffNorm; 
@@ -76,15 +77,16 @@ public:
   inline int getNComp( void ) { return nComp; }
   inline float getNormalization( void ) { return TotalNormalization; }
   inline float getNormalization( int cmp ) { return Normalization[cmp]; }
-  void ComputeTemperature ( vector <float> rField );
+  //void ComputeEmission ( vector <float> rField );
   // These functions interface with the Grain model to retrieve properties of 
   // individual components of the model. 
   //  - Need bound checking
-  inline vector <float> Size ( int _cmp ) { return Component[_cmp].getSize(); } 
+  inline vector <float> Size ( int _cmp ) { return Component[_cmp].getSize(); }
   inline vector <float> CAbs ( int _cmp, int _szid ) { return Component[_cmp].getCAbs(_szid); }
   inline int nSize ( int _cmp ) { return Component[_cmp].getNSize(); }
   inline vector <float> CAbs ( int _cmp, float _sz ) { return Component[_cmp].getCAbs(_sz); }
-  
+  inline vector <float> wCAbs ( int _cmp, int _wid ) { return Component[_cmp].w_getCAbs(_wid); }
+
 private: 
 
   int nComp; 
@@ -94,14 +96,16 @@ private:
   string ModelName; 
   
   vector <vector<float> > SizeDistribution; 
-  vector <vector<float> > Temperature; 
+  vector <float> Temperature;      // Hold a single component temperature at a time...
 
+  //vector <vector<float> > Temperature;      // Hold a single component temperature at a time...
+ 
   vector <float> Normalization; 
   float TotalNormalization;
   float TotalDustMass; 
   vector <float> DustMass; 
 
-  vector <float> ComponentTemperature; 
+  //vector <float> ComponentTemperature; 
 
   // Effective quantities; f(wave), integrated and summed over size 
   // distribution for this grain model. 

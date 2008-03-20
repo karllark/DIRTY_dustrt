@@ -389,16 +389,31 @@ float GrainModel::getTau( float a_wave)
 
 }
 
-void GrainModel::ComputeTemperature ( vector <float> rField ) 
-{ 
+// void GrainModel::ComputeEmission ( vector <float> rField ) 
+// { 
 
-  for (int _cmp=0;_cmp<nComp;++_cmp) { // Component loop
+//   vector <float> _t; 
+//   vector <float>::iterator _it; 
+//   float _tlo,_thi;
 
-    for (int _sz=0;_sz<Component[_cmp].nsize;_sz++) { 
-      cout << EqTemp(Wave, rField, Component[_cmp].CAbs[_sz]) << endl; 
-    }
-  }
+//   for (int _cmp=0;_cmp<nComp;++_cmp) { // Component loop
+
+//     Temperature[_cmp].resize(Component[_cmp].nsize); 
+//     _it=Temperature[_cmp].begin();
+//     *_it = EqTemp(Wave, rField, Component[_cmp].CAbs[0]);
+//     ++_it; 
+//     for (int _sz=1;_sz<Component[_cmp].nsize;++_sz,++_it) {
+//       _tlo = 0.3*(*(_it-1)); 
+//       _thi = 4.0*(*(_it-1));
+//       *_it = EqTemp(Wave, rField, Component[_cmp].CAbs[_sz],((_tlo<0)?1.0:_tlo),((_thi>2500.0)?2500.0:_thi)); 
+//     }
+
+//     // Logic for Equilibrium vs. non-Equilibrium computation. 
+// //     for (int sz=0;sz<Component[_cmp].nsize;++sz) { 
+// //       cout << Component[_cmp].size[sz] << " " << Temperature[_cmp][sz] << endl; 
+// //     }
+//   }
     
-}
+// }
 
 

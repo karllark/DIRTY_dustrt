@@ -98,6 +98,7 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
 					     vector <T>& u, int LoEx=2, int HiEx=2);
   template <typename T> void interpolr (vector <T>& v, vector <T>& x, 
 					vector <T>& u, int LoEx=2, int HiEx=2);
+  template <typename T> vector <T> bbodyCGS (T wave, vector <T>&  Temperature);
   template <typename T> vector <T> bbodyCGS (vector <T>& wave, T Temperature);
   template <typename T> string vtos(const T & value);
   template <typename T> class Matrix;
@@ -381,9 +382,29 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
     }
   // ****************************************************************************
 
-  
+    // ****************************************************************************
+  // BB inputs and outputs all in cgs - cm and erg/s/cm^2/st/cm
+  // Returns BB as f(T) for a single wavelength
+  template <typename T> vector <T> bbodyCGS (T wave, vector <T>& Temperature)
+    {   
+      // Wave is in CGS (cm), return in CGS: erg/cm^2/s/cm/st
+      T c1 = 2.0*Constant::PLANCK*pow(Constant::LIGHT,2);
+      T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN);
+      typename vector <T>::iterator _itbeg,_itend,_it;
+
+      vector <T> theBB;
+      _itbeg = Temperature.begin();
+      _itend = Temperature.end();
+      for (_it=_itbeg;_it!=_itend;++_it) 
+	theBB.push_back(c1/pow((wave),5)*(1.0/(std::exp((c2/(*_it))/(wave)) - 1.0)));
+      
+      return theBB;
+    }
+  // ****************************************************************************
+
   // ****************************************************************************
   // BB inputs and outputs all in cgs - cm and erg/s/cm^2/st/cm
+  // Returns BB as f(wave) for a single T
   template <typename T> vector <T> bbodyCGS (vector <T>& wave, T Temperature)
     {   
       // Wave is in CGS (cm), return in CGS: erg/cm^2/s/cm/st
