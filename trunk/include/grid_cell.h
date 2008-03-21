@@ -11,10 +11,10 @@
 // defines the contents of a grid cell
 struct grid_cell {
   float dust_tau_per_pc;      // dust optical depth per parsec tau/pc
-  vector<double> absorbed_energy;  // energy absorbed in this cell at this wavelength
+  vector<float> absorbed_energy;  // energy absorbed in this cell at this wavelength
                                    // can handle multiwavelengths if desired
-  double save_radiation_field_density;    // save the existing radiation field density (needed for the self-absorption calculation)
-  vector< vector<double> > emitted_energy;  // energy emitted in this cell as a function of wavelength
+  float save_radiation_field_density;    // save the existing radiation field density (needed for the self-absorption calculation)
+  vector< vector<float> > emitted_energy;  // energy emitted in this cell as a function of wavelength
                                             // with ability to have emitted energy split into components
   double num_H;  // number of HI atoms in this cell
 };

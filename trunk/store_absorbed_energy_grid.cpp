@@ -74,8 +74,8 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 
 	    // convert the absorbed energy to radiation field density
 	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] *= 
-	      (runinfo.sed_lum[index]/output.outputs[0].total_num_photons)/
-	      (geometry.grids[m].grid(i,j,k).num_H*4.0*(Constant::PI)*runinfo.ave_C_abs[index]);
+	      float((runinfo.sed_lum[index]/output.outputs[0].total_num_photons)/
+		    (geometry.grids[m].grid(i,j,k).num_H*4.0*(Constant::PI)*runinfo.ave_C_abs[index]));
 
 #ifdef DEBUG_SAEG
 	    cout << "J(lambda) = " << geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] << endl;
