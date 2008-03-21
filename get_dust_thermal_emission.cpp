@@ -16,6 +16,8 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   int i,j,k,m,z = 0;
   uint x = 0;
 
+  bool DoStochastic=false; 
+
   // get the number of emission components
   int n_emit_components = 1;
   if (runinfo.do_emission_grain) n_emit_components += 2*CurGrainModel.getNComp();
@@ -58,6 +60,11 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	  if (tot_abs_energy > 0.) {
 	    // get the dust emission spectrum given the input wavlength vector and radiation field vector
 	    // emitted energy returned is in units of ergs s^-1 HI atom^-1
+
+	    ComputeDustEmission(geometry.grids[m].grid(i,j,k).absorbed_energy,
+				CurGrainModel, 
+				geometry.grids[m].grid(i,j,k).emitted_energy,
+				DoStochastic); 
 
 // 	    dust_thermal_emission(CurGrainModel, runinfo.wavelength,
 // 				  geometry.grids[m].grid(i,j,k).absorbed_energy,

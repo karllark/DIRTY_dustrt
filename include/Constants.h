@@ -24,9 +24,10 @@ namespace Constant {
   const double AU_CM=1.4959787e+13;          // AU --> cm
   const double PC_CM=3.0856776e+18;          // Parsec --> cm
   const double JY_CGS=1.0e-23;               // Constants without wave conversion.
+  const double FPI=4.0*(PI);                 // 4pi
   const double MKS_CGS=10.0; 
-  const double U_J=4.0*(PI)/(LIGHT);         // Convert Energy Density to Field
-  const double VFAC=(4.0/3.0)*(PI);
+  const double U_J=(FPI)/(LIGHT);            // Convert Energy Density to Field
+  const double VFAC=(FPI)/3.0;               // Volume factor (4/3)*pi 
   const double ERG_EV=6.24150974e11;         // Ergs -> electron volts
   
 }
