@@ -206,7 +206,7 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
       exit(8); 
 
     }
-
+   
     // Compute this components contribution to the total mass. 
     for (int sz=0;sz<Component[cmp].nsize;sz++)
       _integrand.push_back(Component[cmp].size[sz]*Component[cmp].size[sz]*Component[cmp].size[sz]*SizeDistribution[cmp][sz]); 

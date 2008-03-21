@@ -8,5 +8,7 @@
 
 //**********************************************************************
 // external function definitions
+extern void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel, 
+				 vector <vector<float> > & EmmittedEnergy, bool DoStochastic);
 
 #endif
