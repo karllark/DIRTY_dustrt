@@ -48,6 +48,10 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	    for (z = 0; z < n_emit_components; z++)
 	      geometry.grids[m].grid(i,j,k).emitted_energy[z].resize(runinfo.wavelength.size(),0.0);
 	  } else
+	    // will need code that does not set the nonequilibrium thermal emission to zero
+	    // when we are doing the next iteration for the case where we donot want to 
+	    // recompute the nonequilibrium case
+	    // also make sure to set the total emission to the sum of the nonequilibrium emission
 	    for (z = 0; z < n_emit_components; z++)
 	      for (x = 0; x < runinfo.wavelength.size(); x++)
 		geometry.grids[m].grid(i,j,k).emitted_energy[z][x] = 0.0;
@@ -60,6 +64,8 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	  if (tot_abs_energy > 0.) {
 	    // get the dust emission spectrum given the input wavlength vector and radiation field vector
 	    // emitted energy returned is in units of ergs s^-1 HI atom^-1
+
+	    cout << k << " " << j << " " << i << endl;
 
 	    ComputeDustEmission(geometry.grids[m].grid(i,j,k).absorbed_energy,
 				CurGrainModel, 
@@ -75,7 +81,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	    for (z = 0; z < n_emit_components; z++)
 	      for (x = 0; x < runinfo.wavelength.size(); x++) {
 		// temp stuff
-		geometry.grids[m].grid(i,j,k).emitted_energy[z][x] = 1.0;
+// 		geometry.grids[m].grid(i,j,k).emitted_energy[z][x] = 1.0;
 
 		// perm stuff
 		// need to multiply the emitted energy passed back by dust_thermal_emission

@@ -66,16 +66,23 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	    
 #ifdef DEBUG_SAEG
 	    cout << "dust tau/pc = " << geometry.grids[m].grid(i,j,k).dust_tau_per_pc << endl;
-	    cout << "# H [total] = " << num_H << endl;
+	    cout << "# H [total] = " << geometry.grids[m].grid(i,j,k).num_H << endl;
 	    cout << "Raw E_abs = " << geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] << endl;
 	    cout << "sed_lum = " << runinfo.sed_lum[index] << endl;
 	    cout << "total # photons = " << output.outputs[0].total_num_photons << endl;
 #endif
 
 	    // convert the absorbed energy to radiation field density
-	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] *= 
-	      float((runinfo.sed_lum[index]/output.outputs[0].total_num_photons)/
-		    (geometry.grids[m].grid(i,j,k).num_H*4.0*(Constant::PI)*runinfo.ave_C_abs[index]));
+	    double j_temp = (runinfo.sed_lum[index]/output.outputs[0].total_num_photons)/
+	      (geometry.grids[m].grid(i,j,k).num_H*4.0*(Constant::PI)*runinfo.ave_C_abs[index]);
+	    // check for roundoff error before converting to double
+	    if (j_temp < 1e-38) {
+	      cout << "roundoff error warning in store_absorbed_energy_grid." << endl;
+	      cout << "j_temp = " << j_temp << endl;
+	      cout << "float(j_temp) = " << float(j_temp) << endl;
+	      exit(8);
+	    }
+	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] *= float(j_temp);
 
 #ifdef DEBUG_SAEG
 	    cout << "J(lambda) = " << geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] << endl;
