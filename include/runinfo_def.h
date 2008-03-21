@@ -57,7 +57,7 @@ struct runinfo_struct {
   int out_sed_lum_offset; // offset for vector to all for ERE/Dust direct/scattered to be saved as well as stellar direct/scattered
   std::vector< std::vector<float> > out_sed_lum;  // allow for direct/scattered lum
   std::vector< std::vector<float> > out_sed_lum_unc;  // allow for direct/scattered lum uncertainties
-  std::vector< std::vector<float> > out_emitted_lum;  // allow to be by grain/emission type
+/*   std::vector< std::vector<float> > out_emitted_lum;  // allow to be by grain/emission type */
 };
 
 #endif

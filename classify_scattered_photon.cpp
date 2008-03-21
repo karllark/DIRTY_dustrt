@@ -4,6 +4,7 @@
 //
 // 2006 Apr/KDG - written
 // 2007 Dec/KDG - changed denominator of atan from d-z to d 
+// 2008 Mar/KDG - added output for emission/grain types
 // ======================================================================
 #include "classify_scattered_photon.h"
 
@@ -15,22 +16,67 @@ void classify_scattered_photon (output_struct& output,
 {
   int i;
   photon_data tmp_photon;
+  double save_scat_weight = 0.0;
+  int image_indxs[2];
 
   // loop over the line-of-sights or albedos or whatever
   for (i = 0; i < output.num_outputs; i++) {
-    // copy input photon into temporary photon to ensure no change
-    tmp_photon = photon;
 
-    // determine the probability the photon would have scattered to the observer
-    tmp_photon.scat_weight = scattered_weight_towards_observer(tmp_photon, geometry, 
-            output.outputs[i].observer_position);
-//     cout << photon.scat_weight << " " << tmp_photon.scat_weight << endl;
+    // setup so the hard stuff is not recomputed for the case where there are
+    // multiple outputs, but only 1 observer position
+    if ((i == 0) || (geometry.num_observers > 1)) {
 
-    // transform photon positions so that the line-of-sight is along the z-axis 
-    rotate_zaxis_for_observer(output.outputs[i].rotate_transform,tmp_photon);
+      // copy input photon into temporary photon to ensure no change
+      tmp_photon = photon;
 
-    // take into account the albedo for this scattering
-    tmp_photon.scat_weight *= geometry.albedo;
+      // determine the probability the photon would have scattered to the observer
+      tmp_photon.scat_weight = scattered_weight_towards_observer(tmp_photon, geometry, 
+								 output.outputs[i].observer_position);
+
+      // transform photon positions so that the line-of-sight is along the z-axis 
+      rotate_zaxis_for_observer(output.outputs[i].rotate_transform,tmp_photon);
+
+      // take into account the albedo for this scattering
+      tmp_photon.scat_weight *= geometry.albedo;
+
+      // save the stellar weight for use when different outputs are for emission/grain types
+      save_scat_weight = tmp_photon.scat_weight;
+
+      // compute x,y angles and image indexs
+      double angle;
+      int k;
+      //double updated_angular_radius = atan(geometry.radius/(geometry.distance - tmp_photon.position[2]));
+      for (k = 0; k < 2; k++) {
+	//       angle = atan(tmp_photon.position[k]/(geometry.distance - tmp_photon.position[2]));
+	// don't know why having d-z doesn't work and having d does work, but that seems the case
+	// this might mean there is some problem with the tranformation, but I can't figure it out.
+	// all this done with Chris in testing the slab model for the SPINR Orion data - KDG 18 Dec 2007
+	angle = atan(tmp_photon.position[k]/(geometry.distance));
+	image_indxs[k] = int((1.0 + (angle/geometry.angular_radius))*output.image_size[k]*0.5);
+	// check the index is on the image
+	if ((image_indxs[k] < 0) || (image_indxs[k] > (output.image_size[k]-1))) {
+	  cout << "classify_scattered_photon: image_indxs[" << k << "] = " << image_indxs[k] << 
+	    " (beyond image bounds)" << endl;
+	  cout << "position = " << tmp_photon.position[k] << endl;
+	  cout << "angle = " << angle << endl;
+	  cout << "model angular radius = " << geometry.angular_radius << endl;
+	  cout << "k = " << k << endl;
+	  cout << "image_size[i] = " << output.image_size[k] << endl;
+	  cout << "photon # = " << photon.number << endl;
+	  //cout << "updated model angular radius = " << updated_angular_radius << endl;
+	  exit(8);
+	}
+      }
+
+#ifdef DEBUG_CSCP
+      cout << "scattered x,y positions = (" << tmp_photon.position[0] << "," << tmp_photon.position[1] << ")" << endl;
+      cout << "model radius = " << geometry.radius << endl;
+      cout << "scattered photon image indexs = (" << image_indxs[0] << "," << image_indxs[1] << ")" << endl;
+#endif
+    } else {
+      // reset the stellar weight for emission/grain output
+      tmp_photon.scat_weight = save_scat_weight;
+    }
 
     // modify weight by probability the emission was due to a specific grain/emission type
     // only used for dust emission part of dirty
@@ -42,41 +88,7 @@ void classify_scattered_photon (output_struct& output,
     output.outputs[i].total_scattered_weight += tmp_photon.scat_weight;
     output.outputs[i].total_scattered_weight_x2 += pow(tmp_photon.scat_weight,2.);
 
-    // compute x,y angles and image indexs
-    double angle;
-    int k;
-    int image_indxs[2];
-    //double updated_angular_radius = atan(geometry.radius/(geometry.distance - tmp_photon.position[2]));
-    for (k = 0; k < 2; k++) {
-//       angle = atan(tmp_photon.position[k]/(geometry.distance - tmp_photon.position[2]));
-      // don't know why having d-z doesn't work and having d does work, but that seems the case
-      // this might mean there is some problem with the tranformation, but I can't figure it out.
-      // all this done with Chris in testing the slab model for the SPINR Orion data - KDG 18 Dec 2007
-      angle = atan(tmp_photon.position[k]/(geometry.distance));
-      image_indxs[k] = int((1.0 + (angle/geometry.angular_radius))*output.image_size[k]*0.5);
-      // check the index is on the image
-      if ((image_indxs[k] < 0) || (image_indxs[k] > (output.image_size[k]-1))) {
-	cout << "classify_scattered_photon: image_indxs[" << k << "] = " << image_indxs[k] << 
-	  " (beyond image bounds)" << endl;
-	cout << "position = " << tmp_photon.position[k] << endl;
-	cout << "angle = " << angle << endl;
-	cout << "model angular radius = " << geometry.angular_radius << endl;
-	cout << "k = " << k << endl;
-	cout << "image_size[i] = " << output.image_size[k] << endl;
-	cout << "photon # = " << photon.number << endl;
-	//cout << "updated model angular radius = " << updated_angular_radius << endl;
-	exit(8);
-      }
-    }
-
-#ifdef DEBUG_CSCP
-    cout << "scattered x,y positions = (" << tmp_photon.position[0] << "," << tmp_photon.position[1] << ")" << endl;
-    cout << "model radius = " << geometry.radius << endl;
-    cout << "scattered photon image indexs = (" << image_indxs[0] << "," << image_indxs[1] << ")" << endl;
-#endif
-
     // update the image values
-//     cout << tmp_photon.scat_weight << endl;
     output.outputs[i].num_photons_xy(image_indxs[0],image_indxs[1]) += 1.0;
     output.outputs[i].scattered_weight_xy(image_indxs[0],image_indxs[1]) += tmp_photon.scat_weight;
     output.outputs[i].scattered_weight_xy_x2(image_indxs[0],image_indxs[1]) += pow(tmp_photon.scat_weight,2.0);
