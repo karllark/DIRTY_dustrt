@@ -70,8 +70,8 @@ void output_global_results (runinfo_struct& runinfo,
 
   // now convert the fluxes from ratios to luminosities
   int out_sed_lum_offset = 0;
-  vector<float> flux_total;
-  vector<float> flux_total_unc;
+  vector<double> flux_total;
+  vector<double> flux_total_unc;
   for (i = 0; i < int(runinfo.wavelength.size()); i++) {
     // stellar direct
     runinfo.out_sed_lum[0][i] *= runinfo.sed_lum[i];
@@ -81,6 +81,8 @@ void output_global_results (runinfo_struct& runinfo,
     runinfo.out_sed_lum_unc[1][i] *= runinfo.sed_lum[i];
     // start total
     flux_total.push_back(runinfo.out_sed_lum[0][i] + runinfo.out_sed_lum[1][i]);
+    cout << runinfo.wavelength[i] << " ";
+    cout << flux_total[i] << " ";
     flux_total_unc.push_back(runinfo.out_sed_lum_unc[0][i]*runinfo.out_sed_lum_unc[0][i] +
 			     runinfo.out_sed_lum_unc[1][i]*runinfo.out_sed_lum_unc[1][i]);
     // offset (adjust if ERE also)
@@ -97,6 +99,7 @@ void output_global_results (runinfo_struct& runinfo,
     flux_total[i] += runinfo.out_sed_lum[out_sed_lum_offset][i] + runinfo.out_sed_lum[1+out_sed_lum_offset][i];
     flux_total_unc[i] += runinfo.out_sed_lum_unc[out_sed_lum_offset][i]*runinfo.out_sed_lum_unc[out_sed_lum_offset][i] +
       runinfo.out_sed_lum_unc[1+out_sed_lum_offset][i]*runinfo.out_sed_lum_unc[1+out_sed_lum_offset][i];
+    cout << flux_total[i] << endl;
   }
 
   // filename of the current output file
@@ -117,8 +120,8 @@ void output_global_results (runinfo_struct& runinfo,
   fits_write_col(out_ptr, TFLOAT, 1, 1, 0, runinfo.n_waves, &runinfo.wavelength[0], &status);
   check_fits_io(status,"fits_write_col : output global results, wavelength column");
 
-//   fits_write_col(out_ptr, TFLOAT, 1, 1, 0, runinfo.n_waves, &flux_total[0], &status);
-//   check_fits_io(status,"fits_write_col : output global results, wavelength column");
+  fits_write_col(out_ptr, TDOUBLE, 2, 1, 0, runinfo.n_waves, &flux_total[0], &status);
+  check_fits_io(status,"fits_write_col : output global results, wavelength column");
   
   // close FITS File
   fits_close_file(out_ptr, &status);

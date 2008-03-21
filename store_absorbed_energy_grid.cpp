@@ -35,7 +35,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 
 {
   // constant for num_H calculation
-  double num_H_const = runinfo.tau_to_h[index]/(Constant::PC_CM);
+  double num_H_const = 1./(runinfo.tau_to_h[index]*(Constant::PC_CM));
 
   // loop through the dust density grid and convert to radiation field density
   int i,j,k,m = 0;
@@ -70,21 +70,25 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	    cout << "Raw E_abs = " << geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] << endl;
 	    cout << "sed_lum = " << runinfo.sed_lum[index] << endl;
 	    cout << "total # photons = " << output.outputs[0].total_num_photons << endl;
+	    cout << "ave C_abs = " << runinfo.ave_C_abs[index] << endl;
 #endif
 
 	    // convert the absorbed energy to radiation field density
-	    double j_temp = (runinfo.sed_lum[index]/output.outputs[0].total_num_photons)/
+	    double j_temp = geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index];
+	    j_temp *= (runinfo.sed_lum[index]/output.outputs[0].total_num_photons)/
 	      (geometry.grids[m].grid(i,j,k).num_H*4.0*(Constant::PI)*runinfo.ave_C_abs[index]);
 	    // check for roundoff error before converting to double
 	    if (j_temp < 1e-38) {
 	      cout << "roundoff error warning in store_absorbed_energy_grid." << endl;
 	      cout << "j_temp = " << j_temp << endl;
 	      cout << "float(j_temp) = " << float(j_temp) << endl;
-	      exit(8);
+	      //	      exit(8);
 	    }
-	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] *= float(j_temp);
+	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] = float(j_temp);
 
 #ifdef DEBUG_SAEG
+	    cout << "J_temp = " << j_temp << endl;
+	    cout << "float(J_temp) = " << float(j_temp) << endl;
 	    cout << "J(lambda) = " << geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] << endl;
 	    cout << "prev_J(lambda) = " << geometry.grids[m].grid(i,j,k).save_radiation_field_density << endl;
 #endif
@@ -95,6 +99,9 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 		geometry.grids[m].grid(i,j,k).save_radiation_field_density;
 	  }
 
+#ifdef DEBUG_SAEG
+	    cout << "final J(lambda) = " << geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] << endl;
+#endif
 // 	    int ans;
 // 	    cin >> ans;
 	}

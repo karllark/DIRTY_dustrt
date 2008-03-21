@@ -39,7 +39,10 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   for (m = 0; m < int(geometry.grids.size()); m++) {
     // loop of the cells in this grid
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
-      for (j = 0; j < geometry.grids[m].index_dim[1]; j++)
+      for (j = 0; j < geometry.grids[m].index_dim[1]; j++) {
+
+	cout << k << " " << j << endl;
+
 	for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
 
 	  // setup emitted energy array
@@ -58,19 +61,33 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 
 	  // determine if there is any energy absorbed needing to be remitted
 	  double tot_abs_energy = 0.0;
-	  for (x = 0; x < runinfo.wavelength.size(); x++)
+	  int tot_nonzero = 0;
+	  for (x = 0; x < runinfo.wavelength.size(); x++) {
 	    tot_abs_energy += geometry.grids[m].grid(i,j,k).absorbed_energy[x];
+	    if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0.) tot_nonzero++;
+	  }
 		
-	  if (tot_abs_energy > 0.) {
+	  if ((tot_abs_energy > 0.) && (tot_nonzero > 10)) {
 	    // get the dust emission spectrum given the input wavlength vector and radiation field vector
 	    // emitted energy returned is in units of ergs s^-1 HI atom^-1
 
-	    cout << k << " " << j << " " << i << endl;
+// 	    cout << "total = " << tot_abs_energy << endl;
+// 	    cout << "n nonzero = " << tot_nonzero << endl;
+
+// 	    for (x = 0; x < runinfo.wavelength.size(); x++) {
+// 	      cout << runinfo.wavelength[x] << " ";
+// 	      cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << endl;
+// 	    }
 
 	    ComputeDustEmission(geometry.grids[m].grid(i,j,k).absorbed_energy,
 				CurGrainModel, 
 				geometry.grids[m].grid(i,j,k).emitted_energy,
 				DoStochastic); 
+
+// 	    for (x = 0; x < runinfo.wavelength.size(); x++) {
+// 	      cout << runinfo.wavelength[x] << " ";
+// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[0][x] << endl;
+// 	    }
 
 // 	    dust_thermal_emission(CurGrainModel, runinfo.wavelength,
 // 				  geometry.grids[m].grid(i,j,k).absorbed_energy,
@@ -86,13 +103,27 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 		// perm stuff
 		// need to multiply the emitted energy passed back by dust_thermal_emission
 		// by the number of HI atoms in the cell to get the total emitted energy
+		if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
+		  cout << z << " " << x << endl;
+		  cout << geometry.grids[m].grid(i,j,k).emitted_energy[z][x] << endl;
+		  cout << " fuck1 " << endl;
+		  exit(8);
+		}
 		geometry.grids[m].grid(i,j,k).emitted_energy[z][x] *= geometry.grids[m].grid(i,j,k).num_H;
 		// add up the emitted energy to the total emitted (per wavelength & component)
+		if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
+		  cout << z << " " << x << endl;
+		  cout << geometry.grids[m].grid(i,j,k).emitted_energy[z][x] << endl;
+		  cout << " fuck " << endl;
+		  exit(8);
+		}
 		runinfo.emitted_lum[z][x] += geometry.grids[m].grid(i,j,k).emitted_energy[z][x];
 	      }
 	  }
 	}
+      }
     
   }
   geometry.emitted_energy_grid_initialized = 1;
+  cout << "about to leave get_dust_thermal_emission()" << endl; 
 }

@@ -37,6 +37,7 @@ void setup_absorbed_energy_grid (geometry_struct& geometry,
 	    else // otherwise set the first element in the absorbed_energy vector to zero
 	      geometry.grids[m].grid(i,j,k).absorbed_energy[0] = 0.0;
 	  }
+	  geometry.grids[m].grid(i,j,k).save_radiation_field_density = 0.0;
 	}
   }
   // set to know that the absorbed energy grid has been initialized the first time

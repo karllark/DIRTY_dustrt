@@ -55,7 +55,7 @@ void get_sed_parameters (ConfigFile& param_data,
       check_input_param("SED wavelength",luminosity[i],0,40);
 	
       wavelength[i] *= Constant::ANG_CM;
-      luminosity[i] = sfr_or_mass*pow(10.,luminosity[i])*(Constant::LIGHT)*pow(wavelength[i],2.0);
+      luminosity[i] = sfr_or_mass*pow(10.,luminosity[i])*(Constant::LIGHT)/pow(wavelength[i],2.0);
     }
 
 
