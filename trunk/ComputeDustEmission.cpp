@@ -2,7 +2,7 @@
 #include "NumUtils.h"
 
 void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel, 
-			  vector <vector<float> > & EmmittedEnergy, bool DoStochastic)
+			  vector <vector<double> > & EmmittedEnergy, bool DoStochastic)
 {
 
   if (DoStochastic) { 
@@ -13,7 +13,7 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
   // Iterators for: 
   // _iteec == emmitted equilibrium for each component
   // _itet == total emmitted energy. 
-  vector <float>::iterator _iteec,_itet; 
+  vector <double>::iterator _iteec,_itet; 
   vector <float> _w = GrainModel.getWave();
   vector <float> _cabs,_size,_sizeDist; 
   uint _nsize; 
@@ -73,8 +73,9 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
       // The luminosity per unit wavelength is given by 
       // 4pi*norm*int[ da n(a)*Cabs(a)*B(T[a]) ]  
       // with units of erg/s/cm/H
-      *_iteec = Constant::FPI*_norm*NumUtils::integrate(_size,_integrand); 
+      *_iteec = (double)Constant::FPI*_norm*NumUtils::integrate(_size,_integrand); 
       *_itet += *_iteec; 
+      if (!finite(*_itet)) { cout << _wv <<"  "<< _w[_wv] << " BLEECH!!!" << endl; exit(8); }
     }
   }
 

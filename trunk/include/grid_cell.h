@@ -14,7 +14,7 @@ struct grid_cell {
   vector<float> absorbed_energy;  // energy absorbed in this cell at this wavelength
                                    // can handle multiwavelengths if desired
   float save_radiation_field_density;    // save the existing radiation field density (needed for the self-absorption calculation)
-  vector< vector<float> > emitted_energy;  // energy emitted in this cell as a function of wavelength
+  vector< vector<double> > emitted_energy;  // energy emitted in this cell as a function of wavelength
                                             // with ability to have emitted energy split into components
   double num_H;  // number of HI atoms in this cell
 };

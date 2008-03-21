@@ -25,10 +25,14 @@ void setup_emitted_grid_for_montecarlo (geometry_struct& geometry,
   // set for grid emission
   geometry.new_photon_source_type = NEW_PHOTON_GRID;
 
-  vector< vector<double> > sum_emitted_lum;
-  sum_emitted_lum.resize(n_emit_components);
-  for (z = 0; z < n_emit_components; z++)
-    sum_emitted_lum[z].resize(runinfo.wavelength.size(),0.0);
+  vector< double > sum_emitted_lum;
+  sum_emitted_lum.resize(runinfo.wavelength.size(),0.0);
+
+//   for (x = 0; x < runinfo.wavelength.size(); x++) 
+//     cout << x << " " << runinfo.emitted_lum[0][x] << endl;
+//   exit(8);
+  
+//   runinfo.emitted_lum[0][x];
 
   // loop over all the defined grids
   for (m = 0; m < int(geometry.grids.size()); m++) {
@@ -41,11 +45,12 @@ void setup_emitted_grid_for_montecarlo (geometry_struct& geometry,
 
 	      // normalize if there we need the emission by grain/emission type
 	      if (runinfo.do_emission_grain) 
-		for (z = 1; z < n_emit_components; z++)
-		  geometry.grids[m].grid(i,j,k).emitted_energy[z][x] /= geometry.grids[m].grid(i,j,k).emitted_energy[0][x];
+		if (geometry.grids[m].grid(i,j,k).emitted_energy[0][x] > 0) 
+		  for (z = 1; z < n_emit_components; z++)
+		    geometry.grids[m].grid(i,j,k).emitted_energy[z][x] /= geometry.grids[m].grid(i,j,k).emitted_energy[0][x];
 
-	      sum_emitted_lum[0][x] += geometry.grids[m].grid(i,j,k).emitted_energy[0][x];
-	      geometry.grids[m].grid(i,j,k).emitted_energy[0][x] = sum_emitted_lum[0][x]/runinfo.emitted_lum[0][x];
+	      sum_emitted_lum[x] += geometry.grids[m].grid(i,j,k).emitted_energy[0][x];
+	      geometry.grids[m].grid(i,j,k).emitted_energy[0][x] = sum_emitted_lum[x]/runinfo.emitted_lum[0][x];
 
 	    }
     

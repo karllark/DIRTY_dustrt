@@ -129,30 +129,40 @@ int main(int argc, char* argv[])
   }
 
   while (!iter_done) {
+
     // get the dust emission at each point in the model
     get_dust_thermal_emission(geometry, runinfo, CurGrainModel);
-    
+
     // setup the grid emission
     setup_emitted_grid_for_montecarlo(geometry, runinfo, CurGrainModel);
       
     // loop over all wavelengths
     for (i = 0; i < runinfo.n_waves; i++) {
 
-      // setup/(re)initialize absorbed energy grid
-      setup_absorbed_energy_grid(geometry, i, 1);
-      
-      // setup dust grains for this wavelength
-      get_dust_scat_parameters(i, runinfo, geometry);
+      cout << endl;
+      cout << "i = " << i << endl;
+      cout << "emitted_lum = " << runinfo.emitted_lum[0][i] << endl;
 
-      // do RT part
-      radiative_transfer(geometry, runinfo, de_output, photon, random_obj);
+      if (runinfo.emitted_lum[0][i] > 0) {
+
+	cout << "doing RT" << endl;
+
+	// setup/(re)initialize absorbed energy grid
+	setup_absorbed_energy_grid(geometry, i, 1);
       
-      // output RT results
-      output_results(de_output, geometry, runinfo, i);
-      
-      // store the result (either in memory or on disk)
-      // remember to zero out the absorbed energy grid
-      store_absorbed_energy_grid(geometry, runinfo, de_output, i, 1);
+	// setup dust grains for this wavelength
+	get_dust_scat_parameters(i, runinfo, geometry);
+	
+	// do RT part
+	radiative_transfer(geometry, runinfo, de_output, photon, random_obj);
+	
+	// output RT results
+	output_results(de_output, geometry, runinfo, i);
+	
+	// store the result (either in memory or on disk)
+	// remember to zero out the absorbed energy grid
+	store_absorbed_energy_grid(geometry, runinfo, de_output, i, 1);
+      }
     }
 
     iter_num++;
