@@ -162,8 +162,10 @@ void new_photon_grid_source (photon_data& photon,
 
   // save the birth grain/emission type probabilities if needed for dust thermal emission part of dirty
   if (runinfo.dust_thermal_emission && runinfo.do_emission_grain)
-    for (i = 0; i < runinfo.n_emission_grain_types; i++)
+    for (i = 0; i < runinfo.n_emission_grain_types; i++) {
       photon.birth_photon_type_prob[i] = geometry.grids[grid_num].grid(x_val,y_val,z_val).emitted_energy[i][geometry.wave_index];
+//       cout << "i = " << i << "; " << photon.birth_photon_type_prob[i] << endl;
+    }
 
 
   // now determine the position indexes of the photon
