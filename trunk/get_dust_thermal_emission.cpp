@@ -86,7 +86,13 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 
 // 	    for (x = 0; x < runinfo.wavelength.size(); x++) {
 // 	      cout << runinfo.wavelength[x] << " ";
-// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[0][x] << endl;
+// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[0][x] << " ";
+// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[1][x] << " ";
+// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[2][x] << " ";
+// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[3][x] << " ";
+// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[4][x] << " ";
+// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[5][x] << " ";
+// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[6][x] << endl;
 // 	    }
 
 // 	    dust_thermal_emission(CurGrainModel, runinfo.wavelength,
@@ -106,7 +112,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 		if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
 		  cout << z << " " << x << endl;
 		  cout << geometry.grids[m].grid(i,j,k).emitted_energy[z][x] << endl;
-		  cout << " fuck1 " << endl;
+		  cout << " emitted energy is not finite (before num_H calc) " << endl;
 		  exit(8);
 		}
 		geometry.grids[m].grid(i,j,k).emitted_energy[z][x] *= geometry.grids[m].grid(i,j,k).num_H;
@@ -114,7 +120,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 		if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
 		  cout << z << " " << x << endl;
 		  cout << geometry.grids[m].grid(i,j,k).emitted_energy[z][x] << endl;
-		  cout << " fuck " << endl;
+		  cout << " emitted energy is not finite (after num_H calc) " << endl;
 		  exit(8);
 		}
 		runinfo.emitted_lum[z][x] += geometry.grids[m].grid(i,j,k).emitted_energy[z][x];

@@ -12,10 +12,10 @@
 #include "output_def.h"
 #include "runinfo_def.h"
 #include "fitsio.h"
-#include "constants.h"
+#include "Constants.h"
 #include "debug.h"
 
-#define OGR_MAX_CHAR_LEN 20
+/* #define OGR_MAX_CHAR_LEN 20 */
 
 //**********************************************************************
 // external function definitions
