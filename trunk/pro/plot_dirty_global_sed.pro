@@ -30,7 +30,7 @@
 ; MODIFICATION HISTORY:
 ;     Written by : Karl D. Gordon (22 Mar 2008)
 ;-
-pro plot_dirty_global_sed,filename,energy=energy
+pro plot_dirty_global_sed,filename,energy=energy,eps=eps
 
 table = mrdfits(filename,1)
 
@@ -39,12 +39,30 @@ if (keyword_set(energy)) then begin
     ytitle = '!4k!3F(!4k!3) [!4l!3m!U-1!N ergs s!U-1!N !4l!3m!U-1!N]'
     table.flux *= table.wavelength
     table.flux_input *= table.wavelength
+    table.flux_rt_d *= table.wavelength
+    table.flux_rt_s *= table.wavelength
+    table.flux_de_d_1 *= table.wavelength
+    table.flux_de_s_1 *= table.wavelength
+    table.flux_de_d_2 *= table.wavelength
+    table.flux_de_s_2 *= table.wavelength
+    table.flux_de_d_3 *= table.wavelength
+    table.flux_de_s_3 *= table.wavelength
+    table.flux_de_d_4 *= table.wavelength
+    table.flux_de_s_4 *= table.wavelength
+    table.flux_de_d_5 *= table.wavelength
+    table.flux_de_s_5 *= table.wavelength
+    table.flux_de_d_6 *= table.wavelength
+    table.flux_de_s_6 *= table.wavelength
+    table.flux_de_d_7 *= table.wavelength
+    table.flux_de_s_7 *= table.wavelength
 endif else begin
     ytitle = 'F(!4k!3) [ergs s!U-1!N !4l!3m!U-1!N]'
 endelse
 
 xrange = krange(table.wavelength,kplot_type='o')
 yrange = krange([table.flux,table.flux_input],kplot_type='o')
+
+setup_ps_output,repstr(filename,'.fits',''),eps=eps,bw=bw
 
 setup_colors,base_color,back_color,blue_color,red_color,green_color, $
              yel_color,purple_color,light_blue_color,grey_color, $
@@ -90,5 +108,6 @@ koplot,table.wavelength,table.flux_de_s_7,psym=100,color=purple_color,linestyle=
 ; plot the total SED
 koplot,table.wavelength,table.flux,psym=100,color=base_color
 
+close_ps_output,eps=eps
 
 end

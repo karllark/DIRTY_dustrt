@@ -12,6 +12,7 @@
 #include "output_def.h"
 #include "runinfo_def.h"
 #include "fitsio.h"
+#include "NumUtils.h"
 #include "Constants.h"
 #include "debug.h"
 

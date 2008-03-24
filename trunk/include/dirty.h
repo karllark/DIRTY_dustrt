@@ -70,6 +70,7 @@ extern void output_results (output_struct& output,
 
 // setup absorbed energy grid
 extern void setup_absorbed_energy_grid (geometry_struct& geometry,
+					runinfo_struct& runinfo,
 					int wave_index,
 					int doing_dust_emission);
 
@@ -79,6 +80,10 @@ extern void store_absorbed_energy_grid (geometry_struct& geometry,
 					output_struct& output,
 					int index,
 					int doing_dust_emission);
+
+// check absorbed energy grid
+extern void check_absorbed_energy_grid (geometry_struct& geometry,
+					runinfo_struct& runinfo);
 
 // get the thermal dust emission in each grid cell
 extern void get_dust_thermal_emission (geometry_struct& geometry,

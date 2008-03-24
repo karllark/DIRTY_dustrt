@@ -75,7 +75,7 @@ void output_global_results (runinfo_struct& runinfo,
 
   // now convert the fluxes from ratios to luminosities
   int out_sed_lum_offset = 0;
-  vector<float> out_wavelength;
+  vector<double> out_wavelength;
   vector<double> out_sed_lum;
   vector<double> flux_total;
   vector<double> flux_total_unc;
@@ -110,6 +110,22 @@ void output_global_results (runinfo_struct& runinfo,
     flux_total_unc[i] = pow(flux_total_unc[i],0.5);
   }
 
+  // determine the global energy absorbed and emitted
+  double total_stellar_energy = NumUtils::integrate(out_wavelength,out_sed_lum);
+  double total_rt_direct_energy = NumUtils::integrate(out_wavelength,runinfo.out_sed_lum[0]);
+  double total_rt_scat_energy = NumUtils::integrate(out_wavelength,runinfo.out_sed_lum[1]);
+  double total_de_direct_energy = NumUtils::integrate(out_wavelength,runinfo.out_sed_lum[out_sed_lum_offset]);
+  double total_de_scat_energy = NumUtils::integrate(out_wavelength,runinfo.out_sed_lum[out_sed_lum_offset+1]);
+  if (runinfo.verbose >= 1) {
+    cout << "Emitted(total) = " << total_stellar_energy << endl;
+    cout << "Emitted(rt direct) = " << total_rt_direct_energy << endl;
+    cout << "Emitted(rt scat) = " << total_rt_scat_energy << endl;
+    cout << "Emitted(de direct) = " << total_de_direct_energy << endl;
+    cout << "Emitted(de scat) = " << total_de_scat_energy << endl;
+    cout << "Absorbed(rt) = " << (total_stellar_energy - total_rt_direct_energy - total_rt_scat_energy) << endl;
+    cout << "Emitted(de) = " << (total_de_direct_energy - total_de_scat_energy) << endl;
+  }
+
   // filename of the current output file
   string filename = "!" + output.file_base;
   // add the extra string (designates global luminosities
@@ -125,7 +141,7 @@ void output_global_results (runinfo_struct& runinfo,
   check_fits_io(status,"fits_create_tbl : output_global_results");
   
   // write the columns
-  fits_write_col(out_ptr, TFLOAT, 1, 1, 0, runinfo.n_waves, &out_wavelength[0], &status);
+  fits_write_col(out_ptr, TDOUBLE, 1, 1, 0, runinfo.n_waves, &out_wavelength[0], &status);
   check_fits_io(status,"fits_write_col : output global results, wavelength column");
 
   fits_write_col(out_ptr, TDOUBLE, 2, 1, 0, runinfo.n_waves, &runinfo.tau_to_tau_ref[0], &status);

@@ -18,10 +18,14 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 
   bool DoStochastic=false; 
 
+  double global_total_emitted = 0.;
+  double global_total_absorbed = 0.;
+
   // get the number of emission components
   int n_emit_components = 1;
   if (runinfo.do_emission_grain) n_emit_components += 2*CurGrainModel.getNComp();
-  cout << "n_emit_components = " << n_emit_components << endl;
+  if (runinfo.verbose >= 2) 
+    cout << "n_emit_components = " << n_emit_components << endl;
 
   // initialize the total emitted sum (by component and wavelength)
   if (!geometry.emitted_energy_grid_initialized) {
@@ -34,14 +38,14 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	runinfo.emitted_lum[z][x] = 0.0;
   }
 	    
-  // loop through the dust density grid and convert to radiation field density
   // loop over all the defined grids
   for (m = 0; m < int(geometry.grids.size()); m++) {
     // loop of the cells in this grid
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
       for (j = 0; j < geometry.grids[m].index_dim[1]; j++) {
 
-	cout << k << " " << j << endl;
+	if (runinfo.verbose >= 1)
+	  cout << "working on dust emission grid (m,k,j) = " << m << " " << k << " " << j << endl;
 
 	for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
 
@@ -61,28 +65,51 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 
 	  // determine if there is any energy absorbed needing to be remitted
 	  double tot_abs_energy = 0.0;
+	  double max_abs_energy = 0.0;
 	  int tot_nonzero = 0;
+
+	  vector<double> tmp_wave;
+	  vector<double> tmp_abs_energy;
+	  tmp_wave.resize(runinfo.wavelength.size());
+	  tmp_abs_energy.resize(runinfo.wavelength.size());
+
+	  max_abs_energy = 0.0;
 	  for (x = 0; x < runinfo.wavelength.size(); x++) {
-	    tot_abs_energy += geometry.grids[m].grid(i,j,k).absorbed_energy[x];
+	    tmp_wave[x] = double(runinfo.wavelength[x]);
+	    tmp_abs_energy[x] = geometry.grids[m].grid(i,j,k).absorbed_energy[x]*4.*Constant::PI*runinfo.ave_C_abs[x];
+	    if (tmp_abs_energy[x] > max_abs_energy) max_abs_energy = tmp_abs_energy[x];
 	    if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0.) tot_nonzero++;
 	  }
+ 	  tot_abs_energy = NumUtils::integrate(tmp_wave,tmp_abs_energy);
 		
-	  if ((tot_abs_energy > 0.) && (tot_nonzero > 10)) {
+	  if ((tot_abs_energy > 0.) && (tot_nonzero > 2) && (max_abs_energy > 1e-40)) {
 	    // get the dust emission spectrum given the input wavlength vector and radiation field vector
 	    // emitted energy returned is in units of ergs s^-1 HI atom^-1
-
-// 	    cout << "total = " << tot_abs_energy << endl;
-// 	    cout << "n nonzero = " << tot_nonzero << endl;
 
 // 	    for (x = 0; x < runinfo.wavelength.size(); x++) {
 // 	      cout << runinfo.wavelength[x] << " ";
 // 	      cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << endl;
 // 	    }
+// 	    cout << "total energy = " << tot_abs_energy << endl;
 
 	    ComputeDustEmission(geometry.grids[m].grid(i,j,k).absorbed_energy,
 				CurGrainModel, 
 				geometry.grids[m].grid(i,j,k).emitted_energy,
 				DoStochastic); 
+
+	    double total_emit_energy = 0.0;
+	    total_emit_energy = NumUtils::integrate(tmp_wave,geometry.grids[m].grid(i,j,k).emitted_energy[0]);
+	    
+	    global_total_emitted += total_emit_energy*geometry.grids[m].grid(i,j,k).num_H;
+	    global_total_absorbed += tot_abs_energy*geometry.grids[m].grid(i,j,k).num_H;
+
+	    if (fabs(1.0 - (total_emit_energy/tot_abs_energy)) > 1e-3) {
+	      cout << "energy conservations worse than 1e-3" << endl;
+	      cout << "total_abs/H atom = " << tot_abs_energy << endl;
+	      cout << "total_emit_energy/H atom = " << total_emit_energy << endl;
+	      cout << "ratio emit/abs = " << total_emit_energy/tot_abs_energy << endl;
+	      exit(8);
+	    }
 
 // 	    for (x = 0; x < runinfo.wavelength.size(); x++) {
 // 	      cout << runinfo.wavelength[x] << " ";
@@ -130,6 +157,13 @@ void get_dust_thermal_emission (geometry_struct& geometry,
       }
     
   }
+
+#ifdef DEBUG_GDTE
+  cout << "global energy conservations check" << endl;
+  cout << "total_abs = " << global_total_absorbed << endl;
+  cout << "total_emit_energy = " << global_total_emitted << endl;
+  cout << "ratio emit/abs = " << global_total_emitted/global_total_absorbed << endl;
+#endif
+
   geometry.emitted_energy_grid_initialized = 1;
-  cout << "about to leave get_dust_thermal_emission()" << endl; 
 }
