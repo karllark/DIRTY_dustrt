@@ -4,6 +4,7 @@
 #include "geometry_def.h"
 #include "runinfo_def.h"
 #include "GrainModel.h"
+#include "Constants.h"
 #include "debug.h"
 
 //**********************************************************************

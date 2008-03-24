@@ -67,6 +67,9 @@ void get_sed_parameters (ConfigFile& param_data,
     // interpolate SED onto wavelength grid
     runinfo.sed_lum = interpol(luminosity, wavelength, run_wave);
 
+//     cout << "total input SED luminosity = " << NumUtils::integrate(wavelength, luminosity) << endl;
+//     exit(8);
+
   } else {
     cout << "Type of SED [" << runinfo.sed_type << "] not recognized." << endl;
     exit(8);

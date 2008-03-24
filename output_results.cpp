@@ -118,6 +118,11 @@ void output_results (output_struct& output,
 //       cout << "done." << endl;
     }
 
+//     cout << "weights = ";
+//     cout << stellar_sl << " ";
+//     cout << scattered_sl << " ";
+//     cout << 1.0 - (stellar_sl + scattered_sl) << endl;
+
     // determine scattered flux
     double scattered_flux = 0.0;
     scattered_flux = scattered_sl*geometry.total_source_luminosity*lum_to_flux;

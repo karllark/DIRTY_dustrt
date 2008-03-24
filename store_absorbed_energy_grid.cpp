@@ -34,6 +34,9 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 				 int doing_dust_emission)
 
 {
+  // total energy absorbed in photons
+  double total_energy_absorbed_photons = 0.0;
+
   // constant for num_H calculation
   double num_H_const = 1./(runinfo.tau_to_h[index]*(Constant::PC_CM));
 
@@ -62,7 +65,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	  if ((geometry.grids[m].grid(i,j,k).dust_tau_per_pc > 0.0) &&
 	      (geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] > 0.0)) {
 	    // # of H atoms in cell
-	    geometry.grids[m].grid(i,j,k).num_H = num_H_const*vol*geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
+	    geometry.grids[m].grid(i,j,k).num_H = num_H_const*vol*geometry.grids[m].grid(i,j,k).dust_tau_per_pc*geometry.tau_to_tau_ref;
 	    
 #ifdef DEBUG_SAEG
 	    cout << "dust tau/pc = " << geometry.grids[m].grid(i,j,k).dust_tau_per_pc << endl;
@@ -75,8 +78,10 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 
 	    // convert the absorbed energy to radiation field density
 	    double j_temp = geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index];
-	    j_temp *= (runinfo.sed_lum[index]/output.outputs[0].total_num_photons)/
-	      (geometry.grids[m].grid(i,j,k).num_H*4.0*(Constant::PI)*runinfo.ave_C_abs[index]);
+	    total_energy_absorbed_photons += j_temp;
+ 	    j_temp *= (runinfo.sed_lum[index]/output.outputs[0].total_num_photons)/
+ 	      (geometry.grids[m].grid(i,j,k).num_H*4.0*(Constant::PI)*runinfo.ave_C_abs[index]);
+
 	    // check for roundoff error before converting to double
 	    if (j_temp < 1e-38) {
 	      cout << "roundoff error warning in store_absorbed_energy_grid." << endl;
@@ -107,10 +112,19 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	}
     
   }
+
+//   cout << endl << "index = " << geometry.abs_energy_wave_index << " ";
+//   cout << " " << "index2 = " << index << " ";
+//   cout << "total photons = " << output.outputs[0].total_num_photons;
+//   cout << endl << "total photons absorbed = " << total_energy_absorbed_photons << endl;
+//   cout << "ratio = " << total_energy_absorbed_photons/output.outputs[0].total_num_photons << endl;
+//   cout << "energy = " << (total_energy_absorbed_photons/output.outputs[0].total_num_photons)*runinfo.sed_lum[index] << endl;
+//   exit(8);
   
   if (geometry.abs_energy_storage_type == 1) {
     cout << "no code written for storage_absorbed_energy_grid for disk storage" << endl;
     exit(8);
   }
   // nothing needed for geometry.abs_energy_storage_type == 0 (memory)
+
 }

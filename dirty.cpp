@@ -73,7 +73,12 @@ int main(int argc, char* argv[])
   int i;
   for (i = 0; i < runinfo.n_waves; i++) {
     // setup/(re)initialize absorbed energy grid
-    setup_absorbed_energy_grid(geometry, i, 0);
+    setup_absorbed_energy_grid(geometry, runinfo, i, 0);
+
+//     // check the absorbed energy grid (temp needed as energy not conserved)
+//     // KDG - 23 Mar 2008
+//     cout << "**test**" << endl;
+//     check_absorbed_energy_grid(geometry, runinfo);
 
     // setup dust grains for this wavelength
     get_dust_scat_parameters(i, runinfo, geometry);
@@ -84,10 +89,24 @@ int main(int argc, char* argv[])
     // output RT results
     output_results(output, geometry, runinfo, i);
 
+//     // check the absorbed energy grid (temp needed as energy not conserved)
+//     // KDG - 23 Mar 2008
+//     cout << "**test2**" << endl;
+//     check_absorbed_energy_grid(geometry, runinfo);
+
     // store the result (either in memory or on disk)
     // remember to zero out the absorbed energy grid
     store_absorbed_energy_grid(geometry, runinfo, output, i, 0);
+
+//     // check the absorbed energy grid (temp needed as energy not conserved)
+//     // KDG - 23 Mar 2008
+//     check_absorbed_energy_grid(geometry, runinfo);
+//     if (i == 1) exit(8);
   }
+
+  // check the absorbed energy grid (temp needed as energy not conserved)
+  // KDG - 23 Mar 2008
+//   check_absorbed_energy_grid(geometry, runinfo);
 
   // do gas emission (iteration needed as the gas provides 
   //    an additional opacity source)
@@ -148,7 +167,7 @@ int main(int argc, char* argv[])
 	cout << "doing RT" << endl;
 
 	// setup/(re)initialize absorbed energy grid
-	setup_absorbed_energy_grid(geometry, i, 1);
+	setup_absorbed_energy_grid(geometry, runinfo, i, 1);
       
 	// setup dust grains for this wavelength
 	get_dust_scat_parameters(i, runinfo, geometry);

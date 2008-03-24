@@ -7,6 +7,7 @@
 #include "setup_absorbed_energy_grid.h"
 
 void setup_absorbed_energy_grid (geometry_struct& geometry,
+				 runinfo_struct& runinfo,
 				 int wave_index,
 				 int doing_dust_emission)
 
@@ -32,12 +33,18 @@ void setup_absorbed_energy_grid (geometry_struct& geometry,
 	  } else {
 	    // if this is the first time or if memory storage requested
 	    // then push zero into the absorbed_energy variable in each grid cell
-	    if ((!geometry.abs_energy_grid_initialized) || (geometry.abs_energy_storage_type == 0))
-	      geometry.grids[m].grid(i,j,k).absorbed_energy.push_back(0.0);
-	    else // otherwise set the first element in the absorbed_energy vector to zero
-	      geometry.grids[m].grid(i,j,k).absorbed_energy[0] = 0.0;
+	    if (geometry.abs_energy_storage_type == 1)
+	      if (!geometry.abs_energy_grid_initialized)
+		geometry.grids[m].grid(i,j,k).absorbed_energy.push_back(0.0);
+	      else
+		geometry.grids[m].grid(i,j,k).absorbed_energy[0] = 0.0;
+	    else
+	      if (!geometry.abs_energy_grid_initialized)
+		geometry.grids[m].grid(i,j,k).absorbed_energy.resize(runinfo.wavelength.size(),0.0);
+	      else
+		geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] = 0.0;
+	    geometry.grids[m].grid(i,j,k).save_radiation_field_density = 0.0;
 	  }
-	  geometry.grids[m].grid(i,j,k).save_radiation_field_density = 0.0;
 	}
   }
   // set to know that the absorbed energy grid has been initialized the first time
