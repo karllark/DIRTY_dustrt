@@ -7,6 +7,7 @@
 // 2007 Feb/KDG - added calcuations of stellar weight (correct for observer position)
 // 2007 Dec/KDG - changed denominator of atan from d-z to d 
 // 2008 Mar/KDG - added output for emission/grain types
+// 2008 May/KDG - changed denominator of atan from d to d-z (see fix in setup_dust_grid_slab.cpp)
 // ======================================================================
 #include "classify_stellar_photon.h"
 //#define DEBUG_CSP
@@ -63,9 +64,9 @@ void classify_stellar_photon (output_struct& output,
       // compute x,y angles and image indexs
       double angle;
       for (k = 0; k < 2; k++) {
-	//       angle = atan(tmp_photon.position[k]/(geometry.distance - tmp_photon.position[2]));
+	angle = atan(tmp_photon.position[k]/(geometry.distance - tmp_photon.position[2]));
 	// see comments in classify_scattered_photon - KDG 18 Dec 2007
-	angle = atan(tmp_photon.position[k]/(geometry.distance));
+	//angle = atan(tmp_photon.position[k]/(geometry.distance));
 	image_indxs[k] = int((1.0 + (angle/geometry.angular_radius))*output.image_size[k]*0.5);
 	// check the index is on the image
 	if ((image_indxs[k] < 0) || (image_indxs[k] > (output.image_size[k]-1))) {

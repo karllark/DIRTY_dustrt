@@ -3,8 +3,11 @@
 //
 // KDG 28 Feb 2007 - adapted from setup_dust_shell
 // KDG 13 Apr 2007 - removed geometry.solid_angle (see setup_dust_grid.cc)
+// KDG  8 May 2008 - fixed error in setting up the dust grid physical dimensions
+//                   for the case where the xy and z sizes are unequal
 // ======================================================================
 #include "setup_dust_grid_slab.h"
+//#define DEBUG_SDG
 
 void setup_dust_grid_slab (ConfigFile& param_data,
 			   geometry_struct& geometry,
@@ -21,6 +24,7 @@ void setup_dust_grid_slab (ConfigFile& param_data,
 
   // radius of geometry (needed for output)
   geometry.radius = size_xy/2.;
+  if (size_z/2 > geometry.radius) geometry.radius = size_z/2;
 
   // angular radius needs to be large enough to allow for any rotation and still
   // have all the photons encompassed in the final image
@@ -101,12 +105,15 @@ void setup_dust_grid_slab (ConfigFile& param_data,
     y_pos[i] = tmp_val;
   }
   for (i = 0; i <= main_grid.index_dim[2]; i++) {
-    tmp_val = float(i)*(size_z)/float(main_grid.index_dim[0]) - size_z/2.;
+    tmp_val = float(i)*(size_z)/float(main_grid.index_dim[2]) - size_z/2.;
     z_pos[i] = tmp_val;
 #ifdef DEBUG_SDG
-    cout << "xyz grid position = ";
-    cout << x_pos[i] << " ";
-    cout << y_pos[i] << " ";
+    if (i <= main_grid.index_dim[0]) {
+      cout << "xyz grid position = ";
+      cout << x_pos[i] << " ";
+      cout << y_pos[i] << " ";
+    } else
+      cout << "z grid position = ";
     cout << z_pos[i] << " ";
     cout << "; i = " << i << endl;
 #endif
