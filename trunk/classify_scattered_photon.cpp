@@ -5,6 +5,7 @@
 // 2006 Apr/KDG - written
 // 2007 Dec/KDG - changed denominator of atan from d-z to d 
 // 2008 Mar/KDG - added output for emission/grain types
+// 2008 May/KDG - changed denominator of atan from d to d-z (see fix in setup_dust_grid_slab.cpp)
 // ======================================================================
 #include "classify_scattered_photon.h"
 
@@ -47,11 +48,11 @@ void classify_scattered_photon (output_struct& output,
       int k;
       //double updated_angular_radius = atan(geometry.radius/(geometry.distance - tmp_photon.position[2]));
       for (k = 0; k < 2; k++) {
-	//       angle = atan(tmp_photon.position[k]/(geometry.distance - tmp_photon.position[2]));
+	angle = atan(tmp_photon.position[k]/(geometry.distance - tmp_photon.position[2]));
 	// don't know why having d-z doesn't work and having d does work, but that seems the case
 	// this might mean there is some problem with the tranformation, but I can't figure it out.
 	// all this done with Chris in testing the slab model for the SPINR Orion data - KDG 18 Dec 2007
-	angle = atan(tmp_photon.position[k]/(geometry.distance));
+	//angle = atan(tmp_photon.position[k]/(geometry.distance));
 	image_indxs[k] = int((1.0 + (angle/geometry.angular_radius))*output.image_size[k]*0.5);
 	// check the index is on the image
 	if ((image_indxs[k] < 0) || (image_indxs[k] > (output.image_size[k]-1))) {
@@ -63,6 +64,12 @@ void classify_scattered_photon (output_struct& output,
 	  cout << "k = " << k << endl;
 	  cout << "image_size[i] = " << output.image_size[k] << endl;
 	  cout << "photon # = " << photon.number << endl;
+	  int m = 0;
+	  cout << "tmp_photon.position[] = ";
+	  for (m = 0; m < 3; m++)
+	    cout << tmp_photon.position[m] << " ";
+	  cout << endl;
+	  cout << "geometry.distance = " << geometry.distance << endl;
 	  //cout << "updated model angular radius = " << updated_angular_radius << endl;
 	  exit(8);
 	}

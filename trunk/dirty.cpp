@@ -96,7 +96,8 @@ int main(int argc, char* argv[])
 
     // store the result (either in memory or on disk)
     // remember to zero out the absorbed energy grid
-    store_absorbed_energy_grid(geometry, runinfo, output, i, 0);
+      if (runinfo.do_dust_emission)
+	store_absorbed_energy_grid(geometry, runinfo, output, i, 0);
 
 //     // check the absorbed energy grid (temp needed as energy not conserved)
 //     // KDG - 23 Mar 2008
