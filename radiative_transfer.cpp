@@ -7,6 +7,7 @@
 // ======================================================================
 #include "radiative_transfer.h"
 //#define DEBUG_RT
+//#define OUTNUM -1
 //#define OUTNUM 4628428
 
 void radiative_transfer (geometry_struct& geometry,
@@ -18,8 +19,16 @@ void radiative_transfer (geometry_struct& geometry,
 {
   int i;
 
+#ifdef DEBUG_RT
+  cout << "rt: io start; ";
+  cout.flush();
+#endif
   // initialize (and allocate if needed) output structure
   initialize_output(output, geometry);
+#ifdef DEBUG_RT
+  cout << "rt: io end; ";
+  cout.flush();
+#endif
 
   // TBD: add code to dynamically determine if enough photons have been
   //      run depending on the output quantitity desired
@@ -29,7 +38,15 @@ void radiative_transfer (geometry_struct& geometry,
       if ((geometry.n_photons > 100) && ((i % (geometry.n_photons/20)) == 0)) cout << "current # = " << i << endl;
     }
     // start the photon at the star position
+#ifdef DEBUG_RT
+    cout << "rt: np begin; ";
+    cout.flush();
+#endif
     new_photon(photon, geometry, runinfo, random_obj);
+#ifdef DEBUG_RT
+    cout << "rt: np end; ";
+    cout.flush();
+#endif
     photon.number = i;
 #ifdef DEBUG_RT
     if (photon.number > OUTNUM) cout << photon.number << " ";

@@ -1,10 +1,12 @@
- // ======================================================================
+// ======================================================================
 // setup a shell clumpy dust grid
 //
 // KDG 6 Jul 2006 - adapted from setup_dust_sphere
 // KDG 13 Apr 2007 - removed geometry.solid_angle (see setup_dust_grid.cc)
+// KDG 15 May 2008 - moved the subdivision of grid cells to a separate routine
 // ======================================================================
 #include "setup_dust_grid_shell.h"
+// #define DEBUG_SDG
 
 void setup_dust_grid_shell (ConfigFile& param_data,
 			    geometry_struct& geometry,
@@ -28,6 +30,10 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   // shell outer radius
   float outer_radius = param_data.FValue("Geometry","outer_radius");
   check_input_param("outer_radius",outer_radius,0.0,geometry.radius);
+
+  // shell subdivide radius
+  float subdivide_radius = param_data.FValue("Geometry","subdivide_radius");
+  check_input_param("subdivide_radius",subdivide_radius,0.0,geometry.radius);
 
   // check the outer_radius is greater than the inner radius
   if (outer_radius <= inner_radius) {
@@ -144,8 +150,6 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	    main_grid.grid(i,j,k).dust_tau_per_pc = geometry.clump_densities[1];
 	} else
 	  main_grid.grid(i,j,k).dust_tau_per_pc = -0.5;  // this means the edge of the dust
-
-// 	main_grid.grid(i,j,k).absorbed_energy = 0.0;
       }
     }
   }
@@ -156,87 +160,93 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   // add main grid to grids vector
   geometry.grids.push_back(main_grid);
 
-  // loop through the main_grid (grids[0]) and subgrid any overdense cells
-  float x_tau = 0.0;
-  int cur_subgrid_num = 1;
-  int subdivide = 0;
-  for (k = 0; k < main_grid.index_dim[2]; k++)
-    for (j = 0; j < main_grid.index_dim[1]; j++)
-      for (i = 0; i < main_grid.index_dim[0]; i++) {
-	x_tau = (geometry.grids[0].positions[0][i+1] - geometry.grids[0].positions[0][i])*
-	  geometry.grids[0].grid(i,j,k).dust_tau_per_pc;
+  // now subdivide the center cubes if the inner radius is inside the cube dimension
+  if (subdivide_radius > 0.0) {
+    if (subdivide_radius < pow(3.,0.5)*(main_grid.phys_cube_size[0]/2.)) subdivide_radius = main_grid.phys_cube_size[0];
+    int subdivide = 0;
+    int m = 0;  // only main_grid for now
+    int cur_subgrid_num = int(geometry.grids.size());
+    for (k = 0; k < geometry.grids[m].index_dim[2]; k++) {
+      z_val = (geometry.grids[m].positions[2][k] + geometry.grids[m].positions[2][k+1])/2.0;
+      for (j = 0; j < geometry.grids[m].index_dim[1]; j++) {
+	y_val = (geometry.grids[m].positions[1][j] + geometry.grids[m].positions[1][j+1])/2.0;
+	for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
+	  x_val = (geometry.grids[m].positions[0][i] + geometry.grids[m].positions[0][i+1])/2.0;
+	  radius = sqrt(x_val*x_val + y_val*y_val + z_val*z_val);
+	  if (radius <= subdivide_radius) {
+	    cout << "inner radius = " << inner_radius;
+	    cout << "; radius = " << radius << "; ";
+	    cout << i << " ";
+	    cout << j << " ";
+	    cout << k << endl;
+	    subdivide = 1;
+	  } else subdivide = 0;
 
-	subdivide = 0;
-	if (x_tau > geometry.max_tau_per_cell) subdivide = 1;
-	if ((spherical_clumps) && (geometry.grids[0].grid(i,j,k).dust_tau_per_pc == geometry.clump_densities[0])) subdivide = 1;
+	  if (subdivide) {
+	    one_grid subgrid;
+	    subgrid.index_dim[0] = int(2.*geometry.grids[0].phys_cube_size[0]/inner_radius) + 1;
+#ifdef DEBUG_SDG
+	    cout << "subgird size = " << subgrid.index_dim[0] << endl;
+#endif
+	    
+	    subgrid.index_dim[1] = subgrid.index_dim[0];
+	    subgrid.index_dim[2] = subgrid.index_dim[0];
+	    
+	    vector<float> x_subpos(subgrid.index_dim[0]+1);
+	    vector<float> y_subpos(subgrid.index_dim[1]+1);
+	    vector<float> z_subpos(subgrid.index_dim[2]+1);
+	    
+	    subgrid.phys_grid_size[0] = geometry.grids[m].positions[0][i+1] - geometry.grids[m].positions[0][i];
+	    subgrid.phys_grid_size[1] = geometry.grids[m].positions[1][j+1] - geometry.grids[m].positions[1][j];
+	    subgrid.phys_grid_size[2] = geometry.grids[m].positions[2][k+1] - geometry.grids[m].positions[2][k];
+	    
+	    subgrid.phys_cube_size[0] = subgrid.phys_grid_size[0]/subgrid.index_dim[0];
+	    subgrid.phys_cube_size[1] = subgrid.phys_grid_size[1]/subgrid.index_dim[1];
+	    subgrid.phys_cube_size[2] = subgrid.phys_grid_size[2]/subgrid.index_dim[2];
 
-	if (subdivide) {
-// 	  cout << i << ",";
-// 	  cout << j << ",";
-// 	  cout << k << " needs a subgrid ";
-// 	  cout << x_tau << " ";
+	    int l;
+	    for (l = 0; l <= subgrid.index_dim[0]; l++) {
+	      x_subpos[l] = geometry.grids[m].positions[0][i] + (float(l)/subgrid.index_dim[0])*subgrid.phys_grid_size[0];
+	      y_subpos[l] = geometry.grids[m].positions[1][j] + (float(l)/subgrid.index_dim[1])*subgrid.phys_grid_size[1];
+	      z_subpos[l] = geometry.grids[m].positions[2][k] + (float(l)/subgrid.index_dim[2])*subgrid.phys_grid_size[2];
+	    }
+	    subgrid.positions.push_back(x_subpos);
+	    subgrid.positions.push_back(y_subpos);
+	    subgrid.positions.push_back(z_subpos);
+	    
+	    subgrid.grid.CSize(subgrid.index_dim[0],subgrid.index_dim[1],subgrid.index_dim[2]);
 
-	  one_grid subgrid;
-	  if (x_tau > geometry.max_tau_per_cell) 
-	    subgrid.index_dim[0] = int(x_tau/geometry.max_tau_per_cell) + 1;
-	  else if (spherical_clumps) {
-	    subgrid.index_dim[0] = 10;  // make a sphere
-	  }
-
-	  subgrid.index_dim[1] = subgrid.index_dim[0];
-	  subgrid.index_dim[2] = subgrid.index_dim[0];
-// 	  cout << subgrid.index_dim[0] << endl;
-
-	  vector<float> x_subpos(subgrid.index_dim[0]+1);
-	  vector<float> y_subpos(subgrid.index_dim[1]+1);
-	  vector<float> z_subpos(subgrid.index_dim[2]+1);
-
-	  subgrid.phys_grid_size[0] = geometry.grids[0].positions[0][i+1] - geometry.grids[0].positions[0][i];
-	  subgrid.phys_grid_size[1] = geometry.grids[0].positions[1][j+1] - geometry.grids[0].positions[1][j];
-	  subgrid.phys_grid_size[2] = geometry.grids[0].positions[2][k+1] - geometry.grids[0].positions[2][k];
-
-	  subgrid.phys_cube_size[0] = subgrid.phys_grid_size[0]/subgrid.index_dim[0];
-	  subgrid.phys_cube_size[1] = subgrid.phys_grid_size[1]/subgrid.index_dim[1];
-	  subgrid.phys_cube_size[2] = subgrid.phys_grid_size[2]/subgrid.index_dim[2];
-
-	  int m;
-	  for (m = 0; m <= subgrid.index_dim[0]; m++) {
-	    x_subpos[m] = geometry.grids[0].positions[0][i] + (float(m)/subgrid.index_dim[0])*subgrid.phys_grid_size[0];
-	    y_subpos[m] = geometry.grids[0].positions[1][j] + (float(m)/subgrid.index_dim[1])*subgrid.phys_grid_size[1];
-	    z_subpos[m] = geometry.grids[0].positions[2][k] + (float(m)/subgrid.index_dim[2])*subgrid.phys_grid_size[2];
-// 	    cout << "size = " << x_subpos[m] << " ";
-// 	    cout << y_subpos[m] << " ";
-// 	    cout << z_subpos[m] << endl;
-	  }
-	  subgrid.positions.push_back(x_subpos);
-	  subgrid.positions.push_back(y_subpos);
-	  subgrid.positions.push_back(z_subpos);
-
-	  subgrid.grid.CSize(subgrid.index_dim[0],subgrid.index_dim[1],subgrid.index_dim[2]);
-
-	  float dust_tau_per_pc = geometry.grids[0].grid(i,j,k).dust_tau_per_pc/subgrid.index_dim[0];
-	  float index_radius;  // radius of subgrid position in index values
-	  int n,o;
-	  for (o = 0; o < subgrid.index_dim[2]; o++) 
-	    for (n = 0; n < subgrid.index_dim[1]; n++) 
-	      for (m = 0; m < subgrid.index_dim[0]; m++) {
-		index_radius = sqrt(pow(float(o) - subgrid.index_dim[2]/2.,2.0) + pow(float(n) - subgrid.index_dim[1]/2.,2.0) +
-				    pow(float(m) - subgrid.index_dim[0]/2.,2.0));
-		if (index_radius < subgrid.index_dim[0]/2.)
-		  subgrid.grid(m,n,o).dust_tau_per_pc = dust_tau_per_pc;
-		else
-		  subgrid.grid(m,n,o).dust_tau_per_pc = dust_tau_per_pc*geometry.density_ratio;
-
-// 		subgrid.grid(m,n,o).absorbed_energy = 0.0;
+	    float tradius;  // radius of subgrid position in index values
+	    float tz_val,ty_val,tx_val = 0.;
+	    int n,o;
+	    for (o = 0; o < subgrid.index_dim[2]; o++) {
+	      tz_val = (subgrid.positions[2][o] + subgrid.positions[2][o+1])/2.0;
+	      for (n = 0; n < subgrid.index_dim[1]; n++) {
+		ty_val = (subgrid.positions[2][n] + subgrid.positions[2][n+1])/2.0;
+		for (l = 0; l < subgrid.index_dim[0]; l++) {
+		  tx_val = (subgrid.positions[2][l] + subgrid.positions[2][l+1])/2.0;
+		  tradius = sqrt(tx_val*tx_val + ty_val*ty_val + tz_val*tz_val);
+		  if (tradius < inner_radius)
+		    subgrid.grid(l,n,o).dust_tau_per_pc = geometry.grids[m].grid(i,j,k).dust_tau_per_pc*0.;
+		  else
+		    subgrid.grid(l,n,o).dust_tau_per_pc = geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
+		}
 	      }
+	    }
 
-	  // setup ties to main grid
-	  subgrid.parent_grid_num = 0;
-	  geometry.grids[0].grid(i,j,k).dust_tau_per_pc = -cur_subgrid_num;
-	  cur_subgrid_num++;
+	    // setup ties to parent grid
+	    subgrid.parent_grid_num = m;
+	    geometry.grids[m].grid(i,j,k).dust_tau_per_pc = -cur_subgrid_num;
+	    cur_subgrid_num++;
 
-	  geometry.grids.push_back(subgrid);
+	    geometry.grids.push_back(subgrid);
+	  }
 	}
       }
+    }
+  }
+
+  // subdivide all overdense cells
+  setup_dust_grid_subdivide_overdense_cells(geometry, spherical_clumps);
 
 }

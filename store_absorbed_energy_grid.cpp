@@ -23,7 +23,6 @@
 //   add the tau/N_H division at the final stage
 //   this avoids round off error (hopefully)
 // ======================================================================
-
 #include "store_absorbed_energy_grid.h"
 //#define DEBUG_SAEG
 
@@ -84,10 +83,16 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 
 	    // check for roundoff error before converting to double
 	    if (j_temp < 1e-38) {
+#ifdef DEBUG_SAEG
 	      cout << "roundoff error warning in store_absorbed_energy_grid." << endl;
 	      cout << "j_temp = " << j_temp << endl;
 	      cout << "float(j_temp) = " << float(j_temp) << endl;
+#endif
 	      //	      exit(8);
+	    } else if (!finite(j_temp)) {
+	      cout << "j_temp is non finite" << endl;
+	      cout << "j_temp = " << j_temp << endl;
+	      exit(8);
 	    }
 	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] = float(j_temp);
 

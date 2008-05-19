@@ -5,7 +5,7 @@
 // 2006 Apr/KDG - written
 // ======================================================================
 #include "scattered_weight_towards_observer.h"
-// #define DEBUG_SWTO
+//#define DEBUG_SWTO
 
 double scattered_weight_towards_observer (photon_data photon,
 					  geometry_struct& geometry,
@@ -66,6 +66,9 @@ double scattered_weight_towards_observer (photon_data photon,
   int escape = 0;
   double tau_scat_to_obs = 0.0;
   double distance_traveled = 0.0;
+#ifdef DEBUG_SWTO
+  cout << "starting calc_photon_traj..." << endl;
+#endif
   distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_scat_to_obs);
 #ifdef DEBUG_SWTO
   cout << "Tau from scattering site to surface = " << tau_scat_to_obs << endl;

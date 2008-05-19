@@ -8,6 +8,7 @@
 // 2008 May/KDG - changed denominator of atan from d to d-z (see fix in setup_dust_grid_slab.cpp)
 // ======================================================================
 #include "classify_scattered_photon.h"
+//#define DEBUG_CSCP
 
 void classify_scattered_photon (output_struct& output,
 				photon_data& photon,
@@ -15,6 +16,10 @@ void classify_scattered_photon (output_struct& output,
 				runinfo_struct& runinfo)
 
 {
+#ifdef DEBUG_CSCP
+  cout << "starting csp.." << endl;
+#endif
+
   int i;
   photon_data tmp_photon;
   double save_scat_weight = 0.0;
@@ -23,6 +28,9 @@ void classify_scattered_photon (output_struct& output,
   // loop over the line-of-sights or albedos or whatever
   for (i = 0; i < output.num_outputs; i++) {
 
+#ifdef DEBUG_CSCP
+    cout << "output # = " << i << endl;
+#endif
     // setup so the hard stuff is not recomputed for the case where there are
     // multiple outputs, but only 1 observer position
     if ((i == 0) || (geometry.num_observers > 1)) {
@@ -30,10 +38,16 @@ void classify_scattered_photon (output_struct& output,
       // copy input photon into temporary photon to ensure no change
       tmp_photon = photon;
 
+#ifdef DEBUG_CSCP
+      cout << "starting scat_weight..." << endl;
+#endif
       // determine the probability the photon would have scattered to the observer
       tmp_photon.scat_weight = scattered_weight_towards_observer(tmp_photon, geometry, 
 								 output.outputs[i].observer_position);
 
+#ifdef DEBUG_CSCP
+      cout << "starting rotate..." << endl;
+#endif
       // transform photon positions so that the line-of-sight is along the z-axis 
       rotate_zaxis_for_observer(output.outputs[i].rotate_transform,tmp_photon);
 
@@ -46,7 +60,6 @@ void classify_scattered_photon (output_struct& output,
       // compute x,y angles and image indexs
       double angle;
       int k;
-      //double updated_angular_radius = atan(geometry.radius/(geometry.distance - tmp_photon.position[2]));
       for (k = 0; k < 2; k++) {
 	angle = atan(tmp_photon.position[k]/(geometry.distance - tmp_photon.position[2]));
 	// don't know why having d-z doesn't work and having d does work, but that seems the case

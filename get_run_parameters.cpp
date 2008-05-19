@@ -11,7 +11,6 @@ void get_run_parameters (ConfigFile& param_data,
 			 geometry_struct& geometry,
 			 runinfo_struct& runinfo)
 {
-
   geometry.n_photons = long(param_data.DValue("Run","num_photons"));
   check_input_param("num_photons",geometry.n_photons,1,1000000000);
 
