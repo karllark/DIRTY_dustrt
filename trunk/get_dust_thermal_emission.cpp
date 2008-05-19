@@ -7,6 +7,7 @@
 // 2008 Mar/KDG - updated calculation to do the units of the emitted energy correctly
 // ======================================================================
 #include "get_dust_thermal_emission.h"
+//#define DEBUG_GDTE
 
 void get_dust_thermal_emission (geometry_struct& geometry,
 				runinfo_struct& runinfo, 
@@ -82,7 +83,13 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	  }
  	  tot_abs_energy = NumUtils::integrate(tmp_wave,tmp_abs_energy);
 		
-	  if ((tot_abs_energy > 0.) && (tot_nonzero > 2) && (max_abs_energy > 1e-40)) {
+#ifdef DEBUG_GDTE
+	  cout << "total nonzero = " << tot_nonzero << endl;
+	  cout << "total absorbed energy = " << tot_abs_energy << endl;
+	  cout << "max absorbed energy = " << max_abs_energy << endl;
+#endif
+
+	  if ((tot_abs_energy > 0.) && (tot_nonzero > 6) && (max_abs_energy > 1e-40)) {
 	    // get the dust emission spectrum given the input wavlength vector and radiation field vector
 	    // emitted energy returned is in units of ergs s^-1 HI atom^-1
 

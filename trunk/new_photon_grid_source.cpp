@@ -7,6 +7,7 @@
 // 2008 Mar/KDG - added setting of birth position (forgot it)
 // ======================================================================
 #include "new_photon_grid_source.h"
+//#define DEBUG_NPGS
 
 void new_photon_grid_source (photon_data& photon,
 			     geometry_struct& geometry,
@@ -49,16 +50,25 @@ void new_photon_grid_source (photon_data& photon,
 				       geometry.grids[m].index_dim[1]-1,
 				       geometry.grids[m].index_dim[2]-1).emitted_energy[0][x])
     grid_num = 0;
-
+ 
+#ifdef DEBUG_NPGS
+ cout << "grid_num (1st check) = " << grid_num << endl;
+#endif
   while ((grid_num == -1) && (m < geometry.grids.size())) {
     m++;
+#ifdef DEBUG_NPGS
+    cout << "(2nd check) m = " << m << endl;
+#endif
     if ((ran_val > geometry.grids[m-1].grid(geometry.grids[m-1].index_dim[0]-1,geometry.grids[m-1].index_dim[1]-1,
 					    geometry.grids[m-1].index_dim[2]-1).emitted_energy[0][x]) &&
-	ran_val <= geometry.grids[m-1].grid(geometry.grids[m].index_dim[0]-1,geometry.grids[m].index_dim[1]-1,
+	ran_val <= geometry.grids[m].grid(geometry.grids[m].index_dim[0]-1,geometry.grids[m].index_dim[1]-1,
 					    geometry.grids[m].index_dim[2]-1).emitted_energy[0][x])
       grid_num = m ;
   } 
   
+#ifdef DEBUG_NPGS
+  cout << "grid_num = " << grid_num << endl;
+#endif
   if (grid_num == -1) {
     cout << "Can't emitted photon from grid, random number of " << ran_val << " larger than anything in grid." << endl;
     exit(8);

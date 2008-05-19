@@ -10,7 +10,8 @@
 // 2003 Jun/KDG - written
 // ======================================================================
 #include "calc_photon_trajectory.h"
-//#define PHOTON_POS
+// #define PHOTON_POS
+// #define DEBUG_CPT
 
 double calc_photon_trajectory (photon_data& photon,
 			       geometry_struct& geometry,
@@ -29,6 +30,18 @@ double calc_photon_trajectory (photon_data& photon,
   //   multiple calls to calc_photon_trajectory needed
   while ((tau_left > 0.0) && (!escape)) {
 
+#ifdef DEBUG_CPT
+    if (photon.number > OUTNUM) {
+      cout << "before delta distance & tau_left & delta_tau & escape = ";
+      cout << delta_dist << " ";
+      cout << tau_left << " ";
+      cout << delta_tau << " ";
+      cout << escape << endl;
+      cout << "current_grid_num, num_current grids = ";
+      cout << photon.current_grid_num << " ";
+      cout << photon.num_current_grids << endl;
+    }
+#endif
     delta_dist = calc_delta_dist(photon, geometry, tau_left, escape, delta_tau);
 #ifdef PHOTON_POS
     int i = 0;

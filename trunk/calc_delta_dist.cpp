@@ -6,6 +6,7 @@
 //                now zero distance traveled
 // ======================================================================
 #include "calc_delta_dist.h"
+// #define DEBUG_CDD
 
 double calc_delta_dist (photon_data& photon,
 			geometry_struct& geometry,
@@ -22,7 +23,8 @@ double calc_delta_dist (photon_data& photon,
   // save the current grid number, the grid number, and the dust_tau_per_pc
   int k = photon.current_grid_num;
   long grid_val = photon.grid_number[k];
-  float dust_tau_per_pc = geometry.grids[grid_val].grid(photon.position_index[k][0],photon.position_index[k][1],photon.position_index[k][2]).dust_tau_per_pc*geometry.tau_to_tau_ref;
+  float dust_tau_ref_per_pc = geometry.grids[grid_val].grid(photon.position_index[k][0],photon.position_index[k][1],photon.position_index[k][2]).dust_tau_per_pc;
+  float dust_tau_per_pc = dust_tau_ref_per_pc*geometry.tau_to_tau_ref;
 
   // print the photon statistics
 #ifdef DEBUG_CDD
@@ -46,10 +48,12 @@ double calc_delta_dist (photon_data& photon,
     cout << "k = " << k << " < " << photon.num_current_grids-1 << endl;
     cout << "dust_tau_per_pc = " << dust_tau_per_pc << endl;
     cout << "number of grids = " << geometry.grids.size() << endl;
+    cout << "photon.current_grid_num = " << photon.current_grid_num << endl;
+    cout << "photon.grid_number[photon.current_grid_num] = " << photon.grid_number[photon.current_grid_num] << endl;
   }
 #endif
 
-  if ((k < (photon.num_current_grids-1)) || (dust_tau_per_pc <= -1.0)) {
+  if ((k < (photon.num_current_grids-1)) || (dust_tau_ref_per_pc <= -1.0)) {
 #ifdef DEBUG_CDD
     if (photon.number > OUTNUM) {
       cout << endl << "=============" << endl;
@@ -58,7 +62,7 @@ double calc_delta_dist (photon_data& photon,
 #endif
     photon.current_grid_num++;
     // determine the position indexes for this subgrid (any any more nested subgrids)
-    if (dust_tau_per_pc <= -1.0) {
+    if (dust_tau_ref_per_pc <= -1.0) {
 #ifdef DEBUG_CDD
       if (photon.number > OUTNUM) {
 	cout << "new "; cout.flush();
@@ -69,7 +73,16 @@ double calc_delta_dist (photon_data& photon,
       // basically, are we restarting the photon tracking in a subgrid?
 
 #endif
-      photon.grid_number[photon.current_grid_num] = -int(dust_tau_per_pc);
+      photon.grid_number[photon.current_grid_num] = -int(dust_tau_ref_per_pc);
+
+      if (photon.grid_number[photon.current_grid_num] >= int(geometry.grids.size())) {
+	cout << "grid desired does not exist" << endl;
+	cout << "grid desired = " << photon.grid_number[photon.current_grid_num] << endl;
+	cout << "# of grids = " << geometry.grids.size() << endl;
+	cout << "dust_tau_ref_per_pc = " << dust_tau_ref_per_pc << endl;
+	exit(8);
+      }
+
       determine_photon_position_index(geometry, photon);
     }
 #ifdef DEBUG_CDD
@@ -256,9 +269,9 @@ double calc_delta_dist (photon_data& photon,
     if (!escape) {
 //       if ((photon.position_index[k][min_index] < geometry.grids[photon.grid_number[photon.current_grid_num]].index_dim[min_index]) &&
 // 	  (photon.position_index[k][min_index] >= 0)) {
-	dust_tau_per_pc = geometry.grids[photon.grid_number[photon.current_grid_num]].
+	dust_tau_ref_per_pc = geometry.grids[photon.grid_number[photon.current_grid_num]].
 	  grid(photon.position_index[k][0],photon.position_index[k][1],photon.position_index[k][2]).dust_tau_per_pc;
-	if ((dust_tau_per_pc > -1.0) && (dust_tau_per_pc < 0.0))
+	if ((dust_tau_ref_per_pc > -1.0) && (dust_tau_ref_per_pc < 0.0))
 	  escape = 1;
 //       }
     }

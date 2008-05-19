@@ -9,7 +9,7 @@ template <class FI, class FI2, class FI3>
     void check_input_param(string const& param, FI x, FI2 min_x, FI3 max_x)
 {
   // first check if the value is set
-  if (x == -99) {
+  if ((x == -99) || (!finite(x))) {
     cout << "Required parameter " << param << " not set." << endl;
     exit(8);
   } else if ((x < min_x) || (x > max_x)) { // then check it is between the limits

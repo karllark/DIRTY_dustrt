@@ -160,6 +160,7 @@ void setup_dust_grid_sphere (ConfigFile& param_data,
 // 	  cout << j << ",";
 // 	  cout << k << " needs a subgrid ";
 // 	  cout << x_tau << " ";
+// 	  cout << endl;
 
 	  one_grid subgrid;
 	  if (x_tau > geometry.max_tau_per_cell) 
@@ -212,7 +213,6 @@ void setup_dust_grid_sphere (ConfigFile& param_data,
 		else
 		  subgrid.grid(m,n,o).dust_tau_per_pc = dust_tau_per_pc*geometry.density_ratio;
 
-// 		subgrid.grid(m,n,o).absorbed_energy = 0.0;
 	      }
 
 	  // setup ties to main grid
