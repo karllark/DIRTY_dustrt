@@ -1,6 +1,8 @@
 #ifndef _DIRTY_GET_DUST_PARAMETERS_
 #define _DIRTY_GET_DUST_PARAMETERS_
 
+#include <cstring>
+
 #include "ConfigFile.h"
 #include "DataFile.h"
 #include "runinfo_def.h"
