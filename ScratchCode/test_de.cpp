@@ -24,6 +24,18 @@ int main (int argc, char * argv[]) {
   MW[0]=-1; 
   MS[0]=-1; 
 
+  vector <float> atest,ainvtest; 
+  for (int i=1;i<=10;++i) atest.push_back((float)i);
+  vector <float>::iterator it1,it2,it3,it4; 
+  it1=atest.begin(); 
+  it2=atest.end(); 
+  for (it3=it1;it3!=it2;++it3) { 
+    ainvtest.push_back(1.0/(*it3));
+  }
+  it3=ainvtest.begin();
+  for (it4=it1;it4!=it2;++it4,++it3) cout << *it4 << " " << *it3 << endl; 
+  exit(8);
+
   // Number of components - only going to fill in one here, but this illustrates
   // the vector nature of the Grain object.
   int ncomp=2; 

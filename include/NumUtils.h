@@ -1,6 +1,7 @@
 #ifndef _NUMUTILS_H
 #define _NUMUTILS_H
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <cmath>

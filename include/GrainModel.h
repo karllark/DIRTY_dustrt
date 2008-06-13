@@ -68,6 +68,7 @@ public:
   inline vector <float> getAlbedo( void ) { return Albedo; }
   inline vector <float> getphFuncEff( void ) { return phFuncEff; }
   inline vector <float> getWave( void ) { return Wave; } 
+  inline vector <float> getEScale( void ) { return EScale; }
 
   float getTau( float a_wave );  
   inline vector <float> getTau( void ) { return Tau; }
@@ -92,6 +93,7 @@ private:
   int nComp; 
   int nWave; 
   vector <float> Wave; 
+  vector <float> EScale; 
   vector <Grain> Component; 
   string ModelName; 
   

@@ -10,6 +10,7 @@
 #ifndef __DATA_FILE_H__
 #define __DATA_FILE_H__
 
+#include <algorithm>
 #include <vector>
 #include <fstream>
 #include <string> 

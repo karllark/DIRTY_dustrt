@@ -52,9 +52,14 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
   _MassConstants = (4.0/3.0)*(Constant::PI); 
 
   // Make the wavelength vector for the GrainModel the input MasterWave. 
+  // Generate an energy scale at the same time.
   copy(MasterWave.begin(),MasterWave.end(),back_inserter(Wave)); 
   nWave = Wave.size(); 
-
+  vector <float>::iterator _itb,_ite,_it;
+  _itb=Wave.begin(); 
+  _ite=Wave.end(); 
+  for (_it=_itb;_it!=_ite;++_it) EScale.push_back(Constant::PLANCKLIGHT/(*_it)); 
+  
   // Setup the model string->id map for case statements.
   ModelMapping(); 
   // Setup the size distribution string->id map for case statements.
