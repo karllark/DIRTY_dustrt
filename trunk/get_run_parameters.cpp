@@ -50,6 +50,12 @@ void get_run_parameters (ConfigFile& param_data,
   if (runinfo.do_emission_grain == -99) runinfo.do_emission_grain = 0;  // set to no if not initially set
   check_input_param("do_emission_grain",runinfo.do_emission_grain,0,1);
 
+  if (runinfo.do_dust_emission) {
+    // now see what energy conservation is required
+    runinfo.energy_conserve_target = param_data.IValue("Run","energy_conserve_target");
+    check_input_param("energy_conserve_target",runinfo.energy_conserve_target,0.,1.);
+  }
+
   // output info
 
   runinfo.do_image_output = param_data.IValue("Run","do_image_output");

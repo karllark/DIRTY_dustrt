@@ -54,7 +54,7 @@ void classify_scattered_photon (output_struct& output,
       // take into account the albedo for this scattering
       tmp_photon.scat_weight *= geometry.albedo;
 
-      // save the stellar weight for use when different outputs are for emission/grain types
+      // save the scattered weight for use when different outputs are for emission/grain types
       save_scat_weight = tmp_photon.scat_weight;
 
       // compute x,y angles and image indexs
@@ -94,7 +94,7 @@ void classify_scattered_photon (output_struct& output,
       cout << "scattered photon image indexs = (" << image_indxs[0] << "," << image_indxs[1] << ")" << endl;
 #endif
     } else {
-      // reset the stellar weight for emission/grain output
+      // reset the scattered weight for emission/grain output
       tmp_photon.scat_weight = save_scat_weight;
     }
 

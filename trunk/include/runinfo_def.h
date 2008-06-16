@@ -25,6 +25,7 @@ struct runinfo_struct {
                          // and equilibrium/non-equilibrium
   int dust_thermal_emission;  // set when doing thermal dust emission (used when do_emission_grain=1)
   int n_emission_grain_types;  // number of grain emission types
+  float energy_conserve_target;  // energy conservation target
 
   int empir_dust;  // set to 1 if empirical dust properties being used
   int model_dust;  // set to 1 if dust grain model properties being used
@@ -42,6 +43,9 @@ struct runinfo_struct {
 
   // emitted energy info (by dust grain component)
   std::vector< std::vector<double> > emitted_lum;
+
+  // absorbed energy
+  double total_absorbed_energy;   // total absorbed energy (computed in get_thermal_dust_emission.cpp)
 
   // ERE model info
   float ere_efficiency;  // efficiency of conversion of input to output photons

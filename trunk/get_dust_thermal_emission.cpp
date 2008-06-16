@@ -93,12 +93,6 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	    // get the dust emission spectrum given the input wavlength vector and radiation field vector
 	    // emitted energy returned is in units of ergs s^-1 HI atom^-1
 
-// 	    for (x = 0; x < runinfo.wavelength.size(); x++) {
-// 	      cout << runinfo.wavelength[x] << " ";
-// 	      cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << endl;
-// 	    }
-// 	    cout << "total energy = " << tot_abs_energy << endl;
-
 	    ComputeDustEmission(geometry.grids[m].grid(i,j,k).absorbed_energy,
 				CurGrainModel, 
 				geometry.grids[m].grid(i,j,k).emitted_energy,
@@ -115,24 +109,8 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	      cout << "total_abs/H atom = " << tot_abs_energy << endl;
 	      cout << "total_emit_energy/H atom = " << total_emit_energy << endl;
 	      cout << "ratio emit/abs = " << total_emit_energy/tot_abs_energy << endl;
-	      exit(8);
+// 	      exit(8);
 	    }
-
-// 	    for (x = 0; x < runinfo.wavelength.size(); x++) {
-// 	      cout << runinfo.wavelength[x] << " ";
-// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[0][x] << " ";
-// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[1][x] << " ";
-// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[2][x] << " ";
-// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[3][x] << " ";
-// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[4][x] << " ";
-// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[5][x] << " ";
-// 	      cout << geometry.grids[m].grid(i,j,k).emitted_energy[6][x] << endl;
-// 	    }
-
-// 	    dust_thermal_emission(CurGrainModel, runinfo.wavelength,
-// 				  geometry.grids[m].grid(i,j,k).absorbed_energy,
-// 				  runinfo.do_emission_grain,
-// 				  geometry.grids[m].grid(i,j,k).emitted_energy);
 
 	    // add to the emitted energy sums
 	    for (z = 0; z < n_emit_components; z++)
@@ -165,12 +143,14 @@ void get_dust_thermal_emission (geometry_struct& geometry,
     
   }
 
-#ifdef DEBUG_GDTE
+  runinfo.total_absorbed_energy = global_total_absorbed;
+// #ifdef DEBUG_GDTE
   cout << "global energy conservations check" << endl;
   cout << "total_abs = " << global_total_absorbed << endl;
   cout << "total_emit_energy = " << global_total_emitted << endl;
   cout << "ratio emit/abs = " << global_total_emitted/global_total_absorbed << endl;
-#endif
+//   exit(8);
+// #endif
 
   geometry.emitted_energy_grid_initialized = 1;
 }
