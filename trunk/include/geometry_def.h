@@ -27,9 +27,9 @@
 struct one_grid {
   int parent_grid_num;
   int index_dim[3];
-  float phys_grid_size[3];
-  float phys_cube_size[3];
-  vector<vector<float> > positions;
+  double phys_grid_size[3];
+  double phys_cube_size[3];
+  vector<vector<double> > positions;
   NumUtils::Cube<grid_cell> grid;
 };
 

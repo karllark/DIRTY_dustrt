@@ -96,7 +96,15 @@ int main(int argc, char* argv[])
     get_dust_scat_parameters(i, runinfo, geometry);
 
     // do RT part
+#ifdef DEBUG_DIRTY
+    cout << "rt: rt begin; ";
+    cout.flush();
+#endif
     radiative_transfer(geometry, runinfo, output, photon, random_obj);
+#ifdef DEBUG_DIRTY
+    cout << "rt: rt end; ";
+    cout.flush();
+#endif
 
     // output RT results
     output_results(output, geometry, runinfo, i);

@@ -4,6 +4,8 @@
 // KDG 6 Jul 2006 - adapted from setup_dust_sphere
 // KDG 13 Apr 2007 - removed geometry.solid_angle (see setup_dust_grid.cc)
 // KDG 15 May 2008 - moved the subdivision of grid cells to a separate routine
+// KDG 13 Jun 2008 - added polynomial density profile (except n=-1)
+// KDG 16 Jun 2008 - fixed max_grid_depth calculation
 // ======================================================================
 #include "setup_dust_grid_shell.h"
 // #define DEBUG_SDG
@@ -24,11 +26,11 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   geometry.angular_radius = atan(1.45*geometry.radius/geometry.distance);
 
   // shell inner radius
-  float inner_radius = param_data.FValue("Geometry","inner_radius");
+  double inner_radius = param_data.FValue("Geometry","inner_radius");
   check_input_param("inner_radius",inner_radius,0.0,geometry.radius);
   
   // shell outer radius
-  float outer_radius = param_data.FValue("Geometry","outer_radius");
+  double outer_radius = param_data.FValue("Geometry","outer_radius");
   check_input_param("outer_radius",outer_radius,0.0,geometry.radius);
 
   // shell subdivide radius
@@ -49,6 +51,16 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 #ifdef DEBUG_SDG
   cout << "input tau = " << geometry.tau << endl;
 #endif
+
+  // polynomial for the shell radial density profile
+  double radial_density_poly = param_data.FValue("Geometry","shell_density_poly");
+  check_input_param("shell density polynomial",radial_density_poly,-100.,100);
+  cout << "poly = " << radial_density_poly << endl;
+  if (radial_density_poly == -1.) {
+    cout << "shell density polynomial is equal to -1 - new code needed!" << endl;
+    exit(8);
+  }
+
   // maximum optical depth per cell (controls when a cell is subdivided)
   geometry.max_tau_per_cell = param_data.FValue("Geometry","max_tau_per_cell");
   check_input_param("max_tau_per_cell",geometry.max_tau_per_cell,0.0,1e10);
@@ -76,7 +88,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   check_input_param("grid_size",grid_size,0,1000);
 
   // set the maximum grid depth
-  geometry.max_grid_depth = 2;
+  geometry.max_grid_depth = 1;
 
   // declare main grid
   one_grid main_grid;
@@ -87,13 +99,13 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   main_grid.index_dim[2] = grid_size;
 
   // fill position arrays with
-  vector<float> x_pos(main_grid.index_dim[0]+1);
-  vector<float> y_pos(main_grid.index_dim[1]+1);
-  vector<float> z_pos(main_grid.index_dim[2]+1);
+  vector<double> x_pos(main_grid.index_dim[0]+1);
+  vector<double> y_pos(main_grid.index_dim[1]+1);
+  vector<double> z_pos(main_grid.index_dim[2]+1);
   int i;
   float tmp_val;
   for (i = 0; i <= main_grid.index_dim[0]; i++) {
-    tmp_val = float(i)*(2.0*geometry.radius)/float(main_grid.index_dim[0]) - geometry.radius;
+    tmp_val = double(i)*(2.0*geometry.radius)/double(main_grid.index_dim[0]) - geometry.radius;
     x_pos[i] = tmp_val;
     y_pos[i] = tmp_val;
     z_pos[i] = tmp_val;
@@ -124,13 +136,17 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   // allocate main grid
   main_grid.grid.CSize(main_grid.index_dim[0],main_grid.index_dim[1],main_grid.index_dim[2]);
 
-  // fill main grid with dust density
-  geometry.clump_densities[0] = geometry.tau/
-    ((outer_radius - inner_radius)*(geometry.filling_factor + geometry.density_ratio*(1.0 - geometry.filling_factor)));
+  // fill main grid with dust density 
+  // (now these are just the factors and the density is imposed later)
+  geometry.clump_densities[0] = (geometry.filling_factor + geometry.density_ratio*(1.0 - geometry.filling_factor));
   geometry.clump_densities[1] = geometry.density_ratio*geometry.clump_densities[0];
 
   int j,k;
-  float radius = 0.0;
+
+  double tmp_density = 0.0;
+  double tmp_den_constant = (geometry.tau*(radial_density_poly+1.))/
+    (pow(outer_radius,radial_density_poly+1.) - pow(inner_radius,radial_density_poly+1.));
+  double radius = 0.0;
   float x_val = 0.0;
   float y_val = 0.0;
   float z_val = 0.0;
@@ -144,10 +160,15 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	if (radius < inner_radius)
 	  main_grid.grid(i,j,k).dust_tau_per_pc = 0.0;
 	else if (radius <= outer_radius) {
+	  tmp_density = tmp_den_constant*pow(radius,radial_density_poly);
 	  if (random_obj.random_num() <= geometry.filling_factor)
-	    main_grid.grid(i,j,k).dust_tau_per_pc = geometry.clump_densities[0];
+	    main_grid.grid(i,j,k).dust_tau_per_pc = tmp_density*geometry.clump_densities[0];
 	  else
-	    main_grid.grid(i,j,k).dust_tau_per_pc = geometry.clump_densities[1];
+	    main_grid.grid(i,j,k).dust_tau_per_pc = tmp_density*geometry.clump_densities[1];
+
+#ifdef DEBUG_SDG
+	  cout << main_grid.grid(i,j,k).dust_tau_per_pc << " ";
+#endif
 	} else
 	  main_grid.grid(i,j,k).dust_tau_per_pc = -0.5;  // this means the edge of the dust
       }
@@ -164,6 +185,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   if (subdivide_radius > 0.0) {
     if (subdivide_radius < pow(3.,0.5)*(main_grid.phys_cube_size[0]/2.)) subdivide_radius = main_grid.phys_cube_size[0];
     int subdivide = 0;
+    int subdivide_any = 0;
     int m = 0;  // only main_grid for now
     int cur_subgrid_num = int(geometry.grids.size());
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++) {
@@ -180,6 +202,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	    cout << j << " ";
 	    cout << k << endl;
 	    subdivide = 1;
+	    subdivide_any = 1;
 	  } else subdivide = 0;
 
 	  if (subdivide) {
@@ -192,9 +215,9 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	    subgrid.index_dim[1] = subgrid.index_dim[0];
 	    subgrid.index_dim[2] = subgrid.index_dim[0];
 	    
-	    vector<float> x_subpos(subgrid.index_dim[0]+1);
-	    vector<float> y_subpos(subgrid.index_dim[1]+1);
-	    vector<float> z_subpos(subgrid.index_dim[2]+1);
+	    vector<double> x_subpos(subgrid.index_dim[0]+1);
+	    vector<double> y_subpos(subgrid.index_dim[1]+1);
+	    vector<double> z_subpos(subgrid.index_dim[2]+1);
 	    
 	    subgrid.phys_grid_size[0] = geometry.grids[m].positions[0][i+1] - geometry.grids[m].positions[0][i];
 	    subgrid.phys_grid_size[1] = geometry.grids[m].positions[1][j+1] - geometry.grids[m].positions[1][j];
@@ -206,9 +229,9 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 
 	    int l;
 	    for (l = 0; l <= subgrid.index_dim[0]; l++) {
-	      x_subpos[l] = geometry.grids[m].positions[0][i] + (float(l)/subgrid.index_dim[0])*subgrid.phys_grid_size[0];
-	      y_subpos[l] = geometry.grids[m].positions[1][j] + (float(l)/subgrid.index_dim[1])*subgrid.phys_grid_size[1];
-	      z_subpos[l] = geometry.grids[m].positions[2][k] + (float(l)/subgrid.index_dim[2])*subgrid.phys_grid_size[2];
+	      x_subpos[l] = geometry.grids[m].positions[0][i] + (double(l)/subgrid.index_dim[0])*subgrid.phys_grid_size[0];
+	      y_subpos[l] = geometry.grids[m].positions[1][j] + (double(l)/subgrid.index_dim[1])*subgrid.phys_grid_size[1];
+	      z_subpos[l] = geometry.grids[m].positions[2][k] + (double(l)/subgrid.index_dim[2])*subgrid.phys_grid_size[2];
 	    }
 	    subgrid.positions.push_back(x_subpos);
 	    subgrid.positions.push_back(y_subpos);
@@ -216,7 +239,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	    
 	    subgrid.grid.CSize(subgrid.index_dim[0],subgrid.index_dim[1],subgrid.index_dim[2]);
 
-	    float tradius;  // radius of subgrid position in index values
+	    double tradius;  // radius of subgrid position in index values
 	    float tz_val,ty_val,tx_val = 0.;
 	    int n,o;
 	    for (o = 0; o < subgrid.index_dim[2]; o++) {
@@ -226,10 +249,11 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 		for (l = 0; l < subgrid.index_dim[0]; l++) {
 		  tx_val = (subgrid.positions[2][l] + subgrid.positions[2][l+1])/2.0;
 		  tradius = sqrt(tx_val*tx_val + ty_val*ty_val + tz_val*tz_val);
+		  tmp_density = tmp_den_constant*pow(tradius,radial_density_poly);
 		  if (tradius < inner_radius)
 		    subgrid.grid(l,n,o).dust_tau_per_pc = geometry.grids[m].grid(i,j,k).dust_tau_per_pc*0.;
 		  else
-		    subgrid.grid(l,n,o).dust_tau_per_pc = geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
+		    subgrid.grid(l,n,o).dust_tau_per_pc = tmp_density*geometry.clump_densities[0];
 		}
 	      }
 	    }
@@ -244,6 +268,8 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	}
       }
     }
+    if (subdivide_any)
+      geometry.max_grid_depth++;
   }
 
   // subdivide all overdense cells

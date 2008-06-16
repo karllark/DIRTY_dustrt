@@ -4,4 +4,7 @@
 // roundoff error threshold for trig functions
 #define ROUNDOFF_ERR_TRIG 1e-14
 
+// roundoff error threshold for determine_index_positions functions
+#define ROUNDOFF_ERR_INDEX 1e-8
+
 #endif

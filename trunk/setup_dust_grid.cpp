@@ -7,6 +7,7 @@
 // 27 Feb 2007 KDG - added slab geometry
 // 13 Apr 2007 KDG - moved geometry.solid_angle definition to where the
 //                   source emission is defined
+// KDG 16 Jun 2008 - added subdivide grid cells & fixed max_grid_depth calculation
 // ======================================================================
 #include "setup_dust_grid.h"
 
@@ -47,6 +48,9 @@ void setup_dust_grid (ConfigFile& param_data,
     cout << "Setup for input geometry type (" << geometry.type << ") not found [NEW CODE NEEDED]." << endl;
     exit(8);
   }
+
+  // verify that the dust grid has been constructed correctly
+  verify_dust_grid(geometry);
 
   // get the source type
   geometry.source_type = param_data.SValue("Geometry","source_type");

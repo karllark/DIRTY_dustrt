@@ -11,4 +11,10 @@
 #include "random_dirty.h"
 #include "debug.h"
 
+//**********************************************************************
+// external function definitions
+
+extern void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
+						       int spherical_clumps);
+
 #endif

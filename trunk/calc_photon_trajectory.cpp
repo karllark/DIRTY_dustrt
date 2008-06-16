@@ -11,7 +11,7 @@
 // ======================================================================
 #include "calc_photon_trajectory.h"
 // #define PHOTON_POS
-// #define DEBUG_CPT
+//#define DEBUG_CPT
 
 double calc_photon_trajectory (photon_data& photon,
 			       geometry_struct& geometry,

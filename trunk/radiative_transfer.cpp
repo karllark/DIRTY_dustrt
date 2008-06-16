@@ -8,7 +8,7 @@
 #include "radiative_transfer.h"
 //#define DEBUG_RT
 //#define OUTNUM -1
-//#define OUTNUM 4628428
+//#define OUTNUM 1559
 
 void radiative_transfer (geometry_struct& geometry,
 			 runinfo_struct& runinfo,
@@ -89,6 +89,9 @@ void radiative_transfer (geometry_struct& geometry,
     while (!escape) {
 
       // classify the scattered photon
+#ifdef DEBUG_RT
+      if (photon.number > OUTNUM) cout << "cscp begin; "; cout.flush();
+#endif
       classify_scattered_photon(output, photon, geometry, runinfo);
 #ifdef DEBUG_RT
       if (photon.number > OUTNUM) cout << "cscp done; "; cout.flush();
