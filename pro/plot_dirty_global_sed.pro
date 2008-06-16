@@ -30,7 +30,8 @@
 ; MODIFICATION HISTORY:
 ;     Written by : Karl D. Gordon (22 Mar 2008)
 ;-
-pro plot_dirty_global_sed,filename,energy=energy,eps=eps
+pro plot_dirty_global_sed,filename,energy=energy,eps=eps, $
+  xrange=xrange,yrange=yrange
 
 table = mrdfits(filename,1)
 
@@ -59,8 +60,8 @@ endif else begin
     ytitle = 'F(!4k!3) [ergs s!U-1!N !4l!3m!U-1!N]'
 endelse
 
-xrange = krange(table.wavelength,kplot_type='o')
-yrange = krange([table.flux,table.flux_input],kplot_type='o')
+if (not keyword_set(xrange)) then xrange = krange(table.wavelength,kplot_type='o')
+if (not keyword_set(yrange)) then yrange = krange([table.flux,table.flux_input],kplot_type='o')
 
 setup_ps_output,repstr(filename,'.fits',''),eps=eps,bw=bw
 

@@ -78,8 +78,12 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	    // convert the absorbed energy to radiation field density
 	    double j_temp = geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index];
 	    total_energy_absorbed_photons += j_temp;
- 	    j_temp *= (runinfo.sed_lum[index]/output.outputs[0].total_num_photons)/
- 	      (geometry.grids[m].grid(i,j,k).num_H*4.0*(Constant::PI)*runinfo.ave_C_abs[index]);
+	    if (doing_dust_emission) 
+	      j_temp *= (runinfo.emitted_lum[0][index]/output.outputs[0].total_num_photons);
+	    else
+	      j_temp *= (runinfo.sed_lum[index]/output.outputs[0].total_num_photons);
+
+	    j_temp /= (geometry.grids[m].grid(i,j,k).num_H*4.0*(Constant::PI)*runinfo.ave_C_abs[index]);
 
 	    // check for roundoff error before converting to double
 	    if (j_temp < 1e-38) {
@@ -107,7 +111,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	    if (doing_dust_emission)
 	      geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] +=
 		geometry.grids[m].grid(i,j,k).save_radiation_field_density;
-	  }
+	  } else geometry.grids[m].grid(i,j,k).num_H = 0.0;
 
 #ifdef DEBUG_SAEG
 	    cout << "final J(lambda) = " << geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] << endl;

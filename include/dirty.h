@@ -101,6 +101,10 @@ extern void setup_emitted_grid_for_montecarlo (geometry_struct& geometry,
 					       runinfo_struct& runinfo,
 					       GrainModel& CurGrainModel);
 
+// determine if energy is conserved well enough
+extern void check_de_energy_conservation (runinfo_struct& runinfo,
+					  int& iter_done);
+
 // output global integrated quantities
 extern void output_global_results (runinfo_struct& runinfo,
 				   output_struct& output);

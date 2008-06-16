@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
   // iterate until converged for max iterations reached
 
   int iter_num = 1;
-  int iter_max = 1;
+  int iter_max = 10;
   int iter_done = 0;
 
 #ifdef DEBUG_DIRTY
@@ -271,9 +271,12 @@ int main(int argc, char* argv[])
       }
     }
 
-    iter_num++;
+    // determine if energy is conserved well enough or if another
+    // iteration is needed due to dust self-absorption
+    check_de_energy_conservation(runinfo, iter_done);
+
     // limit the max iterations
-    if (iter_num >= iter_max) iter_done = 1;
+    if (iter_num >= iter_max) iter_done = 1; else iter_num++;
   }
 
   // output global, multiwavelength luminosities
