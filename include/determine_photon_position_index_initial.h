@@ -6,5 +6,6 @@
 
 #include "geometry_def.h"
 #include "photon_data.h"
+#include "roundoff_err.h"
 
 #endif

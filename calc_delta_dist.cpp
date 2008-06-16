@@ -6,7 +6,7 @@
 //                now zero distance traveled
 // ======================================================================
 #include "calc_delta_dist.h"
-// #define DEBUG_CDD
+//#define DEBUG_CDD
 
 double calc_delta_dist (photon_data& photon,
 			geometry_struct& geometry,
@@ -15,6 +15,9 @@ double calc_delta_dist (photon_data& photon,
 			double& tau_traveled)
   
 {
+#ifdef DEBUG_CDD
+  cout << "starting cdd.." << endl;
+#endif
   tau_traveled = 0.0;
   double distance_traveled = 0.0;  // resulting distance traveled
   int exit_cell = 1;  // tells if the cell has been exited
@@ -23,6 +26,15 @@ double calc_delta_dist (photon_data& photon,
   // save the current grid number, the grid number, and the dust_tau_per_pc
   int k = photon.current_grid_num;
   long grid_val = photon.grid_number[k];
+#ifdef DEBUG_CDD
+  cout << "k = " << k << endl;
+  cout << "grid_val = " << grid_val << endl;
+  cout << "max # grids = " << geometry.grids.size() << endl;
+  cout << photon.position_index[0].size() << endl;
+  cout << geometry.max_grid_depth << endl;
+  cout << photon.position_index[k][0] << endl;
+  cout << "end testing" << endl;
+#endif
   float dust_tau_ref_per_pc = geometry.grids[grid_val].grid(photon.position_index[k][0],photon.position_index[k][1],photon.position_index[k][2]).dust_tau_per_pc;
   float dust_tau_per_pc = dust_tau_ref_per_pc*geometry.tau_to_tau_ref;
 
@@ -61,7 +73,7 @@ double calc_delta_dist (photon_data& photon,
     }
 #endif
     photon.current_grid_num++;
-    // determine the position indexes for this subgrid (any any more nested subgrids)
+    // determine the position indexes for this subgrid (any more nested subgrids)
     if (dust_tau_ref_per_pc <= -1.0) {
 #ifdef DEBUG_CDD
       if (photon.number > OUTNUM) {
@@ -74,6 +86,15 @@ double calc_delta_dist (photon_data& photon,
 
 #endif
       photon.grid_number[photon.current_grid_num] = -int(dust_tau_ref_per_pc);
+
+      // check that the grid number is an actual integer
+      // can have problems if tau is accidently set negative
+      if ((photon.grid_number[photon.current_grid_num] + dust_tau_ref_per_pc) != 0.0) {
+	cout << "problem with subgrid designation of in parent grid." << endl;
+	cout << "dust_tau_ref_per_pc = " << dust_tau_ref_per_pc << endl;
+	cout << "photon.grid_number[photon.current_grid_num] = " << photon.grid_number[photon.current_grid_num] << endl;
+	exit(8);
+      }
 
       if (photon.grid_number[photon.current_grid_num] >= int(geometry.grids.size())) {
 	cout << "grid desired does not exist" << endl;
