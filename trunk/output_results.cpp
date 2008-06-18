@@ -32,7 +32,10 @@ void output_results (output_struct& output,
 {
   int i;
   
+#ifdef DEBUG_OUTR
   cout << "# outputs = " << output.num_outputs << endl;
+#endif
+
   for (i = 0; i < output.num_outputs; i++) {
 
     if (runinfo.verbose >= 2) {

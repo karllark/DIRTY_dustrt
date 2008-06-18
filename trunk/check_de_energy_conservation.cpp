@@ -1,6 +1,8 @@
 // ======================================================================
 //   Procedure to check the energy conservation of the dust emission.
-// If better than a user input limit, then stop the iteration.
+// If better than a user input limit, then stop the iteration.  This
+// really will check that the total dust emission is no longer changing, 
+// but it has the same effect as energy conservation.
 //
 // 2008 Jun/KDG - written
 // ======================================================================
@@ -36,22 +38,32 @@ void check_de_energy_conservation (runinfo_struct& runinfo,
   double total_de_direct_energy = NumUtils::integrate(out_wavelength,de_direct);
   double total_de_scat_energy = NumUtils::integrate(out_wavelength,de_scattered);
 
-  double total_emit = total_de_direct_energy + total_de_scat_energy;
+  double new_total_emit = total_de_direct_energy + total_de_scat_energy;
+
   //#ifdef debug_CDEC
   cout << "Absorbed(rt) = " << runinfo.total_absorbed_energy << endl;
-  cout << "Emitted(de) = " << total_emit << endl;
-  cout << "Energy Conservation = " << total_emit/runinfo.total_absorbed_energy << endl;
+  cout << "Emitted(de) = " << new_total_emit << endl;
+  cout << "Emitted(de) previous = " << runinfo.total_emitted_energy << endl;
+  cout << "Energy Conservation = " << new_total_emit/runinfo.total_absorbed_energy << endl;
   //#endif
 
-  float energy_ratio = total_emit/runinfo.total_absorbed_energy;
-  if (energy_ratio > 1.0) {
-    cout << "more energy emitted than absorbed...check this out." << endl;
-    cout << "energy ratio (emit/abs) = " << energy_ratio << endl;
-    exit(8);
-  }
-  if ((1.0 - energy_ratio) <= runinfo.energy_conserve_target) 
+  float emitted_ratio = runinfo.total_emitted_energy/new_total_emit;
+  cout << "previous/new emitted(de) = " << emitted_ratio << endl;
+
+//   float energy_ratio = total_emit/runinfo.total_absorbed_energy;
+//   if (energy_ratio > 1.0) {
+//     cout << "more energy emitted than absorbed...check this out." << endl;
+//     cout << "energy ratio (emit/abs) = " << energy_ratio << endl;
+//     exit(8);
+//   }
+
+  cout << "fabs(1.0 - emitted_ratio) = " << fabs(1.0 - emitted_ratio) << endl;
+  cout << "target = " << runinfo.energy_conserve_target << endl;
+  if (fabs(1.0 - emitted_ratio) <= runinfo.energy_conserve_target) 
     iter_done = 1;
   else {
-    cout << "Another interation required (ratio = " << energy_ratio << ")" << endl;
+    cout << "Another interation required (ratio = " << emitted_ratio << ")" << endl;
   }
+
+  runinfo.total_emitted_energy = new_total_emit;
 }

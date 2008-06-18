@@ -1,12 +1,11 @@
 // ======================================================================
-//   Header file for initialize output procedure.  
+//   Header file for observer transformation/rotation matrix.  
 // Include files and function definitions.
 //
-// 2005 May/KDG - written
-// 2008 Jun/KDG - added computer matrix def
+// 2008 Jun/KDG - written
 // ======================================================================
-#ifndef _DIRTY_INITIALIZE_OUTPUT_
-#define _DIRTY_INITIALIZE_OUTPUT_
+#ifndef _DIRTY_COMPUTE_OBSERVER_TRANS_MATRIX_
+#define _DIRTY_COMPUTE_OBSERVER_TRANS_MATRIX_
 
 #include <iostream>
 #include <cmath>
@@ -17,9 +16,5 @@
 
 //**********************************************************************
 // external function definitions
-
-extern void compute_observer_trans_matrix (output_struct& output,
-					   geometry_struct& geometry,
-					   int i);
 
 #endif

@@ -221,20 +221,22 @@ int main(int argc, char* argv[])
     // loop over all wavelengths
     for (i = 0; i < runinfo.n_waves; i++) {
 
+#ifdef DEBUG_DIRTY
       cout << endl;
       cout << "i = " << i << endl;
       cout << "emitted_lum = " << runinfo.emitted_lum[0][i] << endl;
+#endif
 
       if (runinfo.emitted_lum[0][i] > 0) {
 
+#ifdef DEBUG_DIRTY
 	cout << "doing RT" << endl;
 
-#ifdef DEBUG_DIRTY
 	cout << "te: saeg start; ";
 	cout.flush();
 #endif
 	// setup/(re)initialize absorbed energy grid
-	setup_absorbed_energy_grid(geometry, runinfo, i, 1);
+	setup_absorbed_energy_grid(geometry, runinfo, i, iter_num);
 #ifdef DEBUG_DIRTY
 	cout << "te: saeg done; ";
 	cout.flush();
@@ -267,7 +269,7 @@ int main(int argc, char* argv[])
 	
 	// store the result (either in memory or on disk)
 	// remember to zero out the absorbed energy grid
-	store_absorbed_energy_grid(geometry, runinfo, de_output, i, 1);
+	store_absorbed_energy_grid(geometry, runinfo, de_output, i, iter_num);
       }
     }
 

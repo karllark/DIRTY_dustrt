@@ -110,7 +110,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	    // add back the previously saved radiation field density
 	    if (doing_dust_emission)
 	      geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] +=
-		geometry.grids[m].grid(i,j,k).save_radiation_field_density;
+		geometry.grids[m].grid(i,j,k).save_radiation_field_density[geometry.abs_energy_wave_index];
 	  } else geometry.grids[m].grid(i,j,k).num_H = 0.0;
 
 #ifdef DEBUG_SAEG

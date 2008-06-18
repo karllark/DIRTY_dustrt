@@ -75,8 +75,8 @@ void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
 // 	    cout << z_subpos[l] << endl;
 	    }
 
-	    cout << x_subpos[0] << " ";
-	    cout << geometry.grids[m].positions[0][i] << endl;
+// 	    cout << x_subpos[0] << " ";
+// 	    cout << geometry.grids[m].positions[0][i] << endl;
 
 	    subgrid.positions.push_back(x_subpos);
 	    subgrid.positions.push_back(y_subpos);
