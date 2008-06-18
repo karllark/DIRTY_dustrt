@@ -25,11 +25,29 @@ void determine_photon_position_index_initial (geometry_struct& geometry,
       tmp_save_pindex = photon.position_index[k][i];
       // make sure that photon is headed into the cell indexed (edges need special treatment)
       if ((photon.position[i] == geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]]) &&
-	  (photon.dir_cosines[i] < 0.0))
+	  (photon.dir_cosines[i] <= 0.0))
 	photon.position_index[k][i]--;
       else if ((photon.position[i] == geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1]) &&
 	       (photon.dir_cosines[i] > 0.0))
 	photon.position_index[k][i]++;
+
+//       // debug stuff
+//       if (photon.position_index[k][i] >= geometry.grids[cur_grid_num].index_dim[i]) {
+// 	cout << tmp_save_pindex << endl;
+// 	cout << photon.position[i] << endl;
+// 	cout << "photon.position[i] = " << photon.position[i] << endl;
+// 	cout << "photon.birth_position[i] = " << photon.birth_position[i] << endl;
+// 	cout << "photon.dir_consines[i] = " << photon.dir_cosines[i] << endl;
+// 	cout << "photon.num_scat = " << photon.num_scat << endl;
+// 	cout << "photon.position_index[k][i] = " << photon.position_index[k][i] << endl;
+// 	cout << "real value of pindex = " << (photon.position[i] - geometry.grids[cur_grid_num].positions[i][0])/
+// 	  geometry.grids[cur_grid_num].phys_cube_size[i] << endl;
+// 	cout << "geometry.grids[cur_grid_num].positions[i][0] = " << geometry.grids[cur_grid_num].positions[i][0] << endl;
+// 	cout << "geometry.grids[cur_grid_num].phys_cube_size[i] = " << geometry.grids[cur_grid_num].phys_cube_size[i] << endl;
+// 	cout << "found the bastard ! " << endl;
+// 	exit(8);
+//       }
+//       // back to regular code
 
       // check that the photon is in the grid cell just determined
       if ((photon.position[i] < geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]]) ||

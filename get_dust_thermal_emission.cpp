@@ -22,6 +22,8 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   double global_total_emitted = 0.;
   double global_total_absorbed = 0.;
 
+  long num_cells = 0;  // interesting to know how many cells we have
+
   // get the number of emission components
   int n_emit_components = 1;
   if (runinfo.do_emission_grain) n_emit_components += 2*CurGrainModel.getNComp();
@@ -49,6 +51,8 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	  cout << "working on dust emission grid (m,k,j) = " << m << " " << k << " " << j << endl;
 
 	for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
+
+	  num_cells++;
 
 	  // setup emitted energy array
 	  if (!geometry.emitted_energy_grid_initialized) {
@@ -144,13 +148,14 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   }
 
   runinfo.total_absorbed_energy = global_total_absorbed;
-// #ifdef DEBUG_GDTE
+#ifdef DEBUG_GDTE
   cout << "global energy conservations check" << endl;
   cout << "total_abs = " << global_total_absorbed << endl;
   cout << "total_emit_energy = " << global_total_emitted << endl;
   cout << "ratio emit/abs = " << global_total_emitted/global_total_absorbed << endl;
-//   exit(8);
-// #endif
+#endif
+
+  cout << "number of cells = " << num_cells << endl;
 
   geometry.emitted_energy_grid_initialized = 1;
 }

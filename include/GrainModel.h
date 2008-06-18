@@ -129,6 +129,7 @@ private:
     if ( !ModelID.empty()) return; 
     ModelID["MRN"]=0; 
     ModelID["BARE-GR-S"]=1; 
+    ModelID["KG-BARE-S"]=2; 
   }
   map<string,int> SizeDistID; 
   void SizeDistMapping() { 

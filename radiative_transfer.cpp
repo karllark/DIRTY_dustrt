@@ -9,6 +9,7 @@
 //#define DEBUG_RT
 //#define OUTNUM -1
 //#define OUTNUM 1559
+#define DEBUG_OUTRANGE
 
 void radiative_transfer (geometry_struct& geometry,
 			 runinfo_struct& runinfo,
@@ -42,7 +43,17 @@ void radiative_transfer (geometry_struct& geometry,
     cout << "rt: np begin; ";
     cout.flush();
 #endif
+#ifdef DEBUG_OUTRANGE
+    try {
+#endif
     new_photon(photon, geometry, runinfo, random_obj);
+#ifdef DEBUG_OUTRANGE
+    } catch(std::out_of_range)
+      {
+	cout << "new_photon - out of range." << endl;
+	exit(8);
+      }
+#endif
 #ifdef DEBUG_RT
     cout << "rt: np end; ";
     cout.flush();
@@ -64,7 +75,17 @@ void radiative_transfer (geometry_struct& geometry,
 #endif
 
     // find the first scattering site (forced)
+#ifdef DEBUG_OUTRANGE
+    try {
+#endif
     forced_first_scatter(geometry, photon, random_obj);
+#ifdef DEBUG_OUTRANGE
+    } catch(std::out_of_range)
+      {
+	cout << "force_first_scatter - out of range." << endl;
+	exit(8);
+      }
+#endif
 #ifdef DEBUG_RT
     if (photon.number > OUTNUM) cout << "ffs done; "; cout.flush();
 #endif
@@ -79,7 +100,17 @@ void radiative_transfer (geometry_struct& geometry,
 #endif
 
     // classify stellar photon(s)
+#ifdef DEBUG_OUTRANGE
+    try {
+#endif
     classify_stellar_photon(output, photon, geometry, runinfo);
+#ifdef DEBUG_OUTRANGE
+    } catch(std::out_of_range)
+      {
+	cout << "classify_stellar_photon - out of range." << endl;
+	exit(8);
+      }
+#endif
 #ifdef DEBUG_RT
     if (photon.number > OUTNUM) cout << "cstp done; "; cout.flush();
 #endif
@@ -92,20 +123,50 @@ void radiative_transfer (geometry_struct& geometry,
 #ifdef DEBUG_RT
       if (photon.number > OUTNUM) cout << "cscp begin; "; cout.flush();
 #endif
+#ifdef DEBUG_OUTRANGE
+    try {
+#endif
       classify_scattered_photon(output, photon, geometry, runinfo);
+#ifdef DEBUG_OUTRANGE
+    } catch(std::out_of_range)
+      {
+	cout << "classify_scattered_photon - out of range." << endl;
+	exit(8);
+      }
+#endif
 #ifdef DEBUG_RT
       if (photon.number > OUTNUM) cout << "cscp done; "; cout.flush();
 #endif
 
       // scatter the photon into a new direction
+#ifdef DEBUG_OUTRANGE
+    try {
+#endif
       scatter_photon(geometry, photon, random_obj);
+#ifdef DEBUG_OUTRANGE
+    } catch(std::out_of_range)
+      {
+	cout << "scatter_photon - out of range." << endl;
+	exit(8);
+      }
+#endif
 #ifdef DEBUG_RT
       if (photon.number > OUTNUM) cout << "sp done; "; cout.flush();
 #endif
 
       // determine the next scattering site or
       // the position where the photon escapes the dust
+#ifdef DEBUG_OUTRANGE
+    try {
+#endif
       escape = next_scatter(geometry, photon, random_obj);
+#ifdef DEBUG_OUTRANGE
+    } catch(std::out_of_range)
+      {
+	cout << "next_scatter - out of range." << endl;
+	exit(8);
+      }
+#endif
 #ifdef DEBUG_RT
       if (photon.number > OUTNUM) cout << "ns done; "; cout.flush();
 #endif

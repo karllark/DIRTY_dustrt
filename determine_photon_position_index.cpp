@@ -34,22 +34,30 @@ void determine_photon_position_index (geometry_struct& geometry,
       // make sure the photon is in this grid
       if ((photon.position[i] < geometry.grids[cur_grid_num].positions[i][0]) ||
 	  (photon.position[i] > geometry.grids[cur_grid_num].positions[i][geometry.grids[cur_grid_num].index_dim[i]])) {
-	cout << "outside of bounds of current grid (in determine_photon_position_index.cpp)" << endl;
-	cout << "This should not happen." << endl;
-	cout << "photon # = " << photon.number << endl;
-	cout << "i = " << i << endl;
-	cout << "photon.position[i] = " << photon.position[i] << endl;
-	cout << "photon.birth_position[i] = " << photon.birth_position[i] << endl;
-	cout << "photon.dir_consines[i] = " << photon.dir_cosines[i] << endl;
-	cout << "photon.num_scat = " << photon.num_scat << endl;
-	cout << "min/max of grid = " << geometry.grids[cur_grid_num].positions[i][0] << " ";
-	cout << geometry.grids[cur_grid_num].positions[i][geometry.grids[cur_grid_num].index_dim[i]-1] << endl;
-	cout << "size of cube [pc] = " << geometry.grids[cur_grid_num].phys_cube_size[i] << endl;
-	cout << "proposed index = " << int((photon.position[i] - geometry.grids[cur_grid_num].positions[i][0])/
-					   geometry.grids[cur_grid_num].phys_cube_size[i]) << endl;
-	cout << "out of a possible " << geometry.grids[cur_grid_num].index_dim[i] << endl;
-	cout << "out of a possible2 " << geometry.grids[cur_grid_num].positions[i].size() << endl;
-	exit(8);
+	if ((photon.position[i] < geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]]) &&
+	    ((geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]] - photon.position[i]) < ROUNDOFF_ERR_INDEX)) {
+	  photon.position_index[k][i]--;
+	} else if ((photon.position[i] > geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1]) &&
+		   ((photon.position[i] - geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1]) < ROUNDOFF_ERR_INDEX)) {
+	  photon.position_index[k][i]++;
+	} else {
+	  cout << "outside of bounds of current grid (in determine_photon_position_index.cpp)" << endl;
+	  cout << "This should not happen." << endl;
+	  cout << "photon # = " << photon.number << endl;
+	  cout << "i = " << i << endl;
+	  cout << "photon.position[i] = " << photon.position[i] << endl;
+	  cout << "photon.birth_position[i] = " << photon.birth_position[i] << endl;
+	  cout << "photon.dir_consines[i] = " << photon.dir_cosines[i] << endl;
+	  cout << "photon.num_scat = " << photon.num_scat << endl;
+	  cout << "min/max of grid = " << geometry.grids[cur_grid_num].positions[i][0] << " ";
+	  cout << geometry.grids[cur_grid_num].positions[i][geometry.grids[cur_grid_num].index_dim[i]-1] << endl;
+	  cout << "size of cube [pc] = " << geometry.grids[cur_grid_num].phys_cube_size[i] << endl;
+	  cout << "proposed index = " << int((photon.position[i] - geometry.grids[cur_grid_num].positions[i][0])/
+					     geometry.grids[cur_grid_num].phys_cube_size[i]) << endl;
+	  cout << "out of a possible " << geometry.grids[cur_grid_num].index_dim[i] << endl;
+	  cout << "out of a possible2 " << geometry.grids[cur_grid_num].positions[i].size() << endl;
+	  exit(8);
+	}
       }
       // now find the index
       photon.position_index[k][i] = int((photon.position[i] - geometry.grids[cur_grid_num].positions[i][0])/

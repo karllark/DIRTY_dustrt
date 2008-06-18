@@ -648,7 +648,8 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
 	throw std::out_of_range(ExceptionObject);
       }
       if (n3_id < 0 || n3_id >= _n3) {
-	cout << "out_of_range Cube::operator(), element 3" << endl; 
+	cout << "out_of_range Cube::operator(), element 3 " << n1_id << "," << n2_id << "," << n3_id << " " << _n3 << 
+endl; 
 	std::string ExceptionObject = "out_of_range Cube::operator(), element 3"; 
 	throw std::out_of_range(ExceptionObject);
       }

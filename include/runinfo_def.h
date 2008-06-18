@@ -47,6 +47,9 @@ struct runinfo_struct {
   // absorbed energy
   double total_absorbed_energy;   // total absorbed energy (computed in get_thermal_dust_emission.cpp)
 
+  // emitted energy
+  double total_emitted_energy;   // total emitted energy
+
   // ERE model info
   float ere_efficiency;  // efficiency of conversion of input to output photons
   float ere_excitation_wavelength;   // wavelength below which photons excite ERE

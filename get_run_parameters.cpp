@@ -52,9 +52,10 @@ void get_run_parameters (ConfigFile& param_data,
 
   if (runinfo.do_dust_emission) {
     // now see what energy conservation is required
-    runinfo.energy_conserve_target = param_data.IValue("Run","energy_conserve_target");
+    runinfo.energy_conserve_target = param_data.FValue("Run","energy_conserve_target");
     check_input_param("energy_conserve_target",runinfo.energy_conserve_target,0.,1.);
   }
+  runinfo.total_emitted_energy = 0.0;  // need to zero out so the first iteration always happens (measurement is a delta)
 
   // output info
 

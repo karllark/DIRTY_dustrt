@@ -55,7 +55,9 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   // polynomial for the shell radial density profile
   double radial_density_poly = param_data.FValue("Geometry","shell_density_poly");
   check_input_param("shell density polynomial",radial_density_poly,-100.,100);
+#ifdef DEBUG_SDG
   cout << "poly = " << radial_density_poly << endl;
+#endif
   if (radial_density_poly == -1.) {
     cout << "shell density polynomial is equal to -1 - new code needed!" << endl;
     exit(8);
