@@ -27,5 +27,4 @@ extern double scattered_weight_towards_observer (photon_data photon,
 extern void rotate_zaxis_for_observer (float transform[3][3],
 				       photon_data& photon);
 
-
 #endif

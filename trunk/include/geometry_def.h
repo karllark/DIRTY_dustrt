@@ -67,6 +67,8 @@ struct geometry_struct {
           // luminosity is the 4th element, 5th element the running sum of the luminosity
           // between 0 and 1 for the determination of which star emits the current photon
 
+  int randomize_observer;  // randomize observer position to integrate over 4pi
+
   // vectors for the diffuse source (ISRF)
   vector<double> diffuse_source_theta;  // in radians
   vector<double> diffuse_source_phi;    // cos(phi)

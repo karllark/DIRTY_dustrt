@@ -35,6 +35,11 @@ void setup_dust_grid (ConfigFile& param_data,
   check_input_param("obs_theta",geometry.observer_angles[1][0],0.,360.);
   geometry.observer_angles[1][0] *= M_PI/180.;
 
+  // randomize observer position
+  geometry.randomize_observer = param_data.IValue("Geometry","randomize_observer");
+  if (geometry.randomize_observer == -99) geometry.randomize_observer = 0;
+  check_input_param("ranomize_observer",geometry.randomize_observer,0,1);
+
   // setup the dust grid proper depending on type
   geometry.type = param_data.SValue("Geometry","type");
     //  if (strcmp(geometry.type.c_str(),"sphere")) {

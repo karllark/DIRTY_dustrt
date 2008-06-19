@@ -2,4 +2,4 @@ classify_stellar_photon.o classify_stellar_photon.d : classify_stellar_photon.cp
   include/classify_stellar_photon.h include/output_def.h \
   include/NumUtils.h include/Constants.h include/geometry_def.h \
   include/grid_cell.h include/photon_data.h include/runinfo_def.h \
-  include/debug.h
+  include/random_dirty.h include/debug.h

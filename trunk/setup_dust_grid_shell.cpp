@@ -238,7 +238,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	    subgrid.positions.push_back(x_subpos);
 	    subgrid.positions.push_back(y_subpos);
 	    subgrid.positions.push_back(z_subpos);
-	    
+
 	    subgrid.grid.CSize(subgrid.index_dim[0],subgrid.index_dim[1],subgrid.index_dim[2]);
 
 	    double tradius;  // radius of subgrid position in index values
