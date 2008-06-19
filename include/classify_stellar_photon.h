@@ -15,6 +15,7 @@
 #include "geometry_def.h"
 #include "photon_data.h"
 #include "runinfo_def.h"
+#include "random_dirty.h"
 #include "debug.h"
 
 //**********************************************************************
@@ -30,4 +31,7 @@ extern double stellar_weight_towards_observer (photon_data photon,
 	   				       geometry_struct& geometry,
 					       float observer_position[3]);
 
+extern void compute_observer_trans_matrix (output_struct& output,
+					   geometry_struct& geometry,
+					   int i);
 #endif

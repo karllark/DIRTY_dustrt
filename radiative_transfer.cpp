@@ -103,7 +103,7 @@ void radiative_transfer (geometry_struct& geometry,
 #ifdef DEBUG_OUTRANGE
     try {
 #endif
-    classify_stellar_photon(output, photon, geometry, runinfo);
+      classify_stellar_photon(output, photon, geometry, runinfo, random_obj);
 #ifdef DEBUG_OUTRANGE
     } catch(std::out_of_range)
       {

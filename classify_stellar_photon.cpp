@@ -15,7 +15,8 @@
 void classify_stellar_photon (output_struct& output,
 			      photon_data& photon,
 			      geometry_struct& geometry,
-			      runinfo_struct& runinfo)
+			      runinfo_struct& runinfo,
+			      random_dirty random_obj)
 
 {
   int i;
@@ -42,8 +43,17 @@ void classify_stellar_photon (output_struct& output,
       determine_photon_position_index_initial(geometry, tmp_photon);
 
 #ifdef DEBUG_CSP
+      cout << "photon number = " << photon.number << endl;
       cout << "classify_stellar_photon: in stellar_weight = " << tmp_photon.stellar_weight << endl;
 #endif
+
+      // if averging over the entire 4pi steradians is desired, randomize the observer position
+      if (geometry.randomize_observer) {
+  	geometry.observer_angles[0][i] = acos(2.0*random_obj.random_num() - 1.0);
+  	geometry.observer_angles[1][i] = M_PI*(2.0*random_obj.random_num() - 1.0);
+
+ 	compute_observer_trans_matrix(output, geometry, i);
+      }
 
       // determine stellar weight towards observer
       tmp_photon.stellar_weight = stellar_weight_towards_observer(tmp_photon, geometry,
@@ -76,6 +86,7 @@ void classify_stellar_photon (output_struct& output,
 	}
       }
 #ifdef DEBUG_CSP
+      cout << "geometry.distance = " << geometry.distance << endl;
       cout << "stellar x,y positions = (" << tmp_photon.position[0] << "," << tmp_photon.position[1] << ")" << endl;
       cout << "model radius = " << geometry.radius << endl;
       cout << "stellar photon image indexs = (" << image_indxs[0] << "," << image_indxs[1] << ")" << endl;

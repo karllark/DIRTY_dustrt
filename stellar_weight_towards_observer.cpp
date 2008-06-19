@@ -47,6 +47,9 @@ double stellar_weight_towards_observer (photon_data photon,
 #ifdef DEBUG_STWTO
   cout << "stellar weight" << endl;
 #endif
+  // redetermine the location of the photon in the grid
+  determine_photon_position_index_initial(geometry, photon);
+
   double distance_traveled = 0.0;
   distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_birth_to_obs);
 #ifdef DEBUG_STWTO

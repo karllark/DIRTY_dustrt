@@ -52,7 +52,8 @@ extern void scatter_photon (geometry_struct& geometry,
 extern void classify_stellar_photon (output_struct& output,
 				     photon_data& photon,
 				     geometry_struct& geometry,
-				     runinfo_struct& runinfo);
+				     runinfo_struct& runinfo,
+				     random_dirty random_obj);
 
 // classifies scattered photon into output
 extern void classify_scattered_photon (output_struct& output,
