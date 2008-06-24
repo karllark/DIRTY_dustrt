@@ -83,10 +83,22 @@ public:
   // individual components of the model. 
   //  - Need bound checking
   inline vector <float> Size ( int _cmp ) { return Component[_cmp].getSize(); }
+  inline float Size ( int _cmp, int _szid ) { return Component[_cmp].getSize(_szid); }
   inline vector <float> CAbs ( int _cmp, int _szid ) { return Component[_cmp].getCAbs(_szid); }
   inline int nSize ( int _cmp ) { return Component[_cmp].getNSize(); }
+  inline float Density ( int _cmp ) { return Component[_cmp].getDensity(); }
   inline vector <float> CAbs ( int _cmp, float _sz ) { return Component[_cmp].getCAbs(_sz); }
   inline vector <float> wCAbs ( int _cmp, int _wid ) { return Component[_cmp].w_getCAbs(_wid); }
+
+  inline vector <float> CalTemp ( int _cmp ) { return Component[_cmp].getTemperature(); }
+  inline vector <float> SpecificHeatCapacity ( int _cmp ) 
+    { return Component[_cmp].getSpecificHeatCapacity(); }
+  inline vector <float> HeatCapacity ( int _szid, int _cmp ) 
+    { return Component[_cmp].getHeatCapacity(_szid); } 
+  inline vector <float> SpecificEnthalpy ( int _cmp ) 
+    { return Component[_cmp].getSpecificEnthalpy(); }
+  inline vector <float> Enthalpy ( int _szid, int _cmp ) 
+    { return Component[_cmp].getEnthalpy(_szid); } 
 
 private: 
 
@@ -138,8 +150,6 @@ private:
   }
 
 }; 
-
-
 
 #endif
 

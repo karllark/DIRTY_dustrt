@@ -48,9 +48,11 @@ protected:
   vector <vector<float> > CSca;   // Scattering cross sections
   vector <vector<float> > phFunc; // Scattering phase funtions
 
-  vector <float> Temperature;          // Temperature grid
-  vector <float> SpecificHeatCapacity; // Specific heat (erg/K/gm)
-  vector <float> SpecificEnthalpy;     // SPecific enthalpy (erg/gm)
+  vector <float> Temperature;           // Temperature grid
+  vector <float> SpecificHeatCapacity;  // Specific heat capacity (erg/K/gm)
+  vector <vector<float> > HeatCapacity; // Heat capacity (erg/K) 
+  vector <float> SpecificEnthalpy;      // Specific enthalpy (erg/gm)
+  vector <vector<float> > Enthalpy;     // Enthalpy (erg)
   
 public:
   
@@ -81,8 +83,11 @@ public:
   // Return number of wavelengths in object
   inline int getNWave(void) { return nwave; }
 
+  // Bounds checking needed....
+
   // Return the vector of sizes
   inline vector <float> getSize(void) { return size; }
+  inline float getSize( int size_id ) { return size[size_id]; }
 
   // Return the vector of masses
   inline vector <float> getMass(void) { return mass; }
@@ -105,9 +110,11 @@ public:
   // Return the specific heat capacity of the grain material
   inline vector <float> getSpecificHeatCapacity( void ) 
     { return SpecificHeatCapacity; }
-
+  inline vector <float> getHeatCapacity( int _szid ) { return HeatCapacity[_szid]; }
+  
   // Return the specific enthalpy of the grain material
   inline vector <float> getSpecificEnthalpy( void ) { return SpecificEnthalpy; }
+  inline vector <float> getEnthalpy( int _szid ) { return Enthalpy[_szid]; }
 
   // Return a vector with CAbs tabulated at a specific size; here, the size
   // can be arbitrary and the function will return an interpolated CAbs.

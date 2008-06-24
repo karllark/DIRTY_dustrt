@@ -5,16 +5,18 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
 			  vector <vector<double> > & EmmittedEnergy, bool DoStochastic)
 {
 
-  if (DoStochastic) { 
-    // will have to make decisions on how to proceed algorithmically. 
-  }
- 
+  // Local copy that can flip when this bin transitions. 
+  bool _dostochastic = DoStochastic; 
+
   vector <float>::iterator _it,_it1,_it2,_itb,_ite;
   // Iterators for: 
   // _iteec == emmitted equilibrium for each component
   // _itet == total emmitted energy. 
   vector <double>::iterator _iteec,_itet; 
   vector <float> _w = GrainModel.getWave();
+  vector <float> _E = GrainModel.getEScale();
+  vector <float> _Enthalpy,_CalTemp; 
+  vector <vector<float> > _TM; 
   vector <float> _cabs,_size,_sizeDist; 
   uint _nsize; 
   uint _nw = _w.size();
@@ -33,20 +35,26 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
   for (int _cmp=0;_cmp<_ncmp;++_cmp) {
 
     _nsize = GrainModel.nSize(_cmp);
-
     _cabs = GrainModel.CAbs(_cmp,(int)0); 
     _t.resize(_nsize); 
     // Compute first temperature to get the ball rolling.
     _it=_t.begin(); 
-    *_it=EqTemp(_w,J,_cabs);
-    ++_it; 
+//     *_it=EqTemp(_w,J,_cabs);
+//     ++_it; 
+    _tlo = 1.0; 
+    _thi = 2500.0; 
+
     // Compute Equilibrium temperature for each size of this component.
-    for (uint _sz=1;_sz<_nsize;++_sz,++_it) {
+    for (uint _sz=0;_sz<_nsize;++_sz) {
       _cabs = GrainModel.CAbs(_cmp,int(_sz)); 
+      *_it = EqTemp(_w,J,_cabs,((_tlo<0)?1.0:_tlo),((_thi>2500.0)?2500.0:_thi));
+      ++_it; 
       _tlo = 0.3*(*(_it-1)); 
       _thi = 3.0*(*(_it-1)); 
-      *_it = EqTemp(_w,J,_cabs,((_tlo<0)?1.0:_tlo),((_thi>2500.0)?2500.0:_thi));
-
+      
+      if (_dostochastic) { 
+	//ComputTransitionMatrix(_E,_w,J,_cabs,_CalTemp,_Enthalpy,_TM); 
+      }
     }
     // Have temperature, size distribution for each size 
     

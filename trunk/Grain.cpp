@@ -237,7 +237,7 @@ void Grain::MakeGrain(string const & fOpticalConstants,
     CAbs[sz].resize(nwave); 
     CSca[sz].resize(nwave); 
     phFunc[sz].resize(nwave);
-    mass[sz] = size[sz]*size[sz]*size[sz]*density;
+    mass[sz] = (Constant::VFAC)*size[sz]*size[sz]*size[sz]*density;
   }
 
   // Loaded up our temporary 2d array, interpolated onto proper 
@@ -306,6 +306,20 @@ void Grain::MakeGrain(string const & fOpticalConstants,
   }
   // Done with calorimetry file
   _filecal.close(); 
+  // Generate the Enthalpy and specific heat for each grain. Normally let 
+  // calling code do the conversion for whatever size it wants, but for RT 
+  // application, this will cut down on the number of multiplies; maybe have 
+  // a switch for memory conservation. 
+  Enthalpy.resize(nsize); 
+  HeatCapacity.resize(nsize); 
+  for (int sz=0;sz<nsize;++sz) {
+    Enthalpy[sz].resize(nTemp); 
+    HeatCapacity[sz].resize(nTemp);
+    for (int nt=0;nt<nTemp;++nt) { 
+      Enthalpy[sz][nt] = SpecificEnthalpy[nt]*mass[sz]; 
+      HeatCapacity[sz][nt] = SpecificHeatCapacity[nt]*mass[sz]; 
+    }
+  }
   // ***************************************************************************
   
 }
