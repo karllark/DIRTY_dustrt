@@ -78,7 +78,11 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
     idx=std::lower_bound(vect.begin(),vect.end(),val); 
     return distance(vect.begin(),idx); 
   }
-  
+  template <typename T> inline int rindex(T val, vector <T>&vect) {
+    typename vector <T>::iterator idx;  
+    idx=std::lower_bound(vect.begin(),vect.end(),val,greater<T>()); 
+    return distance(vect.begin(),idx); 
+  }
   // Some extrapolators. 
   template <typename T> inline T lextra(T & val1, T & val2, T & val3) 
     { return val1*val2/val3; }

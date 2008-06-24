@@ -6,8 +6,14 @@
 #include "NumUtils.h"       // Numerical stuff - namespaced so can use with older defs. 
 #include "mt_ran.h"         //  
 #include "GrainModel.h"   
+#include <algorithm>
+#include <functional>
+#include <numeric>
 
-extern void ComputeEmission (vector <float> & J, GrainModel & GrainModel);
+extern void ComputeDustEmission (vector <float> & J, 
+				 GrainModel & GrainModel,
+				 vector <vector<double> > & EmmittedEnergy, 
+				 bool DoStochastic);
 
 using namespace std; 
 
@@ -26,6 +32,36 @@ int main (int argc, char * argv[]) {
 
   vector <float> atest,ainvtest; 
   for (int i=1;i<=10;++i) atest.push_back((float)i);
+  int idx0=NumUtils::index((float)-1.0,atest); 
+  int idx1=NumUtils::index((float)3.4,atest);
+  int idx2=NumUtils::index((float)12.0,atest);
+  for (int i=0;i<atest.size();i++) cout << i << " " << atest[i] << endl; 
+  cout << endl; 
+  cout << idx0 << " " << idx1 << " " << idx2 << endl << endl; 
+  //exit(8); 
+  ainvtest.assign(atest.begin()+idx1,atest.begin()+idx2); 
+  cout << ainvtest.size() << endl; 
+  for (int i=0;i<ainvtest.size();i++) cout << i << " " << ainvtest[i] << endl; 
+  cout << endl; 
+  idx1=NumUtils::index((float)1.5,atest);
+  idx2=NumUtils::index((float)9.5,atest);
+  cout << idx1 << " " << idx2 << endl << endl; 
+  ainvtest.assign(atest.begin()+idx1,atest.begin()+idx2); 
+  cout << ainvtest.size() << endl; 
+  for (int i=0;i<ainvtest.size();i++) cout << i << " " << ainvtest[i] << endl; 
+  cout << endl; 
+  idx1=NumUtils::index((float)4.8,atest);
+  idx2=NumUtils::index((float)6.7,atest);
+  cout << idx1 << " " << idx2 << endl << endl; 
+  ainvtest.assign(atest.begin()+idx1,atest.begin()+idx2); 
+  cout << ainvtest.size() << endl; 
+  for (int i=0;i<ainvtest.size();i++) cout << i << " " << ainvtest[i] << endl; 
+  cout << endl; 
+
+  idx1 = NumUtils::index((float)0,atest);
+  cout << idx1 << endl; 
+  //exit(8); 
+
   vector <float>::iterator it1,it2,it3,it4; 
   it1=atest.begin(); 
   it2=atest.end(); 
@@ -34,7 +70,7 @@ int main (int argc, char * argv[]) {
   }
   it3=ainvtest.begin();
   for (it4=it1;it4!=it2;++it4,++it3) cout << *it4 << " " << *it3 << endl; 
-  exit(8);
+  //exit(8);
 
   // Number of components - only going to fill in one here, but this illustrates
   // the vector nature of the Grain object.
@@ -84,7 +120,23 @@ int main (int argc, char * argv[]) {
   vector <float> thiseffcabs=thisGrainModel.getCAbsEff(); 
   vector <float> thiseffcsca=thisGrainModel.getCScaEff();
   vector <float> thiseffphfunc=thisGrainModel.getphFuncEff();
-
+  vector <float> thisEnthalpy,thisSpecificEnthalpy,thisCalTemp; 
+  ncomp = thisGrainModel.getNComp();
+//   float trala;
+//   for (int c=0;c<1;c++) { 
+//     thisSize=thisGrainModel.Size(c); 
+//     thisSpecificEnthalpy=thisGrainModel.SpecificEnthalpy(c);
+//     thisCalTemp=thisGrainModel.CalTemp(c); 
+//     trala = thisGrainModel.Density(c); 
+//     for (int sz=0;sz<1;++sz) { 
+//       thisEnthalpy=thisGrainModel.Enthalpy(sz,c); 
+//       cout << sz << " " << thisSize[sz] << " " << trala << endl; 
+//       for (int t=0;t<thisCalTemp.size();++t) { 
+// 	cout << thisCalTemp[t] << " " << thisEnthalpy[t] << "  " << Constant::VFAC*trala*thisSize[sz]*thisSize[sz]*thisSize[sz]*thisSpecificEnthalpy[t] << " " << thisSpecificEnthalpy[t] << endl;
+//       }
+//     }
+//   }
+//   exit(8);
   // Define an albedo vector and compute the albedo 
   // Albedo maybe something we should store in the GrainModel object...
   vector <float> albedo; 
@@ -137,9 +189,13 @@ int main (int argc, char * argv[]) {
 
 //   float mysize=0.0040*1.0e-4;
 //   int sizeid=NumUtils::index(mysize,thisSize); 
+  vector <vector<double> > thisEmission; 
+  thisEmission.resize(2*ncomp+1); 
+  for (int i=0;i<(2*ncomp+1);++i) thisEmission[i].resize(nWave);
+  bool DoStochastic=true; 
   cout << "Calling compute emission " <<endl ;
-  ComputeEmission(thisISRF, thisGrainModel ); 
-  
+  ComputeDustEmission(thisISRF, thisGrainModel, thisEmission, DoStochastic); 
+
 //   cout << "EQUILIBRIUM TEMPERATURE AT SIZE " << mysize << "(" 
 //        << thisSize[sizeid] << ") IS " << thisTemp[sizeid] << endl; 
 

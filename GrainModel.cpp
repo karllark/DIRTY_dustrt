@@ -40,7 +40,7 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
   vector <float> _thisphFunc; 
   vector <float> _integrand; 
 
-  float delta,_CAbsIntegral,_CScaIntegral,_phFuncIntegral,_MassConstants;
+  float delta,_CAbsIntegral,_CScaIntegral,_phFuncIntegral;//,_MassConstants;
      
   typedef vector <float>::iterator iter; 
   iter iCAbsEff,iCScaEff,iphFuncEff,iTau,iAlbedo; 
@@ -49,7 +49,7 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
   //int _thisNSize; 
 
   // Constants that will multiply the mass integrals
-  _MassConstants = (4.0/3.0)*(Constant::PI); 
+  //_MassConstants = (4.0/3.0)*(Constant::PI); 
 
   // Make the wavelength vector for the GrainModel the input MasterWave. 
   // Generate an energy scale at the same time.
@@ -214,8 +214,9 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
    
     // Compute this components contribution to the total mass. 
     for (int sz=0;sz<Component[cmp].nsize;sz++)
-      _integrand.push_back(Component[cmp].size[sz]*Component[cmp].size[sz]*Component[cmp].size[sz]*SizeDistribution[cmp][sz]); 
-    DustMass[cmp] = Normalization[cmp]*_MassConstants*Component[cmp].getDensity()*NumUtils::integrate(Component[cmp].size,_integrand); 
+      _integrand.push_back(Component[cmp].mass[sz]*SizeDistribution[cmp][sz]);
+    //_integrand.push_back(Component[cmp].size[sz]*Component[cmp].size[sz]*Component[cmp].size[sz]*SizeDistribution[cmp][sz]); 
+    DustMass[cmp] = Normalization[cmp]*NumUtils::integrate(Component[cmp].size,_integrand); 
     TotalDustMass += DustMass[cmp]; 
     _integrand.erase(_integrand.begin(),_integrand.end()); 
 
