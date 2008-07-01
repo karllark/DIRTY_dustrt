@@ -29,6 +29,10 @@ extern void setup_dust_grid_slab (ConfigFile& param_data,
 				  geometry_struct& geometry,
 				  random_dirty& random_obj);
 
+extern void setup_dust_grid_dexp_disk (ConfigFile& param_data,
+				       geometry_struct& geometry,
+				       random_dirty& random_obj);
+
 extern void verify_dust_grid (geometry_struct& geometry);
 
 #endif

@@ -32,7 +32,7 @@ type=dust_model
 wave_type=res
 wave_min=0.09
 wave_max=5000.
-wave_resolution=50.
+wave_resolution=2.
 
 [Model Book Keeping]
 Path to Dust Properties=/home/kgordon/Dirty_v2/Dust/
@@ -53,10 +53,11 @@ sfr_or_mass=1.
 [Run]
 num_photons=100000
 output_image_size=201
-output_filebase=standard_sphere_mwave_dmodel
+output_filebase=standard_sphere_mwave_dmodel_1jul08
 # how to store the absorbed energy (speed vs RAM size)
 # 0 to use memory, 1 to use disk
 abs_energy_storage=0
+energy_conserve_target=0.01
 verbose=1
 # do thermal dust emission
 do_dust_emission=1
