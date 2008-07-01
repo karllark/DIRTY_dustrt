@@ -94,9 +94,16 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 #endif
 
 	  if ((tot_abs_energy > 0.) && (tot_nonzero > int(0.75*runinfo.wavelength.size())) && (tot_abs_energy > 1e-35)) {
+#ifdef DEBUG_GDTE
+	    // output the J
+	    for (x = 0; x < runinfo.wavelength.size(); x++) {
+	      cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
+	    }
+	    cout << endl;
+#endif
+
 	    // get the dust emission spectrum given the input wavlength vector and radiation field vector
 	    // emitted energy returned is in units of ergs s^-1 HI atom^-1
-
 	    ComputeDustEmission(geometry.grids[m].grid(i,j,k).absorbed_energy,
 				CurGrainModel, 
 				geometry.grids[m].grid(i,j,k).emitted_energy,
