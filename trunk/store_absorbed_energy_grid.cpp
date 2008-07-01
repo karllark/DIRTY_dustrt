@@ -44,6 +44,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
   // loop over all the defined grids
   for (m = 0; m < int(geometry.grids.size()); m++) {
     // determine the volume in cm^3
+    //   assumes all cells in a grid have the same size (which is correct)
     double vol = 1.0;
     for (i = 0; i < 3; i++)
       vol *= (Constant::PC_CM)*(geometry.grids[m].positions[i][1] - geometry.grids[m].positions[i][0]);
