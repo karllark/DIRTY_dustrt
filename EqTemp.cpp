@@ -68,6 +68,7 @@ double EqTemp(vector <double> wave, vector <double> J, vector <double> Q, double
     integrand.clear();
 
   }
+//   cout << "Tk (double) = " << Tk << endl;
 
   return Tk;
 
@@ -130,6 +131,8 @@ float EqTemp(vector <float> wave, vector <float> J, vector <float> Q, float Tl, 
     integrand.clear();
  
   }
+
+  //   cout << "Tk (float) = " << Tk << endl;
 
   return Tk;
 

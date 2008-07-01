@@ -93,7 +93,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	  cout << "max absorbed energy = " << max_abs_energy << endl;
 #endif
 
-	  if ((tot_abs_energy > 0.) && (tot_nonzero > 6) && (max_abs_energy > 1e-40)) {
+	  if ((tot_abs_energy > 0.) && (tot_nonzero > int(0.75*runinfo.wavelength.size())) && (tot_abs_energy > 1e-35)) {
 	    // get the dust emission spectrum given the input wavlength vector and radiation field vector
 	    // emitted energy returned is in units of ergs s^-1 HI atom^-1
 

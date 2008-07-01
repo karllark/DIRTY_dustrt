@@ -140,7 +140,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 
   // fill main grid with dust density 
   // (now these are just the factors and the density is imposed later)
-  geometry.clump_densities[0] = (geometry.filling_factor + geometry.density_ratio*(1.0 - geometry.filling_factor));
+  geometry.clump_densities[0] = 1.0/(geometry.filling_factor + geometry.density_ratio*(1.0 - geometry.filling_factor));
   geometry.clump_densities[1] = geometry.density_ratio*geometry.clump_densities[0];
 
   int j,k;
