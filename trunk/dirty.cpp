@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
   // iterate until converged for max iterations reached
 
   int iter_num = 1;
-  int iter_max = 1;
+  int iter_max = 10;
   int iter_done = 0;
 
 #ifdef DEBUG_DIRTY
