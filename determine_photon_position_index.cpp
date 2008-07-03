@@ -12,8 +12,8 @@
 // 2003 Jun/KDG - written
 // ======================================================================
 #include "determine_photon_position_index.h"
-#define OUTNUM 87974
-#define DEBUG_DPPI
+//#define OUTNUM 2567
+//#define DEBUG_DPPI
 
 void determine_photon_position_index (geometry_struct& geometry,
 				      photon_data& photon)
@@ -27,7 +27,7 @@ void determine_photon_position_index (geometry_struct& geometry,
   while (not done) {
     int i = 0;
 #ifdef DEBUG_DPPI
-    if (photon.number > OUTNUM) {
+    if (photon.number == OUTNUM) {
       cout << endl;
       cout << "in dppi" << endl;
     }
@@ -39,7 +39,7 @@ void determine_photon_position_index (geometry_struct& geometry,
       // take care of case when we are at the edge of the grid in the maximum sense
       if (photon.position_index[k][i] == geometry.grids[cur_grid_num].index_dim[i]) photon.position_index[k][i]--;
 #ifdef DEBUG_DPPI
-      if (photon.number > OUTNUM) {
+      if (photon.number == OUTNUM) {
 	cout << "before adjust" << endl;
 	cout << "i = " << i << endl;
 	cout << photon.number << endl;
@@ -52,7 +52,7 @@ void determine_photon_position_index (geometry_struct& geometry,
 #endif
       // make sure that photon is headed into the cell indexed (edges need special treatment)
       if ((photon.position[i] == geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]]) &&
-	  (photon.dir_cosines[i] < 0.0))
+	  (photon.dir_cosines[i] < 0.0) && (photon.position_index[k][i] > 0))
 	photon.position_index[k][i]--;
       else if ((photon.position[i] == geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1]) &&
 	       (photon.dir_cosines[i] > 0.0))
@@ -60,7 +60,7 @@ void determine_photon_position_index (geometry_struct& geometry,
       // take care of case when we are at the edge of the grid in the maximum sense
       if (photon.position_index[k][i] == geometry.grids[cur_grid_num].index_dim[i]) photon.position_index[k][i]--;
 #ifdef DEBUG_DPPI
-      if (photon.number > OUTNUM) {
+      if (photon.number == OUTNUM) {
 	cout << "after adjust" << endl;
 	cout << "i = " << i << endl;
 	cout << photon.position_index[k][i] << " ";
@@ -124,7 +124,7 @@ void determine_photon_position_index (geometry_struct& geometry,
   photon.num_current_grids = k;
 
 #ifdef DEBUG_DPPI
-  if (photon.number > OUTNUM) {
+  if (photon.number == OUTNUM) {
     cout << "end of dppi" << endl;
   }
 #endif

@@ -36,8 +36,12 @@ void classify_stellar_photon (output_struct& output,
 
       // copy the photon birth position to the position location
       int k;
-      for (k = 0; k < 3; k++)
+      for (k = 0; k < 3; k++) {
 	tmp_photon.position[k] = tmp_photon.birth_position[k];
+#ifdef DEBUG_CSP
+	cout << "pos; k = " << k << " " << tmp_photon.position[k] << endl;
+#endif
+      }
 
       // now determine the position indexes of the photon
       determine_photon_position_index_initial(geometry, tmp_photon);

@@ -6,6 +6,7 @@
 // ======================================================================
 #include "stellar_weight_towards_observer.h"
 //#define DEBUG_STWTO
+//#define OUTNUM 2567
 
 double stellar_weight_towards_observer (photon_data photon,
 					geometry_struct& geometry,
@@ -27,14 +28,16 @@ double stellar_weight_towards_observer (photon_data photon,
     dir_cosines_birth_to_obs[i] = birth_to_obs[i]/dist_birth_to_obs;
 
 #ifdef DEBUG_STWTO
-  cout << "birth_to_obs vector = ";
-  for (i = 0; i < 3; i++) 
-    cout << birth_to_obs[i] << " ";
-  cout << endl;
-  cout << "birth_to_obs dir_cosines = ";
-  for (i = 0; i < 3; i++) 
-    cout << dir_cosines_birth_to_obs[i] << " ";
-  cout << endl;
+  if (photon.number == OUTNUM) {
+    cout << "birth_to_obs vector = ";
+    for (i = 0; i < 3; i++) 
+      cout << birth_to_obs[i] << " ";
+    cout << endl;
+    cout << "birth_to_obs dir_cosines = ";
+    for (i = 0; i < 3; i++) 
+      cout << dir_cosines_birth_to_obs[i] << " ";
+    cout << endl;
+  }
 #endif
 
   // determine the optical depth to the surface from the birth site
@@ -45,7 +48,9 @@ double stellar_weight_towards_observer (photon_data photon,
   int escape = 0;
   double tau_birth_to_obs = 0.0;
 #ifdef DEBUG_STWTO
-  cout << "stellar weight" << endl;
+  if (photon.number == OUTNUM) {
+    cout << "stellar weight" << endl;
+  }
 #endif
   // redetermine the location of the photon in the grid
   determine_photon_position_index_initial(geometry, photon);
@@ -53,9 +58,11 @@ double stellar_weight_towards_observer (photon_data photon,
   double distance_traveled = 0.0;
   distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_birth_to_obs);
 #ifdef DEBUG_STWTO
-  cout << "tau/distance traveled = " << tau_birth_to_obs << " ";
-  cout << distance_traveled << endl;
-  cout << "Tau from birth site to surface = " << tau_birth_to_obs << endl;
+  if (photon.number == OUTNUM) {
+    cout << "tau/distance traveled = " << tau_birth_to_obs << " ";
+    cout << distance_traveled << endl;
+    cout << "Tau from birth site to surface = " << tau_birth_to_obs << endl;
+  }
 #endif
 
   double stellar_weight = photon.stellar_weight;
@@ -64,7 +71,9 @@ double stellar_weight_towards_observer (photon_data photon,
   double stellar_weight_tau = exp(-tau_birth_to_obs);
 
 #ifdef DEBUG_STWTO
-  cout << "weight(tau) = " << stellar_weight_tau << endl;
+  if (photon.number == OUTNUM) {
+    cout << "weight(tau) = " << stellar_weight_tau << endl;
+  }
 #endif
 
   // udpate stellar weight

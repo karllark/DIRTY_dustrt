@@ -6,8 +6,8 @@
 //                now zero distance traveled
 // ======================================================================
 #include "calc_delta_dist.h"
-#define DEBUG_CDD
-#define OUTNUM 87974
+//#define DEBUG_CDD
+//#define OUTNUM 2567
 
 double calc_delta_dist (photon_data& photon,
 			geometry_struct& geometry,
@@ -17,7 +17,7 @@ double calc_delta_dist (photon_data& photon,
   
 {
 #ifdef DEBUG_CDD
-  if (photon.number > OUTNUM) {
+  if (photon.number == OUTNUM) {
     cout << "starting cdd.." << endl;
   }
 #endif
@@ -30,7 +30,7 @@ double calc_delta_dist (photon_data& photon,
   int k = photon.current_grid_num;
   long grid_val = photon.grid_number[k];
 #ifdef DEBUG_CDD
-  if (photon.number > OUTNUM) {
+  if (photon.number == OUTNUM) {
     cout << "k = " << k << endl;
     cout << "grid_val = " << grid_val << endl;
     cout << "max # grids = " << geometry.grids.size() << endl;
@@ -46,7 +46,7 @@ double calc_delta_dist (photon_data& photon,
   // print the photon statistics
 #ifdef DEBUG_CDD
   int di = 0;
-  if (photon.number > OUTNUM) {
+  if (photon.number == OUTNUM) {
     cout << endl;
     cout << "cdd photon in" << endl;
     cout << "number = " << photon.number << endl;
@@ -72,7 +72,7 @@ double calc_delta_dist (photon_data& photon,
 
   if ((k < (photon.num_current_grids-1)) || (dust_tau_ref_per_pc <= -1.0)) {
 #ifdef DEBUG_CDD
-    if (photon.number > OUTNUM) {
+    if (photon.number == OUTNUM) {
       cout << endl << "=============" << endl;
       cout << "k, num_current_grids, dust_tau_per_pc, dust_tau_ref_per_pc = " << k << " " << photon.num_current_grids;
       cout << " " << dust_tau_per_pc << " " << dust_tau_ref_per_pc << endl;
@@ -82,7 +82,7 @@ double calc_delta_dist (photon_data& photon,
     // determine the position indexes for this subgrid (any more nested subgrids)
     if (dust_tau_ref_per_pc <= -1.0) {
 #ifdef DEBUG_CDD
-      if (photon.number > OUTNUM) {
+      if (photon.number == OUTNUM) {
 	cout << "new "; cout.flush();
       }
       
@@ -113,7 +113,7 @@ double calc_delta_dist (photon_data& photon,
       determine_photon_position_index(geometry, photon);
     }
 #ifdef DEBUG_CDD
-    if (photon.number > OUTNUM) {
+    if (photon.number == OUTNUM) {
       cout << "subgrid found" << endl;
       cout << "target_tau = " << target_tau << endl;
       cout << "tau_traveled = " << tau_traveled << endl;
@@ -137,7 +137,7 @@ double calc_delta_dist (photon_data& photon,
 	     (photon.position[i] == geometry.grids[photon.grid_number[photon.current_grid_num]].positions[i][photon.position_index[k][i]])))
 	  min_index = i;
 #ifdef DEBUG_CDD
-	if (photon.number > OUTNUM) {
+	if (photon.number == OUTNUM) {
 	  cout << "position, cell wall+/- = ";
 	  cout << photon.position[i] << " ";
 	  cout << geometry.grids[photon.grid_number[photon.current_grid_num]].positions[i][photon.position_index[k][i]] << " ";
@@ -148,7 +148,7 @@ double calc_delta_dist (photon_data& photon,
     }
 
 #ifdef DEBUG_CDD
-    if (photon.number > OUTNUM) {
+    if (photon.number == OUTNUM) {
       cout << "target_tau = " << target_tau << endl;
       cout << "tau_traveled = " << tau_traveled << endl;
       cout << "diff = " << target_tau - tau_traveled << endl;
@@ -169,9 +169,8 @@ double calc_delta_dist (photon_data& photon,
   //   this is parallel to the x,y,z axes
     int i = 0;
 #ifdef DEBUG_CDD
-    if (photon.number > OUTNUM) {
+    if (photon.number == OUTNUM) {
       cout << "exit_cell = " << exit_cell << endl;
-      cout << "delt pos = ";
     }
 #endif
     for (i = 0; i < 3; i++) {
@@ -192,24 +191,25 @@ double calc_delta_dist (photon_data& photon,
       else
         delta_distance[i] = 0.0;
 #ifdef DEBUG_CDD
-      if (photon.number > OUTNUM) {
+      if (photon.number == OUTNUM) {
+	cout << "i = " << i << " ";
+	cout << "delt pos dir = ";
 	cout << delta_position[i] << " ";
 	cout << delta_distance[i] << " ";
+	cout << photon.dir_cosines[i] << " ";
+	cout << geometry.grids[photon.grid_number[photon.current_grid_num]].positions[i][photon.position_index[k][i]+1] << " ";
+	cout << photon.position[i] << " ";
+	cout << endl;
       }
 #endif
     }
-#ifdef DEBUG_CDD
-    if (photon.number > OUTNUM) {
-      cout << endl;
-    }
-#endif
   
     // determine the first axis the photon exits along
     //   minumum distance traveled
     double min_dist = 1e20;
     min_index = -1;
     for (i = 0; i < 3; i++) 
-      if ((delta_distance[i] < min_dist) && (delta_distance[i] > 0.)) {
+      if ((delta_distance[i] < min_dist) && (delta_distance[i] >= 0.)) {
         min_dist = delta_distance[i];
 	min_index = i;
       }
@@ -226,7 +226,7 @@ double calc_delta_dist (photon_data& photon,
     }
 
 #ifdef DEBUG_CDD
-    if (photon.number > OUTNUM) {
+    if (photon.number == OUTNUM) {
       cout << "index transversed = " << min_index << endl;
     }
 #endif    
@@ -245,7 +245,7 @@ double calc_delta_dist (photon_data& photon,
     }
 
 #ifdef DEBUG_CDD
-    if (photon.number > OUTNUM) {
+    if (photon.number == OUTNUM) {
       cout << "***single cell***" << endl;
       cout << "target_tau = " << target_tau << endl;
       cout << "tau_traveled = " << tau_traveled << endl;
@@ -278,7 +278,7 @@ double calc_delta_dist (photon_data& photon,
 
     // now determine if the photon has left the grid
 #ifdef DEBUG_CDD
-    if (photon.number > OUTNUM) {
+    if (photon.number == OUTNUM) {
       cout << "escape (pre check1/2) = " << escape << endl;
     }
 #endif
@@ -287,7 +287,7 @@ double calc_delta_dist (photon_data& photon,
 	  (photon.position_index[k][min_index] < 0))
 	escape = 1;
 #ifdef DEBUG_CDD
-    if (photon.number > OUTNUM) {
+    if (photon.number == OUTNUM) {
       cout << "escape (post check1) = " << escape << endl;
     }
 #endif
@@ -303,7 +303,7 @@ double calc_delta_dist (photon_data& photon,
 //       }
     }
 #ifdef DEBUG_CDD
-    if (photon.number > OUTNUM) {
+    if (photon.number == OUTNUM) {
       cout << "escape (post check2) = " << escape << endl;
     }
 #endif
@@ -311,7 +311,7 @@ double calc_delta_dist (photon_data& photon,
   }
 
 #ifdef DEBUG_CDD
-  if (photon.number > OUTNUM) {
+  if (photon.number == OUTNUM) {
     cout << "dist & tau traveled = ";
     cout << distance_traveled << " ";
     cout << tau_traveled << endl;
