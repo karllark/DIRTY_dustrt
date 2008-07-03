@@ -25,7 +25,7 @@ max_tau_per_cell=50.
 # spherical or cubical clumps [choices are sphere/cube]
 clump_type=cube
 # size of grid (all dimensions equal)
-grid_size=5
+grid_size=100
 
 [Dust Grains]
 type=dust_model
@@ -61,6 +61,7 @@ energy_conserve_target=0.01
 verbose=1
 # do thermal dust emission
 do_dust_emission=1
+energy_conserve_target=0.05
 # separate emission by grain type (graphite, silicate, PAH, etc.)
 do_emission_grain=1
 do_global_output=1

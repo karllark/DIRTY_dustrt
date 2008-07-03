@@ -6,7 +6,8 @@
 //                now zero distance traveled
 // ======================================================================
 #include "calc_delta_dist.h"
-//#define DEBUG_CDD
+#define DEBUG_CDD
+#define OUTNUM 87974
 
 double calc_delta_dist (photon_data& photon,
 			geometry_struct& geometry,
@@ -16,7 +17,9 @@ double calc_delta_dist (photon_data& photon,
   
 {
 #ifdef DEBUG_CDD
-  cout << "starting cdd.." << endl;
+  if (photon.number > OUTNUM) {
+    cout << "starting cdd.." << endl;
+  }
 #endif
   tau_traveled = 0.0;
   double distance_traveled = 0.0;  // resulting distance traveled
@@ -27,13 +30,15 @@ double calc_delta_dist (photon_data& photon,
   int k = photon.current_grid_num;
   long grid_val = photon.grid_number[k];
 #ifdef DEBUG_CDD
-  cout << "k = " << k << endl;
-  cout << "grid_val = " << grid_val << endl;
-  cout << "max # grids = " << geometry.grids.size() << endl;
-  cout << photon.position_index[0].size() << endl;
-  cout << geometry.max_grid_depth << endl;
-  cout << photon.position_index[k][0] << endl;
-  cout << "end testing" << endl;
+  if (photon.number > OUTNUM) {
+    cout << "k = " << k << endl;
+    cout << "grid_val = " << grid_val << endl;
+    cout << "max # grids = " << geometry.grids.size() << endl;
+    cout << photon.position_index[0].size() << endl;
+    cout << geometry.max_grid_depth << endl;
+    cout << photon.position_index[k][0] << endl;
+    cout << "end testing" << endl;
+  }
 #endif
   float dust_tau_ref_per_pc = geometry.grids[grid_val].grid(photon.position_index[k][0],photon.position_index[k][1],photon.position_index[k][2]).dust_tau_per_pc;
   float dust_tau_per_pc = dust_tau_ref_per_pc*geometry.tau_to_tau_ref;
@@ -69,7 +74,8 @@ double calc_delta_dist (photon_data& photon,
 #ifdef DEBUG_CDD
     if (photon.number > OUTNUM) {
       cout << endl << "=============" << endl;
-      cout << "k, num_current_grids, dust_tau_per_pc = " << k << " " << photon.num_current_grids << " " << dust_tau_per_pc << endl;
+      cout << "k, num_current_grids, dust_tau_per_pc, dust_tau_ref_per_pc = " << k << " " << photon.num_current_grids;
+      cout << " " << dust_tau_per_pc << " " << dust_tau_ref_per_pc << endl;
     }
 #endif
     photon.current_grid_num++;

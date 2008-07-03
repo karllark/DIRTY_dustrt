@@ -76,6 +76,9 @@ void determine_photon_position_index_initial (geometry_struct& geometry,
 	  cout << "cell max position = " << geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1] << endl;
 	  cout << "geometry.grids[cur_grid_num].positions[i][0] = " << geometry.grids[cur_grid_num].positions[i][0] << endl;
 	  cout << "geometry.grids[cur_grid_num].phys_cube_size[i] = " << geometry.grids[cur_grid_num].phys_cube_size[i] << endl;
+	  cout << "min edge diff = " << geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]] - photon.position[i] << endl;
+	  cout << "max edge diff = " << photon.position[i] - geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1] << endl;
+          cout << "ROUNDOFF_ERR_INDEX = " << ROUNDOFF_ERR_INDEX << endl;
 	  exit(8);
 	}
       }
