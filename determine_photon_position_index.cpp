@@ -12,6 +12,8 @@
 // 2003 Jun/KDG - written
 // ======================================================================
 #include "determine_photon_position_index.h"
+#define OUTNUM 87974
+#define DEBUG_DPPI
 
 void determine_photon_position_index (geometry_struct& geometry,
 				      photon_data& photon)
@@ -39,6 +41,7 @@ void determine_photon_position_index (geometry_struct& geometry,
 #ifdef DEBUG_DPPI
       if (photon.number > OUTNUM) {
 	cout << "before adjust" << endl;
+	cout << "i = " << i << endl;
 	cout << photon.number << endl;
 	cout << photon.position_index[k][i] << " ";
 	cout << geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]] << " ";
@@ -59,6 +62,7 @@ void determine_photon_position_index (geometry_struct& geometry,
 #ifdef DEBUG_DPPI
       if (photon.number > OUTNUM) {
 	cout << "after adjust" << endl;
+	cout << "i = " << i << endl;
 	cout << photon.position_index[k][i] << " ";
 	cout << geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]] << " ";
 	cout << photon.position[i] << " ";
@@ -94,6 +98,9 @@ void determine_photon_position_index (geometry_struct& geometry,
 	    geometry.grids[cur_grid_num].phys_cube_size[i] << endl;
 	  cout << "out of a possible " << geometry.grids[cur_grid_num].index_dim[i] << endl;
 	  cout << "out of a possible2 " << geometry.grids[cur_grid_num].positions[i].size() << endl;
+	  int parent_grid_num = geometry.grids[cur_grid_num].parent_grid_num;
+	  cout << "parent grid cell min = " << geometry.grids[parent_grid_num].positions[i][photon.position_index[k-1][i]] << endl;
+	  cout << "parent grid cell max = " << geometry.grids[parent_grid_num].positions[i][photon.position_index[k-1][i]+1] << endl;
 	  exit(8);
 	}
       }
