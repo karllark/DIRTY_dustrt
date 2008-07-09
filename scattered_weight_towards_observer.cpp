@@ -5,6 +5,7 @@
 // 2006 Apr/KDG - written
 // ======================================================================
 #include "scattered_weight_towards_observer.h"
+//#define OUTNUM 222074
 //#define DEBUG_SWTO
 
 double scattered_weight_towards_observer (photon_data photon,
@@ -27,18 +28,20 @@ double scattered_weight_towards_observer (photon_data photon,
     dir_cosines_scat_to_obs[i] = scat_to_obs[i]/dist_scat_to_obs;
 
 #ifdef DEBUG_SWTO
-  cout << "scat_to_obs vector = ";
-  for (i = 0; i < 3; i++) 
-    cout << scat_to_obs[i] << " ";
-  cout << endl;
-  cout << "scat_to_obs dir_cosines = ";
-  for (i = 0; i < 3; i++) 
-    cout << dir_cosines_scat_to_obs[i] << " ";
-  cout << endl;
-  cout << "cos_alpha contributions = ";
-  for (i = 0; i < 3; i++) 
-    cout << dir_cosines_scat_to_obs[i]*photon.dir_cosines[i] << " ";
-  cout << endl;
+  if (photon.number == OUTNUM) {
+    cout << "scat_to_obs vector = ";
+    for (i = 0; i < 3; i++) 
+      cout << scat_to_obs[i] << " ";
+    cout << endl;
+    cout << "scat_to_obs dir_cosines = ";
+    for (i = 0; i < 3; i++) 
+      cout << dir_cosines_scat_to_obs[i] << " ";
+    cout << endl;
+    cout << "cos_alpha contributions = ";
+    for (i = 0; i < 3; i++) 
+      cout << dir_cosines_scat_to_obs[i]*photon.dir_cosines[i] << " ";
+    cout << endl;
+  }
 #endif
 
   // determine the angle between the photon direction before the scattering and
@@ -67,12 +70,16 @@ double scattered_weight_towards_observer (photon_data photon,
   double tau_scat_to_obs = 0.0;
   double distance_traveled = 0.0;
 #ifdef DEBUG_SWTO
-  cout << "starting calc_photon_traj..." << endl;
+  if (photon.number == OUTNUM) {
+    cout << "starting calc_photon_traj..." << endl;
+  }
 #endif
   distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_scat_to_obs);
 #ifdef DEBUG_SWTO
-  cout << "Tau from scattering site to surface = " << tau_scat_to_obs << endl;
-  cout << "cosine of angle = " << cos_alpha << endl;
+  if (photon.number == OUTNUM) {
+    cout << "Tau from scattering site to surface = " << tau_scat_to_obs << endl;
+    cout << "cosine of angle = " << cos_alpha << endl;
+  }
 #endif
 
   double scat_weight = photon.scat_weight;
@@ -86,9 +93,11 @@ double scattered_weight_towards_observer (photon_data photon,
   double scat_weight_tau = exp(-tau_scat_to_obs);
 
 #ifdef DEBUG_SWTO
-  cout << "weight(angle) = " << scat_weight_angle << endl;
-  cout << "weight(tau) = " << scat_weight_tau << endl;
-  cout << "geometry.solid_angle = " << geometry.solid_angle << endl;
+  if (photon.number == OUTNUM) {
+    cout << "weight(angle) = " << scat_weight_angle << endl;
+    cout << "weight(tau) = " << scat_weight_tau << endl;
+    cout << "geometry.solid_angle = " << geometry.solid_angle << endl;
+  }
 #endif
 
   // udpate scattered weight

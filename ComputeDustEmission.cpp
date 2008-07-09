@@ -47,7 +47,7 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
     // Compute Equilibrium temperature for each size of this component.
     for (uint _sz=0;_sz<_nsize;++_sz) {
       _cabs = GrainModel.CAbs(_cmp,int(_sz)); 
-      *_it = EqTemp(_w,J,_cabs,((_tlo<0)?1.0:_tlo),((_thi>25000.0)?25000.0:_thi));
+      *_it = EqTemp(_w,J,_cabs,((_tlo<0)?0.001:_tlo),((_thi>25000.0)?25000.0:_thi));
       ++_it; 
       _tlo = 0.3*(*(_it-1)); 
       _thi = 3.0*(*(_it-1)); 

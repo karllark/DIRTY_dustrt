@@ -50,6 +50,7 @@ void radiative_transfer (geometry_struct& geometry,
 #ifdef DEBUG_OUTRANGE
     } catch(std::out_of_range)
       {
+	cout << "photon # = " << photon.number << endl;
 	cout << "new_photon - out of range." << endl;
 	exit(8);
       }
@@ -82,6 +83,7 @@ void radiative_transfer (geometry_struct& geometry,
 #ifdef DEBUG_OUTRANGE
     } catch(std::out_of_range)
       {
+	cout << "photon # = " << photon.number << endl;
 	cout << "force_first_scatter - out of range." << endl;
 	exit(8);
       }
@@ -107,6 +109,7 @@ void radiative_transfer (geometry_struct& geometry,
 #ifdef DEBUG_OUTRANGE
     } catch(std::out_of_range)
       {
+	cout << "photon # = " << photon.number << endl;
 	cout << "classify_stellar_photon - out of range." << endl;
 	exit(8);
       }
@@ -130,6 +133,8 @@ void radiative_transfer (geometry_struct& geometry,
 #ifdef DEBUG_OUTRANGE
     } catch(std::out_of_range)
       {
+	cout << "photon # = " << photon.number << endl;
+	cout << "num scat = " << photon.num_scat << endl;
 	cout << "classify_scattered_photon - out of range." << endl;
 	exit(8);
       }
@@ -146,6 +151,8 @@ void radiative_transfer (geometry_struct& geometry,
 #ifdef DEBUG_OUTRANGE
     } catch(std::out_of_range)
       {
+	cout << "photon # = " << photon.number << endl;
+	cout << "num scat = " << photon.num_scat << endl;
 	cout << "scatter_photon - out of range." << endl;
 	exit(8);
       }
@@ -163,6 +170,8 @@ void radiative_transfer (geometry_struct& geometry,
 #ifdef DEBUG_OUTRANGE
     } catch(std::out_of_range)
       {
+	cout << "photon # = " << photon.number << endl;
+	cout << "num scat = " << photon.num_scat << endl;
 	cout << "next_scatter - out of range." << endl;
 	exit(8);
       }
