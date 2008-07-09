@@ -642,12 +642,14 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
   template <typename T> inline T& Cube<T>::operator() (int n1_id, int n2_id, int n3_id)
     {
       if (n1_id < 0 || n1_id >= _n1) { 
-	cout << "out_of_range Cube::operator(), element 1" << endl; 
+	cout << "out_of_range Cube::operator(), element 1 " << n1_id << "," << n2_id << "," << n3_id << " " << _n1 << 
+endl;
 	std::string ExceptionObject = "out_of_range Cube::operator(), element 1"; 
 	throw std::out_of_range(ExceptionObject);
       }
       if (n2_id < 0 || n2_id >= _n2) { 
-	cout << "out_of_range Cube::operator(), element 2" << endl; 
+	cout << "out_of_range Cube::operator(), element 2 " << n1_id << "," << n2_id << "," << n3_id << " " << _n2 << 
+endl;
 	std::string ExceptionObject = "out_of_range Cube::operator(), element 2"; 
 	throw std::out_of_range(ExceptionObject);
       }

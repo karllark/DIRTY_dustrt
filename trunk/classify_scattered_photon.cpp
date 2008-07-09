@@ -8,6 +8,7 @@
 // 2008 May/KDG - changed denominator of atan from d to d-z (see fix in setup_dust_grid_slab.cpp)
 // ======================================================================
 #include "classify_scattered_photon.h"
+#define OUTNUM 222074
 //#define DEBUG_CSCP
 
 void classify_scattered_photon (output_struct& output,
@@ -17,7 +18,9 @@ void classify_scattered_photon (output_struct& output,
 
 {
 #ifdef DEBUG_CSCP
-  cout << "starting csp.." << endl;
+  if (photon.number == OUTNUM) {
+    cout << "starting csp.." << endl;
+  }
 #endif
 
   int i;
@@ -29,7 +32,9 @@ void classify_scattered_photon (output_struct& output,
   for (i = 0; i < output.num_outputs; i++) {
 
 #ifdef DEBUG_CSCP
+  if (photon.number == OUTNUM) {
     cout << "output # = " << i << endl;
+  }
 #endif
     // setup so the hard stuff is not recomputed for the case where there are
     // multiple outputs, but only 1 observer position
@@ -38,15 +43,32 @@ void classify_scattered_photon (output_struct& output,
       // copy input photon into temporary photon to ensure no change
       tmp_photon = photon;
 
+//       // now determine the position indexes of the photon
+//       determine_photon_position_index_initial(geometry, tmp_photon);
+
+//   if (tmp_photon.number == OUTNUM) {
+//     cout << "temp check" << endl;
+//     int m = 0;
+//     int k = tmp_photon.current_grid_num;
+//     for (m = 0; m < 3; m++) {
+//       cout << "m = " << m << " ";
+//       cout << "tmp_photon.position_index = " << tmp_photon.position_index[k][m] << endl;
+//     }
+//   }
+
 #ifdef DEBUG_CSCP
+  if (photon.number == OUTNUM) {
       cout << "starting scat_weight..." << endl;
+  }
 #endif
       // determine the probability the photon would have scattered to the observer
       tmp_photon.scat_weight = scattered_weight_towards_observer(tmp_photon, geometry, 
 								 output.outputs[i].observer_position);
 
 #ifdef DEBUG_CSCP
+  if (photon.number == OUTNUM) {
       cout << "starting rotate..." << endl;
+  }
 #endif
       // transform photon positions so that the line-of-sight is along the z-axis 
       rotate_zaxis_for_observer(output.outputs[i].rotate_transform,tmp_photon);
@@ -89,9 +111,11 @@ void classify_scattered_photon (output_struct& output,
       }
 
 #ifdef DEBUG_CSCP
+  if (photon.number == OUTNUM) {
       cout << "scattered x,y positions = (" << tmp_photon.position[0] << "," << tmp_photon.position[1] << ")" << endl;
       cout << "model radius = " << geometry.radius << endl;
       cout << "scattered photon image indexs = (" << image_indxs[0] << "," << image_indxs[1] << ")" << endl;
+  }
 #endif
     } else {
       // reset the scattered weight for emission/grain output

@@ -7,7 +7,7 @@
 // ======================================================================
 #include "calc_delta_dist.h"
 //#define DEBUG_CDD
-//#define OUTNUM 2567
+//#define OUTNUM 0
 
 double calc_delta_dist (photon_data& photon,
 			geometry_struct& geometry,
@@ -122,14 +122,14 @@ double calc_delta_dist (photon_data& photon,
     
     distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_traveled);
     
-    if (fabs(target_tau - tau_traveled) < ROUNDOFF_ERR_TRIG) {
-      exit_cell = 0;
-      escape = 1;
-    } else { // determine which of x,y,z exited first
+    int escape_grid = 0;
+    if (escape) { // determine which of x,y,z exited first
       photon.current_grid_num--;
       photon.num_current_grids--;
-      escape = 0;
       int i = 0;
+      escape = 0;
+      escape_grid = 1;
+      exit_cell = 1;
       for (i = 0; i < 3; i++) {
 	if (((photon.dir_cosines[i] > 0.0) && 
 	     (photon.position[i] == geometry.grids[photon.grid_number[photon.current_grid_num]].positions[i][photon.position_index[k][i]+1])) ||
@@ -145,6 +145,11 @@ double calc_delta_dist (photon_data& photon,
 	}
 #endif
       }
+    }
+    // now determine if the photon has traveled far enough
+    if (fabs(target_tau - tau_traveled) < ROUNDOFF_ERR_TRIG) {
+      if (!escape_grid) exit_cell = 0;
+      escape = 1;
     }
 
 #ifdef DEBUG_CDD
@@ -286,6 +291,7 @@ double calc_delta_dist (photon_data& photon,
       if ((photon.position_index[k][min_index] >= geometry.grids[photon.grid_number[photon.current_grid_num]].index_dim[min_index]) ||
 	  (photon.position_index[k][min_index] < 0))
 	escape = 1;
+
 #ifdef DEBUG_CDD
     if (photon.number == OUTNUM) {
       cout << "escape (post check1) = " << escape << endl;
