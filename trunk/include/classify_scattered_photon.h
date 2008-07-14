@@ -20,6 +20,9 @@
 //**********************************************************************
 // external function definitions
 
+/* extern void determine_photon_position_index_initial (geometry_struct& geometry, */
+/*   					             photon_data& photon); */
+
 extern double scattered_weight_towards_observer (photon_data photon,
 						 geometry_struct& geometry,
 						 float observer_position[3]);

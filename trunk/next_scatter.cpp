@@ -6,6 +6,7 @@
 // 2004 Dec/KDG - written
 // ======================================================================
 #include "next_scatter.h"
+//#define DEBUG_NS
 
 int next_scatter (geometry_struct& geometry,
 		  photon_data& photon,
@@ -31,6 +32,9 @@ int next_scatter (geometry_struct& geometry,
   distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_traveled);
 #ifdef DEBUG_NS
   cout << "ns cpt done; ";
+  cout << "distance_traveled = " << distance_traveled << endl;
+  cout << "target_tau = " << target_tau << endl;
+  cout << "photon.scat_weight = " << photon.scat_weight << endl;
 #endif
 
 //   int j = 0;
@@ -47,14 +51,14 @@ int next_scatter (geometry_struct& geometry,
 #ifdef DEBUG_NS
   cout << "ns escape = " << escape << endl;
 #endif
-  //#ifdef DEBUG_NS
+#ifdef DEBUG_NS
   if ((target_tau - tau_traveled) < -ROUNDOFF_ERR_TRIG) {
     cout << "*****error*****next_scatter*****" << endl;
     cout << "target_tau = " << target_tau << endl;
     cout << "tau_traveled = " << tau_traveled << endl;
     cout << "diff = " << target_tau - tau_traveled << endl;
   }
-  //#endif
+#endif
   
   // return escape (1 = yes, 0 = no)
   return(escape);

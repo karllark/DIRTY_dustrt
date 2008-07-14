@@ -35,6 +35,8 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 {
   // total energy absorbed in photons
   double total_energy_absorbed_photons = 0.0;
+  // total energy absorbed at this wavelength
+  runinfo.absorbed_energy[geometry.abs_energy_wave_index] = 0.0;
 
   // constant for num_H calculation
   double num_H_const = 1./(runinfo.tau_to_h[index]*(Constant::PC_CM));
@@ -114,6 +116,10 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 		geometry.grids[m].grid(i,j,k).save_radiation_field_density[geometry.abs_energy_wave_index];
 	  } else geometry.grids[m].grid(i,j,k).num_H = 0.0;
 
+	  // sum the absorbed energy for this wavelength
+	  runinfo.absorbed_energy[geometry.abs_energy_wave_index] += 
+	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index]*geometry.grids[m].grid(i,j,k).num_H;
+	  
 #ifdef DEBUG_SAEG
 	    cout << "final J(lambda) = " << geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] << endl;
 #endif
