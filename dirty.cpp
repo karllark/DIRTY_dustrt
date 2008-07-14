@@ -85,6 +85,9 @@ int main(int argc, char* argv[])
   // loop over all wavelengths
   int i;
   for (i = 0; i < runinfo.n_waves; i++) {
+    if (runinfo.verbose >= 1)
+      cout << "working on wavelength [micron] = " << runinfo.wavelength[i]*Constant::CM_UM << endl;
+
     // setup/(re)initialize absorbed energy grid
     setup_absorbed_energy_grid(geometry, runinfo, i, 0);
 
@@ -221,13 +224,16 @@ int main(int argc, char* argv[])
     // loop over all wavelengths
     for (i = 0; i < runinfo.n_waves; i++) {
 
+      if (runinfo.verbose >= 1)
+	cout << "working on wavelength [micron] = " << runinfo.wavelength[i]*Constant::CM_UM << endl;
+
 #ifdef DEBUG_DIRTY
       cout << endl;
       cout << "i = " << i << endl;
       cout << "emitted_lum = " << runinfo.emitted_lum[0][i] << endl;
 #endif
 
-      if (runinfo.emitted_lum[0][i] > 0) {
+      if (runinfo.emitted_lum[0][i] > 1e-3*runinfo.out_sed_lum[0][i]*runinfo.sed_lum[i]) {
 
 #ifdef DEBUG_DIRTY
 	cout << "doing RT" << endl;

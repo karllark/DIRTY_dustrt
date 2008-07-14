@@ -76,7 +76,7 @@ void forced_first_scatter (geometry_struct& geometry,
   }
 #endif
   if (fabs(target_tau - tau_traveled) > ROUNDOFF_ERR_TRIG) {
-    cout << "*****error*****" << endl;
+    cout << "*****error*****forced_first_scatter****" << endl;
     cout << "target_tau = " << target_tau << endl;
     cout << "tau_traveled = " << tau_traveled << endl;
     cout << "diff = " << target_tau - tau_traveled << endl;

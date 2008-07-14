@@ -6,9 +6,10 @@
 // 2007 Dec/KDG - changed denominator of atan from d-z to d 
 // 2008 Mar/KDG - added output for emission/grain types
 // 2008 May/KDG - changed denominator of atan from d to d-z (see fix in setup_dust_grid_slab.cpp)
+// 2008 Jul/KDG - fixed scattered photon weight in the case of subgrids (set current_grid_num = 0)
 // ======================================================================
 #include "classify_scattered_photon.h"
-#define OUTNUM 222074
+// #define OUTNUM 222074
 //#define DEBUG_CSCP
 
 void classify_scattered_photon (output_struct& output,
@@ -23,7 +24,7 @@ void classify_scattered_photon (output_struct& output,
   }
 #endif
 
-  int i;
+  int i,k;
   photon_data tmp_photon;
   double save_scat_weight = 0.0;
   int image_indxs[2];
@@ -43,18 +44,9 @@ void classify_scattered_photon (output_struct& output,
       // copy input photon into temporary photon to ensure no change
       tmp_photon = photon;
 
-//       // now determine the position indexes of the photon
-//       determine_photon_position_index_initial(geometry, tmp_photon);
-
-//   if (tmp_photon.number == OUTNUM) {
-//     cout << "temp check" << endl;
-//     int m = 0;
-//     int k = tmp_photon.current_grid_num;
-//     for (m = 0; m < 3; m++) {
-//       cout << "m = " << m << " ";
-//       cout << "tmp_photon.position_index = " << tmp_photon.position_index[k][m] << endl;
-//     }
-//   }
+      // set the current grid number back to zero to ensure the full tracking can happen
+      // has to start in the base grid!  
+      tmp_photon.current_grid_num = 0;
 
 #ifdef DEBUG_CSCP
   if (photon.number == OUTNUM) {
@@ -81,7 +73,6 @@ void classify_scattered_photon (output_struct& output,
 
       // compute x,y angles and image indexs
       double angle;
-      int k;
       for (k = 0; k < 2; k++) {
 	angle = atan(tmp_photon.position[k]/(geometry.distance - tmp_photon.position[2]));
 	// don't know why having d-z doesn't work and having d does work, but that seems the case

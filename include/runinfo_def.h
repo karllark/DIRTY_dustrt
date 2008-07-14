@@ -45,6 +45,7 @@ struct runinfo_struct {
   std::vector< std::vector<double> > emitted_lum;
 
   // absorbed energy
+  std::vector<double> absorbed_energy;  // aborbed energy by wavelength
   double total_absorbed_energy;   // total absorbed energy (computed in get_thermal_dust_emission.cpp)
 
   // emitted energy

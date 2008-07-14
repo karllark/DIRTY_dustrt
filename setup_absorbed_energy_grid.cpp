@@ -12,10 +12,15 @@ void setup_absorbed_energy_grid (geometry_struct& geometry,
 				 int doing_dust_emission)
 
 {
-  if (geometry.abs_energy_storage_type == 0)
+  if (geometry.abs_energy_storage_type == 0) {
     geometry.abs_energy_wave_index = wave_index;
-  else
+    if (!doing_dust_emission) 
+      runinfo.absorbed_energy.resize(runinfo.wavelength.size(),0.0);
+  } else {
     geometry.abs_energy_wave_index = 0;
+    if ((!geometry.abs_energy_grid_initialized) && (!doing_dust_emission))
+      runinfo.absorbed_energy.push_back(0.0);
+  }
 
 //   if (doing_dust_emission == 1) cout << "saving radiation field..." << endl;
 

@@ -198,8 +198,7 @@ void radiative_transfer (geometry_struct& geometry,
       if (photon.number > OUTNUM) cout << endl;
 #endif
     }
-
-
+    
   }
 
 }

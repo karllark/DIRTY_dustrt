@@ -3,6 +3,7 @@
 //
 // KDG 15 May 2008 - Written (taken from setup_dust_grid_shell)
 // KDG 16 Jun 2008 - fixed max_grid_depth calculation & fixed assignment of grid number to parent
+// KDG 14 Jul 2008 - fixed error of interating over recently created subgrids
 // ======================================================================
 #include "setup_dust_grid_subdivide_overdense_cells.h"
 
@@ -17,12 +18,22 @@ void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
   int cur_subgrid_num = int(geometry.grids.size());
   int subdivide = 0;
   int subdivide_any = 0;
+  
+  geometry.num_cells = 0;
+ 
+  long num_cells_orig = 0;
+  long num_cells_subdivide = 0;
+  
+  int n_grids = int(geometry.grids.size());
+  for (m = 0; m < n_grids; m++) {
 
-  for (m = 0; m < int(geometry.grids.size()); m++) {
+    cout << "m = " << m << " " << geometry.grids.size() << endl;
 
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
       for (j = 0; j < geometry.grids[m].index_dim[1]; j++)
 	for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
+	  num_cells_orig++;
+
 	  // assumes a cubical cell
 	  x_tau = (geometry.grids[m].positions[0][i+1] - geometry.grids[m].positions[0][i])*
 	    geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
@@ -32,13 +43,17 @@ void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
 	  if ((spherical_clumps) && (geometry.grids[0].grid(i,j,k).dust_tau_per_pc == geometry.clump_densities[0])) subdivide = 1;
 
 	  if (subdivide) {
+	    num_cells_subdivide++;
+
+#ifdef DEBUG_SDGSOC
 	    cout << m << ",";
 	    cout << i << ",";
 	    cout << j << ",";
 	    cout << k << " needs a subgrid; ";
 	    cout << "cell tau = " << x_tau << endl;
+#endif
 	    
-	    // not that we've subdivided at least one grid cel
+	    // note that we've subdivided at least one grid cel
 	    subdivide_any = 1;
 
 	    one_grid subgrid;
@@ -90,6 +105,7 @@ void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
 	    for (o = 0; o < subgrid.index_dim[2]; o++) 
 	      for (n = 0; n < subgrid.index_dim[1]; n++) 
 		for (l = 0; l < subgrid.index_dim[0]; l++) {
+		  geometry.num_cells++;
 		  if (spherical_clumps) {
 		    index_radius = sqrt(pow(float(o) - subgrid.index_dim[2]/2.,2.0) + 
 					pow(float(n) - subgrid.index_dim[1]/2.,2.0) +
@@ -109,12 +125,18 @@ void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
 	    cur_subgrid_num++;
 
 	    geometry.grids.push_back(subgrid);
+	  } else {
+	    geometry.num_cells++;
 	  }
 	}
   }
 
   if (subdivide_any)
     geometry.max_grid_depth++;
+
+  cout << "total number of cells = " << geometry.num_cells << endl;
+  cout << "number of orig. cells = " << num_cells_orig << endl;
+  cout << "number of subdiv. cells = " << num_cells_subdivide << endl;
 
 }
 

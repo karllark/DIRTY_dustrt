@@ -38,6 +38,8 @@ struct geometry_struct {
   vector<one_grid> grids;  // vector of grids
   int max_grid_depth;   // maximum number of nesting grids
 
+  long num_cells; // number of cells
+
   // absorbed energy storage info
   int abs_energy_storage_type;  // how to store the absorbed energy
                                 // 0 = memory, 1 = disk
