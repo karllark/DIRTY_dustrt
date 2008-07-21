@@ -6,7 +6,7 @@
 // ======================================================================
 #include "stellar_weight_towards_observer.h"
 //#define DEBUG_STWTO
-//#define OUTNUM 2567
+//#define OUTNUM 108473
 
 double stellar_weight_towards_observer (photon_data photon,
 					geometry_struct& geometry,

@@ -44,7 +44,7 @@ void output_results (output_struct& output,
     }
 
     // compute total stellar weight uncertainty
-    float total_stellar_weight_err = 0.0;  
+    double total_stellar_weight_err = 0.0;  
     // first compute the uncertainty on the average weight of a single stellar photon
     total_stellar_weight_err = 
       output.outputs[i].total_stellar_weight_x2/output.outputs[i].total_num_photons -
@@ -61,7 +61,7 @@ void output_results (output_struct& output,
       cout << "Stellar weight = " << output.outputs[i].total_stellar_weight << endl;
     }
 
-    float stellar_sl = output.outputs[i].total_stellar_weight/output.outputs[i].total_num_photons;
+    double stellar_sl = output.outputs[i].total_stellar_weight/output.outputs[i].total_num_photons;
     if (runinfo.verbose >= 2) {
       cout << "Stellar S/L = " << stellar_sl;
       cout << " +/- " << stellar_sl*total_stellar_weight_err;
@@ -91,7 +91,7 @@ void output_results (output_struct& output,
     }
 
     // compute total scattered weight uncertainty
-    float total_scattered_weight_err = 0.0;  
+    double total_scattered_weight_err = 0.0;  
     // first compute the uncertainty on the average weight of a single scattered photon
     total_scattered_weight_err = 
       output.outputs[i].total_scattered_weight_x2/output.outputs[i].total_num_scattered_photons -
@@ -104,7 +104,7 @@ void output_results (output_struct& output,
     // fractional uncertainty on the total scattered weight
     total_scattered_weight_err /= output.outputs[i].total_scattered_weight/output.outputs[i].total_num_scattered_photons;
 
-    float scattered_sl = output.outputs[i].total_scattered_weight/output.outputs[i].total_num_photons;
+    double scattered_sl = output.outputs[i].total_scattered_weight/output.outputs[i].total_num_photons;
     if (runinfo.verbose >= 2) {
       cout << "Scattered weight = " << output.outputs[i].total_scattered_weight << endl;
       cout << "Scattered S/L = " << scattered_sl;

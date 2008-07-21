@@ -13,11 +13,11 @@
 // structure with the output for one line-of-sight, albedo, etc.
 struct one_output {
   // number of photons
-  float total_num_photons; // total
+  double total_num_photons; // total
   NumUtils::Matrix<float> num_photons_xy; // photons per image pixel
 
   // number of scattered photons
-  float total_num_scattered_photons; // total
+  double total_num_scattered_photons; // total
 
   // stellar photons
   double total_stellar_weight; // total

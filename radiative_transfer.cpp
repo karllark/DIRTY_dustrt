@@ -18,7 +18,7 @@ void radiative_transfer (geometry_struct& geometry,
 			 random_dirty random_obj)
 
 {
-  int i;
+  long i;
 
 #ifdef DEBUG_RT
   cout << "rt: io start; ";
@@ -36,7 +36,12 @@ void radiative_transfer (geometry_struct& geometry,
   for (i = 0; i < geometry.n_photons; i++) {
     // print a status statement if asked
     if (runinfo.verbose >= 1) {
-      if ((geometry.n_photons > 100) && ((i % (geometry.n_photons/20)) == 0)) cout << "current # = " << i << endl;
+      if ((geometry.n_photons > 100) && ((i % (geometry.n_photons/20)) == 0)) {
+	cout << "current # = " << i;
+	cout << " stel sl = " << output.outputs[0].total_stellar_weight/output.outputs[0].total_num_photons;
+	cout << " scat sl = " << output.outputs[0].total_scattered_weight/output.outputs[0].total_num_photons;
+	cout << endl;
+      }
     }
     // start the photon at the star position
 #ifdef DEBUG_RT
