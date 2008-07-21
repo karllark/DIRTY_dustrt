@@ -6,8 +6,8 @@
 //                now zero distance traveled
 // ======================================================================
 #include "calc_delta_dist.h"
+//#define OUTNUM 108473
 //#define DEBUG_CDD
-//#define OUTNUM 0
 
 double calc_delta_dist (photon_data& photon,
 			geometry_struct& geometry,
@@ -214,8 +214,9 @@ double calc_delta_dist (photon_data& photon,
     double min_dist = 1e20;
     min_index = -1;
     for (i = 0; i < 3; i++) 
-      if ((delta_distance[i] < min_dist) && (delta_distance[i] >= 0.)) {
-        min_dist = delta_distance[i];
+      if ((delta_distance[i] < min_dist) && (delta_distance[i] >= 0.) &&
+	  (!((photon.dir_cosines[i] == 0.0) && (delta_distance[i] == 0.0)))) {
+	min_dist = delta_distance[i];
 	min_index = i;
       }
 

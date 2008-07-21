@@ -51,10 +51,11 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   }
   global_total_absorbed = NumUtils::integrate(tmp_wave,tmp_abs_energy);
 
-  double min_enough_energy = 2.*runinfo.energy_conserve_target*global_total_absorbed/geometry.num_cells;
+  double min_enough_energy = 0.1*runinfo.energy_conserve_target*global_total_absorbed/geometry.num_cells;
   long num_cells_enough = 0;
   long num_cells_not_enough = 0;
   long num_cells_zero = 0;
+  long num_cells_too_few_waves = 0;
 
 #ifdef DEBUG_GDTE 
   cout << "min enough energy = " << min_enough_energy << endl;
@@ -110,7 +111,11 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	  cout << "max absorbed energy = " << max_abs_energy << endl;
 #endif
 
-	  if (tot_abs_energy > min_enough_energy) {
+	  if ((tot_abs_energy > 0.0) && (tot_nonzero < int(0.5*runinfo.wavelength.size()))) {
+
+	    num_cells_too_few_waves++;
+
+	  } else if (tot_abs_energy >= min_enough_energy) {
 
 	    num_cells_enough++;
 	    
@@ -184,18 +189,22 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   runinfo.total_absorbed_energy = global_total_absorbed;
 
   if (fabs(1.0 - (global_total_emitted/global_total_absorbed)) > runinfo.energy_conserve_target) {
-    cout << "energy conservation will not be meet...need to change the min_enough_energy target in the code." << endl;
+    cout << "energy conservation will not be meet..." << endl;
+    cout << "need to change the min_enough_energy target in the code" << endl;
+    cout << "or" << endl;
+    cout << "(more likely) need to add more photons to get better radiation fields." << endl;
 
     cout << "global energy conservations check" << endl;
     cout << "total_abs = " << global_total_absorbed << endl;
     cout << "total_emit_energy = " << global_total_emitted << endl;
     cout << "ratio emit/abs = " << global_total_emitted/global_total_absorbed << endl;
     
+    cout << "num cells = " << geometry.num_cells << endl;
     cout << "num cells w/ enough energy = " << num_cells_enough << endl;
     cout << "num cells w/ not enough energy (includes zero) = " << num_cells_not_enough << endl;
     cout << "num cells w/ zero energy = " << num_cells_zero << endl;
+    cout << "num cells w/ too few wavelengths = " << num_cells_too_few_waves << endl;
 
-    exit(8);
   } else if (runinfo.verbose >= 1) {
     cout << "global energy conservations check" << endl;
     cout << "total_abs = " << global_total_absorbed << endl;
@@ -205,6 +214,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
     cout << "num cells w/ enough energy = " << num_cells_enough << endl;
     cout << "num cells w/ not enough energy (includes zero) = " << num_cells_not_enough << endl;
     cout << "num cells w/ zero energy = " << num_cells_zero << endl;
+    cout << "num cells w/ too few wavelengths = " << num_cells_too_few_waves << endl;
   }
 
   geometry.emitted_energy_grid_initialized = 1;
