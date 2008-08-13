@@ -41,6 +41,9 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
   // constant for num_H calculation
   double num_H_const = 1./(runinfo.tau_to_h[index]*(Constant::PC_CM));
 
+  // total H mass (so we can get the dust mass assuming a gas-to-dust ratio)
+  double total_H_mass = 0.0;
+
   // loop through the dust density grid and convert to radiation field density
   int i,j,k,m = 0;
   // loop over all the defined grids
@@ -77,6 +80,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	    cout << "total # photons = " << output.outputs[0].total_num_photons << endl;
 	    cout << "ave C_abs = " << runinfo.ave_C_abs[index] << endl;
 #endif
+	    total_H_mass += geometry.grids[m].grid(i,j,k).num_H*Constant::HMASS_CGS;
 
 	    // convert the absorbed energy to radiation field density
 	    double j_temp = geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index];
@@ -136,6 +140,8 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 //   cout << "ratio = " << total_energy_absorbed_photons/output.outputs[0].total_num_photons << endl;
 //   cout << "energy = " << (total_energy_absorbed_photons/output.outputs[0].total_num_photons)*runinfo.sed_lum[index] << endl;
 //   exit(8);
+
+//   cout << "total H mass [g] = " << total_H_mass << endl;
   
   if (geometry.abs_energy_storage_type == 1) {
     cout << "no code written for storage_absorbed_energy_grid for disk storage" << endl;

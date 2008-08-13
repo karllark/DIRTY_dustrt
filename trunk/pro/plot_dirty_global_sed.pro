@@ -31,7 +31,7 @@
 ;     Written by : Karl D. Gordon (22 Mar 2008)
 ;-
 pro plot_dirty_global_sed,filename,energy=energy,eps=eps, $
-  xrange=xrange,yrange=yrange
+  xrange=xrange,yrange=yrange,table=table
 
 table = mrdfits(filename,1)
 table_tagnames = tag_names(table)
@@ -43,23 +43,26 @@ if (keyword_set(energy)) then begin
     table.flux_input *= table.wavelength
     table.flux_rt_d *= table.wavelength
     table.flux_rt_s *= table.wavelength
-    table.flux_de_d_1 *= table.wavelength
-    table.flux_de_s_1 *= table.wavelength
-    table.flux_de_d_2 *= table.wavelength
-    table.flux_de_s_2 *= table.wavelength
-    table.flux_de_d_3 *= table.wavelength
-    table.flux_de_s_3 *= table.wavelength
-
-    sindxs = where(table_tagnames EQ 'FLUX_DE_D_4',n_sindxs)
+    sindxs = where(table_tagnames EQ 'FLUX_DE_D_1',n_sindxs)
     if (n_sindxs GT 0) then begin
-        table.flux_de_d_4 *= table.wavelength
-        table.flux_de_s_4 *= table.wavelength
-        table.flux_de_d_5 *= table.wavelength
-        table.flux_de_s_5 *= table.wavelength
-        table.flux_de_d_6 *= table.wavelength
-        table.flux_de_s_6 *= table.wavelength
-        table.flux_de_d_7 *= table.wavelength
-        table.flux_de_s_7 *= table.wavelength
+        table.flux_de_d_1 *= table.wavelength
+        table.flux_de_s_1 *= table.wavelength
+        table.flux_de_d_2 *= table.wavelength
+        table.flux_de_s_2 *= table.wavelength
+        table.flux_de_d_3 *= table.wavelength
+        table.flux_de_s_3 *= table.wavelength
+        
+        sindxs = where(table_tagnames EQ 'FLUX_DE_D_4',n_sindxs)
+        if (n_sindxs GT 0) then begin
+            table.flux_de_d_4 *= table.wavelength
+            table.flux_de_s_4 *= table.wavelength
+            table.flux_de_d_5 *= table.wavelength
+            table.flux_de_s_5 *= table.wavelength
+            table.flux_de_d_6 *= table.wavelength
+            table.flux_de_s_6 *= table.wavelength
+            table.flux_de_d_7 *= table.wavelength
+            table.flux_de_s_7 *= table.wavelength
+        endif
     endif
 endif else begin
     ytitle = 'F(!4k!3) [ergs s!U-1!N !4l!3m!U-1!N]'
@@ -87,16 +90,19 @@ koplot,table.wavelength,table.flux_rt_d+table.flux_rt_s,psym=100,color=blue_colo
 koplot,table.wavelength,table.flux_rt_d,psym=100,color=blue_color,linestyle=1
 koplot,table.wavelength,table.flux_rt_s,psym=100,color=blue_color,linestyle=2
 
+sindxs = where(table_tagnames EQ 'FLUX_DE_D_1',n_sindxs)
+if (n_sindxs GT 0) then begin
 ; plot the total DE
-koplot,table.wavelength,table.flux_de_d_1+table.flux_de_s_1,psym=100,color=red_color,linestyle=0
-koplot,table.wavelength,table.flux_de_d_1,psym=100,color=red_color,linestyle=1
-koplot,table.wavelength,table.flux_de_s_1,psym=100,color=red_color,linestyle=2
+    koplot,table.wavelength,table.flux_de_d_1+table.flux_de_s_1,psym=100,color=red_color,linestyle=0
+    koplot,table.wavelength,table.flux_de_d_1,psym=100,color=red_color,linestyle=1
+    koplot,table.wavelength,table.flux_de_s_1,psym=100,color=red_color,linestyle=2
 
 ; plot the DE component 
-koplot,table.wavelength,table.flux_de_d_2,psym=100,color=green_color,linestyle=1
-koplot,table.wavelength,table.flux_de_s_2,psym=100,color=green_color,linestyle=2
-koplot,table.wavelength,table.flux_de_d_3,psym=100,color=green_color,linestyle=3
-koplot,table.wavelength,table.flux_de_s_3,psym=100,color=green_color,linestyle=4
+    koplot,table.wavelength,table.flux_de_d_2,psym=100,color=green_color,linestyle=1
+    koplot,table.wavelength,table.flux_de_s_2,psym=100,color=green_color,linestyle=2
+    koplot,table.wavelength,table.flux_de_d_3,psym=100,color=green_color,linestyle=3
+    koplot,table.wavelength,table.flux_de_s_3,psym=100,color=green_color,linestyle=4
+endif
 
 sindxs = where(table_tagnames EQ 'FLUX_DE_D_4',n_sindxs)
 if (n_sindxs GT 0) then begin
