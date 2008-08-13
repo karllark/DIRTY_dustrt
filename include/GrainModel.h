@@ -142,6 +142,10 @@ private:
     ModelID["MRN"]=0; 
     ModelID["BARE-GR-S"]=1; 
     ModelID["KG-BARE-S"]=2; 
+    ModelID["KG-BARE-S1"]=3; 
+    ModelID["KG-BARE-S2"]=4; 
+    ModelID["KG-BARE-S3"]=5; 
+    ModelID["KG-BARE-S4"]=6; 
   }
   map<string,int> SizeDistID; 
   void SizeDistMapping() { 

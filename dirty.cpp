@@ -20,7 +20,7 @@
 // 2008 Mar/KDG - fixed global output to use a FITS ASCII table
 // ======================================================================
 #include "dirty.h"
-//#define DEBUG_DIRTY
+#define DEBUG_DIRTY
 
 int main(int argc, char* argv[]) 
 
@@ -85,8 +85,10 @@ int main(int argc, char* argv[])
   // loop over all wavelengths
   int i;
   for (i = 0; i < runinfo.n_waves; i++) {
-    if (runinfo.verbose >= 1)
+    if (runinfo.verbose >= 1) {
       cout << "working on wavelength [micron] = " << runinfo.wavelength[i]*Constant::CM_UM << endl;
+      cout << "albedo = " << runinfo.albedo[i] << endl;
+    }
 
     // setup/(re)initialize absorbed energy grid
     setup_absorbed_energy_grid(geometry, runinfo, i, 0);
@@ -289,7 +291,10 @@ int main(int argc, char* argv[])
 
   // output global, multiwavelength luminosities
   if (runinfo.do_global_output)
-    output_global_results(runinfo, de_output);
+    if (runinfo.do_dust_emission)
+      output_global_results(runinfo, de_output);
+    else
+      output_global_results(runinfo, output);
 
   return 0;
 

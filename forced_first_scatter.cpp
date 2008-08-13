@@ -58,6 +58,8 @@ void forced_first_scatter (geometry_struct& geometry,
   if (photon.number == OUTNUM) cout << "target_tau = " << target_tau << endl;
   if (photon.number == OUTNUM) cout << "tau_to_surface = " << tau_to_surface << endl;
 #endif
+//    cout << geometry.tau_to_tau_ref << " ";
+//    cout << "tau_to_surface = " << tau_to_surface << endl;
 		   
   // move photon to location determined by target_tau and get the distance traveled
   escape = 0;  // reset escape

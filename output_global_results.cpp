@@ -13,7 +13,7 @@ void output_global_results (runinfo_struct& runinfo,
 
   // setup the columns of the output table
   int tfields = 9; // min number of fields
-  if (runinfo.do_emission_grain) tfields += 4*(runinfo.n_emission_grain_types);
+  if (runinfo.do_dust_emission && runinfo.do_emission_grain) tfields += 4*(runinfo.n_emission_grain_types);
   vector<string> sttype(tfields);
   vector<string> stform(tfields);
   vector<string> stunit(tfields);
@@ -36,7 +36,7 @@ void output_global_results (runinfo_struct& runinfo,
   sttype[8] = "Flux_rt_s_unc";
 
   // columns for emission/grain types
-  if (runinfo.do_emission_grain) {
+  if (runinfo.do_dust_emission && runinfo.do_emission_grain) {
     int eg_offset = 9;
     //    grain_emission_type = GetEmissionLabels(); // from grain model
     // temp stuff
@@ -93,37 +93,45 @@ void output_global_results (runinfo_struct& runinfo,
     flux_total.push_back(runinfo.out_sed_lum[0][i] + runinfo.out_sed_lum[1][i]);
     flux_total_unc.push_back(runinfo.out_sed_lum_unc[0][i]*runinfo.out_sed_lum_unc[0][i] +
 			     runinfo.out_sed_lum_unc[1][i]*runinfo.out_sed_lum_unc[1][i]);
-    // offset (adjust if ERE also)
-    out_sed_lum_offset = 2;
-    for (j = 0; j < runinfo.n_emission_grain_types; j++) {
-      // dust thermal emitted direct
-      runinfo.out_sed_lum[out_sed_lum_offset+(2*j)][i] *= runinfo.emitted_lum[0][i]/Constant::CM_UM;
-      runinfo.out_sed_lum_unc[out_sed_lum_offset+(2*j)][i] *= runinfo.emitted_lum[0][i]/Constant::CM_UM;
-      // dust thermal emitted scattered
-      runinfo.out_sed_lum[1+out_sed_lum_offset+(2*j)][i] *= runinfo.emitted_lum[0][i]/Constant::CM_UM;
-      runinfo.out_sed_lum_unc[1+out_sed_lum_offset+(2*j)][i] *= runinfo.emitted_lum[0][i]/Constant::CM_UM;
+    if (runinfo.do_dust_emission) {
+      // offset (adjust if ERE also)
+      out_sed_lum_offset = 2;
+      for (j = 0; j < runinfo.n_emission_grain_types; j++) {
+	// dust thermal emitted direct
+	runinfo.out_sed_lum[out_sed_lum_offset+(2*j)][i] *= runinfo.emitted_lum[0][i]/Constant::CM_UM;
+	runinfo.out_sed_lum_unc[out_sed_lum_offset+(2*j)][i] *= runinfo.emitted_lum[0][i]/Constant::CM_UM;
+	// dust thermal emitted scattered
+	runinfo.out_sed_lum[1+out_sed_lum_offset+(2*j)][i] *= runinfo.emitted_lum[0][i]/Constant::CM_UM;
+	runinfo.out_sed_lum_unc[1+out_sed_lum_offset+(2*j)][i] *= runinfo.emitted_lum[0][i]/Constant::CM_UM;
+      }
+      // add the total thermal emitted component to the total
+      flux_total[i] += runinfo.out_sed_lum[out_sed_lum_offset][i] + runinfo.out_sed_lum[1+out_sed_lum_offset][i];
+      flux_total_unc[i] += runinfo.out_sed_lum_unc[out_sed_lum_offset][i]*runinfo.out_sed_lum_unc[out_sed_lum_offset][i] +
+	runinfo.out_sed_lum_unc[1+out_sed_lum_offset][i]*runinfo.out_sed_lum_unc[1+out_sed_lum_offset][i];
+      flux_total_unc[i] = pow(flux_total_unc[i],0.5);
     }
-    // add the total thermal emitted component to the total
-    flux_total[i] += runinfo.out_sed_lum[out_sed_lum_offset][i] + runinfo.out_sed_lum[1+out_sed_lum_offset][i];
-    flux_total_unc[i] += runinfo.out_sed_lum_unc[out_sed_lum_offset][i]*runinfo.out_sed_lum_unc[out_sed_lum_offset][i] +
-      runinfo.out_sed_lum_unc[1+out_sed_lum_offset][i]*runinfo.out_sed_lum_unc[1+out_sed_lum_offset][i];
-    flux_total_unc[i] = pow(flux_total_unc[i],0.5);
   }
 
   // determine the global energy absorbed and emitted
   double total_stellar_energy = NumUtils::integrate(out_wavelength,out_sed_lum);
   double total_rt_direct_energy = NumUtils::integrate(out_wavelength,runinfo.out_sed_lum[0]);
   double total_rt_scat_energy = NumUtils::integrate(out_wavelength,runinfo.out_sed_lum[1]);
-  double total_de_direct_energy = NumUtils::integrate(out_wavelength,runinfo.out_sed_lum[out_sed_lum_offset]);
-  double total_de_scat_energy = NumUtils::integrate(out_wavelength,runinfo.out_sed_lum[out_sed_lum_offset+1]);
+  double total_de_direct_energy = 0.0;
+  double total_de_scat_energy = 0.0;
+  if (runinfo.do_emission_grain) {
+    total_de_direct_energy = NumUtils::integrate(out_wavelength,runinfo.out_sed_lum[out_sed_lum_offset]);
+    total_de_scat_energy = NumUtils::integrate(out_wavelength,runinfo.out_sed_lum[out_sed_lum_offset+1]);
+  }
   if (runinfo.verbose >= 1) {
     cout << "Emitted(total) = " << total_stellar_energy << endl;
     cout << "Emitted(rt direct) = " << total_rt_direct_energy << endl;
     cout << "Emitted(rt scat) = " << total_rt_scat_energy << endl;
-    cout << "Emitted(de direct) = " << total_de_direct_energy << endl;
-    cout << "Emitted(de scat) = " << total_de_scat_energy << endl;
-    cout << "Absorbed(rt) = " << (total_stellar_energy - total_rt_direct_energy - total_rt_scat_energy) << endl;
-    cout << "Emitted(de) = " << (total_de_direct_energy - total_de_scat_energy) << endl;
+    if (runinfo.do_emission_grain) {
+      cout << "Emitted(de direct) = " << total_de_direct_energy << endl;
+      cout << "Emitted(de scat) = " << total_de_scat_energy << endl;
+      cout << "Absorbed(rt) = " << (total_stellar_energy - total_rt_direct_energy - total_rt_scat_energy) << endl;
+      cout << "Emitted(de) = " << (total_de_direct_energy - total_de_scat_energy) << endl;
+    }
   }
 
   // filename of the current output file
@@ -144,7 +152,7 @@ void output_global_results (runinfo_struct& runinfo,
   fits_write_col(out_ptr, TDOUBLE, 1, 1, 0, runinfo.n_waves, &out_wavelength[0], &status);
   check_fits_io(status,"fits_write_col : output global results, wavelength column");
 
-  fits_write_col(out_ptr, TDOUBLE, 2, 1, 0, runinfo.n_waves, &runinfo.tau_to_tau_ref[0], &status);
+  fits_write_col(out_ptr, TFLOAT, 2, 1, 0, runinfo.n_waves, &runinfo.tau_to_tau_ref[0], &status);
   check_fits_io(status,"fits_write_col : output global results, tau_to_tau_ref");
 
   fits_write_col(out_ptr, TDOUBLE, 3, 1, 0, runinfo.n_waves, &out_sed_lum[0], &status);
@@ -156,7 +164,9 @@ void output_global_results (runinfo_struct& runinfo,
   fits_write_col(out_ptr, TDOUBLE, 5, 1, 0, runinfo.n_waves, &flux_total_unc[0], &status);
   check_fits_io(status,"fits_write_col : output global results, flux_total_unc");
 
-  for (i = 0; i < (runinfo.n_emission_grain_types+1); i++) {
+  int n_col = 1;
+  if (runinfo.do_dust_emission) n_col += runinfo.n_emission_grain_types;
+  for (i = 0; i < n_col; i++) {
     fits_write_col(out_ptr, TDOUBLE, (6+(4*i)), 1, 0, runinfo.n_waves, &runinfo.out_sed_lum[2*i][0], &status);
     fits_write_col(out_ptr, TDOUBLE, (7+(4*i)), 1, 0, runinfo.n_waves, &runinfo.out_sed_lum_unc[2*i][0], &status);
     fits_write_col(out_ptr, TDOUBLE, (8+(4*i)), 1, 0, runinfo.n_waves, &runinfo.out_sed_lum[(2*i)+1][0], &status);
