@@ -10,6 +10,8 @@
 #include "roundoff_err.h"
 #include "debug.h"
 
+#define MAX_NUM_SCAT 50
+
 //**********************************************************************
 // external function definitions
 

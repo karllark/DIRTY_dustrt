@@ -41,6 +41,7 @@ void radiative_transfer (geometry_struct& geometry,
 	cout << "current # = " << i;
 	cout << " stel sl = " << output.outputs[0].total_stellar_weight/output.outputs[0].total_num_photons;
 	cout << " scat sl = " << output.outputs[0].total_scattered_weight/output.outputs[0].total_num_photons;
+	cout << " ave 1st tau = " << output.outputs[0].ave_first_tau/output.outputs[0].total_num_photons;
 	cout << endl;
       }
     }
