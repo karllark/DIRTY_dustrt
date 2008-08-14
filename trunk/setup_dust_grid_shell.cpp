@@ -233,8 +233,9 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 
   // now subdivide the center cubes if the inner radius is inside the cube dimension
   if (subdivide_radius > 0.0) {
+    cout << "input subdivide radius = " << subdivide_radius << endl;
     if (subdivide_radius < pow(3.,0.5)*(main_grid.phys_cube_size[0]/2.)) subdivide_radius = main_grid.phys_cube_size[0];
-    cout << subdivide_radius << endl;
+    cout << "subdivide radius used (depends on main grid size) = " << subdivide_radius << endl;
     int subdivide = 0;
     int subdivide_any = 0;
     int m = 0;  // only main_grid for now
@@ -247,21 +248,21 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	  x_val = (geometry.grids[m].positions[0][i] + geometry.grids[m].positions[0][i+1])/2.0;
 	  radius = sqrt(x_val*x_val + y_val*y_val + z_val*z_val);
 	  if (radius <= subdivide_radius) {
-	    cout << "inner radius = " << inner_radius;
-	    cout << "; radius = " << radius << "; ";
-	    cout << i << " ";
-	    cout << j << " ";
-	    cout << k << endl;
 	    subdivide = 1;
 	    subdivide_any = 1;
 	  } else subdivide = 0;
 
 	  if (subdivide) {
 	    one_grid subgrid;
-	    subgrid.index_dim[0] = int(10.*geometry.grids[0].phys_cube_size[0]/very_inner_radius) + 1;
+	    subgrid.index_dim[0] = int(2.*geometry.grids[0].phys_cube_size[0]/very_inner_radius) + 1;
 #ifdef DEBUG_SDG
-	    cout << "subgird size = " << subgrid.index_dim[0] << endl;
 #endif
+	    cout << "inner radius = " << inner_radius;
+	    cout << "; radius = " << radius << "; ";
+	    cout << i << " ";
+	    cout << j << " ";
+	    cout << k << endl;
+	    cout << "subgird size = " << subgrid.index_dim[0] << endl;
 	    
 	    subgrid.index_dim[1] = subgrid.index_dim[0];
 	    subgrid.index_dim[2] = subgrid.index_dim[0];

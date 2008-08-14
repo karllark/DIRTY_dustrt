@@ -39,6 +39,8 @@ void initialize_output (output_struct& output,
     output.outputs[i].total_stellar_weight_x2 = 0.0;
     output.outputs[i].total_scattered_weight = 0.0;
     output.outputs[i].total_scattered_weight_x2 = 0.0;
+    output.outputs[i].ave_first_tau = 0.0;
+    output.outputs[i].ave_first_tau_x2 = 0.0;
 
     int j,k;
     for (j = 0; j < output.image_size[0]; j++)

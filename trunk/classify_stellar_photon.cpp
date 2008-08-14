@@ -125,6 +125,9 @@ void classify_stellar_photon (output_struct& output,
     output.outputs[i].total_stellar_weight += tmp_photon.stellar_weight;
     output.outputs[i].total_stellar_weight_x2 += pow(tmp_photon.stellar_weight,2.);
 
+    output.outputs[i].ave_first_tau += tmp_photon.first_tau;
+    output.outputs[i].ave_first_tau_x2 += pow(tmp_photon.first_tau,2.);
+
     // update the image values
     output.outputs[i].stellar_weight_xy(image_indxs[0],image_indxs[1]) += tmp_photon.stellar_weight;
     output.outputs[i].stellar_weight_xy_x2(image_indxs[0],image_indxs[1]) += pow(tmp_photon.stellar_weight,2.0);

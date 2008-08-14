@@ -31,6 +31,10 @@ struct one_output {
   NumUtils::Matrix<float> scattered_weight_xy; // weight per image pixel
   NumUtils::Matrix<float> scattered_weight_xy_x2; // squared sum weight per image pixel
 
+  // other
+  double ave_first_tau; // average of tau (starts as a sum)
+  double ave_first_tau_x2; // total squared sum (for unc calc)
+
   // transfrom used to put the observer on the z-axis
   // used by rotate_zaxis_to_observer routine
   float rotate_transform[3][3];

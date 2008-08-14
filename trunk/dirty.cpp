@@ -20,7 +20,7 @@
 // 2008 Mar/KDG - fixed global output to use a FITS ASCII table
 // ======================================================================
 #include "dirty.h"
-#define DEBUG_DIRTY
+//#define DEBUG_DIRTY
 
 int main(int argc, char* argv[]) 
 
@@ -87,6 +87,7 @@ int main(int argc, char* argv[])
   for (i = 0; i < runinfo.n_waves; i++) {
     if (runinfo.verbose >= 1) {
       cout << "working on wavelength [micron] = " << runinfo.wavelength[i]*Constant::CM_UM << endl;
+      cout << "tau = " << runinfo.tau_to_tau_ref[i]*geometry.tau << endl;
       cout << "albedo = " << runinfo.albedo[i] << endl;
     }
 

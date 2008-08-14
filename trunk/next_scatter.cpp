@@ -42,11 +42,14 @@ int next_scatter (geometry_struct& geometry,
 //     cout << photon.position[j] << " ";
 //   cout << endl;
 
+  escape = 0;
   // check if the photon has left the dust
   if ((target_tau - tau_traveled) > ROUNDOFF_ERR_TRIG)
     escape = 1;
-  else
-    escape = 0;
+
+  // check if the photon has scattered enough and there is just no significant weight left
+  if (photon.num_scat > MAX_NUM_SCAT)
+    escape = 1;
 
 #ifdef DEBUG_NS
   cout << "ns escape = " << escape << endl;
