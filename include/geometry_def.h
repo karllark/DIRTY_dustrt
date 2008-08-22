@@ -54,6 +54,8 @@ struct geometry_struct {
   double albedo;   // dust scattering albedo
   double g;        // dust scattering phase function asymmetry (g = <cos(theta)>)
 
+  double total_h_mass; // total hydrogen mass (where dust emission was done)
+
   int wave_index;  // wavelength index (needed for new_photon_grid_source)
 
   float distance;  // distance of model from observer

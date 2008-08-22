@@ -141,6 +141,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 //   cout << "energy = " << (total_energy_absorbed_photons/output.outputs[0].total_num_photons)*runinfo.sed_lum[index] << endl;
 //   exit(8);
 
+  geometry.total_h_mass = total_H_mass;
 //   cout << "total H mass [g] = " << total_H_mass << endl;
   
   if (geometry.abs_energy_storage_type == 1) {

@@ -107,6 +107,7 @@ extern void check_de_energy_conservation (runinfo_struct& runinfo,
 
 // output global integrated quantities
 extern void output_global_results (runinfo_struct& runinfo,
-				   output_struct& output);
+				   output_struct& output,
+				   geometry_struct& geometry);
 
 #endif
