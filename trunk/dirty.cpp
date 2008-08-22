@@ -293,9 +293,9 @@ int main(int argc, char* argv[])
   // output global, multiwavelength luminosities
   if (runinfo.do_global_output)
     if (runinfo.do_dust_emission)
-      output_global_results(runinfo, de_output);
+      output_global_results(runinfo, de_output, geometry);
     else
-      output_global_results(runinfo, output);
+      output_global_results(runinfo, output, geometry);
 
   return 0;
 

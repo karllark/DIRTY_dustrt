@@ -149,6 +149,16 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 
   int j,k;
 
+  // these computations need to be done with radii less than 1 
+  // I don't understand why, but I checked this in IDL and get the same results
+  // 20 Aug 2008 - KDG (should check this more, but don't know what the next step is)
+
+  // normalized all the radii to the outer radius (see above comment)
+  very_inner_radius /= outer_radius;
+  inner_radius /= outer_radius;
+  double save_outer_radius = outer_radius;
+  outer_radius = 1.0;
+
   double tmp_density = 0.0;
   double tmp_den_constant1 = 0.0;
   double tmp_den_constant2 = 0.0;
@@ -166,6 +176,11 @@ void setup_dust_grid_shell (ConfigFile& param_data,
     tmp_den_constant2 = geometry.tau/tmp_den_constant2;
     tmp_den_constant1 = tmp_den_constant2*pow(inner_radius,radial_density_poly)/(inner_radius - very_inner_radius);
   }
+
+//   cout << tmp_den_constant1 << endl;
+//   cout << tmp_den_constant2 << endl;
+//   exit(8);
+
   double radius = 0.0;
   float x_val = 0.0;
   float y_val = 0.0;
@@ -179,6 +194,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
       for (i = 0; i < main_grid.index_dim[0]; i++) {
 	x_val = (main_grid.positions[0][i] + main_grid.positions[0][i+1])/2.0;
 	radius = sqrt(x_val*x_val + y_val*y_val + z_val*z_val);
+	radius /= save_outer_radius;
 	if (radius > outer_radius)
 	  main_grid.grid(i,j,k).dust_tau_per_pc = -0.5;  // this means the edge of the dust
 	else {
@@ -188,6 +204,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	    tmp_density = tmp_den_constant1*(radius - very_inner_radius);
 	  else if (radius <= outer_radius) 
 	    tmp_density = tmp_den_constant2*pow(radius,radial_density_poly);
+	  tmp_density /= save_outer_radius;
 	  
 	  if (random_obj.random_num() <= geometry.filling_factor)
 	    main_grid.grid(i,j,k).dust_tau_per_pc = tmp_density*geometry.clump_densities[0];

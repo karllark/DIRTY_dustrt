@@ -6,7 +6,8 @@
 #include "output_global_results.h"
 
 void output_global_results (runinfo_struct& runinfo,
-			    output_struct& output)
+			    output_struct& output,
+			    geometry_struct& geometry)
 
 {
   int i,j = 0;
@@ -148,6 +149,11 @@ void output_global_results (runinfo_struct& runinfo,
   fits_create_tbl(out_ptr, ASCII_TBL, 0, tfields, &ttype[0], &tform[0], &tunit[0], "Global_Outputs", &status);
   check_fits_io(status,"fits_create_tbl : output_global_results");
   
+  double thmass = geometry.total_h_mass;
+  cout << thmass << endl;
+  fits_write_key(out_ptr, TDOUBLE, "TOT_HMASS", &thmass, "Total H atom mass", &status);
+  check_fits_io(status,"fits_write_key : output_global_results");
+
   // write the columns
   fits_write_col(out_ptr, TDOUBLE, 1, 1, 0, runinfo.n_waves, &out_wavelength[0], &status);
   check_fits_io(status,"fits_write_col : output global results, wavelength column");

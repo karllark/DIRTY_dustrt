@@ -89,13 +89,26 @@ void determine_photon_position_index_initial (geometry_struct& geometry,
       if ((photon.position[i] < geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]]) ||
 	  (photon.position[i] > geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1])) {
 	// now make changes if this is a roundoff error issue (very near the grid min/max)
-	if ((photon.position[i] < geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]]) &&
-	    ((geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]] - photon.position[i]) < ROUNDOFF_ERR_INDEX)) {
-	  photon.position_index[k][i]--;
-	} else if ((photon.position[i] > geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1]) &&
-		   ((photon.position[i] - geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1]) < ROUNDOFF_ERR_INDEX)) {
-	  photon.position_index[k][i]++;
-	} else {
+	int not_ok = 0;
+	if (photon.position[i] < geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]]) {
+	  float frac_miss = (geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]] - photon.position[i])/
+	    geometry.grids[cur_grid_num].phys_cube_size[k];
+	  cout << "frac_miss = " << frac_miss << endl;
+	  if (frac_miss < ROUNDOFF_ERR_INDEX)
+	    photon.position_index[k][i]--;
+	  else
+	    not_ok = 1;
+	} else if (photon.position[i] > geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1]) {
+	  float frac_miss = (photon.position[i] - geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1])/
+	    geometry.grids[cur_grid_num].phys_cube_size[k];
+	  cout << "frac_miss = " << frac_miss << endl;
+	  if (frac_miss < ROUNDOFF_ERR_INDEX)
+	    photon.position_index[k][i]++;
+	  else
+	    not_ok = 1;
+	}
+
+	if (not_ok) {
 	  cout << "photon not in designated grid cell (determine_photon.position_index_initial.cpp)." << endl;
 	  cout << "out of bounds of correction." << endl;
 	  cout << "photon # = " << photon.number << endl;
@@ -112,8 +125,10 @@ void determine_photon_position_index_initial (geometry_struct& geometry,
 	  cout << "cell max position = " << geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1] << endl;
 	  cout << "geometry.grids[cur_grid_num].positions[i][0] = " << geometry.grids[cur_grid_num].positions[i][0] << endl;
 	  cout << "geometry.grids[cur_grid_num].phys_cube_size[i] = " << geometry.grids[cur_grid_num].phys_cube_size[i] << endl;
-	  cout << "min edge diff = " << geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]] - photon.position[i] << endl;
-	  cout << "max edge diff = " << photon.position[i] - geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1] << endl;
+	  cout << "min edge diff/cube size = " << (geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]] - photon.position[i])/
+	       geometry.grids[cur_grid_num].phys_cube_size[k] << endl;
+	  cout << "max edge diff/cub size = " << (photon.position[i] - geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1])/
+	       geometry.grids[cur_grid_num].phys_cube_size[k] << endl;
           cout << "ROUNDOFF_ERR_INDEX = " << ROUNDOFF_ERR_INDEX << endl;
 	  exit(8);
 	}
