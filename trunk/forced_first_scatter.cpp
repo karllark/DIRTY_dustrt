@@ -31,6 +31,7 @@ void forced_first_scatter (geometry_struct& geometry,
 
   // get the optical depth to the edge of the dust in the current direction
   dummy_photon = photon;
+  dummy_photon.path_cur_cells = -1;  // set to -1 *not* to save cells tranversed
   distance_traveled = calc_photon_trajectory(dummy_photon, geometry, target_tau, escape, tau_to_surface);
   photon.first_tau = tau_to_surface;
 #ifdef DEBUG_FFS
@@ -52,6 +53,7 @@ void forced_first_scatter (geometry_struct& geometry,
   // unlike 2nd, 3rd, etc. scatterings, this scattering is forced to be 
   // in the dust distribution and is why the weights are done as above
   target_tau = -log(1.0 - random_obj.random_num()*(1.0 - new_stellar_weight));
+  photon.target_tau = target_tau;
 
 //   cout << "tau_to_surf = " << tau_to_surface << endl;
 #ifdef DEBUG_FFS
@@ -63,6 +65,7 @@ void forced_first_scatter (geometry_struct& geometry,
 		   
   // move photon to location determined by target_tau and get the distance traveled
   escape = 0;  // reset escape
+  photon.path_cur_cells = 0;  // set to 0 to save cells tranversed
 #ifdef DEBUG_FFS
   if (photon.number == OUTNUM) cout << "tau_traveled in = " << tau_traveled << endl;
 #endif

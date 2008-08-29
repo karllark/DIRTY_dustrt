@@ -26,4 +26,9 @@ extern void new_photon_grid_source (photon_data& photon,
 				    runinfo_struct& runinfo,
 				    random_dirty random_obj);
 
+// new photon for dexp disk
+extern void new_photon_dexp_disk (photon_data& photon,
+				  geometry_struct& geometry,
+				  random_dirty random_obj);
+
 #endif

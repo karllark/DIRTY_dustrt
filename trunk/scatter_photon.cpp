@@ -2,6 +2,7 @@
 //   Procedure to scatter a photon into a new direction.  
 //
 // 2004 Dec/KDG - written
+// 2008 Aug/KDG - added continous absorption
 // ======================================================================
 #include "scatter_photon.h"
 
@@ -61,11 +62,35 @@ void scatter_photon (geometry_struct& geometry,
     photon.dir_cosines[i] = new_dir_cosines[i];
 
   // update the absorbed energy in the grid
-  int k = photon.current_grid_num;
-  long grid_val = photon.grid_number[k];
-  geometry.grids[grid_val].grid(photon.position_index[k][0],photon.position_index[k][1],photon.position_index[k][2]).absorbed_energy[geometry.abs_energy_wave_index] +=
-    (1. - geometry.albedo)*photon.scat_weight;
-  
+//   int k = photon.current_grid_num;
+//   long grid_val = photon.grid_number[k];
+//   geometry.grids[grid_val].grid(photon.position_index[k][0],photon.position_index[k][1],photon.position_index[k][2]).absorbed_energy[geometry.abs_energy_wave_index] +=
+//     (1. - geometry.albedo)*photon.scat_weight;
+
+  // continuous absorption (instead of point absorption - should help convergence)
+#ifdef DEGUG_SP
+  cout << photon.num_scat << endl;
+  float tmp_sum = 0.0;
+#endif
+  float abs_weight = (1. - geometry.albedo)*photon.scat_weight;
+  for (i = 0; i < photon.path_cur_cells; i++) {
+    geometry.grids[photon.path_pos_index[0][i]].grid(photon.path_pos_index[1][i],photon.path_pos_index[2][i],photon.path_pos_index[3][i]).absorbed_energy[geometry.abs_energy_wave_index] += abs_weight*(photon.path_tau[i]/photon.target_tau);
+#ifdef DEGUG_SP
+    cout << "path: ";
+    cout << i << " ";
+    cout << photon.path_pos_index[0][i] << " ";
+    cout << photon.path_pos_index[1][i] << " ";
+    cout << photon.path_pos_index[2][i] << " ";
+    cout << photon.path_pos_index[3][i] << " ";
+    cout << photon.path_tau[i] << " ";
+    cout << geometry.grids[photon.path_pos_index[0][i]].grid(photon.path_pos_index[1][i],photon.path_pos_index[2][i],photon.path_pos_index[3][i]).dust_tau_per_pc*geometry.tau_to_tau_ref*geometry.grids[photon.path_pos_index[0][i]].phys_cube_size[0] << " ";
+    cout << endl;
+    tmp_sum += photon.path_tau[i];
+#endif
+  }
+#ifdef DEGUG_SP
+  cout << "total tau = " << photon.target_tau << " " << tmp_sum << endl;
+#endif  
   // update the scattered weight
   photon.scat_weight *= geometry.albedo;
 

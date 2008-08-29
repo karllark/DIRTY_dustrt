@@ -5,6 +5,7 @@
 // 2003 Jun/KDG - written
 // 2004 Dec/KDG - added photon tracking
 // 2005 May/KDG - added angular radius
+// 2008 Aug/KDG - added double exp disk
 // ======================================================================
 
 #ifndef _DIRTY_GEOMETRY_DEF_
@@ -22,11 +23,12 @@
 #define NEW_PHOTON_DIFFUSE_ISOTROPIC 2
 #define NEW_PHOTON_DIFFUSE_FILE 3
 #define NEW_PHOTON_GRID 4
+#define NEW_PHOTON_DEXP_DISK 5
 
 // info defining a single grid (can be nested inside of other single grids)
 struct one_grid {
   int parent_grid_num;
-  int index_dim[3];
+  long index_dim[3];
   double phys_grid_size[3];
   double phys_cube_size[3];
   vector<vector<double> > positions;
@@ -70,6 +72,12 @@ struct geometry_struct {
   double star_positions[5][MAX_MULTIPLE_STARS];  // position of stars in physical units
           // luminosity is the 4th element, 5th element the running sum of the luminosity
           // between 0 and 1 for the determination of which star emits the current photon
+
+  // dexp stellar variables
+  double stellar_scaleheight;
+  double stellar_scalelength;
+  double stellar_emit_constant_z;
+  double stellar_emit_constant_xy;
 
   int randomize_observer;  // randomize observer position to integrate over 4pi
 

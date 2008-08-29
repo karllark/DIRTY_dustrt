@@ -25,6 +25,17 @@ struct photon_data {
 
   long number;  // photon number (nth photon)
   double first_tau;  // optical depth to the surface along the birth direction of the photon
+  double target_tau; // optical depth to the next scattering
+
+  // needed to do continous absorption (m,i,j,k)
+  // vector of indexes for the cells the current photon just passed through
+  std::vector< std::vector<int> > path_pos_index;  
+  // vector of taus for each cell the photon just passed through
+  std::vector< float > path_tau;
+  // max number of cells in the path vectors (can be increased if needed)
+  int path_max_cells;
+  // current number of cells in the current storage of the current path
+  int path_cur_cells;
 };
 
 #endif

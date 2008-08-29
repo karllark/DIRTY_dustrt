@@ -209,8 +209,8 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	  if (random_obj.random_num() <= geometry.filling_factor)
 	    main_grid.grid(i,j,k).dust_tau_per_pc = tmp_density*geometry.clump_densities[0];
 	  else {
-	  if (radius < min_good_radius) min_good_radius = radius;
-	  if (radius > max_good_radius) max_good_radius = radius;
+	    if (radius < min_good_radius) min_good_radius = radius;
+	    if (radius > max_good_radius) max_good_radius = radius;
 	    main_grid.grid(i,j,k).dust_tau_per_pc = tmp_density*geometry.clump_densities[1];
 	  }
 	}
@@ -257,6 +257,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
     int subdivide_any = 0;
     int m = 0;  // only main_grid for now
     int cur_subgrid_num = int(geometry.grids.size());
+    int poss_index = 0;
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++) {
       z_val = (geometry.grids[m].positions[2][k] + geometry.grids[m].positions[2][k+1])/2.0;
       for (j = 0; j < geometry.grids[m].index_dim[1]; j++) {
@@ -265,20 +266,28 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	  x_val = (geometry.grids[m].positions[0][i] + geometry.grids[m].positions[0][i+1])/2.0;
 	  radius = sqrt(x_val*x_val + y_val*y_val + z_val*z_val);
 	  if (radius <= subdivide_radius) {
-	    subdivide = 1;
-	    subdivide_any = 1;
+	    cout << 10.*geometry.grids[0].phys_cube_size[0]/((inner_radius - very_inner_radius)*save_outer_radius) << endl;
+	    cout << geometry.grids[0].phys_cube_size[0] << endl;
+	    cout << (inner_radius - very_inner_radius)*save_outer_radius << endl;
+	    poss_index = int(30.*geometry.grids[0].phys_cube_size[0]/((inner_radius - very_inner_radius)*save_outer_radius)) + 1;
+	    if (poss_index > 1) {
+	      subdivide = 1;
+	      subdivide_any = 1;
+	    } else subdivide = 0;
 	  } else subdivide = 0;
 
 	  if (subdivide) {
 	    one_grid subgrid;
-	    subgrid.index_dim[0] = int(2.*geometry.grids[0].phys_cube_size[0]/very_inner_radius) + 1;
+	    subgrid.index_dim[0] = poss_index;
 #ifdef DEBUG_SDG
 #endif
-	    cout << "inner radius = " << inner_radius;
+	    cout << "very inner radius = " << very_inner_radius*save_outer_radius << " ";
+	    cout << "inner radius = " << inner_radius*save_outer_radius;
 	    cout << "; radius = " << radius << "; ";
 	    cout << i << " ";
 	    cout << j << " ";
 	    cout << k << endl;
+	    cout << "geometry.grids[0].phys.cube_size[0] = " << geometry.grids[0].phys_cube_size[0] << endl;
 	    cout << "subgird size = " << subgrid.index_dim[0] << endl;
 	    
 	    subgrid.index_dim[1] = subgrid.index_dim[0];
@@ -318,26 +327,28 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	      tz_val = (subgrid.positions[2][o] + subgrid.positions[2][o+1])/2.0;
 // 	      cout << "o = " << o << endl;
 	      for (n = 0; n < subgrid.index_dim[1]; n++) {
-		ty_val = (subgrid.positions[2][n] + subgrid.positions[2][n+1])/2.0;
+		ty_val = (subgrid.positions[1][n] + subgrid.positions[1][n+1])/2.0;
 		for (l = 0; l < subgrid.index_dim[0]; l++) {
-		  tx_val = (subgrid.positions[2][l] + subgrid.positions[2][l+1])/2.0;
+		  tx_val = (subgrid.positions[0][l] + subgrid.positions[0][l+1])/2.0;
 		  tradius = sqrt(tx_val*tx_val + ty_val*ty_val + tz_val*tz_val);
+		  tradius /= save_outer_radius;
 		  if (tradius < very_inner_radius) {
 		    tmp_density = 0.0;
 		    subgrid.grid(l,n,o).dust_tau_per_pc = 0.0;
 		  } else if (tradius < inner_radius) {
 		    tmp_density = tmp_den_constant1*(tradius - very_inner_radius);
-		    subgrid.grid(l,n,o).dust_tau_per_pc = geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
+//  		    subgrid.grid(l,n,o).dust_tau_per_pc = geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
 		  } else if (tradius <= outer_radius) {
 		    tmp_density = tmp_den_constant2*pow(tradius,radial_density_poly);
-		    subgrid.grid(l,n,o).dust_tau_per_pc = geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
+//  		    subgrid.grid(l,n,o).dust_tau_per_pc = geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
 		  } else if (tradius > outer_radius) {
 		    tmp_density = 1.0;
 		    subgrid.grid(l,n,o).dust_tau_per_pc = -0.5;
 		  }
+		  tmp_density /= save_outer_radius;
 
-// 		  if (subgrid.grid(l,n,o).dust_tau_per_pc != -0.5)
-// 		    subgrid.grid(l,n,o).dust_tau_per_pc = tmp_density*geometry.clump_densities[0];
+		  if (subgrid.grid(l,n,o).dust_tau_per_pc != -0.5)
+		    subgrid.grid(l,n,o).dust_tau_per_pc = tmp_density*geometry.clump_densities[0];
 // 		  if ((subgrid.grid(l,n,o).dust_tau_per_pc == 0.0)) 
 // 		    cout << "0 "; 
 // 		  else 

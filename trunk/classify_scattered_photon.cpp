@@ -49,18 +49,17 @@ void classify_scattered_photon (output_struct& output,
       tmp_photon.current_grid_num = 0;
 
 #ifdef DEBUG_CSCP
-  if (photon.number == OUTNUM) {
-      cout << "starting scat_weight..." << endl;
-  }
+      if (photon.number == OUTNUM) {
+	cout << "starting scat_weight..." << endl;
+      }
 #endif
       // determine the probability the photon would have scattered to the observer
       tmp_photon.scat_weight = scattered_weight_towards_observer(tmp_photon, geometry, 
 								 output.outputs[i].observer_position);
-
 #ifdef DEBUG_CSCP
-  if (photon.number == OUTNUM) {
-      cout << "starting rotate..." << endl;
-  }
+      if (photon.number == OUTNUM) {
+	cout << "starting rotate..." << endl;
+      }
 #endif
       // transform photon positions so that the line-of-sight is along the z-axis 
       rotate_zaxis_for_observer(output.outputs[i].rotate_transform,tmp_photon);
@@ -75,10 +74,6 @@ void classify_scattered_photon (output_struct& output,
       double angle;
       for (k = 0; k < 2; k++) {
 	angle = atan(tmp_photon.position[k]/(geometry.distance - tmp_photon.position[2]));
-	// don't know why having d-z doesn't work and having d does work, but that seems the case
-	// this might mean there is some problem with the tranformation, but I can't figure it out.
-	// all this done with Chris in testing the slab model for the SPINR Orion data - KDG 18 Dec 2007
-	//angle = atan(tmp_photon.position[k]/(geometry.distance));
 	image_indxs[k] = int((1.0 + (angle/geometry.angular_radius))*output.image_size[k]*0.5);
 	// check the index is on the image
 	if ((image_indxs[k] < 0) || (image_indxs[k] > (output.image_size[k]-1))) {

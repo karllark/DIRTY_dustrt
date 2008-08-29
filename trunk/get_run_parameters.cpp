@@ -32,6 +32,10 @@ void get_run_parameters (ConfigFile& param_data,
   output.file_base = param_data.SValue("Run","output_filebase");
   check_input_param("output_filebase",output.file_base,"dirty_test");
   
+  output.do_output_model_grid = param_data.IValue("Run","output_model_grid");
+  if (output.do_output_model_grid == -99) output.do_output_model_grid = 0;  // set to no output if not initially set
+  check_input_param("output_model_grid",output.do_output_model_grid,0,1);
+
   // setup the emission_type string (added to file_base later) to be "" for stellar
   output.emission_type = "";
 

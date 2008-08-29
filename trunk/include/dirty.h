@@ -110,4 +110,8 @@ extern void output_global_results (runinfo_struct& runinfo,
 				   output_struct& output,
 				   geometry_struct& geometry);
 
+// output the model grid
+extern void output_model_grid (geometry_struct& geometry,
+			       output_struct& output);
+
 #endif

@@ -33,8 +33,20 @@
 pro plot_dirty_global_sed,filename,energy=energy,eps=eps, $
   xrange=xrange,yrange=yrange,table=table
 
-table = mrdfits(filename,1)
+table = mrdfits(filename,1,header)
 table_tagnames = tag_names(table)
+
+; print some statistics
+tot_abs = fxpar(header,'TOT_ABS')
+tot_emit = fxpar(header,'TOT_EMIT')
+print,'total absorbed energy = ',tot_abs
+print,'total emitted energy = ',tot_emit
+print,'emit/abs = ',tot_emit/tot_abs
+
+print,'# cells with enough = ',fxpar(header,'N_ENOUGH')
+print,'# cells with not enough = ',fxpar(header,'N_NOT_EN')
+print,'# cells with zero = ',fxpar(header,'N_ZERO')
+print,'# cells with too few waves = ',fxpar(header,'N_FEWWAV')
 
 xtitle = '!4k!3 [!4l!3m]'
 if (keyword_set(energy)) then begin

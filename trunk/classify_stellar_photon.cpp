@@ -86,8 +86,6 @@ void classify_stellar_photon (output_struct& output,
       double angle;
       for (k = 0; k < 2; k++) {
 	angle = atan(tmp_photon.position[k]/(geometry.distance - tmp_photon.position[2]));
-	// see comments in classify_scattered_photon - KDG 18 Dec 2007
-	//angle = atan(tmp_photon.position[k]/(geometry.distance));
 	image_indxs[k] = int((1.0 + (angle/geometry.angular_radius))*output.image_size[k]*0.5);
 	// check the index is on the image
 	if ((image_indxs[k] < 0) || (image_indxs[k] > (output.image_size[k]-1))) {

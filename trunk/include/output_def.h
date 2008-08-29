@@ -51,6 +51,7 @@ struct output_struct {
   string file_base; // base name of output files
   string emission_type; // string to identify the output type ("" if stellar)
   string type;  // type of output (ratio/flux current options)
+  int do_output_model_grid;  // output the model grid?
 
   vector<one_output> outputs; // vector of outputs
 };
