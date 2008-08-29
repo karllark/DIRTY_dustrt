@@ -5,7 +5,7 @@
 // KDG Jun 2008 - adapted from setup_dust_shell
 // ======================================================================
 #include "setup_dust_grid_dexp_disk.h"
-#define DEBUG_SDGDD
+//#define DEBUG_SDGDD
 
 void setup_dust_grid_dexp_disk (ConfigFile& param_data,
 				geometry_struct& geometry,
@@ -33,6 +33,21 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
   // dust vertical truncation
   double dust_vertical_trunc = param_data.FValue("Geometry","dust_vertical_trunc");
   check_input_param("dust_vertical_trunc",dust_vertical_trunc,0.0,geometry.radius);
+  
+  // stellar scalelength
+  geometry.stellar_scalelength = param_data.FValue("Geometry","stellar_scalelength");
+  check_input_param("stellar_scalelength",geometry.stellar_scalelength,0.0,geometry.radius);
+
+  // stellar scaleheight
+  geometry.stellar_scaleheight = param_data.FValue("Geometry","stellar_scaleheight");
+  check_input_param("stellar_scaleheight",geometry.stellar_scaleheight,0.0,geometry.radius);
+
+  // constant needed for z calculation
+  geometry.stellar_emit_constant_z = 1.0/(1.0 - exp(-1.0*dust_vertical_trunc/geometry.stellar_scaleheight));
+
+  // constant needed for xy calculation
+  geometry.stellar_emit_constant_xy = 1.0/(1.0 - exp(-1.0*geometry.radius/geometry.stellar_scalelength)*
+					   ((geometry.radius/geometry.stellar_scalelength) + 1.0));
   
   // radial optical depth
   geometry.tau = param_data.FValue("Geometry","tau");
@@ -157,9 +172,7 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
   int j,k;
 
   double tmp_density = 0.0;
-//   double tmp_den_constant = (geometry.tau*(radial_density_poly+1.))/
-//     (pow(outer_radius,radial_density_poly+1.) - pow(inner_radius,radial_density_poly+1.));
-  double radius = 0.0;
+  double tmp_den_constant = geometry.tau/(dust_scaleheight*(1.0 - exp(-1.*dust_vertical_trunc/dust_scaleheight)));
   float x_val = 0.0;
   float y_val = 0.0;
   float z_val = 0.0;
@@ -169,19 +182,15 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
       y_val = (main_grid.positions[1][j] + main_grid.positions[1][j+1])/2.0;
       for (i = 0; i < main_grid.index_dim[0]; i++) {
 	x_val = (main_grid.positions[0][i] + main_grid.positions[0][i+1])/2.0;
-	radius = sqrt(x_val*x_val + y_val*y_val + z_val*z_val);
-// 	  tmp_density = tmp_den_constant*pow(radius,radial_density_poly);
-	if (radius < geometry.radius) {
+	float xy_val = sqrt(x_val*x_val + y_val*y_val);
+	tmp_density = tmp_den_constant*exp(-1.0*abs(z_val)/dust_scaleheight)*exp(-1.0*xy_val/dust_scalelength);
+	if ((xy_val > geometry.radius) || (fabs(z_val) > dust_vertical_trunc)) {
+	  main_grid.grid(i,j,k).dust_tau_per_pc = 1e-20;
+	} else
 	  if (random_obj.random_num() <= geometry.filling_factor)
 	    main_grid.grid(i,j,k).dust_tau_per_pc = tmp_density*geometry.clump_densities[0];
 	  else
 	    main_grid.grid(i,j,k).dust_tau_per_pc = tmp_density*geometry.clump_densities[1];
-	  
-// #ifdef DEBUG_SDGDD
-// 	  cout << main_grid.grid(i,j,k).dust_tau_per_pc << " ";
-// #endif
-	} else
-	  main_grid.grid(i,j,k).dust_tau_per_pc = -0.5;  // this means the edge of the dust
       }
     }
   }
@@ -192,99 +201,115 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
   // add main grid to grids vector
   geometry.grids.push_back(main_grid);
   
-//   // now subdivide the center cubes if the inner radius is inside the cube dimension
-//   if (subdivide_radius > 0.0) {
-//     if (subdivide_radius < pow(3.,0.5)*(main_grid.phys_cube_size[0]/2.)) subdivide_radius = main_grid.phys_cube_size[0];
-//     int subdivide = 0;
-//     int subdivide_any = 0;
-//     int m = 0;  // only main_grid for now
-//     int cur_subgrid_num = int(geometry.grids.size());
-//     for (k = 0; k < geometry.grids[m].index_dim[2]; k++) {
-//       z_val = (geometry.grids[m].positions[2][k] + geometry.grids[m].positions[2][k+1])/2.0;
-//       for (j = 0; j < geometry.grids[m].index_dim[1]; j++) {
-// 	y_val = (geometry.grids[m].positions[1][j] + geometry.grids[m].positions[1][j+1])/2.0;
-// 	for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
-// 	  x_val = (geometry.grids[m].positions[0][i] + geometry.grids[m].positions[0][i+1])/2.0;
-// 	  radius = sqrt(x_val*x_val + y_val*y_val + z_val*z_val);
-// 	  if (radius <= subdivide_radius) {
-// 	    cout << "inner radius = " << inner_radius;
-// 	    cout << "; radius = " << radius << "; ";
-// 	    cout << i << " ";
-// 	    cout << j << " ";
-// 	    cout << k << endl;
-// 	    subdivide = 1;
-// 	    subdivide_any = 1;
-// 	  } else subdivide = 0;
+  // subdivide if the min_grid_size < start_grid_size
+  if (min_grid_size < start_grid_size) {
 
-// 	  if (subdivide) {
-// 	    one_grid subgrid;
-// 	    subgrid.index_dim[0] = int(2.*geometry.grids[0].phys_cube_size[0]/inner_radius) + 1;
-// #ifdef DEBUG_SDG
-// 	    cout << "subgird size = " << subgrid.index_dim[0] << endl;
-// #endif
+    int subdivide = 0;
+    int subdivide_any = 0;
+    int m = 0;  // only main_grid for now
+    int cur_subgrid_num = int(geometry.grids.size());
+    float start_min_frac = start_grid_size/min_grid_size;
+    for (k = 0; k < geometry.grids[m].index_dim[2]; k++) {
+      z_val = (geometry.grids[m].positions[2][k] + geometry.grids[m].positions[2][k+1])/2.0;
+      for (j = 0; j < geometry.grids[m].index_dim[1]; j++) {
+	y_val = (geometry.grids[m].positions[1][j] + geometry.grids[m].positions[1][j+1])/2.0;
+	for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
+	  x_val = (geometry.grids[m].positions[0][i] + geometry.grids[m].positions[0][i+1])/2.0;
+	  float xy_val = sqrt(x_val*x_val + y_val*y_val);
+
+	  float z_frac = fabs(z_val)/dust_scaleheight;
+	  float xy_frac = fabs(xy_val)/dust_scalelength;
+
+	  int poss_index = 0;
+	  float frac_sub = z_frac;
+	  if ((z_frac < start_min_frac) && (xy_frac < start_min_frac) && (geometry.grids[m].grid(i,j,k).dust_tau_per_pc > 0.0)) {
+	    if (xy_frac < z_frac) frac_sub = xy_frac;
+	    poss_index = int(start_min_frac/frac_sub);
+
+	    if (poss_index > 1) {
+#ifdef DEBUG_SDGDD
+	      cout << "subdivide ";
+	      cout << z_frac << " " << xy_frac << endl;
+	      cout << i << " " << j << " " << k << endl;
+#endif
+	      subdivide = 1;
+	      subdivide_any = 1;
+	    } else subdivide = 0;
+	  } else subdivide = 0;
+
+	  if (subdivide) {
+	    one_grid subgrid;
+	    if (poss_index > int(start_min_frac)) poss_index = int(start_min_frac);
+	    subgrid.index_dim[0] = poss_index;
+#ifdef DEBUG_SDGDD
+	    cout << "subgrid cube size = " << geometry.grids[m].phys_cube_size[0]/float(poss_index) << endl;
+	    cout << "subgird cubes (1 dim) = " << subgrid.index_dim[0] << endl;
+#endif
 	    
-// 	    subgrid.index_dim[1] = subgrid.index_dim[0];
-// 	    subgrid.index_dim[2] = subgrid.index_dim[0];
+	    subgrid.index_dim[1] = subgrid.index_dim[0];
+	    subgrid.index_dim[2] = subgrid.index_dim[0];
 	    
-// 	    vector<double> x_subpos(subgrid.index_dim[0]+1);
-// 	    vector<double> y_subpos(subgrid.index_dim[1]+1);
-// 	    vector<double> z_subpos(subgrid.index_dim[2]+1);
+	    vector<double> x_subpos(subgrid.index_dim[0]+1);
+	    vector<double> y_subpos(subgrid.index_dim[1]+1);
+	    vector<double> z_subpos(subgrid.index_dim[2]+1);
 	    
-// 	    subgrid.phys_grid_size[0] = geometry.grids[m].positions[0][i+1] - geometry.grids[m].positions[0][i];
-// 	    subgrid.phys_grid_size[1] = geometry.grids[m].positions[1][j+1] - geometry.grids[m].positions[1][j];
-// 	    subgrid.phys_grid_size[2] = geometry.grids[m].positions[2][k+1] - geometry.grids[m].positions[2][k];
+	    subgrid.phys_grid_size[0] = geometry.grids[m].positions[0][i+1] - geometry.grids[m].positions[0][i];
+	    subgrid.phys_grid_size[1] = geometry.grids[m].positions[1][j+1] - geometry.grids[m].positions[1][j];
+	    subgrid.phys_grid_size[2] = geometry.grids[m].positions[2][k+1] - geometry.grids[m].positions[2][k];
 	    
-// 	    subgrid.phys_cube_size[0] = subgrid.phys_grid_size[0]/subgrid.index_dim[0];
-// 	    subgrid.phys_cube_size[1] = subgrid.phys_grid_size[1]/subgrid.index_dim[1];
-// 	    subgrid.phys_cube_size[2] = subgrid.phys_grid_size[2]/subgrid.index_dim[2];
+	    subgrid.phys_cube_size[0] = subgrid.phys_grid_size[0]/subgrid.index_dim[0];
+	    subgrid.phys_cube_size[1] = subgrid.phys_grid_size[1]/subgrid.index_dim[1];
+	    subgrid.phys_cube_size[2] = subgrid.phys_grid_size[2]/subgrid.index_dim[2];
 
-// 	    int l;
-// 	    for (l = 0; l <= subgrid.index_dim[0]; l++) {
-// 	      x_subpos[l] = geometry.grids[m].positions[0][i] + (double(l)/subgrid.index_dim[0])*subgrid.phys_grid_size[0];
-// 	      y_subpos[l] = geometry.grids[m].positions[1][j] + (double(l)/subgrid.index_dim[1])*subgrid.phys_grid_size[1];
-// 	      z_subpos[l] = geometry.grids[m].positions[2][k] + (double(l)/subgrid.index_dim[2])*subgrid.phys_grid_size[2];
-// 	    }
-// 	    subgrid.positions.push_back(x_subpos);
-// 	    subgrid.positions.push_back(y_subpos);
-// 	    subgrid.positions.push_back(z_subpos);
+	    int l;
+	    for (l = 0; l <= subgrid.index_dim[0]; l++) {
+	      x_subpos[l] = geometry.grids[m].positions[0][i] + (double(l)/subgrid.index_dim[0])*subgrid.phys_grid_size[0];
+	      y_subpos[l] = geometry.grids[m].positions[1][j] + (double(l)/subgrid.index_dim[1])*subgrid.phys_grid_size[1];
+	      z_subpos[l] = geometry.grids[m].positions[2][k] + (double(l)/subgrid.index_dim[2])*subgrid.phys_grid_size[2];
+	    }
+	    subgrid.positions.push_back(x_subpos);
+	    subgrid.positions.push_back(y_subpos);
+	    subgrid.positions.push_back(z_subpos);
 
-// 	    subgrid.grid.CSize(subgrid.index_dim[0],subgrid.index_dim[1],subgrid.index_dim[2]);
+	    subgrid.grid.CSize(subgrid.index_dim[0],subgrid.index_dim[1],subgrid.index_dim[2]);
 
-// 	    double tradius;  // radius of subgrid position in index values
-// 	    float tz_val,ty_val,tx_val = 0.;
-// 	    int n,o;
-// 	    for (o = 0; o < subgrid.index_dim[2]; o++) {
-// 	      tz_val = (subgrid.positions[2][o] + subgrid.positions[2][o+1])/2.0;
-// 	      for (n = 0; n < subgrid.index_dim[1]; n++) {
-// 		ty_val = (subgrid.positions[2][n] + subgrid.positions[2][n+1])/2.0;
-// 		for (l = 0; l < subgrid.index_dim[0]; l++) {
-// 		  tx_val = (subgrid.positions[2][l] + subgrid.positions[2][l+1])/2.0;
-// 		  tradius = sqrt(tx_val*tx_val + ty_val*ty_val + tz_val*tz_val);
-// 		  tmp_density = tmp_den_constant*pow(tradius,radial_density_poly);
-// 		  if (tradius < inner_radius)
-// 		    subgrid.grid(l,n,o).dust_tau_per_pc = geometry.grids[m].grid(i,j,k).dust_tau_per_pc*0.;
-// 		  else
-// 		    subgrid.grid(l,n,o).dust_tau_per_pc = tmp_density*geometry.clump_densities[0];
-// 		}
-// 	      }
-// 	    }
+	    float tz_val,ty_val,tx_val = 0.;
+	    int n,o;
+	    for (o = 0; o < subgrid.index_dim[2]; o++) {
+	      tz_val = (subgrid.positions[2][o] + subgrid.positions[2][o+1])/2.0;
+	      for (n = 0; n < subgrid.index_dim[1]; n++) {
+		ty_val = (subgrid.positions[2][n] + subgrid.positions[2][n+1])/2.0;
+		for (l = 0; l < subgrid.index_dim[0]; l++) {
+		  tx_val = (subgrid.positions[2][l] + subgrid.positions[2][l+1])/2.0;
+		  float txy_val = sqrt(tx_val*tx_val + ty_val*ty_val);
+		  tmp_density = tmp_den_constant*exp(-1.0*abs(tz_val)/dust_scaleheight)*exp(-1.0*txy_val/dust_scalelength);
+		  if ((txy_val > geometry.radius) || (fabs(tz_val) > dust_vertical_trunc)) {
+		    subgrid.grid(l,n,o).dust_tau_per_pc = 1e-20;
+		  } else {
+		    if (random_obj.random_num() <= geometry.filling_factor)
+		      subgrid.grid(l,n,o).dust_tau_per_pc = tmp_density*geometry.clump_densities[0];
+		    else
+		      subgrid.grid(l,n,o).dust_tau_per_pc = tmp_density*geometry.clump_densities[1];
+		  }
+		}
+	      }
+	    }
 
-// 	    // setup ties to parent grid
-// 	    subgrid.parent_grid_num = m;
-// 	    geometry.grids[m].grid(i,j,k).dust_tau_per_pc = -cur_subgrid_num;
-// 	    cur_subgrid_num++;
+	    // setup ties to parent grid
+	    subgrid.parent_grid_num = m;
+	    geometry.grids[m].grid(i,j,k).dust_tau_per_pc = -cur_subgrid_num;
+	    cur_subgrid_num++;
 
-// 	    geometry.grids.push_back(subgrid);
-// 	  }
-// 	}
-//       }
-//     }
-//     if (subdivide_any)
-//       geometry.max_grid_depth++;
-//   }
+	    geometry.grids.push_back(subgrid);
+	  }
+	}
+      }
+    }
+    if (subdivide_any)
+      geometry.max_grid_depth++;
+  }
 
   // subdivide all overdense cells
   setup_dust_grid_subdivide_overdense_cells(geometry, spherical_clumps);
 
-  exit(8);
 }

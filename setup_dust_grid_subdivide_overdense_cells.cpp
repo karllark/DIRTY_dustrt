@@ -27,8 +27,6 @@ void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
   int n_grids = int(geometry.grids.size());
   for (m = 0; m < n_grids; m++) {
 
-    cout << "m = " << m << " " << geometry.grids.size() << endl;
-
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
       for (j = 0; j < geometry.grids[m].index_dim[1]; j++)
 	for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {

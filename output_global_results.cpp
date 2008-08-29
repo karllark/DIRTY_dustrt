@@ -2,6 +2,7 @@
 //   Procedure to output the global results of dirty.
 //
 // 2008 Jan/KDG - written
+// 2008 Aug/KDG - output more info into the header
 // ======================================================================
 #include "output_global_results.h"
 
@@ -150,9 +151,26 @@ void output_global_results (runinfo_struct& runinfo,
   check_fits_io(status,"fits_create_tbl : output_global_results");
   
   double thmass = geometry.total_h_mass;
-  cout << thmass << endl;
   fits_write_key(out_ptr, TDOUBLE, "TOT_HMASS", &thmass, "Total H atom mass", &status);
   check_fits_io(status,"fits_write_key : output_global_results");
+
+  if (runinfo.do_dust_emission) {
+    fits_write_key(out_ptr, TDOUBLE, "TOT_ABS", &runinfo.total_absorbed_energy, "total absorbed energy", &status);
+    check_fits_io(status,"fits_write_key : output_global_results, abs energy");
+    fits_write_key(out_ptr, TDOUBLE, "TOT_EMIT", &runinfo.total_emitted_energy, "total emitted energy", &status);
+    check_fits_io(status,"fits_write_key : output_global_results, emit energy");
+
+    fits_write_key(out_ptr, TLONG, "N_CELLS", &geometry.num_cells, "# cells in model", &status);
+    check_fits_io(status,"fits_write_key : output_global_results, cells");
+    fits_write_key(out_ptr, TLONG, "N_ENOUGH", &runinfo.num_cells_enough, "# cells with enough for dust emission", &status);
+    check_fits_io(status,"fits_write_key : output_global_results, cells");
+    fits_write_key(out_ptr, TLONG, "N_NOT_EN", &runinfo.num_cells_not_enough, "# cells with not enough for dust emission", &status);
+    check_fits_io(status,"fits_write_key : output_global_results, cells");
+    fits_write_key(out_ptr, TLONG, "N_ZERO", &runinfo.num_cells_zero, "# cells with zero absorbed energy", &status);
+    check_fits_io(status,"fits_write_key : output_global_results, cells");
+    fits_write_key(out_ptr, TLONG, "N_FEWWAV", &runinfo.num_cells_too_few_waves, "# cells with too few wavelengths for dust emission", &status);
+    check_fits_io(status,"fits_write_key : output_global_results, cells");
+  }
 
   // write the columns
   fits_write_col(out_ptr, TDOUBLE, 1, 1, 0, runinfo.n_waves, &out_wavelength[0], &status);

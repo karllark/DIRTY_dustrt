@@ -18,6 +18,7 @@
 // 2007 Dec/KDG - added arbitary grid emission (for dust emission)
 // 2008 Jan/KDG - added global output
 // 2008 Mar/KDG - fixed global output to use a FITS ASCII table
+// 2008 Aug/KDG - added continous absorption
 // ======================================================================
 #include "dirty.h"
 //#define DEBUG_DIRTY
@@ -68,6 +69,10 @@ int main(int argc, char* argv[])
   cout.flush();
 #endif
   
+  // output model_grid info
+  if (output.do_output_model_grid)
+    output_model_grid(geometry, output);
+
   // get the dust grain parameters
   get_dust_parameters(param_data, CurGrainModel, runinfo);
 #ifdef DEBUG_DIRTY

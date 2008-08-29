@@ -4,6 +4,7 @@
 // 2003 Jun/KDG - written
 // 2007 Feb/KDG - fixed case where dir cosines are zero -> nan distance traveled
 //                now zero distance traveled
+// 2008 Aug/KDG - added saving of trajectory for continous absorption
 // ======================================================================
 #include "calc_delta_dist.h"
 //#define OUTNUM 108473
@@ -248,6 +249,33 @@ double calc_delta_dist (photon_data& photon,
       distance_traveled *= target_tau/tau_traveled;
       tau_traveled = target_tau;
       exit_cell = 0;
+    }
+
+    if (photon.path_cur_cells >= 0) { // if -1, don't save
+      if ((photon.path_cur_cells+1) > photon.path_max_cells) {
+	// lengthen the photon.path variables
+	photon.path_tau.push_back(0.0);
+	photon.path_pos_index[0].push_back(0);
+	photon.path_pos_index[1].push_back(0);
+	photon.path_pos_index[2].push_back(0);
+	photon.path_pos_index[3].push_back(0);
+	photon.path_max_cells++;
+      } 
+      photon.path_tau[photon.path_cur_cells] = tau_traveled;
+      photon.path_pos_index[0][photon.path_cur_cells] = grid_val;
+      photon.path_pos_index[1][photon.path_cur_cells] = photon.position_index[k][0];
+      photon.path_pos_index[2][photon.path_cur_cells] = photon.position_index[k][1];
+      photon.path_pos_index[3][photon.path_cur_cells] = photon.position_index[k][2];
+
+#ifdef DEBUG_CDD      
+      cout << "path: ";
+      cout << photon.path_pos_index[0][photon.path_cur_cells] << " ";
+      cout << photon.path_pos_index[1][photon.path_cur_cells] << " ";
+      cout << photon.path_pos_index[2][photon.path_cur_cells] << " ";
+      cout << photon.path_pos_index[3][photon.path_cur_cells] << " ";
+      cout << photon.path_tau[photon.path_cur_cells] << endl;
+#endif
+      photon.path_cur_cells++;
     }
 
 #ifdef DEBUG_CDD

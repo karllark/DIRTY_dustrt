@@ -16,6 +16,7 @@ int next_scatter (geometry_struct& geometry,
   // determine the optical depth to the next scattering
   double target_tau = 0.0;
   target_tau = -log(random_obj.random_num());
+  photon.target_tau = target_tau;
   
   // check to see if we will start in a subgrid
   if (photon.current_grid_num > 0) {
@@ -29,6 +30,7 @@ int next_scatter (geometry_struct& geometry,
   int escape = 0;
   double distance_traveled = 0.0;
   double tau_traveled = 0.0;
+  photon.path_cur_cells = 0;  // set to 0 to save cells tranversed
   distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_traveled);
 #ifdef DEBUG_NS
   cout << "ns cpt done; ";

@@ -40,7 +40,6 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   }
 
   // calculate the total absorbed energy from the previously saved total abosrbed energy by wavelength
-  // this will make the calculation of this here redundant (remove after checking it is the same)
   vector<double> tmp_wave;
   tmp_wave.resize(runinfo.wavelength.size());
   vector<double> tmp_abs_energy;
@@ -188,6 +187,10 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 
   runinfo.total_absorbed_energy = global_total_absorbed;
 
+  runinfo.num_cells_enough = num_cells_enough;
+  runinfo.num_cells_not_enough = num_cells_not_enough;
+  runinfo.num_cells_zero = num_cells_zero;
+  runinfo.num_cells_too_few_waves = num_cells_too_few_waves;
   if (fabs(1.0 - (global_total_emitted/global_total_absorbed)) > runinfo.energy_conserve_target) {
     cout << "energy conservation will not be meet..." << endl;
     cout << "need to change the min_enough_energy target in the code" << endl;

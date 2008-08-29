@@ -196,6 +196,9 @@ void setup_dust_grid (ConfigFile& param_data,
       }
     }
     
+  } else if (geometry.source_type == "dexp_disk") {
+    geometry.solid_angle = 4.*M_PI;
+    geometry.new_photon_source_type = NEW_PHOTON_DEXP_DISK;
   } else {
     cout << "Setup for input source type (" << geometry.source_type << ") not found [NEW CODE NEEDED]." << endl;
     exit(8);
@@ -209,4 +212,10 @@ void setup_dust_grid (ConfigFile& param_data,
     photon.grid_number.push_back(long(0));
   }
 
+  // add in the initialization for the photon path variables
+  photon.path_max_cells = 10;
+  vector<int> tmp_index(photon.path_max_cells);
+  for (i = 0; i < 4; i++)
+    photon.path_pos_index.push_back(tmp_index);
+  photon.path_tau.resize(photon.path_max_cells);
 }

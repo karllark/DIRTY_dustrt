@@ -46,9 +46,10 @@ void output_results (output_struct& output,
     // compute total stellar weight uncertainty
     double total_stellar_weight_err = 0.0;  
     // first compute the uncertainty on the average weight of a single stellar photon
-    total_stellar_weight_err = 
-      output.outputs[i].total_stellar_weight_x2/output.outputs[i].total_num_photons -
-      pow(output.outputs[i].total_stellar_weight/output.outputs[i].total_num_photons,2);
+    if (output.outputs[i].total_num_photons > 0)
+      total_stellar_weight_err = 
+	output.outputs[i].total_stellar_weight_x2/output.outputs[i].total_num_photons -
+	pow(output.outputs[i].total_stellar_weight/output.outputs[i].total_num_photons,2);
     if (total_stellar_weight_err > 0.0)
       total_stellar_weight_err = sqrt(total_stellar_weight_err/output.outputs[i].total_num_photons);
     else
@@ -93,9 +94,10 @@ void output_results (output_struct& output,
     // compute total scattered weight uncertainty
     double total_scattered_weight_err = 0.0;  
     // first compute the uncertainty on the average weight of a single scattered photon
-    total_scattered_weight_err = 
-      output.outputs[i].total_scattered_weight_x2/output.outputs[i].total_num_scattered_photons -
-      pow(output.outputs[i].total_scattered_weight/output.outputs[i].total_num_scattered_photons,2);
+    if (output.outputs[i].total_num_photons > 0)
+      total_scattered_weight_err = 
+	output.outputs[i].total_scattered_weight_x2/output.outputs[i].total_num_scattered_photons -
+	pow(output.outputs[i].total_scattered_weight/output.outputs[i].total_num_scattered_photons,2);
     if (total_scattered_weight_err > 0.0)
       total_scattered_weight_err = sqrt(total_scattered_weight_err/output.outputs[i].total_num_scattered_photons);
     else
@@ -275,15 +277,22 @@ void output_results (output_struct& output,
       float phi_deg = geometry.observer_angles[1][i]*180.0/M_PI;
       fits_write_key(out_ptr, TFLOAT, "LOSPHI", &phi_deg, "phi of line-of-sight [degrees]", &status);
       
-      fits_write_key(out_ptr, TFLOAT, "STEL_SL", &stellar_sl, "stellar/emitted luminosity", &status);
-      float stel_sle = stellar_sl*total_stellar_weight_err;
-      fits_write_key(out_ptr, TFLOAT, "STEL_SLE", &stel_sle, "STEL_SL uncertainty", &status);
+      check_fits_io(status,"fits_write_key : output results (run details 0.9)");
+
+      if (!finite(stellar_sl)) stellar_sl = 0.0;
+      fits_write_key(out_ptr, TDOUBLE, "STEL_SL", &stellar_sl, "stellar/emitted luminosity", &status);
+      double stel_sle = stellar_sl*total_stellar_weight_err;
+      if (!finite(stel_sle)) stel_sle = 0.0;
+      fits_write_key(out_ptr, TDOUBLE, "STEL_SLE", &stel_sle, "STEL_SL uncertainty", &status);
       
-      fits_write_key(out_ptr, TFLOAT, "SCAT_SL", &scattered_sl, "scattered/emitted luminosity", &status);
-      float scat_sle = scattered_sl*total_scattered_weight_err;
-      fits_write_key(out_ptr, TFLOAT, "SCAT_SLE", &scat_sle, "SCAT_SL uncertainty", &status);
+      if (!finite(scattered_sl)) scattered_sl = 0.0;
+      fits_write_key(out_ptr, TDOUBLE, "SCAT_SL", &scattered_sl, "scattered/emitted luminosity", &status);
+      check_fits_io(status,"fits_write_key : output results (run details: 0.95)");
+      double scat_sle = scattered_sl*total_scattered_weight_err;
+      if (!finite(scat_sle)) scat_sle = 0.0;
+      fits_write_key(out_ptr, TDOUBLE, "SCAT_SLE", &scat_sle, "SCAT_SL uncertainty", &status);
       
-      check_fits_io(status,"fits_write_key : output results (run details)");
+      check_fits_io(status,"fits_write_key : output results (run details 1.0)");
       
       // create and output the scattered intensity image
       fits_create_img(out_ptr, -32, 2, output.image_size, &status);

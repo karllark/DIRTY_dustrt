@@ -51,6 +51,12 @@ struct runinfo_struct {
   // emitted energy
   double total_emitted_energy;   // total emitted energy
 
+  // cell info
+  long num_cells_enough;  // cells with enough energy for dust emission
+  long num_cells_not_enough; // cells with no emission
+  long num_cells_zero; // cells with zero energy
+  long num_cells_too_few_waves; // cells with too few wavelengths for dust emission
+
   // ERE model info
   float ere_efficiency;  // efficiency of conversion of input to output photons
   float ere_excitation_wavelength;   // wavelength below which photons excite ERE
