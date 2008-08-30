@@ -269,7 +269,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	    cout << 10.*geometry.grids[0].phys_cube_size[0]/((inner_radius - very_inner_radius)*save_outer_radius) << endl;
 	    cout << geometry.grids[0].phys_cube_size[0] << endl;
 	    cout << (inner_radius - very_inner_radius)*save_outer_radius << endl;
-	    poss_index = int(30.*geometry.grids[0].phys_cube_size[0]/((inner_radius - very_inner_radius)*save_outer_radius)) + 1;
+	    poss_index = int(5.*geometry.grids[0].phys_cube_size[0]/((inner_radius - very_inner_radius)*save_outer_radius)) + 1;
 	    if (poss_index > 1) {
 	      subdivide = 1;
 	      subdivide_any = 1;
