@@ -16,6 +16,7 @@ void initialize_output (output_struct& output,
   // allocate outputs if not already allocated
   if (!output.arrays_allocated) {
     one_output single_output;
+    single_output.num_stellar_photons_xy.MSize(output.image_size[0],output.image_size[1]);
     single_output.num_photons_xy.MSize(output.image_size[0],output.image_size[1]);
     single_output.stellar_weight_xy.MSize(output.image_size[0],output.image_size[1]);
     single_output.stellar_weight_xy_x2.MSize(output.image_size[0],output.image_size[1]);
@@ -45,6 +46,7 @@ void initialize_output (output_struct& output,
     int j,k;
     for (j = 0; j < output.image_size[0]; j++)
       for (k = 0; k < output.image_size[1]; k++) {
+	output.outputs[i].num_stellar_photons_xy(j,k) = 0.0;
 	output.outputs[i].num_photons_xy(j,k) = 0.0;
 	output.outputs[i].stellar_weight_xy(j,k) = 0.0;
 	output.outputs[i].stellar_weight_xy_x2(j,k) = 0.0;

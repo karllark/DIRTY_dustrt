@@ -1,3 +1,34 @@
+;+
+; NAME:
+;      PLOT_MODEL_GRID_TAU
+;
+; PURPOSE:
+;      Plot the radial profile of the model grid.
+;
+; CATEGORY:
+;      DIRTYv2.
+;
+; CALLING SEQUENCE:
+;      PLOT_MODEL_GRID_TAU, filebase
+;
+; INPUTS:
+;      filebase: filebase of model grid output files
+;
+; KEYWORD PARAMETERS:
+;
+; OUTPUTS:
+;
+; RESTRICTIONS:
+;      This program written for research use.  No warrenties are
+;      given.  Use at your own risk.
+;
+; PROCEDURE:
+;     
+; EXAMPLE:
+;
+; MODIFICATION HISTORY:
+;     Written by : Karl D. Gordon (28 Aug 2008)
+;-
 
 pro plot_model_grid_tau,filebase,kxrange=kxrange,kyrange=kyrange
 
