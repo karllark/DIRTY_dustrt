@@ -14,7 +14,8 @@
 struct one_output {
   // number of photons
   double total_num_photons; // total
-  NumUtils::Matrix<float> num_photons_xy; // photons per image pixel
+  NumUtils::Matrix<float> num_stellar_photons_xy; // photons per image pixel
+  NumUtils::Matrix<float> num_photons_xy; // scattered photons per image pixel
 
   // number of scattered photons
   double total_num_scattered_photons; // total
