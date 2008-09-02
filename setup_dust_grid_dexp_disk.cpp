@@ -20,7 +20,7 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
 
   // angular radius needs to be large enough to allow for any rotation and still
   // have all the photons encompassed in the final image
-  geometry.angular_radius = atan(1.45*geometry.radius/geometry.distance);
+  geometry.angular_radius = atan(1.05*geometry.radius/geometry.distance);
 
   // dust scalelength
   double dust_scalelength = param_data.FValue("Geometry","dust_scalelength");
@@ -191,6 +191,11 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
 	    main_grid.grid(i,j,k).dust_tau_per_pc = tmp_density*geometry.clump_densities[0];
 	  else
 	    main_grid.grid(i,j,k).dust_tau_per_pc = tmp_density*geometry.clump_densities[1];
+// 	if ((i == main_grid.index_dim[0]/2) && (k == main_grid.index_dim[2]/2)) {
+// 	  cout << i << " " << j << " " << k << " : ";
+// 	  cout << main_grid.grid(i,j,k).dust_tau_per_pc << " ";
+// 	  cout << x_val << " " << y_val << " " << xy_val << endl;
+// 	}
       }
     }
   }
@@ -278,9 +283,9 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
 	    for (o = 0; o < subgrid.index_dim[2]; o++) {
 	      tz_val = (subgrid.positions[2][o] + subgrid.positions[2][o+1])/2.0;
 	      for (n = 0; n < subgrid.index_dim[1]; n++) {
-		ty_val = (subgrid.positions[2][n] + subgrid.positions[2][n+1])/2.0;
+		ty_val = (subgrid.positions[1][n] + subgrid.positions[1][n+1])/2.0;
 		for (l = 0; l < subgrid.index_dim[0]; l++) {
-		  tx_val = (subgrid.positions[2][l] + subgrid.positions[2][l+1])/2.0;
+		  tx_val = (subgrid.positions[0][l] + subgrid.positions[0][l+1])/2.0;
 		  float txy_val = sqrt(tx_val*tx_val + ty_val*ty_val);
 		  tmp_density = tmp_den_constant*exp(-1.0*abs(tz_val)/dust_scaleheight)*exp(-1.0*txy_val/dust_scalelength);
 		  if ((txy_val > geometry.radius) || (fabs(tz_val) > dust_vertical_trunc)) {

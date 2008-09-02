@@ -48,19 +48,23 @@ void new_photon_dexp_disk (photon_data& photon,
   double min_xy = 0.0;
   double max_xy = geometry.radius;
   double test_xy = geometry.radius/2.0;
-  float right_side = log(1.0 - ran_num/geometry.stellar_emit_constant_xy);
-  float left_side = -1.0*test_xy/geometry.stellar_scalelength + log(test_xy/geometry.stellar_scalelength + 1.0);
+  double right_side = log(1.0 - ran_num/geometry.stellar_emit_constant_xy);
+  double left_side = -1.0*test_xy/geometry.stellar_scalelength + log(test_xy/geometry.stellar_scalelength + 1.0);
 //   cout << -1.0*min_xy/geometry.stellar_scalelength + log(min_xy/geometry.stellar_scalelength + 1.0) << " ";
 //   cout << -1.0*max_xy/geometry.stellar_scalelength + log(max_xy/geometry.stellar_scalelength + 1.0) << endl;
 //   cout << left_side << " " << right_side << " " << test_xy << endl;
 //   float tans = 0.0;
-  while (fabs((left_side - right_side)/left_side) > 0.01) {
+  while (fabs((left_side - right_side)/left_side) > 1e-4) {
 //     cout << left_side << " " << right_side << " " << test_xy << endl;
     if (left_side > right_side) min_xy = test_xy; else max_xy = test_xy;
 //     cout << min_xy << " " << test_xy << " " << max_xy << endl;
     test_xy = (max_xy + min_xy)/2.0;
     left_side = -1.0*test_xy/geometry.stellar_scalelength + log(test_xy/geometry.stellar_scalelength + 1.0);
 //     cin >> tans;
+  }
+  if (test_xy > geometry.radius) {
+    cout << "whoops test_xy = " << test_xy << endl;
+    exit(0);
   }
   // now that we have rho, get xy (ran number for phi)
   phi = M_PI*(2.0*random_obj.random_num() - 1.0);
