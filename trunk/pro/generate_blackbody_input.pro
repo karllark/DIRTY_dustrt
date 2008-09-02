@@ -17,6 +17,8 @@
 ;      out_filename : output filename
 ;
 ; KEYWORD PARAMETERS:
+;      tot_lum : scale output to this total luminosity
+;                (used for extragalactic models)
 ;
 ; OUTPUTS:
 ;      ASCII file suitable for input to DIRTYv2
@@ -30,10 +32,11 @@
 ; EXAMPLE:
 ;
 ; MODIFICATION HISTORY:
-;     Written by : Karl D. Gordon (15 May 2008)
+;     Written by  : Karl D. Gordon (15 May 2008)
+;     31 Aug 2008 : added tot_lum keyword
 ;-
 pro generate_blackbody_input,temperature,radius,out_filename, $
-  silent=silent
+  silent=silent,tot_lum=tot_lum
 
 min_wave = 0.09
 max_wave = 5000.0
@@ -64,6 +67,19 @@ radius_m = radius*6.960d8
 
 ; convert to ergs s^-1 Hz^-1
 bb_output = bb*1d7*4.d0*!PI*radius_m^2
+
+; integrate to determine the total luminosity
+if (keyword_set(tot_lum)) then begin
+    freq = 2.998e14/waves
+    bb_int = bb_output
+    lum = int_tabulated(freq,bb_int,/double,/sort)
+    bb_output *= tot_lum/(lum/3.839d33)
+endif
+
+freq = 2.998e14/waves
+bb_int = bb_output
+lum = int_tabulated(freq,bb_int,/double,/sort)
+print,'total luminosity [solar] = ', lum/3.839e33
 
 ; output file
 openw,unit1,out_filename,/get_lun
