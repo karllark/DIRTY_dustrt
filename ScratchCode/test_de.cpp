@@ -30,67 +30,90 @@ int main (int argc, char * argv[]) {
   MW[0]=-1; 
   MS[0]=-1; 
 
-  vector <float> atest,ainvtest; 
-  for (int i=1;i<=10;++i) atest.push_back((float)i);
-  int idx0=NumUtils::index((float)-1.0,atest); 
-  int idx1=NumUtils::index((float)3.4,atest);
-  int idx2=NumUtils::index((float)12.0,atest);
-  for (int i=0;i<atest.size();i++) cout << i << " " << atest[i] << endl; 
-  cout << endl; 
-  cout << idx0 << " " << idx1 << " " << idx2 << endl << endl; 
-  //exit(8); 
-  ainvtest.assign(atest.begin()+idx1,atest.begin()+idx2); 
-  cout << ainvtest.size() << endl; 
-  for (int i=0;i<ainvtest.size();i++) cout << i << " " << ainvtest[i] << endl; 
-  cout << endl; 
-  idx1=NumUtils::index((float)1.5,atest);
-  idx2=NumUtils::index((float)9.5,atest);
-  cout << idx1 << " " << idx2 << endl << endl; 
-  ainvtest.assign(atest.begin()+idx1,atest.begin()+idx2); 
-  cout << ainvtest.size() << endl; 
-  for (int i=0;i<ainvtest.size();i++) cout << i << " " << ainvtest[i] << endl; 
-  cout << endl; 
-  idx1=NumUtils::index((float)4.8,atest);
-  idx2=NumUtils::index((float)6.7,atest);
-  cout << idx1 << " " << idx2 << endl << endl; 
-  ainvtest.assign(atest.begin()+idx1,atest.begin()+idx2); 
-  cout << ainvtest.size() << endl; 
-  for (int i=0;i<ainvtest.size();i++) cout << i << " " << ainvtest[i] << endl; 
-  cout << endl; 
 
-  idx1 = NumUtils::index((float)0,atest);
-  cout << idx1 << endl; 
-  //exit(8); 
+//   vector <float> v1,v2; 
+//   for (int i=1;i<=10;++i) v1.push_back((float)i);
+//   for (int i=1;i<=20;++i) v2.push_back((float)i); 
+//   cout << "Size before assign: " <<  v1.size() << " " << v2.size() << endl; 
+//   v2.assign(v1.begin(),v1.end()); 
+//   cout << "Size after assign: " << v1.size() << " " << v2.size() << endl; 
+//   cout << "****" << endl; 
+//   for (int i=0;i<v2.size();++i) cout << i+1 << " " << v1[i] << " " << v2[i] << endl;
+//   cout << "****" << endl; 
+  
+//   vector <bool> vb; 
+//   for (int i=0;i<10;++i) vb.push_back(false); 
+//   for (int i=0;i<10;++i) cout << i << " " << vb[i] << endl; 
+//   transform(vb.begin()+3,vb.end(),vb.begin()+3,bind2nd(multiplies<bool>(),false)); 
+//   for (int i=0;i<10;++i) cout << i << " " << vb[i] << endl; 
+  //exit(8);
 
-  vector <float>::iterator it1,it2,it3,it4; 
-  it1=atest.begin(); 
-  it2=atest.end(); 
-  for (it3=it1;it3!=it2;++it3) { 
-    ainvtest.push_back(1.0/(*it3));
-  }
-  it3=ainvtest.begin();
-  for (it4=it1;it4!=it2;++it4,++it3) cout << *it4 << " " << *it3 << endl; 
+//   vector <float> atest,ainvtest; 
+//   for (int i=1;i<=10;++i) atest.push_back((float)i);
+//   int idx0=NumUtils::index((float)-1.0,atest); 
+//   int idx1=NumUtils::index((float)3.4,atest);
+//   int idx2=NumUtils::index((float)12.0,atest);
+//   for (int i=0;i<atest.size();i++) cout << i << " " << atest[i] << endl; 
+//   cout << endl; 
+//   cout << idx0 << " " << idx1 << " " << idx2 << endl << endl; 
+//   //exit(8); 
+//   ainvtest.assign(atest.begin()+idx1,atest.begin()+idx2); 
+//   cout << ainvtest.size() << endl; 
+//   for (int i=0;i<ainvtest.size();i++) cout << i << " " << ainvtest[i] << endl; 
+//   cout << endl; 
+//   idx1=NumUtils::index((float)1.5,atest);
+//   idx2=NumUtils::index((float)9.5,atest);
+//   cout << idx1 << " " << idx2 << endl << endl; 
+//   ainvtest.assign(atest.begin()+idx1,atest.begin()+idx2); 
+//   cout << ainvtest.size() << endl; 
+//   for (int i=0;i<ainvtest.size();i++) cout << i << " " << ainvtest[i] << endl; 
+//   cout << endl; 
+//   idx1=NumUtils::index((float)4.8,atest);
+//   idx2=NumUtils::index((float)6.7,atest);
+//   cout << idx1 << " " << idx2 << endl << endl; 
+//   ainvtest.assign(atest.begin()+idx1,atest.begin()+idx2); 
+//   cout << ainvtest.size() << endl; 
+//   for (int i=0;i<ainvtest.size();i++) cout << i << " " << ainvtest[i] << endl; 
+//   cout << endl; 
+
+//   for (int i=0;i<atest.size();++i) atest[i] *= 2.5; 
+//   for (int i=0;i<atest.size();++i) cout << i <<" " << atest[i] << endl; 
+//   idx1 = NumUtils::index((float)5.6,atest);
+//   cout << idx1 << endl; 
+//   vector <float>::iterator it; 
+//   it=atest.begin()+idx1; 
+//   cout << idx1 << " " << *it << " " << *(it-1) << endl; 
+
+//   vector <float>::iterator it1,it2,it3,it4; 
+//   it1=atest.begin(); 
+//   it2=atest.end(); 
+//   for (it3=it1;it3!=it2;++it3) { 
+//     ainvtest.push_back(1.0/(*it3));
+//   }
+//   it3=ainvtest.begin();
+//   for (it4=it1;it4!=it2;++it4,++it3) cout << *it4 << " " << *it3 << endl; 
   //exit(8);
 
   // Number of components - only going to fill in one here, but this illustrates
   // the vector nature of the Grain object.
-  int ncomp=2; 
-  // Declare a vector of grain object. 
-  vector <Grain> MyGrain(ncomp); 
-  // Instantiate a Grain object and stick it into the first element of the vector. 
-  MyGrain[0].MakeGrain("CrossSections/AmC_121_large_longwave",
-		       "Calorimetry/Graphitic_Calorimetry.dat",
-		       MW,MS,"/home/misselt/Science/Dust/OpticalProperties/");
+//   int ncomp=2; 
+//   // Declare a vector of grain object. 
+  // Just to define a wavelength grid. 
+  Grain MyGrain; 
+//   // Instantiate a Grain object and stick it into the first element of the vector. 
+  MyGrain.MakeGrain("CrossSections/AmC_121_large_longwave",
+		    "Calorimetry/Graphitic_Calorimetry_1000.dat",
+		    MW,MS,"/home/misselt/Science/Dust/OpticalProperties/");
   // Get the wavelenght grid MyGrain[0] is defined on. 
-  vector <float> thisWave = MyGrain[0].getWave(); 
-  int nWave = MyGrain[0].getNWave(); 
-  // Get the size grid MyGrain[0] is defined on. 
-  vector <float> thisSize = MyGrain[0].getSize();
-  int nSize = MyGrain[0].getNSize();
-  // Get an absorption cross section for this grain - 0 is for the first size
-  // in the grid.  
-  vector <float> thisCAbs(nWave);
-  thisCAbs = MyGrain[0].getCAbs(0);
+  vector <float> thisWave = MyGrain.getWave(); 
+  int nWave = MyGrain.getNWave(); 
+//   // Get the size grid MyGrain[0] is defined on. 
+//   vector <float> thisSize = MyGrain[0].getSize();
+//   int nSize = MyGrain[0].getNSize();
+//   // Get an absorption cross section for this grain - 0 is for the first size
+//   // in the grid.  
+//   vector <float> thisCAbs(nWave);
+//   thisCAbs = MyGrain[0].getCAbs(0);
   // Overloaded getCAbs() - with a float size, will either find an exact match,
   // or interpolate from the Grain object size grid. 
   // vector <float> thatCAbs = MyGrain[0].getCAbs((float)0.15e-4); 
@@ -107,21 +130,21 @@ int main (int argc, char * argv[]) {
  
   // Declare a GrainModel object (single, but this is also vectorizable should 
   // we eventually want to have different grains models in different grids. 
-  GrainModel thisGrainModel;
-  // Hard coded GrainModel configuration. 
-  string aConfigFile="Craptastic.cfg";
-  ConfigFile thisConfig(aConfigFile);
-  // Instiate a GrainModel - requires a configuration file which will tell the 
-  // class where to get the model info and the wavelength grid we want things 
-  // defined on. 
-  // All the work goes on behind this line. 
-  thisGrainModel.MakeGrainModel(thisConfig,thisWave); 
-  // Get the effective (size integrated, summed) grain quantities. 
-  vector <float> thiseffcabs=thisGrainModel.getCAbsEff(); 
-  vector <float> thiseffcsca=thisGrainModel.getCScaEff();
-  vector <float> thiseffphfunc=thisGrainModel.getphFuncEff();
-  vector <float> thisEnthalpy,thisSpecificEnthalpy,thisCalTemp; 
-  ncomp = thisGrainModel.getNComp();
+
+//   // Hard coded GrainModel configuration. 
+//   string aConfigFile="Craptastic.cfg";
+//   ConfigFile thisConfig(aConfigFile);
+//   // Instiate a GrainModel - requires a configuration file which will tell the 
+//   // class where to get the model info and the wavelength grid we want things 
+//   // defined on. 
+//   // All the work goes on behind this line. 
+
+//   // Get the effective (size integrated, summed) grain quantities. 
+//   vector <float> thiseffcabs=thisGrainModel.getCAbsEff(); 
+//   vector <float> thiseffcsca=thisGrainModel.getCScaEff();
+//   vector <float> thiseffphfunc=thisGrainModel.getphFuncEff();
+//   vector <float> thisEnthalpy,thisSpecificEnthalpy,thisCalTemp; 
+//   ncomp = thisGrainModel.getNComp();
 //   float trala;
 //   for (int c=0;c<1;c++) { 
 //     thisSize=thisGrainModel.Size(c); 
@@ -139,12 +162,12 @@ int main (int argc, char * argv[]) {
 //   exit(8);
   // Define an albedo vector and compute the albedo 
   // Albedo maybe something we should store in the GrainModel object...
-  vector <float> albedo; 
-  for (int i=0;i<nWave;i++) { 
-    albedo.push_back(thiseffcsca[i]/(thiseffcsca[i]+thiseffcabs[i])); 
-    //cout << thisWave[i] << " " << albedo[i] << " " << thiseffphfunc[i] << endl; 
-  }
-  // ****************************************************************************
+//   vector <float> albedo; 
+//   for (int i=0;i<nWave;i++) { 
+//     albedo.push_back(thiseffcsca[i]/(thiseffcsca[i]+thiseffcabs[i])); 
+//     //cout << thisWave[i] << " " << albedo[i] << " " << thiseffphfunc[i] << endl; 
+//   }
+//   // ****************************************************************************
 
   // ****************************************************************************
   // Example of computing an ISRF
@@ -154,6 +177,15 @@ int main (int argc, char * argv[]) {
   ISRF MyISRF(thisWave,1.0); 
   // Get the field from the object. 
   vector <float> thisISRF = MyISRF.getISRF(); 
+
+  GrainModel thisGrainModel;
+  string aConfigFile="Craptastic.cfg";
+  ConfigFile thisConfig(aConfigFile);
+  thisGrainModel.MakeGrainModel(thisConfig,thisWave); 
+  int ncomp = thisGrainModel.getNComp();
+
+//   for (int i=0;i<thisISRF.size();++i) cout << thisWave[i]*1.0e4 << " " << thisISRF[i] << endl; 
+// 	exit(8);
   // ****************************************************************************
 
 
@@ -193,8 +225,18 @@ int main (int argc, char * argv[]) {
   thisEmission.resize(2*ncomp+1); 
   for (int i=0;i<(2*ncomp+1);++i) thisEmission[i].resize(nWave);
   bool DoStochastic=true; 
-  cout << "Calling compute emission " <<endl ;
+  cout << "Calling compute emission " <<endl;
   ComputeDustEmission(thisISRF, thisGrainModel, thisEmission, DoStochastic); 
+
+  for (int i=0;i<nWave;i++) { 
+    //cout << thisEmission[i].size() << endl; 
+    cout << thisWave[i] << " " << thisEmission[0][i] << " ";
+    for (int c=0;c<ncomp;++c) { 
+      
+      cout << thisEmission[2*c+1][i] << " " << thisEmission[2*c+2][i] << " "; 
+    }
+    cout << endl; 
+  }
 
 //   cout << "EQUILIBRIUM TEMPERATURE AT SIZE " << mysize << "(" 
 //        << thisSize[sizeid] << ") IS " << thisTemp[sizeid] << endl; 

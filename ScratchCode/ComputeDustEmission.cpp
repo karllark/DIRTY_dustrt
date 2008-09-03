@@ -2,108 +2,153 @@
 #include "GrainModel.h"
 #include "NumUtils.h"
 
-extern vector <double> ComputeProbability(vector <float> & waveE, vector <float> & wave, 
-					  vector <float> & J, vector <float> & cabs, 
-					  vector <float> & Temp, vector <float> & Enthalpy, float eqT);
+extern vector <double> StochasticHeating(vector <float> & waveE, vector <float> & wave, 
+					 vector <float> & J, vector <float> & cabs, 
+					 vector <float> & Temp, vector <float> & Enthalpy, 
+					 float EAbs, float & TMin, float & TMax);
 
 void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel, 
 			  vector <vector<double> > & EmmittedEnergy, bool DoStochastic)
 {
 
-  // Local copy that can flip when this bin transitions. 
-  bool _dostochastic = DoStochastic; 
-
-  vector <float>::iterator _it,_it1,_it2,_itb,_ite;
-  // Iterators for: 
-  // _iteec == emmitted equilibrium for each component
-  // _itet == total emmitted energy. 
-  vector <double>::iterator _iteec,_itet; 
-  vector <float> _w = GrainModel.getWave();
-  vector <float> _E = GrainModel.getEScale();
-  vector <float> _Enthalpy,_CalTemp; 
-  vector <vector<double> > _P; 
-  vector <float> _cabs,_size,_sizeDist; 
-  uint _nsize; 
-  uint _nw = _w.size();
+  // Stochastic state for each size. 
+  vector <bool> _dostochastic;
   
-  if (J.size() != _nw) { cout << "FUCK!!! J/nwave don't match!" << endl; exit(8);}
+  // Hold eq. and st. luminosity as f(size,wave)
+  vector <vector<double> > StochasticLum; 
+  vector <vector<double> > EquilibriumLum; 
+  // Iterators for: 
+  // _iteec == emmitted equilibrium for each component at each wavelength. 
+  // _itees == emmitted stochastic for each compoenent at each wavelength. 
+  // _itet == total emmitted energy for each wavelength.
+  vector <double>::iterator _iteec,_itees,_itet; 
 
-  vector <float> _integrand; 
-
-  // Do the equilibrium calculation. 
+  // Some temporary vectors. 
+  vector <double> _integrand,_integrand1;
   vector <float> _t;
  
-  float _tlo,_thi,_norm,mpe,tau_abs,tau_rad,Tu; 
+  // Some iterators.
+  vector <float>::iterator _it;
+
+  // Some Grain model derived parameters.
+  vector <float> _w = GrainModel.getWave();
+  vector <float> _E = GrainModel.getEScale();
   int _ncmp = GrainModel.getNComp(); 
+  uint _nw = _w.size();
+  vector <float> _Enthalpy; 
+  vector <float> _CalTemp;
+  vector <float> _cabs,_size,_sizeDist; 
+  uint _nsize; 
 
-  for (int _cmp=0;_cmp<_ncmp;++_cmp) {
-    
-    _dostochastic=DoStochastic; 
+  // Check J is defined on same wave grid as wave....
+  if (J.size() != _nw) { cout << "FUCK!!! J/nwave don't match!" << endl; exit(8);}
+  
+  // Some local variables.  
+  // EAbs computed in EqTemp() and passed back for StochasticHeating() to test convergence. 
+  float EAbs;
+  float _tlo,_thi,_norm,mpe,tau_abs,tau_rad,Tu; 
 
+  // Some default starting values for stochastic caluclation - will return with best guess 
+  // from StochasticHeating for next size. 
+  int nBins;
+  float TMin; 
+  float TMax; 
+
+  // Local J that includes the microwave background - Otherwise the really small guys 
+  // want to cool to ~0K. 
+  //vector <float> _localJ=NumUtils::add_bbodyCGS<float>(_w,2.7,J); 
+  //for (int i=0;i<_nw;++i) cout << i << " " << _w[i] <<" " << J[i] << " " << _localJ[i] << endl;
+
+  for (int _cmp=0;_cmp<_ncmp;++_cmp) { // Component loop
+
+    // Default starting values.  Works well for size distributions that start small...
+    nBins=50; 
+    TMin=0.1; 
+    TMax=5000.;
+
+    // Populate GrainModel() for each component
     _nsize = GrainModel.nSize(_cmp);
     _cabs = GrainModel.CAbs(_cmp,(int)0); 
+    // initilize _t and _dostochastic
     _t.resize(_nsize);
-    
-    // Size the temperature probability 
-    if (_dostochastic) _P.resize(_nsize); 
+    _dostochastic.resize(_nsize,DoStochastic);  // Populate local with global default. 
+    // and first dimension of Luminosities. 
+    EquilibriumLum.resize(_nsize);
+    StochasticLum.resize(_nsize); 
 
-    // Start
+    // Start values for EqTemp(). 
     _it=_t.begin(); 
     _tlo = 1.0; 
     _thi = 2500.0; 
-    cout << "Starting emission calculation, component " << _cmp << endl; 
-    // Compute Equilibrium temperature for each size of this component.
-    for (uint _sz=0;_sz<_nsize;++_sz) {
-      //cout << "next size " << _sz << endl; 
-      _cabs = GrainModel.CAbs(_cmp,int(_sz)); 
-      *_it = EqTemp(_w,J,_cabs,((_tlo<0)?1.0:_tlo),((_thi>2500.0)?2500.0:_thi));
+
+    // Loop over all sizes. 
+    for (uint _sz=0;_sz<_nsize;++_sz) { // Size loop
+
+      _cabs = GrainModel.CAbs(_cmp,int(_sz));
+      // Get equilibrium temperature.  Return emitted energy as well since it's used 
+      // in stochastic calculation. 
+      *_it = EqTemp<float>(_w,J,_cabs,EAbs,((_tlo<0)?1.0:_tlo),((_thi>2500.0)?2500.0:_thi));
+      // Equlibrium luminosity = C_abs*B
+      EquilibriumLum[_sz] = NumUtils::prod_bbodyCGS<double>(_w,*_it,_cabs);
+      
       ++_it; 
       _tlo = 0.3*(*(_it-1)); 
       _thi = 3.0*(*(_it-1)); 
-      if (_dostochastic) { 
-	_Enthalpy = GrainModel.Enthalpy(_sz,_cmp); // Since Enthalpy and CalTemp will change 
-	_CalTemp = GrainModel.CalTemp(_cmp);       // as we generate transition matrix, regenerate
-                                                   // at each size/cmp pair.
+
+      if (_dostochastic[_sz]) {	
+	
+	// Since Enthalpy and CalTemp will change as we generate transition matrix,
+	// regenerate at each size/cmp pair.
+	_Enthalpy = GrainModel.Enthalpy(_sz,_cmp); 
+	_CalTemp = GrainModel.CalTemp(_cmp);       
+	
+	// Compute absorptive and radiative timescales to help shut off stochastic. 
 	tau_abs = HeatUtils::getTauAbs(J,_cabs,_w,mpe); 
 	Tu = HeatUtils::getTmean(_CalTemp,_Enthalpy,mpe); 
 	tau_rad = HeatUtils::getTauRad(_cabs,_w,mpe,Tu); 
-	//cout << "Cmp, Size, eqT: " << _cmp << " " << Constant::CM_UM*GrainModel.Size(_cmp,_sz)<< " " << *(_it-1) << " " << tau_abs << " " << tau_rad << endl; 
-	if (tau_abs < tau_rad) { 
-	  cout << "Turning off stochastic heating at grain size " << Constant::CM_UM*GrainModel.Size(_cmp,_sz) << " for component " << _cmp << endl;
-	  _dostochastic=false; 
+
+	if (100*tau_abs < tau_rad) {   // Turn off stochastic heating for this and all subsequent sizes. 
+	  transform(_dostochastic.begin()+_sz,_dostochastic.end(),_dostochastic.begin()+_sz,
+		    bind1st(multiplies<bool>(),false));
+	} else { // Compute StochasticLum, zero out Eq. 
+	  StochasticLum[_sz] = StochasticHeating(_E,_w,J,_cabs,_CalTemp,_Enthalpy,EAbs,TMin,TMax); 
+	  EquilibriumLum[_sz].resize(_nw,0.0);  
 	}  
-	_P[_sz] = ComputeProbability(_E,_w,J,_cabs,_CalTemp,_Enthalpy,*(_it-1)); 
-	  
-      }
+      } else StochasticLum[_sz].resize(_nw,0.0);  // Zero stochastic so we have zero's when we don't do it.  
+
     }
-    // Have temperature, size distribution for each size 
 
-    // Compute luminosity.
-    _norm=GrainModel.getNormalization(_cmp);           // Size Dist norm in H^-1
-
-    _size = GrainModel.Size(_cmp);                    // Size in cm
-    _sizeDist = GrainModel.getSizeDistribution(_cmp); // Size dist in cm^-1
-    
-    _itb = _sizeDist.begin();
-    _ite = _sizeDist.end();
-   
-    _iteec = EmmittedEnergy[2*_cmp+1].begin(); 
+    // Now we have E_eq(w,a) = C(w,a)*B(w,T(a)) and E_st(w,a) = C(w,a)*SUM(P(T(a))*B(w,T(a))
+    // Need to compute integrals over size distribution. 
+    _integrand.resize(_nsize); 
+    _integrand1.resize(_nsize); 
+    _norm=GrainModel.getNormalization(_cmp);
+    cout << _norm << endl ;
+    _size = GrainModel.Size(_cmp);
+    _sizeDist = GrainModel.getSizeDistribution(_cmp);
+    _iteec = EmmittedEnergy[2*_cmp+1].begin(); // component equilibrium
+    _itees = EmmittedEnergy[2*_cmp+2].begin(); // component stochastic
     _itet = EmmittedEnergy[0].begin(); 
 
-    for (uint _wv=0;_wv<_nw;++_wv,++_iteec,++_itet) {
-      _cabs = GrainModel.wCAbs(_cmp,_wv);             // _cabs at wave[] for all sizes in cm^2.
-      _integrand = bbodyCGS(_w[_wv],_t);              // black body at wave[] for all sizes in erg/s/cm^2/cm^1/st
-      _it1 = _cabs.begin(); 
-      _it2 = _integrand.begin();
-      for (_it=_itb;_it!=_ite;++_it,++_it1,++_it2) *_it2 *= ((*_it)*(*_it1));
+    for (uint _wv=0;_wv<_nw;++_wv,++_iteec,++_itees,++_itet) { // wavelength loop
+    
+      // _integrand contains the equilibrium contribution to luminosity
+      // _integrand1 contains the stochastic contribution to luminosity
+      for (uint _sz=0;_sz<_nsize;++_sz) { // size loop
+
+	if (!_dostochastic[_sz]) { // compute the equilibrium contribution 
+	  _integrand[_sz] = _sizeDist[_sz]*EquilibriumLum[_sz][_wv];
+	  _integrand1[_sz] = 0.0; 
+	} else { // compute the stochastic contribution
+	  _integrand[_sz] = 0.0; 
+	  _integrand1[_sz] = _sizeDist[_sz]*StochasticLum[_sz][_wv]; 
+	}
+      }
       
-      // now we have n(a)*Cabs(a)*B(T[a]) at wavelength _w[_wv]
-      // The luminosity per unit wavelength is given by 
-      // 4pi*norm*int[ da n(a)*Cabs(a)*B(T[a]) ]  
-      // with units of erg/s/cm/H
-      *_iteec = (double)Constant::FPI*_norm*NumUtils::integrate(_size,_integrand); 
-      *_itet += *_iteec; 
-      if (!finite(*_itet)) { cout << _wv <<"  "<< _w[_wv] << " BLEECH!!!" << endl; exit(8); }
+      *_iteec = _norm*Constant::FPI*NumUtils::integrate<double>(_size,_integrand); 
+      *_itees = _norm*Constant::FPI*NumUtils::integrate<double>(_size,_integrand1); 
+      *_itet += (*_iteec + *_itees); 
+
     }
 
   }

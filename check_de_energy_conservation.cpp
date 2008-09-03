@@ -5,6 +5,7 @@
 // but it has the same effect as energy conservation.
 //
 // 2008 Jun/KDG - written
+// 2008 Sept 2 - added implicit casts for NumUtils::integrate call -KAM
 // ======================================================================
 #include "check_de_energy_conservation.h"
 #define DEBUG_CDEC
@@ -35,8 +36,8 @@ void check_de_energy_conservation (runinfo_struct& runinfo,
   }
 
   // determine the global energy absorbed and emitted
-  double total_de_direct_energy = NumUtils::integrate(out_wavelength,de_direct);
-  double total_de_scat_energy = NumUtils::integrate(out_wavelength,de_scattered);
+  double total_de_direct_energy = NumUtils::integrate<double>(out_wavelength,de_direct);
+  double total_de_scat_energy = NumUtils::integrate<double>(out_wavelength,de_scattered);
 
   double new_total_emit = total_de_direct_energy + total_de_scat_energy;
 

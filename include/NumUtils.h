@@ -98,13 +98,17 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
   template <typename T> vector <int> sortID(vector <T>&vect);
   template <typename T> vector <int> sortID_src(vector <T>&vect); 
   template <typename T> void sortIndexOnVector(vector <T> & vect, vector <int> & index, int beg, int end);
-  template <typename T> T integrate (vector <T>& x, vector <T>& y);
+  template <typename T, typename T1, typename T2> T integrate (vector <T1>& x, vector <T2>& y);
   template <typename T> vector <T> interpol (vector <T>& v, vector <T>& x, 
 					     vector <T>& u, int LoEx=2, int HiEx=2);
   template <typename T> void interpolr (vector <T>& v, vector <T>& x, 
 					vector <T>& u, int LoEx=2, int HiEx=2);
-  template <typename T> vector <T> bbodyCGS (T wave, vector <T>&  Temperature);
-  template <typename T> vector <T> bbodyCGS (vector <T>& wave, T Temperature);
+  template <typename T, typename T1, typename T2> vector <T> bbodyCGS (T1 wave, vector <T2>& Temperature);
+  template <typename T, typename T1, typename T2> vector <T> bbodyCGS (vector <T1>& wave, T2 Temperature);
+  template <class T, class T1, class T2, class T3> vector <T> prod_bbodyCGS (T1 wave, vector <T2>& Temperature, vector <T3>& product);
+  template <class T, class T1, class T2, class T3> vector <T> prod_bbodyCGS (vector <T1>& wave, T2 Temperature, vector <T3>& product);
+  template <class T, class T1, class T2, class T3> vector <T> add_bbodyCGS (T1 wave, vector <T2>& Temperature, vector <T3>& add);
+  template <class T, class T1, class T2, class T3> vector <T> add_bbodyCGS (vector <T1>& wave, T2 Temperature, vector <T3>& add);
   template <typename T> string vtos(const T & value);
   template <typename T> class Matrix;
   template <typename T> class Cube; 
@@ -146,12 +150,20 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
     {
       T theMax=-1e256;
       int theMaxID; 
-      for (int i=0;i<vect.size();i++) {
-	if (vect[i] > theMax) { 
-	  theMax=vect[i];
-	  theMaxID=i; 
-	}
+      typename vector <T>::iterator _it,_itb,_ite; 
+      _itb=vect.begin(); _ite=vect.end();
+      for (_it=_itb;_it!=_ite;++_it) {
+	if (*_it > theMax) { 
+	   theMax = *_it; 
+	   theMaxID = distance(_itb,_it); 
+        }
       }
+      //for (int i=0;i<vect.size();i++) {
+//	if (vect[i] > theMax) { 
+//	  theMax=vect[i];
+//	  theMaxID=i; 
+//	}
+ //     }
       return theMaxID; 
     }
   // ****************************************************************************
@@ -224,10 +236,11 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
 
   // ****************************************************************************
   // Simple trapazoidal integration
-  template <typename T> T integrate (vector <T>& x, vector <T>& y)
+  template <typename T, typename T1, typename T2> T integrate (vector <T1>& x, vector <T2>& y)
     {
       T answer=0.0;
-      typename vector <T>::iterator ix,iy; 
+      typename vector <T2>::iterator iy;
+      typename vector <T1>::iterator ix; 
       if (x.size() > 1) {
 	iy = y.begin()+1;
 	for (ix=x.begin()+1;ix!=x.end();ix++) {
@@ -238,6 +251,9 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       return answer;
     }
   // ****************************************************************************
+
+
+ 
 
   // ****************************************************************************
   // Interpolate - should be fast enough for small vectors.
@@ -287,7 +303,8 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
 	  *ir = *iv; 
 	  break; 
 	default : // Power law. 
-	  *ir = (*iv)*pow( (*ix)/(*iuh), HiEx); 
+	  //cout << *iv << " " << *ix << " " << *iuh << " " << HiEx << endl; 
+	  *ir = (*iv)*pow( (*iuh)/(*ix), HiEx); 
 	  break; 
 	}
 	iuh--; 
@@ -390,19 +407,70 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
     // ****************************************************************************
   // BB inputs and outputs all in cgs - cm and erg/s/cm^2/st/cm
   // Returns BB as f(T) for a single wavelength
-  template <typename T> vector <T> bbodyCGS (T wave, vector <T>& Temperature)
+  template <typename T, typename T1, typename T2> vector <T> bbodyCGS (T1 wave, vector <T2>& Temperature)
     {   
       // Wave is in CGS (cm), return in CGS: erg/cm^2/s/cm/st
       T c1 = 2.0*Constant::PLANCK*pow(Constant::LIGHT,2);
-      T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN);
-      typename vector <T>::iterator _itbeg,_itend,_it;
+      T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*static_cast<T>(wave));
+/*       cout << Constant::PLANCKLIGHT << " " << Constant::BOLTZMAN << " " << wave << endl;  */
+/*       cout << Constant::BOLTZMAN*wave << endl;  */
+/*       cout << Constant::PLANCKLIGHT/(Constant::BOLTZMAN*wave) << endl; */
+/*       cout << "C2 in bb: " << c2 << endl;  */
+      typename vector <T2>::iterator _itbeg,_itend,_it;
+      //cout << "comp bb: " <<  c1 << " " << c2 << endl; 
+      vector <T> theBB;
+      _itbeg = Temperature.begin();
+      _itend = Temperature.end();
+      int i=0; 
+      for (_it=_itbeg;_it!=_itend;++_it,++i) {
+	//cout << "INBB 1: " << static_cast<T1>(wave) << " " << c1/pow((static_cast<T1>(wave)),5) << endl; 
+	//cout << (std::exp((c2/static_cast<T1>((*_it))))) << endl; 
+	theBB.push_back(c1/pow((wave),5)*(1.0/(std::exp(c2/(*_it)) - 1.0)));
+	//cout << "IN BB: " << wave << " " << *_it << " "<<  theBB[i] << endl; 
+      }
+      return theBB;
+    }
+  // ****************************************************************************
+
+  // ****************************************************************************
+  // BB inputs and outputs all in cgs - cm and erg/s/cm^2/st/cm
+  // Returns BB multiplied by another vector as f(T) for a single wavelength
+  template <class T, class T1, class T2, class T3> vector <T> prod_bbodyCGS (T1 wave, vector <T2>& Temperature, vector <T3>& product)
+    {   
+      // Wave is in CGS (cm), return in CGS: erg/cm^2/s/cm/st
+      T c1 = 2.0*Constant::PLANCK*pow(Constant::LIGHT,2);
+      T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*static_cast<T>(wave));
+      typename vector <T2>::iterator _itbeg,_itend,_it;
+      typename vector <T3>::iterator _itp;
 
       vector <T> theBB;
       _itbeg = Temperature.begin();
       _itend = Temperature.end();
-      for (_it=_itbeg;_it!=_itend;++_it) 
-	theBB.push_back(c1/pow((wave),5)*(1.0/(std::exp((c2/(*_it))/(wave)) - 1.0)));
-      
+      _itp = product.begin(); 
+      for (_it=_itbeg;_it!=_itend;++_it,++_itp) {
+	theBB.push_back((*_itp)*c1/pow((wave),5)*(1.0/(std::exp(c2/(*_it)) - 1.0)));	
+      }
+      return theBB;
+    }
+  // ****************************************************************************
+  // ****************************************************************************
+  // BB inputs and outputs all in cgs - cm and erg/s/cm^2/st/cm
+  // Returns BB summed with another vector as f(T) for a single wavelength
+  template <class T, class T1, class T2, class T3> vector <T> add_bbodyCGS (T1 wave, vector <T2>& Temperature, vector <T3>& add)
+    {   
+      // Wave is in CGS (cm), return in CGS: erg/cm^2/s/cm/st
+      T c1 = 2.0*Constant::PLANCK*pow(Constant::LIGHT,2);
+      T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*static_cast<T>(wave));
+      typename vector <T2>::iterator _itbeg,_itend,_it;
+      typename vector <T3>::iterator _ita;
+
+      vector <T> theBB;
+      _itbeg = Temperature.begin();
+      _itend = Temperature.end();
+      _ita = add.begin(); 
+      for (_it=_itbeg;_it!=_itend;++_it,++_ita) {
+	theBB.push_back( (c1/pow((wave),5)*(1.0/(std::exp(c2/(*_it)) - 1.0))) + *_ita);	
+      }
       return theBB;
     }
   // ****************************************************************************
@@ -410,18 +478,61 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
   // ****************************************************************************
   // BB inputs and outputs all in cgs - cm and erg/s/cm^2/st/cm
   // Returns BB as f(wave) for a single T
-  template <typename T> vector <T> bbodyCGS (vector <T>& wave, T Temperature)
+  template <typename T, typename T1, typename T2> vector <T> bbodyCGS (vector <T1>& wave, T2 Temperature)
     {   
       // Wave is in CGS (cm), return in CGS: erg/cm^2/s/cm/st
       T c1 = 2.0*Constant::PLANCK*pow(Constant::LIGHT,2);
       T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*Temperature);
-      typename vector <T>::iterator _itbeg,_itend,_it;
+      class vector <T1>::iterator _itbeg,_itend,_it;
 
       vector <T> theBB;
       _itbeg = wave.begin();
       _itend = wave.end();
       for (_it=_itbeg;_it!=_itend;++_it) 
 	theBB.push_back(c1/pow((*_it),5)*(1.0/(std::exp(c2/(*_it)) - 1.0)));
+      
+      return theBB;
+    }
+  // ****************************************************************************
+
+  // ****************************************************************************
+  // BB inputs and outputs all in cgs - cm and erg/s/cm^2/st/cm
+  // Returns BB multiplied by another vector as f(wave) for a single T
+  template <class T, class T1, class T2, class T3> vector <T> prod_bbodyCGS (vector <T1>& wave, T2 Temperature, vector <T3>& product)
+    {   
+      // Wave is in CGS (cm), return in CGS: erg/cm^2/s/cm/st
+      T c1 = 2.0*Constant::PLANCK*pow(Constant::LIGHT,2);
+      T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*Temperature);
+      class vector <T1>::iterator _itbeg,_itend,_it;
+      class vector <T3>::iterator _itp; 
+
+      vector <T> theBB;
+      _itbeg = wave.begin();
+      _itend = wave.end();
+      _itp = product.begin();
+      for (_it=_itbeg;_it!=_itend;++_it,++_itp) 
+	theBB.push_back((*_itp)*c1/pow((*_it),5)*(1.0/(std::exp(c2/(*_it)) - 1.0)));
+      
+      return theBB;
+    }
+  // ****************************************************************************
+  // ****************************************************************************
+  // BB inputs and outputs all in cgs - cm and erg/s/cm^2/st/cm
+  // Returns BB multiplied by another vector as f(wave) for a single T
+  template <class T, class T1, class T2, class T3> vector <T> add_bbodyCGS (vector <T1>& wave, T2 Temperature, vector <T3>& add)
+    {   
+      // Wave is in CGS (cm), return in CGS: erg/cm^2/s/cm/st
+      T c1 = 2.0*Constant::PLANCK*pow(Constant::LIGHT,2);
+      T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*Temperature);
+      class vector <T1>::iterator _itbeg,_itend,_it;
+      class vector <T3>::iterator _ita; 
+
+      vector <T> theBB;
+      _itbeg = wave.begin();
+      _itend = wave.end();
+      _ita = add.begin();
+      for (_it=_itbeg;_it!=_itend;++_it,++_ita) 
+	theBB.push_back( (c1/pow((*_it),5)*(1.0/(std::exp(c2/(*_it)) - 1.0))) + *_ita);
       
       return theBB;
     }

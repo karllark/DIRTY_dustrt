@@ -1,6 +1,6 @@
 #include "check_absorbed_energy_grid.h"
 //#define DEBUG_SAEG
-
+// 2008 sept 2 - added implicit cast for NumUtils::integrate call.
 void check_absorbed_energy_grid (geometry_struct& geometry,
 				 runinfo_struct& runinfo)
 
@@ -41,7 +41,7 @@ void check_absorbed_energy_grid (geometry_struct& geometry,
     cout << endl;
   }
 
-  double tot_abs_energy = NumUtils::integrate(tmp_wave,abs_energy);
+  double tot_abs_energy = NumUtils::integrate<double>(tmp_wave,abs_energy);
   cout << "total_abs_energy = " << tot_abs_energy << endl;
 
   exit(8);
