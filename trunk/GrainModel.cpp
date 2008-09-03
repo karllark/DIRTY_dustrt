@@ -216,7 +216,7 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
     for (int sz=0;sz<Component[cmp].nsize;sz++)
       _integrand.push_back(Component[cmp].mass[sz]*SizeDistribution[cmp][sz]);
     //_integrand.push_back(Component[cmp].size[sz]*Component[cmp].size[sz]*Component[cmp].size[sz]*SizeDistribution[cmp][sz]); 
-    DustMass[cmp] = Normalization[cmp]*NumUtils::integrate(Component[cmp].size,_integrand); 
+    DustMass[cmp] = Normalization[cmp]*NumUtils::integrate<float>(Component[cmp].size,_integrand); 
     TotalDustMass += DustMass[cmp]; 
     _integrand.erase(_integrand.begin(),_integrand.end()); 
 
@@ -354,7 +354,7 @@ vector <float> GrainModel::getZDA_sdist(vector <float> coeff, int cmp)
   // a numerical approximation to the normalized size distribution. 
   // This normalization will depend slightly on the choice of size grid, so we can't
   // simply incorporate it into Normalization[]
-  float _Nfac = 1.0/NumUtils::integrate(Component[cmp].size,retvec); 
+  float _Nfac = 1.0/NumUtils::integrate<float>(Component[cmp].size,retvec); 
   transform(retvec.begin(),retvec.end(),retvec.begin(),bind2nd(multiplies<float>(),_Nfac)); 
 
   return retvec; 

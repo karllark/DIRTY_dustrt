@@ -7,7 +7,6 @@
 
 
 #include "TimeEvolution.h"
-
 void TimeEvolution(vector <float>& wave, vector <float>& J, vector <float>& CAbs, 
 		   vector <float>& Temperature, vector <float>& SpecificHeatCapacity,
 		   vector <float>& SpecificEnthalpy, float density, float size,
@@ -206,30 +205,30 @@ void TimeEvolution(vector <float>& wave, vector <float>& J, vector <float>& CAbs
     // Four point Runge-Kutta numerical integration
     k1 = *pthisTemp;
     //cout << thisC << " " <<  "K1 is " << k1 << endl; 
-    integrand = NumUtils::bbodyCGS(wave,k1);
+    integrand = NumUtils::bbodyCGS<float>(wave,k1);
     transform(integrand.begin(),integrand.end(),CAbs.begin(),integrand.begin(),multiplies<float>());
     //cout << NumUtils::integrate(wave,integrand) << " " << DTdtConst << " " << thisC << endl; 
     //cout << "DTCONST/THISC " << DTdtConst/thisC << endl; 
-    k1 = (DTdtConst/thisC)*NumUtils::integrate(wave,integrand); 
+    k1 = (DTdtConst/thisC)*NumUtils::integrate<float>(wave,integrand); 
     
     k2 = (*pthisTemp) + k1/2.0; 
-    integrand = NumUtils::bbodyCGS(wave,k2);
+    integrand = NumUtils::bbodyCGS<float>(wave,k2);
     //for (int ii=0;ii<nWave;ii++) cout << wave[ii] << " " << integrand[ii] << endl;  
     transform(integrand.begin(),integrand.end(),CAbs.begin(),integrand.begin(),multiplies<float>());
     //for (int ii=0;ii<nWave;ii++) cout << wave[ii] << " " << integrand[ii] << endl;    
     //cout << NumUtils::integrate(wave,integrand) << " " << DTdtConst << " " << thisC << endl; 
     //cout << "DTCONST/THISC " << DTdtConst/thisC << endl; 
-    k2 = (DTdtConst/thisC)*NumUtils::integrate(wave,integrand); 
+    k2 = (DTdtConst/thisC)*NumUtils::integrate<float>(wave,integrand); 
     
     k3 = (*pthisTemp) + k2/2.0;
-    integrand = NumUtils::bbodyCGS(wave,k3); 
+    integrand = NumUtils::bbodyCGS<float>(wave,k3); 
     transform(integrand.begin(),integrand.end(),CAbs.begin(),integrand.begin(),multiplies<float>());
-    k3 = (DTdtConst/thisC)*NumUtils::integrate(wave,integrand); 
+    k3 = (DTdtConst/thisC)*NumUtils::integrate<float>(wave,integrand); 
     
     k4 = (*pthisTemp) + k3; 
-    integrand = NumUtils::bbodyCGS(wave,k4); 
+    integrand = NumUtils::bbodyCGS<float>(wave,k4); 
     transform(integrand.begin(),integrand.end(),CAbs.begin(),integrand.begin(),multiplies<float>());
-    k4 = (DTdtConst/thisC)*NumUtils::integrate(wave,integrand); 
+    k4 = (DTdtConst/thisC)*NumUtils::integrate<float>(wave,integrand); 
  
     //cout << "*pthisTemp " << *pthisTemp << " " << DTdtConst << " " << thisC << " " << k1 << " " <<  k2 << " " <<  k3 << " " << k4 << endl; 
     thisTemp[t] = thisTemp[t-1] + k1/6.0 + k2/3.0 + k3/3.0 + k4/6.0; 

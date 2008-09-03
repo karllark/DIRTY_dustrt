@@ -6,10 +6,9 @@ NP_SRCS = test_de.cpp \
           ../StringManip.cpp \
           ../ConfigFile.cpp \
 	  ../Grain.cpp \
-	  ../EqTemp.cpp \
 	  TimeEvolution.cpp \
-	  ComputeProbability.cpp \
 	  ComputeDustEmission.cpp \
+	  StochasticHeating.cpp \
           ../GrainModel.cpp \
 	  mt_ran.cpp
 
@@ -22,7 +21,7 @@ LIBDIR=./include
 LIBDIR2=../include
 
 #CCFLAGS = -I$(LIBDIR)/lib -I$(LIBDIR) -I$(LIBPATH)/$(LIBDIR) -O3 -pg 
-CCFLAGS = -I$(LIBDIR) -I$(LIBDIR2) -O3 -pg 
+CCFLAGS = -I$(LIBDIR) -I$(LIBDIR2) -O3 -pg -g
 #LDFLAGS = -O3 -L$(LIBDIR) -lConfigFile -lDataFile -lNumUtils -lStringManip -lcfitsio
 LDFLAGS = -lcfitsio -pg 
 #LDFLAGS = -O3 -L$(LIBDIR) -l90Prime -lcfitsio

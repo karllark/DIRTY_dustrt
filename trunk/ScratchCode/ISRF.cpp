@@ -17,7 +17,7 @@ ISRF::ISRF(vector <float> in_wave, float in_XMMP) {
 
   // Populate class members. 
   XMMP = in_XMMP; 
-  wave = in_wave; 
+  wave.assign(in_wave.begin(),in_wave.end()); 
   nWave = wave.size(); 
   theISRF.resize(nWave,0); 
 
@@ -26,27 +26,24 @@ ISRF::ISRF(vector <float> in_wave, float in_XMMP) {
   vector <float>::iterator iTempISRF; 
   vector <float>::iterator iISRF; 
   
-  for (iW=_W.begin();iW!=_W.end();iW++) {
+  for (iW=_W.begin();iW!=_W.end();iW++,++iT) {
  
     // _TempISRF = black body at T_i
-    _TempISRF = NumUtils::bbodyCGS(wave,(*iT));
-    
+    _TempISRF = NumUtils::bbodyCGS<float>(wave,*iT);
     iISRF=theISRF.begin(); 
 
     // _TempISRF = bbody at T_i scaled by W_i
     // ISRF = sum of scaled bb's at T converted to U (UV fitting done in U...)
-    for (iTempISRF=_TempISRF.begin();iTempISRF!=_TempISRF.end();iTempISRF++) {
+    for (iTempISRF=_TempISRF.begin();iTempISRF!=_TempISRF.end();iTempISRF++,++iISRF) {
       *iTempISRF *= *iW; 
-      *iISRF += (*iTempISRF)*JtoU; 
-      *iISRF++; 
+      *iISRF += (*iTempISRF)*JtoU;
     }
 
     //transform(TempISRF.begin(),TempISRF.end(),TempISRF.begin(),bind2nd(multiplies<double>(),(*iW))); 
     //transform(ISRF.begin(),ISRF.end(),TempISRF.begin(),ISRF.begin(),plus<double>());
     // bbodyCGS uses push_back
     _TempISRF.clear(); 
- 
-    *iT++; 
+
   }
   
   // For UV wavelengths, add the UV portion of the ISRF

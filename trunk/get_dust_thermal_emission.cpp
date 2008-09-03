@@ -5,6 +5,7 @@
 //
 // 2007 Oct/KDG - written
 // 2008 Mar/KDG - updated calculation to do the units of the emitted energy correctly
+// 2008 Sept 2 - added explicit cast to NumUtils::integrate
 // ======================================================================
 #include "get_dust_thermal_emission.h"
 //#define DEBUG_GDTE
@@ -48,7 +49,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
     tmp_wave[x] = double(runinfo.wavelength[x]);
     tmp_abs_energy[x] = runinfo.absorbed_energy[x]*4.*Constant::PI*runinfo.ave_C_abs[x];
   }
-  global_total_absorbed = NumUtils::integrate(tmp_wave,tmp_abs_energy);
+  global_total_absorbed = NumUtils::integrate<double>(tmp_wave,tmp_abs_energy);
 
   double min_enough_energy = 0.1*runinfo.energy_conserve_target*global_total_absorbed/geometry.num_cells;
   long num_cells_enough = 0;
@@ -102,7 +103,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	    if (tmp_abs_energy[x] > max_abs_energy) max_abs_energy = tmp_abs_energy[x];
 	    if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0.) tot_nonzero++;
 	  }
- 	  tot_abs_energy = NumUtils::integrate(tmp_wave,tmp_abs_energy)*geometry.grids[m].grid(i,j,k).num_H;
+ 	  tot_abs_energy = NumUtils::integrate<double>(tmp_wave,tmp_abs_energy)*geometry.grids[m].grid(i,j,k).num_H;
 		
 #ifdef DEBUG_GDTE
 	  cout << "total nonzero = " << tot_nonzero << endl;
@@ -136,7 +137,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 				DoStochastic); 
 
 	    double total_emit_energy = 0.0;
-	    total_emit_energy = NumUtils::integrate(tmp_wave,geometry.grids[m].grid(i,j,k).emitted_energy[0])*geometry.grids[m].grid(i,j,k).num_H;
+	    total_emit_energy = NumUtils::integrate<double>(tmp_wave,geometry.grids[m].grid(i,j,k).emitted_energy[0])*geometry.grids[m].grid(i,j,k).num_H;
 	    
 	    global_total_emitted += total_emit_energy;
 

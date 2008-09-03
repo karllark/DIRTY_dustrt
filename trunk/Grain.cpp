@@ -294,7 +294,7 @@ void Grain::MakeGrain(string const & fOpticalConstants,
   }  
   
   // First non comment line should look like: 
-  // TMIN,TMAX NT: 1.0,2500.0  50
+  // TMIN,TMAX,NT: 1.0 2500.0  50
   _parts = StringManip::strsplit(_line); 
   nTemp = atoi(_parts[3].c_str());
   for (int nt=0;nt<nTemp;nt++) { 

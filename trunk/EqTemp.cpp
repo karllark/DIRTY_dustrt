@@ -36,7 +36,7 @@ double EqTemp(vector <double> wave, vector <double> J, vector <double> Q, double
   transform(integrand.begin(),integrand.end(),Q.begin(),integrand.begin(),multiplies<double>());
 
   // compute the left hand side of the equilibrium equation - this doesn't change anymore!
-  LHS=NumUtils::integrate(wave,integrand); 
+  LHS=NumUtils::integrate<double>(wave,integrand); 
   
   // Clear integrand as we will re-use it to compute RHS. 
   //   bbody uses a push_back to populate the vector, so we want it empty.
@@ -48,10 +48,10 @@ double EqTemp(vector <double> wave, vector <double> J, vector <double> Q, double
     Tk = (Tl+Th)/2.0; 
     
     // Get black body at Tk, compute RHS integrand. 
-    integrand = NumUtils::bbodyCGS(wave,Tk); 
+    integrand = NumUtils::bbodyCGS<double>(wave,Tk); 
     transform(integrand.begin(),integrand.end(),Q.begin(),integrand.begin(),multiplies<double>()); 
     
-    RHS = NumUtils::integrate(wave,integrand);
+    RHS = NumUtils::integrate<double>(wave,integrand);
     Delta = (LHS-RHS)/LHS; 
 
     // If we've converged, Tk is the correct temperature.
@@ -99,8 +99,8 @@ float EqTemp(vector <float> wave, vector <float> J, vector <float> Q, float Tl, 
   transform(integrand.begin(),integrand.end(),Q.begin(),integrand.begin(),multiplies<float>());
 
   // compute the left hand side of the equilibrium equation - this doesn't change anymore!
-  LHS=NumUtils::integrate(wave,integrand); 
-
+  LHS=NumUtils::integrate<float>(wave,integrand); 
+  cout << "LHS " << LHS << endl; 
   // Clear integrand as we will re-use it to compute RHS. 
   //   bbody uses a push_back to populate the vector, so we want it empty.
   integrand.clear(); 
@@ -111,10 +111,10 @@ float EqTemp(vector <float> wave, vector <float> J, vector <float> Q, float Tl, 
     Tk = (Tl+Th)/2.0; 
 
     // Get black body at Tk, compute RHS integrand. 
-    integrand = NumUtils::bbodyCGS(wave,Tk); 
+    integrand = NumUtils::bbodyCGS<float>(wave,Tk); 
     transform(integrand.begin(),integrand.end(),Q.begin(),integrand.begin(),multiplies<float>()); 
     
-    RHS = NumUtils::integrate(wave,integrand);
+    RHS = NumUtils::integrate<float>(wave,integrand);
     Delta = (LHS-RHS)/LHS; 
 
     // If we've converged, Tk is the correct temperature.

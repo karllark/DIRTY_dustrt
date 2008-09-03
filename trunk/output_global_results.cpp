@@ -3,6 +3,7 @@
 //
 // 2008 Jan/KDG - written
 // 2008 Aug/KDG - output more info into the header
+// 2008 sept 2 - added explicit casts in NumUtils::integrate KAM
 // ======================================================================
 #include "output_global_results.h"
 
@@ -115,14 +116,14 @@ void output_global_results (runinfo_struct& runinfo,
   }
 
   // determine the global energy absorbed and emitted
-  double total_stellar_energy = NumUtils::integrate(out_wavelength,out_sed_lum);
-  double total_rt_direct_energy = NumUtils::integrate(out_wavelength,runinfo.out_sed_lum[0]);
-  double total_rt_scat_energy = NumUtils::integrate(out_wavelength,runinfo.out_sed_lum[1]);
+  double total_stellar_energy = NumUtils::integrate<double>(out_wavelength,out_sed_lum);
+  double total_rt_direct_energy = NumUtils::integrate<double>(out_wavelength,runinfo.out_sed_lum[0]);
+  double total_rt_scat_energy = NumUtils::integrate<double>(out_wavelength,runinfo.out_sed_lum[1]);
   double total_de_direct_energy = 0.0;
   double total_de_scat_energy = 0.0;
   if (runinfo.do_emission_grain) {
-    total_de_direct_energy = NumUtils::integrate(out_wavelength,runinfo.out_sed_lum[out_sed_lum_offset]);
-    total_de_scat_energy = NumUtils::integrate(out_wavelength,runinfo.out_sed_lum[out_sed_lum_offset+1]);
+    total_de_direct_energy = NumUtils::integrate<double>(out_wavelength,runinfo.out_sed_lum[out_sed_lum_offset]);
+    total_de_scat_energy = NumUtils::integrate<double>(out_wavelength,runinfo.out_sed_lum[out_sed_lum_offset+1]);
   }
   if (runinfo.verbose >= 1) {
     cout << "Emitted(total) = " << total_stellar_energy << endl;
