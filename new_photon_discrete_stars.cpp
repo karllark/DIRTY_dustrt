@@ -5,7 +5,7 @@
 //
 // 2003 Jun/KDG - written
 // 2004 Dec/KDG - various variable initializations
-// 2006 Aug/KDG - changed from "1star" to "discrete_stars" to handle
+// 2006 Aug/KDG - changed from "1star" to "discrete_stars" to hand
 //                1 to n stars with specific positions and luminosities
 // ======================================================================
 #include "new_photon_discrete_stars.h"

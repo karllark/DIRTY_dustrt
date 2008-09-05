@@ -2,11 +2,14 @@
 #
 # * 20 Mar 2008 Karl Misselt <misselt@as.arizona.edu> 
 # - Made this the default Makefile
+# added -g for debugging symbols to track possible leaks. 
+# efence library ifn' you want to link against it. 
 
 RM = /bin/rm -f
 CPP = g++
 
 INCDIR = include
+#LIBS = -lcfitsio -lefence
 LIBS = -lcfitsio
 
 PROGRAM = dirty
@@ -14,7 +17,8 @@ PROGRAM = dirty
 SOURCES = $(wildcard *.cpp)
 
 OBJECTS = ${SOURCES:.cpp=.o}
-CPPFLAGS = -I${INCDIR} -O2 -Wall -Wextra
+#CPPFLAGS = -I${INCDIR} -O2 -Wall -Wextra -g
+CPPFLAGS = -I${INCDIR} -O2 -Wall -Wextra 
 
 BUILDOBJ = $(CPP) $(CPPFLAGS)
 BUILDLNK = $(CPP) $(LDFLAGS)

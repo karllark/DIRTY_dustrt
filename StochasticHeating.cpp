@@ -12,13 +12,15 @@ int ComputeGrid(vector <float>& enth, vector <float>& denth, vector <float>& tem
 
 vector <double> StochasticHeating(vector <float> & wave, vector <float> & J, 
 				  vector <float> & cabs, vector <float> & Temperature, 
-				  vector <float> & Enthalpy, float EAbs, float & TMin, float & TMax) 
+				  vector <float> & Enthalpy, float EAbs, float & TMin, float & TMax)
 
 {
   
+  int maxBins = 1000; 
   bool converged=false; 
   bool IncreaseBins=false; 
   int nBins=50; 
+  int oldnbins=nBins;
   float tol = 0.01; 
   float thistol; 
   double Ptol = 1.0e-14; 
@@ -59,19 +61,39 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & J,
   float _cabs; // Absorption cross section at _wT
   float _J;    // Radition field at _wT
   
+  //cout << " in stochastic, initilizing 1.0 " << endl; 
+  // Reserve maximum sizes for our vectors.     
+  // wavelength
+  thisWave.reserve(nWave); 
+  thisCabs.reserve(nWave); 
+  thisJ.reserve(nWave);
+  integrand.reserve(nWave); 
+  // bins
+  //cout << " in stochastic, initilizing 2.0 " << endl;
+  _enth.reserve(maxBins); 
+  _denth.reserve(maxBins); 
+  _temp.reserve(maxBins); 
+  _tgrid.reserve(maxBins); 
+  _P.reserve(maxBins); 
+  TM.reserve(maxBins);
+  Bij.reserve(maxBins); 
+  //cout << " in stochastic, initilizing 3.0 " << endl;
+  //for (int i=0;i<maxBins;++i) { TM[i].reserve(maxBins); Bij[i].reserve(maxBins); }
+  //cout << " in stochastic, initilizing 3.1 " << endl;
   // Convergence wrapper... 
-  while (!converged) {
+  while (!converged) { // convergence bracket
         
+    //cout << "not converged 1" << endl; 
     _enth.resize(nBins,0); _denth.resize(nBins,0); _temp.resize(nBins,0); _tgrid.resize(nBins+1,0); 
     TM.resize(nBins); 
     _P.resize(nBins,0); 
    
     status = ComputeGrid(_enth,_denth,_temp,_tgrid,Temperature,Enthalpy,TMax,TMin,nBins); 
-    
+    //cout << "not converged 2 " << endl;
     for (int f=0;f<nBins;++f) {  // Loop over available final states 
-      
-      TM[f].resize(nBins,0);  // Allocate second dim of TM
-      
+      //cout << f <<  " f states, not converged 3.0.0 " << endl; 
+      TM[f].resize(nBins,0.0);  // Allocate second dim of TM
+      //cout << f <<  " f states, not converged 3.0 " << endl; 
       if (f != nBins-1) { // Cooling transitions - only f+1 to f
 	integrand = NumUtils::prod_bbodyCGS<double>(wave,_temp[f+1],cabs); 
 	TM[f][f+1] = Constant::PLANCKLIGHT/(_enth[f+1]-_enth[f])*NumUtils::integrate<double>(wave,integrand);
@@ -79,7 +101,8 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & J,
       
       for (int i=0;i<f;++i) { // Heating transitions - all initial < final
 	_wT=Constant::PLANCKLIGHT/(_enth[f]-_enth[i]); // wavelength of transition
-	if (_wT < wave[0] || _wT >= wave[nWaveLast]) {	    
+	if (_wT <= wave[0] || _wT >= wave[nWaveLast]) {	    
+	  //cout << i << " f i states, not converged 4 " << endl; 
 	  TM[f][i]=0.0; // No photons available to do transition.
 	} else { // find out where the photon falls in our grid and interpolate c/J
 	  
@@ -88,34 +111,42 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & J,
 	  _cabs=NumUtils::line(*(it0-1),*it0,*(it1-1),*it1,_wT); 
 	  _J=NumUtils::line(*(it0-1),*it0,*(it2-1),*it2,_wT); 
 	  TM[f][i] = Constant::IPLANCKLIGHT*_cabs*_J*_denth[f]*pow(_wT,3);  
-	  
+	  //cout << i << " f i states, not converged 4.1 " << endl; 
 	  if (f == nBins-1) { // put all transitions to states beyond our defined grid into last bin
 	    thisWave.assign(wave.begin(),it0); 
 	    thisnWave = thisWave.size()-1; 
 	    thisWave[thisnWave] = _wT; 
 	    thisCabs.assign(cabs.begin(),it1); 
-	    thisCabs[thisnWave] = NumUtils::line(*(it0-1),*it0,*(it1-1),*it1,_wT); 
+	    //cout << i << "  f i states, not converged 4.2 " << idx  << "  " << wave.size() <<  endl; 
+	    thisCabs[thisnWave] = NumUtils::line(*(it0-1),*it0,*(it1-1),*it1,_wT);
+	    //cout << i << "  f i states, not converged 4.3 " << endl;  
 	    thisJ.assign(J.begin(),it2); 
 	    thisJ[thisnWave]=NumUtils::line(*(it0-1),*it0,*(it2-1),*it2,_wT); 
+	    //cout << i << "  f i states, not converged 4.3 " << endl; 
 	    integrand.resize(thisnWave+1); 
 	    idb=integrand.begin(); 
 	    ide=integrand.end(); 
 	    it1=thisCabs.begin(); 
 	    it2=thisJ.begin(); 
+	    //cout << i << "  f i states, not converged 4.4 " << endl; 
 	    for (idt=idb;idt!=ide;++idt,++it1,++it2) *idt=((*it1)*(*it2));
+	    //cout << i << "  f i states, not converged 4.5 " << endl; 
 	    TM[f][i] += (_wT*NumUtils::integrate<double>(thisWave,integrand)); 
+	    //cout << i << "  f i states, not converged 4.6 " << endl; 
 	  }
 	}
       }
     }
-    
+    // this was the last one.
+    //cout << "not converged 2 " << endl; 
     // Populate the Diagonal.
+    //cout << "  out of states, not converged 5.0 " << endl; 
     for (int f=1;f<nBins;++f) {
       TM[0][0] -= TM[f][0]; 
       for (int i=f-1;i<nBins;++i) 
 	if (f != i) TM[f][f] -= TM[i][f]; 
     }
-    
+    //cout << "  out of states, not converged 5.1 " << endl; 
     // Compute B{i,j}
     Bij.resize(nBins); 
     
@@ -126,7 +157,7 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & J,
 	Bij[j][i] = Bij[j+1][i]+TM[j][i]; 
       }     
     }
-    
+    //cout << "  out of states, not converged 5.2 " << endl; 
     // Compute P
     _P[0]=1.0; 
     _norm=_P[0]; 
@@ -144,11 +175,11 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & J,
       }
       _norm += _P[f]; 
     }
-    
+    //cout << "  out of states, not converged 5.3 " << endl; 
     // Normalize _P
     idb=_P.begin(); ide=_P.end(); 
     for (idt=idb;idt!=ide;++idt) *idt /= _norm; 
-
+    //cout << "  out of states, not converged 5.4 " << endl; 
     // Compute emission... 
     // Compute integral over T and return for each lambda.
     integrand.resize(nWave); 
@@ -163,7 +194,7 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & J,
     }
     Eemit = NumUtils::integrate<double>(wave,integrand); 
     thistol = abs(EAbs-Eemit)/EAbs; 
-   
+    //cout << "  out of states, not converged 5.5 " << endl; 
     if (thistol > tol) { // not converged
       if (_P[0] >= 1.) {  // everything is packed into the lowest bin - too broad _tgrid
 	TMin = _tgrid[0]; 
@@ -171,7 +202,7 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & J,
 	IncreaseBins = false; 
       } else { 
 	idxp = NumUtils::maxID(_P); 
-	maxP = _P[idxp]; 
+	maxP = _P[idxp];
 	idx = NumUtils::index(maxP*Ptol,_P); 
 	idx1 = NumUtils::rindex(maxP*Ptol,_P); 
 	if (idx >= idx1) idx=0; 
@@ -196,13 +227,24 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & J,
       }
 
       // Increase nbins by 25%
-      if (IncreaseBins) 
+      if (IncreaseBins) {
+	oldnbins=nBins; 
 	nBins = static_cast<int>(static_cast<float>(nBins)*1.25); 
+      }
+      
+      if (nBins > maxBins) { 
+	cout << "EXCEEDED BIN COUNT IN StochasticHeating()" << endl; 
+	for (int ii=0;ii<oldnbins;++ii) cout << ii << " " << _temp[ii] << " " << _P[ii] << endl; 
+	for (int ii=0;ii<nWave;++ii) cout << ii << wave[ii] << " " << J[ii] << endl; 
+	cout << EAbs << " " << Eemit << " " << thistol << endl; 
+	exit(8); 
+      }
     } else converged=true;  
 
+    //cout << "not converged 2 " << endl; 
 
   }
-
+  //cout << "  out of states, not converged 6.0 " << endl; 
   return integrand; // this is C(lam)*Sum_T (P(T)*B(T,lam)) ~ stochastic L(lam) 
 
 }
