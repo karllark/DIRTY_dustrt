@@ -18,11 +18,11 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   int i,j,k,m,z = 0;
   uint x = 0;
 
-  bool DoStochastic=false; 
+  bool DoStochastic=true; 
 
   double global_total_emitted = 0.;
   double global_total_absorbed = 0.;
-
+  double total_emit_energy = 0.0;
   // get the number of emission components
   int n_emit_components = 1;
   if (runinfo.do_emission_grain) n_emit_components += 2*CurGrainModel.getNComp();
@@ -136,7 +136,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 				geometry.grids[m].grid(i,j,k).emitted_energy,
 				DoStochastic); 
 
-	    double total_emit_energy = 0.0;
+	    total_emit_energy = 0.0;
 	    total_emit_energy = NumUtils::integrate<double>(tmp_wave,geometry.grids[m].grid(i,j,k).emitted_energy[0])*geometry.grids[m].grid(i,j,k).num_H;
 	    
 	    global_total_emitted += total_emit_energy;

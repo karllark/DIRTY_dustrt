@@ -148,8 +148,9 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
   // Get max element (index) of vector.
   template <typename T> int maxID(vector <T>& vect)
     {
-      T theMax=-1e256;
-      int theMaxID; 
+      //T theMax=-1e256;
+      int theMaxID=0; 
+      T theMax=vect[0];
       typename vector <T>::iterator _it,_itb,_ite; 
       _itb=vect.begin(); _ite=vect.end();
       for (_it=_itb;_it!=_ite;++_it) {

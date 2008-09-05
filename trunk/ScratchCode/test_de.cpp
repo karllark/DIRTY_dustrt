@@ -103,7 +103,7 @@ int main (int argc, char * argv[]) {
 //   // Instantiate a Grain object and stick it into the first element of the vector. 
   MyGrain.MakeGrain("CrossSections/AmC_121_large_longwave",
 		    "Calorimetry/Graphitic_Calorimetry_1000.dat",
-		    MW,MS,"/home/misselt/Science/Dust/OpticalProperties/");
+		    MW,MS,"/work/Science/Dust/OpticalProperties/");
   // Get the wavelenght grid MyGrain[0] is defined on. 
   vector <float> thisWave = MyGrain.getWave(); 
   int nWave = MyGrain.getNWave(); 
@@ -236,6 +236,20 @@ int main (int argc, char * argv[]) {
       cout << thisEmission[2*c+1][i] << " " << thisEmission[2*c+2][i] << " "; 
     }
     cout << endl; 
+  }
+
+  thisEmission.resize(2*ncomp+1);
+  for (int i=0;i<(2*ncomp+1);++i) thisEmission[i].resize(nWave);
+  cout << "Calling compute emission " <<endl;
+  ComputeDustEmission(thisISRF, thisGrainModel, thisEmission, DoStochastic);
+
+  for (int i=0;i<nWave;i++) {
+   cout << thisWave[i] << " " << thisEmission[0][i] << " ";
+    for (int c=0;c<ncomp;++c) {
+
+      cout << thisEmission[2*c+1][i] << " " << thisEmission[2*c+2][i] << " ";
+    }
+    cout << endl;
   }
 
 //   cout << "EQUILIBRIUM TEMPERATURE AT SIZE " << mysize << "(" 
