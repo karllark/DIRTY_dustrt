@@ -92,8 +92,10 @@ int main(int argc, char* argv[])
   for (i = 0; i < runinfo.n_waves; i++) {
     if (runinfo.verbose >= 1) {
       cout << "working on wavelength [micron] = " << runinfo.wavelength[i]*Constant::CM_UM << endl;
-      cout << "tau = " << runinfo.tau_to_tau_ref[i]*geometry.tau << endl;
-      cout << "albedo = " << runinfo.albedo[i] << endl;
+      cout << "tau = " << runinfo.tau_to_tau_ref[i]*geometry.tau << " ";
+      cout << "albedo = " << runinfo.albedo[i] << " ";
+      cout << "g = " << runinfo.g[i] << " ";
+      cout << endl;
     }
 
     // setup/(re)initialize absorbed energy grid
