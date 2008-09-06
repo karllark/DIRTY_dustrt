@@ -85,8 +85,9 @@ void classify_stellar_photon (output_struct& output,
       // compute x,y angles and image indexs
       double angle;
       for (k = 0; k < 2; k++) {
-	angle = atan(tmp_photon.position[k]/(geometry.distance - tmp_photon.position[2]));
+ 	angle = atan(tmp_photon.position[k]/(geometry.distance - tmp_photon.position[2]));
 	image_indxs[k] = int((1.0 + (angle/geometry.angular_radius))*output.image_size[k]*0.5);
+// 	image_indxs[k] = int((1.0 + (tmp_photon.position[k]/(1.1*geometry.radius)))*output.image_size[k]*0.5);
 	// check the index is on the image
 	if ((image_indxs[k] < 0) || (image_indxs[k] > (output.image_size[k]-1))) {
 	  cout << "classify stellar photon: image_indxs[" << k << "] = " << image_indxs[k] << 

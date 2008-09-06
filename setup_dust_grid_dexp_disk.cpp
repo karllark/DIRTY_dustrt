@@ -20,7 +20,7 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
 
   // angular radius needs to be large enough to allow for any rotation and still
   // have all the photons encompassed in the final image
-  geometry.angular_radius = atan(1.05*geometry.radius/geometry.distance);
+  geometry.angular_radius = atan(1.1*geometry.radius/geometry.distance);
 
   // dust scalelength
   double dust_scalelength = param_data.FValue("Geometry","dust_scalelength");
@@ -45,10 +45,6 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
   // constant needed for z calculation
   geometry.stellar_emit_constant_z = 1.0/(1.0 - exp(-1.0*dust_vertical_trunc/geometry.stellar_scaleheight));
 
-  // constant needed for xy calculation
-  geometry.stellar_emit_constant_xy = 1.0/(1.0 - exp(-1.0*geometry.radius/geometry.stellar_scalelength)*
-					   ((geometry.radius/geometry.stellar_scalelength) + 1.0));
-  
   // radial optical depth
   geometry.tau = param_data.FValue("Geometry","tau");
   check_input_param("tau",geometry.tau,0.0,1000.);
@@ -85,6 +81,28 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
   // starting size of grid on one side (assume xy plane)
   float start_grid_size = param_data.FValue("Geometry","start_grid_size");
   check_input_param("start_grid_size",start_grid_size,0,geometry.radius);
+
+  // constant needed for xy calculation (not used as went to vector method)
+//   geometry.stellar_emit_constant_xy = 1.0/(1.0 - exp(-1.0*geometry.radius/geometry.stellar_scalelength)*
+// 					   ((geometry.radius/geometry.stellar_scalelength) + 1.0));
+  // vector of values for xy calculation
+  geometry.stellar_emit_n_xy = 2*int(geometry.radius/min_grid_size) + 1;
+  geometry.stellar_emit_xy_vals.resize(geometry.stellar_emit_n_xy);
+  int ii = 0;
+  double tmp_min_rad = 0.0;
+  double tmp_rad = 0.0;
+  double tmp_sum = 0.0;
+  geometry.stellar_emit_xy_vals[0] = 0.0;
+  for (ii = 1; ii < geometry.stellar_emit_n_xy; ii++) {
+    tmp_min_rad = ((double(ii) - 1.0)/double(geometry.stellar_emit_n_xy-1))*geometry.radius;
+    tmp_rad = ((double(ii))/double(geometry.stellar_emit_n_xy-1))*geometry.radius;
+    geometry.stellar_emit_xy_vals[ii] = exp(-1.0*tmp_rad/geometry.stellar_scalelength);
+    geometry.stellar_emit_xy_vals[ii] *= (tmp_rad*tmp_rad - tmp_min_rad*tmp_min_rad);
+    tmp_sum += geometry.stellar_emit_xy_vals[ii];
+    geometry.stellar_emit_xy_vals[ii] = tmp_sum;
+  }
+  for (ii = 0; ii < geometry.stellar_emit_n_xy; ii++)
+    geometry.stellar_emit_xy_vals[ii] /= tmp_sum;
 
   // set the maximum grid depth
   geometry.max_grid_depth = 1;

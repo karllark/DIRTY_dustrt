@@ -105,11 +105,11 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	  }
  	  tot_abs_energy = NumUtils::integrate<double>(tmp_wave,tmp_abs_energy)*geometry.grids[m].grid(i,j,k).num_H;
 		
-#ifdef DEBUG_GDTE
+	  //#ifdef DEBUG_GDTE
 	  cout << "total nonzero = " << tot_nonzero << endl;
 	  cout << "total absorbed energy = " << tot_abs_energy << endl;
 	  cout << "max absorbed energy = " << max_abs_energy << endl;
-#endif
+	  //#endif
 
 	  if ((tot_abs_energy > 0.0) && (tot_nonzero < int(0.5*runinfo.wavelength.size()))) {
 
@@ -121,13 +121,13 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	    
 // 	    cout << "total min = " << tot_abs_energy << " " << min_enough_energy << endl;
 // 	  if ((tot_abs_energy > 0.) && (tot_nonzero > int(0.75*runinfo.wavelength.size())) && (tot_abs_energy > 1e-35)) {
-#ifdef DEBUG_GDTE
+// #ifdef DEBUG_GDTE
 	    // output the J
 	    for (x = 0; x < runinfo.wavelength.size(); x++) {
 	      cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
 	    }
 	    cout << endl;
-#endif
+// #endif
 
 	    // get the dust emission spectrum given the input wavlength vector and radiation field vector
 	    // emitted energy returned is in units of ergs s^-1 HI atom^-1

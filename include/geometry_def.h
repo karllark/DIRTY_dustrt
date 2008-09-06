@@ -77,7 +77,9 @@ struct geometry_struct {
   double stellar_scaleheight;
   double stellar_scalelength;
   double stellar_emit_constant_z;
-  double stellar_emit_constant_xy;
+  int stellar_emit_n_xy;
+  vector<double> stellar_emit_xy_vals;
+  //  double stellar_emit_constant_xy;
 
   int randomize_observer;  // randomize observer position to integrate over 4pi
 
