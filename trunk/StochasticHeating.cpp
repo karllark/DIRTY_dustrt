@@ -22,6 +22,7 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & J,
   int nBins=50; 
   int oldnbins=nBins;
   float tol = 0.01; 
+  float tol_max_bins = 0.1; 
   float thistol; 
   double Ptol = 1.0e-14; 
   vector <vector<double> > TM;
@@ -233,11 +234,17 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & J,
       }
       
       if (nBins > maxBins) { 
+	// accept a lower tolerance for these cases
 	cout << "EXCEEDED BIN COUNT IN StochasticHeating()" << endl; 
-	for (int ii=0;ii<oldnbins;++ii) cout << ii << " " << _temp[ii] << " " << _P[ii] << endl; 
-	for (int ii=0;ii<nWave;++ii) cout << ii << wave[ii] << " " << J[ii] << endl; 
-	cout << EAbs << " " << Eemit << " " << thistol << endl; 
-	exit(8); 
+	if (thistol > tol_max_bins) { // still not converged well enough
+	  for (int ii=0;ii<oldnbins;++ii) cout << ii << " " << _temp[ii] << " " << _P[ii] << endl; 
+	  for (int ii=0;ii<nWave;++ii) cout << ii << wave[ii] << " " << J[ii] << endl; 
+	  cout << EAbs << " " << Eemit << " " << thistol << endl; 
+	  exit(8); 
+	} else {
+	  cout << "but close enough (tol_max_bins = " << tol_max_bins << "; tol = " << thistol << endl;
+	  converged=true;
+	}
       }
     } else converged=true;  
 
