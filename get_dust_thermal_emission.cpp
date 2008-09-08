@@ -66,8 +66,13 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   double max_abs_energy = 0.0;
   int tot_nonzero = 0;
 
+  vector<double> tmp_wave_for_interpol;
+  vector<double> tmp_j_for_interpol;
+  vector<double> tmp_new_j_from_interpol;
+
   // loop over all the defined grids
   for (m = 0; m < int(geometry.grids.size()); m++) {
+
     // loop of the cells in this grid
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
       for (j = 0; j < geometry.grids[m].index_dim[1]; j++) {
@@ -119,6 +124,36 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 
 	    num_cells_enough++;
 	    
+	    // interoplate the radiative field to fill all the wavelength points
+	    // if it has any nonzero points
+	    if (tot_nonzero != int(runinfo.wavelength.size())) {
+	      for (x = 0; x < runinfo.wavelength.size(); x++) {
+// 		cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
+		if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0) {
+		  tmp_wave_for_interpol.push_back(runinfo.wavelength[x]);
+		  tmp_j_for_interpol.push_back(geometry.grids[m].grid(i,j,k).absorbed_energy[x]);
+		}
+	      }
+// 	      cout << endl;
+	      
+	      tmp_new_j_from_interpol = NumUtils::interpol(tmp_j_for_interpol,tmp_wave_for_interpol,tmp_wave);
+	      tmp_wave_for_interpol.resize(0);
+	      tmp_j_for_interpol.resize(0);
+
+	      for (x = 0; x < runinfo.wavelength.size(); x++) {
+// 		cout << tmp_wave[x] << " ";
+// 		cout << runinfo.wavelength[x] << " ";
+// 		cout << tmp_new_j_from_interpol[x] << " ";
+// 		cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
+// 		cout << endl;
+		geometry.grids[m].grid(i,j,k).absorbed_energy[x] = tmp_new_j_from_interpol[x];
+	      }
+
+	      tmp_new_j_from_interpol.resize(0);
+
+// 	      exit(1);
+	    }
+
 // 	    cout << "total min = " << tot_abs_energy << " " << min_enough_energy << endl;
 // 	  if ((tot_abs_energy > 0.) && (tot_nonzero > int(0.75*runinfo.wavelength.size())) && (tot_abs_energy > 1e-35)) {
 // #ifdef DEBUG_GDTE
