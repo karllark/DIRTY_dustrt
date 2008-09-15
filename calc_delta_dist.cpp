@@ -7,8 +7,8 @@
 // 2008 Aug/KDG - added saving of trajectory for continous absorption
 // ======================================================================
 #include "calc_delta_dist.h"
-//#define OUTNUM 108473
-//#define DEBUG_CDD
+// #define OUTNUM 0
+// #define DEBUG_CDD
 
 double calc_delta_dist (photon_data& photon,
 			geometry_struct& geometry,
@@ -23,7 +23,7 @@ double calc_delta_dist (photon_data& photon,
   }
 #endif
   tau_traveled = 0.0;
-  double distance_traveled = 0.0;  // resulting distance traveled
+  float distance_traveled = 0.0;  // resulting distance traveled
   int exit_cell = 1;  // tells if the cell has been exited
   int min_index = 0;
 
@@ -41,8 +41,8 @@ double calc_delta_dist (photon_data& photon,
     cout << "end testing" << endl;
   }
 #endif
-  float dust_tau_ref_per_pc = geometry.grids[grid_val].grid(photon.position_index[k][0],photon.position_index[k][1],photon.position_index[k][2]).dust_tau_per_pc;
-  float dust_tau_per_pc = dust_tau_ref_per_pc*geometry.tau_to_tau_ref;
+  double dust_tau_ref_per_pc = geometry.grids[grid_val].grid(photon.position_index[k][0],photon.position_index[k][1],photon.position_index[k][2]).dust_tau_per_pc;
+  double dust_tau_per_pc = dust_tau_ref_per_pc*geometry.tau_to_tau_ref;
 
   // print the photon statistics
 #ifdef DEBUG_CDD
@@ -288,12 +288,19 @@ double calc_delta_dist (photon_data& photon,
       cout << photon.current_grid_num << " ";
       cout << photon.num_current_grids << endl;
       cout << "min_index = " << min_index << endl;
+      cout << "-----" << endl;
     }
 #endif
   // update the photon position for the distance_traveled
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < 3; i++) {
+#ifdef DEBUG_CDD
+      if (photon.number == OUTNUM) {
+	cout << "pos, delta_pos = " << photon.position[i] << " " << distance_traveled*photon.dir_cosines[i];
+	cout << " " << distance_traveled << " " << photon.dir_cosines[i] << endl;
+      }
+#endif
       photon.position[i] += distance_traveled*photon.dir_cosines[i];
-
+    }
   }
 
   // end single cell, rest should be cell or subgrid compatable

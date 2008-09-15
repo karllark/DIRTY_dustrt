@@ -85,9 +85,9 @@ void classify_stellar_photon (output_struct& output,
       // compute x,y angles and image indexs
       double angle;
       for (k = 0; k < 2; k++) {
- 	angle = atan(tmp_photon.position[k]/(geometry.distance - tmp_photon.position[2]));
-	image_indxs[k] = int((1.0 + (angle/geometry.angular_radius))*output.image_size[k]*0.5);
-// 	image_indxs[k] = int((1.0 + (tmp_photon.position[k]/(1.1*geometry.radius)))*output.image_size[k]*0.5);
+   	angle = atan(tmp_photon.position[k]/(geometry.distance - tmp_photon.position[2]));
+  	image_indxs[k] = int((1.0 + (angle/geometry.angular_radius))*output.image_size[k]*0.5);
+// 	image_indxs[k] = int((1.0 + (tmp_photon.birth_position[k]/(1.1*geometry.radius)))*output.image_size[k]*0.5);
 	// check the index is on the image
 	if ((image_indxs[k] < 0) || (image_indxs[k] > (output.image_size[k]-1))) {
 	  cout << "classify stellar photon: image_indxs[" << k << "] = " << image_indxs[k] << 
@@ -132,6 +132,8 @@ void classify_stellar_photon (output_struct& output,
     output.outputs[i].stellar_weight_xy(image_indxs[0],image_indxs[1]) += tmp_photon.stellar_weight;
     output.outputs[i].stellar_weight_xy_x2(image_indxs[0],image_indxs[1]) += pow(tmp_photon.stellar_weight,2.0);
 
+//     cout << "stellar_weight (after) = " << tmp_photon.stellar_weight << " ";
+//     cout << "first_tau = " << tmp_photon.first_tau << endl;
 #ifdef DEBUG_CSP
       if (photon.number == OUTNUM) {
 	cout << "stellar_weight (after) = " << output.outputs[i].total_stellar_weight << endl;

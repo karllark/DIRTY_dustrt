@@ -73,15 +73,29 @@ void determine_photon_position_index (geometry_struct& geometry,
       // make sure the photon is in this grid
       if ((photon.position[i] < geometry.grids[cur_grid_num].positions[i][0]) ||
 	  (photon.position[i] > geometry.grids[cur_grid_num].positions[i][geometry.grids[cur_grid_num].index_dim[i]])) {
-	if ((photon.position[i] < geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]]) &&
-	    ((geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]] - photon.position[i]) < ROUNDOFF_ERR_INDEX) &&
-	    (photon.position_index[k][i] > 0)) {
-	  photon.position_index[k][i]--;
-	} else if ((photon.position[i] > geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1]) &&
-		   ((photon.position[i] - geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1]) < ROUNDOFF_ERR_INDEX) &&
-		   (photon.position_index[k][i] < geometry.grids[cur_grid_num].index_dim[i])) {
-	  photon.position_index[k][i]++;
-	} else {
+	// now make changes if this is a roundoff error issue (very near the grid min/max)
+	int not_ok = 0;
+	if (photon.position[i] < geometry.grids[cur_grid_num].positions[i][0]) {
+	  float frac_miss = (geometry.grids[cur_grid_num].positions[i][0] - photon.position[i])/
+	    geometry.grids[cur_grid_num].phys_cube_size[k];
+	  cout << "frac_miss-- = " << frac_miss << endl;
+	  if (frac_miss < ROUNDOFF_ERR_INDEX)
+	    photon.position[i] = geometry.grids[cur_grid_num].positions[i][0];
+// 	    photon.position_index[k][i]--;
+	  else
+	    not_ok = 1;
+	} else if (photon.position[i] > geometry.grids[cur_grid_num].positions[i][geometry.grids[cur_grid_num].index_dim[i]]) {
+	  float frac_miss = (photon.position[i] - geometry.grids[cur_grid_num].positions[i][geometry.grids[cur_grid_num].index_dim[i]])/
+	    geometry.grids[cur_grid_num].phys_cube_size[k];
+	  cout << "frac_miss++ = " << frac_miss << endl;
+	  if (frac_miss < ROUNDOFF_ERR_INDEX)
+	    photon.position[i] = geometry.grids[cur_grid_num].positions[i][geometry.grids[cur_grid_num].index_dim[i]];
+// 	    photon.position_index[k][i]++;
+	  else
+	    not_ok = 1;
+	}
+
+	if (not_ok) {
 	  cout << "outside of bounds of current grid (in determine_photon_position_index.cpp)" << endl;
 	  cout << "This should not happen." << endl;
 	  cout << "photon # = " << photon.number << endl;

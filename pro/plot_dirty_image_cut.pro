@@ -86,12 +86,12 @@ endif else begin
     koplot,pix_vals,scat_image[*,y_val],psym=100,color=blue_color
     koplot,pix_vals,stell_image[*,y_val],psym=100,color=red_color
     koplot,pix_vals,input_image[*,y_val],psym=100,color=green_color
-    koplot,pix_vals,smooth(tot_image[*,y_val],5),psym=100,color=base_color
+    koplot,pix_vals,tot_image[*,y_val],psym=100,color=base_color
 
     ; temp stuff
-;    mod_val = exp(-abs(pix_vals-275.0)/62.625)
-;    mod_val = 0.9*max(input_image[*,y_val])*mod_val
-;    koplot,pix_vals,mod_val,color=base_color,psym=100,linestyle=2
+    mod_val = exp(-abs(pix_vals-275.0)/62.625)
+    mod_val = 1.0*max(input_image[*,y_val])*mod_val
+    koplot,pix_vals,mod_val,color=base_color,psym=100,linestyle=2
 endelse
 
 tot_cut = input_image[*,y_val]

@@ -86,7 +86,7 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
 //   geometry.stellar_emit_constant_xy = 1.0/(1.0 - exp(-1.0*geometry.radius/geometry.stellar_scalelength)*
 // 					   ((geometry.radius/geometry.stellar_scalelength) + 1.0));
   // vector of values for xy calculation
-  geometry.stellar_emit_n_xy = 2*int(geometry.radius/min_grid_size) + 1;
+  geometry.stellar_emit_n_xy = 100*int(geometry.radius/min_grid_size) + 1;
   geometry.stellar_emit_xy_vals.resize(geometry.stellar_emit_n_xy);
   int ii = 0;
   double tmp_min_rad = 0.0;
@@ -285,11 +285,23 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
 	    subgrid.phys_cube_size[2] = subgrid.phys_grid_size[2]/subgrid.index_dim[2];
 
 	    int l;
-	    for (l = 0; l <= subgrid.index_dim[0]; l++) {
+	    // ensure that the first position exactly equals the edge of the parent cell
+	    //   no roundoff error problems (hopefully)
+	    x_subpos[0] = geometry.grids[m].positions[0][i];
+	    y_subpos[0] = geometry.grids[m].positions[1][j];
+	    z_subpos[0] = geometry.grids[m].positions[2][k];
+
+	    for (l = 1; l < subgrid.index_dim[0]; l++) {
 	      x_subpos[l] = geometry.grids[m].positions[0][i] + (double(l)/subgrid.index_dim[0])*subgrid.phys_grid_size[0];
 	      y_subpos[l] = geometry.grids[m].positions[1][j] + (double(l)/subgrid.index_dim[1])*subgrid.phys_grid_size[1];
 	      z_subpos[l] = geometry.grids[m].positions[2][k] + (double(l)/subgrid.index_dim[2])*subgrid.phys_grid_size[2];
 	    }
+	    // ensure that the last position exactly equals the edge of the parent cell
+	    //   no roundoff error problems (hopefully)
+	    x_subpos[subgrid.index_dim[0]] = geometry.grids[m].positions[0][i+1];
+	    y_subpos[subgrid.index_dim[1]] = geometry.grids[m].positions[1][j+1];
+	    z_subpos[subgrid.index_dim[2]] = geometry.grids[m].positions[2][k+1];
+
 	    subgrid.positions.push_back(x_subpos);
 	    subgrid.positions.push_back(y_subpos);
 	    subgrid.positions.push_back(z_subpos);
