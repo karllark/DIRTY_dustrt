@@ -50,6 +50,16 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
     T operator()(T val) { return std::log(val); }
   };
   template <class T> 
+    class pow10 { 
+  public: 
+    T operator()(T val) { return std::pow(10,val); }
+  }; 
+  template <class T>  
+    class log10 { 
+  public: 
+    T operator()(T val) { return std::log10(val); }
+  };
+  template <class T> 
     class isNan { 
   public: 
     bool operator()(T val) { return val != val; } 
@@ -100,7 +110,8 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
   template <typename T> void sortIndexOnVector(vector <T> & vect, vector <int> & index, int beg, int end);
   template <typename T, typename T1, typename T2> T integrate (vector <T1>& x, vector <T2>& y);
   template <typename T> vector <T> interpol (vector <T>& v, vector <T>& x, 
-					     vector <T>& u, int LoEx=2, int HiEx=2);
+				       vector <T>& u, 
+				       int LoEx=2, int HiEx=2);
   template <typename T> void interpolr (vector <T>& v, vector <T>& x, 
 					vector <T>& u, int LoEx=2, int HiEx=2);
   template <typename T, typename T1, typename T2> vector <T> bbodyCGS (T1 wave, vector <T2>& Temperature);
@@ -259,68 +270,125 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
   // ****************************************************************************
   // Interpolate - should be fast enough for small vectors.
   template <typename T> vector <T> interpol (vector <T>& v, vector <T>& x, 
-					     vector <T>& u, int LoEx, int HiEx)
+				       vector <T>& u,
+				       int LoEx, int HiEx)
     {
 
       if (v.size() != x.size()) { 
 	cout << "Abscissa and ordinate lengths do not match in interpol" << endl; 
 	throw "size mismatch"; 
       } 
-
+      //cout << "usize " << u.size() << " " << x.size() << endl;
       vector <T> r(u.size()); 
+      T slp,extrslp1;
+      T intcpt,extrint1;
+      uint j;
+      uint n = x.size()-1; 
+      if (HiEx == -99) { 
+	extrslp1 = (v[n]-v[n-1])/(x[n]-x[n-1]); 
+	extrint1 = v[n] - extrslp1*x[n];
+      }
 
-      typename vector <T>::iterator iu,iul,iuh,ir,ix,iv; 
-      ix = x.begin();
-      iv = v.begin(); 
-      iul = u.begin(); 
-      ir = r.begin(); 
-
-      while ( *iul < *ix ) { // Extrapolate to the left. 
-	switch (LoEx) { 
-	case -1 :  // set to 0
-	  *ir = 0.0; 
-	  break; 
-	case 0 : // Constant extrapolation
-	  *ir = *iv; 
-	  break; 
-	default : // Power law. 
-	  *ir = (*iv)*pow((*iul)/(*ix), LoEx);
-	  break; 
+      for (uint i=0;i<u.size();++i) {
+	if (u[i] < x[0]) { // extrapolate to left.
+	  switch (LoEx) {
+	  case -1 :
+	    r[i] = static_cast<T>(0);
+	    break;
+	  case 0 :
+	    r[i] = v[0];
+	    break;
+	  default :
+	    r[i] = v[0]*pow(u[i]/x[0],LoEx);
+	  }
+	} else {
+	  if (u[i] > x[x.size()-1]) { // extrapolate right.
+	    switch (HiEx) {
+	    case -1 :
+	      r[i] = static_cast<T>(0);
+	      break;
+	    case 0:
+	      r[i] = v[v.size()-1];
+	      break;
+	    case -99 : 
+	      r[i] = extrint1 + extrslp1*u[i]; 
+	      break; 
+	    default :
+	      r[i] = v[v.size()-1]*pow(u[i]/x[x.size()-1],HiEx);
+	      break;
+	    }
+	  } else {
+	    j=0;
+	    while (u[i] > x[j]) j++;
+	    slp = (v[j] - v[j-1])/(x[j]-x[j-1]);
+	    intcpt = v[j] - slp*x[j];
+	    r[i] = slp*u[i] + intcpt;
+	  }
 	}
-	iul++; 
-	ir++; 
       }
+	
+/*       typename vector <T>::iterator iu,iul,iuh,ir,ix,iv; */
+/*       ix = x.begin(); */
+/*       iv = v.begin(); */
+/*       iul = u.begin(); */
+/*       ir = r.begin(); */
 
-      iuh = u.end()-1; 
-      ir = r.end()-1; 
-      ix = x.end()-1; 
-      iv = v.end()-1; 
-      while ( *iuh > *ix ) { // Extrapolate to the right. 
-	switch (HiEx) { 
-	case -1 : // set to 0
-	  *ir = 0; 
-	  break; 
-	case 0 : // constant
-	  *ir = *iv; 
-	  break; 
-	default : // Power law. 
-	  //cout << *iv << " " << *ix << " " << *iuh << " " << HiEx << endl; 
-	  *ir = (*iv)*pow( (*iuh)/(*ix), HiEx); 
-	  break; 
-	}
-	iuh--; 
-	ir--;
-      }
+/*       while ( *iul < *ix ) { // Extrapolate to the left. */
+/* 	cout << "From the left " << *iul << " " << *ix << endl;  */
+/* 	switch (LoEx) { */
+/* 	case -1 :  // set to 0 */
+/* 	  *ir = 0.0; */
+/* 	  break; */
+/* 	case 0 : // Constant extrapolation */
+/* 	  *ir = *iv; */
+/* 	  break; */
+/* 	default : // Power law. */
+/* 	  *ir = (*iv)*pow((*iul)/(*ix), LoEx); */
+/* 	  break; */
+/* 	} */
+/* 	iul++; */
+/* 	ir++; */
+/*       } */
 
-      ix = x.begin(); 
-      iv = v.begin();
-      ir = r.begin()+distance(u.begin(),iul); 
+/*       iuh = u.end()-1; */
+/*       ir = r.end()-1; */
+/*       ix = x.end()-1; */
+/*       iv = v.end()-1; */
+/*       T slope; */
+/*       T intercept; */
+/*       if (HiEx == -99) { */
+/* 	slope = (*iv-*(iv-1))/(*ix-*(ix-1)); */
+/*         intercept = *iv-slope*(*ix); */
+/*       } */
+/*       while ( *iuh > *ix ) { // Extrapolate to the right. */
+/* 	switch (HiEx) { */
+/* 	case -1 : // set to 0 */
+/* 	  *ir = 0; */
+/* 	  break; */
+/* 	case 0 : // constant */
+/* 	  *ir = *iv; */
+/* 	  break; */
+/* 	case -99 : // linear of last two points. */
+/*           *ir = slope*(*iuh)+intercept; */
+/* 	  break; */
+/* 	default : // Power law. */
+/* 	  //cout << *iv << " " << *ix << " " << *iuh << " " << HiEx << endl; */
+/* 	  *ir = (*iv)*pow( (*iuh)/(*ix), HiEx); */
+/* 	  break; */
+/* 	} */
+/* 	iuh--; */
+/* 	ir--; */
+/*       } */
 
-      for (iu=iul;iu<=iuh;iu++) {	
-	while ( *ix < *iu ) { ix++; iv++; }
-	*ir = ((*iu) - (*(ix)))*((*(iv)) - (*(iv-1)))/((*(ix))- (*(ix-1))) + (*iv); 
-	ir++;
-      }
+/*       ix = x.begin(); */
+/*       iv = v.begin(); */
+/*       ir = r.begin()+distance(u.begin(),iul); */
+
+/*       for (iu=iul;iu<=iuh;iu++) { */
+/* 	while ( *ix < *iu ) { ix++; iv++; } */
+/* 	*ir = ((*iu) - (*(ix)))*((*(iv)) - (*(iv-1)))/((*(ix))- (*(ix-1))) + (*iv); */
+/* 	ir++; */
+/*       } */
       
       return r; 
     }

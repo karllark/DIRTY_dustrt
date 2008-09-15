@@ -10,10 +10,12 @@
 #include <functional>
 #include <numeric>
 
+#include "DataFile.h"
+
 extern void ComputeDustEmission (vector <float> & J, 
 				 GrainModel & GrainModel,
 				 vector <vector<double> > & EmmittedEnergy, 
-				 bool DoStochastic);
+				 bool & DoStochastic);
 
 using namespace std; 
 
@@ -99,14 +101,14 @@ int main (int argc, char * argv[]) {
 //   int ncomp=2; 
 //   // Declare a vector of grain object. 
   // Just to define a wavelength grid. 
-  Grain MyGrain; 
+  //Grain MyGrain; 
 //   // Instantiate a Grain object and stick it into the first element of the vector. 
-  MyGrain.MakeGrain("CrossSections/AmC_121_large_longwave",
-		    "Calorimetry/Graphitic_Calorimetry_1000.dat",
-		    MW,MS,"/work/Science/Dust/OpticalProperties/");
+  //MyGrain.MakeGrain("CrossSections/AmC_121_large_longwave",
+  //"Calorimetry/Graphitic_Calorimetry_1000.dat",
+  //		   MW,MS,"/home/misselt/Science/Dust/OpticalProperties/");
   // Get the wavelenght grid MyGrain[0] is defined on. 
-  vector <float> thisWave = MyGrain.getWave(); 
-  int nWave = MyGrain.getNWave(); 
+  //vector <float> thisWave = MyGrain.getWave(); 
+  //int nWave = MyGrain.getNWave(); 
 //   // Get the size grid MyGrain[0] is defined on. 
 //   vector <float> thisSize = MyGrain[0].getSize();
 //   int nSize = MyGrain[0].getNSize();
@@ -174,10 +176,26 @@ int main (int argc, char * argv[]) {
   // We will compute it on thisWave and scale it by 1 MMP (~1.3G)
   // Instantiate the object
   // Again, everything is CGS!
-  ISRF MyISRF(thisWave,1.0); 
+  //ISRF MyISRF(thisWave,1.0); 
   // Get the field from the object. 
-  vector <float> thisISRF = MyISRF.getISRF(); 
+  //vector <float> thisISRF = MyISRF.getISRF(); 
 
+  string shitfile="brokenbin.dat";
+  vector <float> thisISRF,thisWave; 
+  ifstream file(shitfile.c_str());
+  string buf1,buf2; 
+  string line; 
+  while (getline(file,line)) { 
+   if (!line.length()) continue; 
+   if (line[0] == '#') continue; 
+   stringstream ss(line); 
+   while (ss >> buf1 >> buf2) { 
+      thisWave.push_back(atof(buf1.c_str())); 
+      thisISRF.push_back(atof(buf2.c_str()));
+   } 
+  } 
+  int nWave=thisWave.size(); 	
+  for (int i=0;i<thisISRF.size();++i) cout << thisWave[i] << " " << thisISRF[i] << endl; 
   GrainModel thisGrainModel;
   string aConfigFile="Craptastic.cfg";
   ConfigFile thisConfig(aConfigFile);
@@ -238,19 +256,19 @@ int main (int argc, char * argv[]) {
     cout << endl; 
   }
 
-  thisEmission.resize(2*ncomp+1);
-  for (int i=0;i<(2*ncomp+1);++i) thisEmission[i].resize(nWave);
-  cout << "Calling compute emission " <<endl;
-  ComputeDustEmission(thisISRF, thisGrainModel, thisEmission, DoStochastic);
+//   thisEmission.resize(2*ncomp+1);
+//   for (int i=0;i<(2*ncomp+1);++i) thisEmission[i].resize(nWave);
+//   cout << "Calling compute emission " <<endl;
+//   ComputeDustEmission(thisISRF, thisGrainModel, thisEmission, DoStochastic);
 
-  for (int i=0;i<nWave;i++) {
-   cout << thisWave[i] << " " << thisEmission[0][i] << " ";
-    for (int c=0;c<ncomp;++c) {
+//   for (int i=0;i<nWave;i++) {
+//    cout << thisWave[i] << " " << thisEmission[0][i] << " ";
+//     for (int c=0;c<ncomp;++c) {
 
-      cout << thisEmission[2*c+1][i] << " " << thisEmission[2*c+2][i] << " ";
-    }
-    cout << endl;
-  }
+//       cout << thisEmission[2*c+1][i] << " " << thisEmission[2*c+2][i] << " ";
+//     }
+//     cout << endl;
+//   }
 
 //   cout << "EQUILIBRIUM TEMPERATURE AT SIZE " << mysize << "(" 
 //        << thisSize[sizeid] << ") IS " << thisTemp[sizeid] << endl; 
@@ -271,7 +289,6 @@ int main (int argc, char * argv[]) {
 //   // Time and Temperature History.
 //   vector <float> Time; 
 //   vector <float> TH; 
-
 //   // Get Cabs as mysize. 
 //   thisCAbs = MyGrain[0].getCAbs(mysize);
 
