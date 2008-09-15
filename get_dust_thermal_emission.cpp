@@ -110,11 +110,11 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	  }
  	  tot_abs_energy = NumUtils::integrate<double>(tmp_wave,tmp_abs_energy)*geometry.grids[m].grid(i,j,k).num_H;
 		
-	  //#ifdef DEBUG_GDTE
+	  #ifdef DEBUG_GDTE
 	  cout << "total nonzero = " << tot_nonzero << endl;
 	  cout << "total absorbed energy = " << tot_abs_energy << endl;
 	  cout << "max absorbed energy = " << max_abs_energy << endl;
-	  //#endif
+	  #endif
 
 	  if ((tot_abs_energy > 0.0) && (tot_nonzero < int(0.5*runinfo.wavelength.size()))) {
 
@@ -141,8 +141,8 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	      tmp_j_for_interpol.resize(0);
 
 	      for (x = 0; x < runinfo.wavelength.size(); x++) {
-// 		cout << tmp_wave[x] << " ";
-// 		cout << runinfo.wavelength[x] << " ";
+//  		cout << tmp_wave[x] << " ";
+//  		cout << runinfo.wavelength[x] << " ";
 // 		cout << tmp_new_j_from_interpol[x] << " ";
 // 		cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
 // 		cout << endl;
@@ -158,19 +158,20 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 // 	  if ((tot_abs_energy > 0.) && (tot_nonzero > int(0.75*runinfo.wavelength.size())) && (tot_abs_energy > 1e-35)) {
 // #ifdef DEBUG_GDTE
 	    // output the J
-	    for (x = 0; x < runinfo.wavelength.size(); x++) {
-	      cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
-	    }
-	    cout << endl;
+	    //for (x = 0; x < runinfo.wavelength.size(); x++) {
+	    //  cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
+	    //}
+	    //cout << endl;
 // #endif
 
 	    // get the dust emission spectrum given the input wavlength vector and radiation field vector
 	    // emitted energy returned is in units of ergs s^-1 HI atom^-1
+	    //cout << "Calling dust emission" << endl; 
 	    ComputeDustEmission(geometry.grids[m].grid(i,j,k).absorbed_energy,
 				CurGrainModel, 
 				geometry.grids[m].grid(i,j,k).emitted_energy,
 				DoStochastic); 
-
+	    //cout << "returning from dust emission" << endl; 
 	    total_emit_energy = 0.0;
 	    total_emit_energy = NumUtils::integrate<double>(tmp_wave,geometry.grids[m].grid(i,j,k).emitted_energy[0])*geometry.grids[m].grid(i,j,k).num_H;
 	    
