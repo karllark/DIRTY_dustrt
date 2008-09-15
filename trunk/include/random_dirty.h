@@ -1,5 +1,7 @@
 #define NTAB 32 
 
+#include <iostream>
+
 class random_dirty {
  public:
   // Constructors/destructors. 

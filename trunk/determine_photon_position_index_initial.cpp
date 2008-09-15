@@ -93,7 +93,7 @@ void determine_photon_position_index_initial (geometry_struct& geometry,
 	if (photon.position[i] < geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]]) {
 	  float frac_miss = (geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]] - photon.position[i])/
 	    geometry.grids[cur_grid_num].phys_cube_size[k];
-	  cout << "frac_miss = " << frac_miss << endl;
+	  cout << "frac_miss--(initial) = " << frac_miss << endl;
 	  if (frac_miss < ROUNDOFF_ERR_INDEX)
 	    photon.position_index[k][i]--;
 	  else
@@ -101,7 +101,8 @@ void determine_photon_position_index_initial (geometry_struct& geometry,
 	} else if (photon.position[i] > geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1]) {
 	  float frac_miss = (photon.position[i] - geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1])/
 	    geometry.grids[cur_grid_num].phys_cube_size[k];
-	  cout << "frac_miss = " << frac_miss << endl;
+	  cout << "frac_miss++(initial) = " << frac_miss << endl;
+          cout << "ROUNDOFF_ERR_INDEX = " << ROUNDOFF_ERR_INDEX << endl;
 	  if (frac_miss < ROUNDOFF_ERR_INDEX)
 	    photon.position_index[k][i]++;
 	  else

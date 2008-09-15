@@ -146,6 +146,7 @@ int main(int argc, char* argv[])
 //     // KDG - 23 Mar 2008
 //     check_absorbed_energy_grid(geometry, runinfo);
 //     if (i == 1) exit(8);
+//  	exit(8);
   }
 
   // check the absorbed energy grid (temp needed as energy not conserved)
@@ -164,9 +165,9 @@ int main(int argc, char* argv[])
   geometry.emitted_energy_grid_initialized = 0;
 
   // do ERE part (no iteration needed)
-  //runinfo.out_sed_lum_offset += 2;  // increment to save ERE direct/scattered luminosity
-  //output.emission_type = "_ere"; // setup the emission_type string for dust emission
-  //emit_ere_photons();
+//   runinfo.out_sed_lum_offset += 2;  // increment to save ERE direct/scattered luminosity
+//   output.emission_type = "_ere"; // setup the emission_type string for dust emission
+//   emit_ere_photons();
 
   // start RT+DE iteration (only if DE flag set)
   //    do DE part

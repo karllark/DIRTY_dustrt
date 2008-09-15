@@ -21,6 +21,8 @@
 #define EPS 1.2e-7
 #define RNMX (1.0 - EPS)
 
+using namespace std;
+
 //constructor
 int random_dirty::random_num (long seed)
 
@@ -52,10 +54,10 @@ int random_dirty::random_num (long seed)
 
 /* ====================================================================== */
 
-//constructor
 float random_dirty::random_num ()
 
 {
+
     int j;
     long k;
     static long idum2 = 123456789;
@@ -74,8 +76,10 @@ float random_dirty::random_num ()
     if (iy < 1) iy += IMM1;
     temp = AM*iy;
     if (temp > RNMX) {
+//       cout << "RNMX = " << RNMX << endl;
       return RNMX;
     } else {
+//       cout << "temp = " << temp << endl;
       return temp;
     }
 }

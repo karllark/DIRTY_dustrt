@@ -101,6 +101,7 @@ void get_sed_parameters (ConfigFile& param_data,
       run_wave.push_back(double(runinfo.wavelength[i]));
     
     // interpolate SED onto wavelength grid
+    // numbers are power law coefficents for extrapolation on the left & right sides
     runinfo.sed_lum = interpol(luminosity, wavelength, run_wave,2,-2);
   }    
 

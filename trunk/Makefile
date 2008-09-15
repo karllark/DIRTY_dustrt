@@ -19,6 +19,7 @@ SOURCES = $(wildcard *.cpp)
 OBJECTS = ${SOURCES:.cpp=.o}
 #CPPFLAGS = -I${INCDIR} -O2 -Wall -Wextra -g
 CPPFLAGS = -I${INCDIR} -O2 -Wall -Wextra 
+#CPPFLAGS = -I${INCDIR} -Wall -Wextra 
 
 BUILDOBJ = $(CPP) $(CPPFLAGS)
 BUILDLNK = $(CPP) $(LDFLAGS)
