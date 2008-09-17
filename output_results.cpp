@@ -6,6 +6,7 @@
 //                in ergs s^-1 cm^-3
 // ======================================================================
 #include "output_results.h"
+//#define DEBUG_OUTR
 
 // helper routine
 void output_2d_info(fitsfile *out_ptr,
@@ -197,30 +198,29 @@ void output_results (output_struct& output,
 	}
    
 
-#ifdef DEBUG_OUTR
-      int m,n;
-      cout << "Image of scattered weight" << endl;
-      for (m = 0; m < output.image_size[0]; m++) {
-	for (n = 0; n < output.image_size[1]; n++)
-	  cout << setw(8) << output.outputs[i].scattered_weight_xy(m,n) << " ";
-	cout << endl;
-      }
+// #ifdef DEBUG_OUTR
+//       int m,n;
+//       cout << "Image of scattered weight" << endl;
+//       for (m = 0; m < output.image_size[0]; m++) {
+// 	for (n = 0; n < output.image_size[1]; n++)
+// 	  cout << setw(8) << output.outputs[i].scattered_weight_xy(m,n) << " ";
+// 	cout << endl;
+//       }
       
-      cout << "Image of stellar weight" << endl;
-      for (m = 0; m < output.image_size[0]; m++) {
-	for (n = 0; n < output.image_size[1]; n++)
-	  cout << setw(6) << output.outputs[i].stellar_weight_xy(m,n) << " ";
-	cout << endl;
-      }
+//       cout << "Image of stellar weight" << endl;
+//       for (m = 0; m < output.image_size[0]; m++) {
+// 	for (n = 0; n < output.image_size[1]; n++)
+// 	  cout << setw(6) << output.outputs[i].stellar_weight_xy(m,n) << " ";
+// 	cout << endl;
+//       }
       
-      cout << "Image of number of scattered photons" << endl;
-      for (m = 0; m < output.image_size[0]; m++) {
-	for (n = 0; n < output.image_size[1]; n++)
-	  cout << setw(6) << output.outputs[i].num_photons_xy(m,n) << " ";
-	cout << endl;
-      }
-      
-#endif
+//       cout << "Image of number of scattered photons" << endl;
+//       for (m = 0; m < output.image_size[0]; m++) {
+// 	for (n = 0; n < output.image_size[1]; n++)
+// 	  cout << setw(6) << output.outputs[i].num_photons_xy(m,n) << " ";
+// 	cout << endl;
+//       }
+// #endif
 
       // filename of the current output file
       string filename = "!" + output.file_base;

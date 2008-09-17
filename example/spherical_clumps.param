@@ -6,16 +6,22 @@
 [Geometry]
 distance=100.0
 n_obs_angles=1
-obs_theta=0.
-obs_phi=0.
+obs_theta=30.
+obs_phi=60.
+source_type=stars
 n_stars=1
 star_pos_x=0.
 star_pos_y=0.
 star_pos_z=0.
-type=sphere
+type=shell
 radius=1.0
+very_inner_radius=0.3
+inner_radius=0.3
+outer_radius=1.0
+subdivide_radius=0.0
+shell_density_poly=0.
 # radial optical depth
-tau=0.01
+tau=1.0
 # filling factor & density control the clumpiness
 filling_factor=0.025
 density_ratio=0.001
@@ -24,17 +30,45 @@ max_tau_per_cell=50.0
 # spherical or cubical clumps [choices are sphere/cube]
 clump_type=sphere
 # size of grid (all dimensions equal)
-grid_size=10
+grid_size=30
 
 [Dust Grains]
-type=single_wavelenth
-wavelength=0.55
-albedo=0.5
-g=0.7
+type=dust_model
+wave_type=res
+wave_min=0.09
+wave_max=1000.
+wave_resolution=2.
+#type=single_wavelength
+#wavelength=0.55
+#albedo=0.5
+#g=0.7
+
+[SED]
+type=bb_file
+sed_file=/home/kgordon/Dirty_v2/local_copy/SEDs/redsg_lmc_T2800_R3200.dat
+
+[Model Book Keeping]
+Path to Dust Properties=/home/kgordon/Dirty_v2/Dust/
+Cross Section SubDir=OpticalProperties/CrossSections/
+Calorimetry SubDir=OpticalProperties/Calorimetry/
+Model SubDir=Models/
+Model Name=BARE-GR-S
 
 [Run]
-num_photons=500000
+num_photons=1e5
 output_image_size=201
-output_filebase=example/spherical_clumps
+output_filebase=spherical_clumps
 type=single_wavelenth
 wavelength=0.55
+abs_energy_storage=0
+verbose=1
+# do thermal dust emission
+do_dust_emission=1
+# energy conservation target
+energy_conserve_target=0.05
+# separate emission by emission type (equilibrium, non-equilibrium)
+do_emission_type=1
+# separate emission by grain type (graphite, silicate, PAH, etc.)
+do_emission_grain=1
+do_global_output=1
+do_image_output=1

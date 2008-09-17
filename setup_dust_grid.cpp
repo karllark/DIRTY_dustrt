@@ -24,16 +24,49 @@ void setup_dust_grid (ConfigFile& param_data,
   // number of observers 
   //  (currently only 1 allowed, need to expand to reading in a file with more observer positions)
   geometry.num_observers = param_data.IValue("Geometry","n_obs_angles");
-  check_input_param("n_obs_angles",geometry.num_observers,1,1);
+  check_input_param("n_obs_angles",geometry.num_observers,1,100);
 
-  // read in observer angles and convert to radians
-  geometry.observer_angles[0][0] = param_data.FValue("Geometry","obs_theta");
-  check_input_param("obs_theta",geometry.observer_angles[0][0],0.,180.);
-  geometry.observer_angles[0][0] *= M_PI/180.;
+  if (geometry.num_observers == 1) {
+    // read in observer angles and convert to radians
+    geometry.observer_angles[0][0] = param_data.FValue("Geometry","obs_theta");
+    check_input_param("obs_theta",geometry.observer_angles[0][0],0.,180.);
+    geometry.observer_angles[0][0] *= M_PI/180.;
 
-  geometry.observer_angles[1][0] = param_data.FValue("Geometry","obs_phi");
-  check_input_param("obs_theta",geometry.observer_angles[1][0],0.,360.);
-  geometry.observer_angles[1][0] *= M_PI/180.;
+    geometry.observer_angles[1][0] = param_data.FValue("Geometry","obs_phi");
+    check_input_param("obs_theta",geometry.observer_angles[1][0],0.,360.);
+    geometry.observer_angles[1][0] *= M_PI/180.;
+  } else {
+    // get the filename
+    string multiple_obs_filename = param_data.SValue("Geometry","obs_file");
+    // check that the file exists
+    ifstream multiple_obs_file(multiple_obs_filename.c_str());
+    if (multiple_obs_file.fail()) {
+      cout << "Multiple obs file w/ positions (" << multiple_obs_filename << ") does not exist." << endl;
+      exit(8);
+    }
+    multiple_obs_file.close();
+      
+    // read in the positions
+    vector<double> obs_theta,obs_phi;
+    DataFile(multiple_obs_filename, obs_theta, obs_phi);
+      
+    // check we got the number of positions we expected
+    if (int(obs_theta.size()) != geometry.num_observers) {
+      cout << "The number of directions in multiple observers file (" << obs_theta.size() << ")" << endl;
+      cout << "does not match the number expected (" << geometry.num_observers << ")" << endl;
+      exit(8);
+    }
+      
+    // test the results and put them into the appropriate locations
+    int i;
+    for (i = 0; i < geometry.num_observers; i++) {
+      check_input_param("multiple obs obs_theta",obs_theta[i],0.0,180.0);
+      check_input_param("multiple obs obs_theta",obs_phi[i],0.0,360.0);
+	
+      geometry.observer_angles[0][i] = obs_theta[i]*M_PI/180.;
+      geometry.observer_angles[1][i] = obs_phi[i]*M_PI/180.;
+    }
+  }
 
   // randomize observer position
   geometry.randomize_observer = param_data.IValue("Geometry","randomize_observer");
