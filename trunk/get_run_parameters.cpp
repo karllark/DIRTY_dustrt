@@ -85,6 +85,6 @@ void get_run_parameters (ConfigFile& param_data,
 
   output.arrays_allocated = 0;
   output.num_outputs = geometry.num_observers;
-  runinfo.dust_thermal_emission = 1;
+  runinfo.dust_thermal_emission = 0;
 
 }

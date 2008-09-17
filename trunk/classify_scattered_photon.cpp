@@ -80,6 +80,7 @@ void classify_scattered_photon (output_struct& output,
 	if ((image_indxs[k] < 0) || (image_indxs[k] > (output.image_size[k]-1))) {
 	  cout << "classify_scattered_photon: image_indxs[" << k << "] = " << image_indxs[k] << 
 	    " (beyond image bounds)" << endl;
+	  cout << "real version of index = " << (1.0 + (angle/geometry.angular_radius))*output.image_size[k]*0.5 << endl;
 	  cout << "position = " << tmp_photon.position[k] << endl;
 	  cout << "angle = " << angle << endl;
 	  cout << "model angular radius = " << geometry.angular_radius << endl;

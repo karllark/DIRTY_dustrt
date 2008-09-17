@@ -50,7 +50,7 @@ print,'# cells with too few waves = ',fxpar(header,'N_FEWWAV')
 
 xtitle = '!4k!3 [!4l!3m]'
 if (keyword_set(energy)) then begin
-    ytitle = '!4k!3F(!4k!3) [!4l!3m!U-1!N ergs s!U-1!N !4l!3m!U-1!N]'
+    ytitle = '!4k!3F(!4k!3) [ergs s!U-1!N]'
     table.flux *= table.wavelength
     table.flux_input *= table.wavelength
     table.flux_rt_d *= table.wavelength

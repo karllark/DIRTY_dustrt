@@ -11,7 +11,7 @@
 // ======================================================================
 #include "classify_stellar_photon.h"
 //#define DEBUG_CSP
-//#define OUTNUM 108473
+//#define OUTNUM 0
 
 void classify_stellar_photon (output_struct& output,
 			      photon_data& photon,
@@ -92,6 +92,7 @@ void classify_stellar_photon (output_struct& output,
 	if ((image_indxs[k] < 0) || (image_indxs[k] > (output.image_size[k]-1))) {
 	  cout << "classify stellar photon: image_indxs[" << k << "] = " << image_indxs[k] << 
 	    " (beyond image bounds)" << endl;
+	  cout << "real version of index = " << (1.0 + (angle/geometry.angular_radius))*output.image_size[k]*0.5 << endl;
 	  exit(8);
 	}
       }
@@ -117,23 +118,24 @@ void classify_stellar_photon (output_struct& output,
       if (photon.number == OUTNUM) {
 	cout << "tmp_photon.stellar_weight = " << tmp_photon.stellar_weight << endl;
 	cout << "stellar_weight (before) = " << output.outputs[i].total_stellar_weight << endl;
+	cout << "i = " << i << endl;
       }
 #endif
-    // update global values
-    output.outputs[i].total_num_photons += 1.0;
-    output.outputs[i].total_stellar_weight += tmp_photon.stellar_weight;
-    output.outputs[i].total_stellar_weight_x2 += pow(tmp_photon.stellar_weight,2.);
-
-    output.outputs[i].ave_first_tau += tmp_photon.first_tau;
-    output.outputs[i].ave_first_tau_x2 += pow(tmp_photon.first_tau,2.);
-
-    // update the image values
-    output.outputs[i].num_stellar_photons_xy(image_indxs[0],image_indxs[1]) += 1.0;
-    output.outputs[i].stellar_weight_xy(image_indxs[0],image_indxs[1]) += tmp_photon.stellar_weight;
-    output.outputs[i].stellar_weight_xy_x2(image_indxs[0],image_indxs[1]) += pow(tmp_photon.stellar_weight,2.0);
-
-//     cout << "stellar_weight (after) = " << tmp_photon.stellar_weight << " ";
-//     cout << "first_tau = " << tmp_photon.first_tau << endl;
+      // update global values
+      output.outputs[i].total_num_photons += 1.0;
+      output.outputs[i].total_stellar_weight += tmp_photon.stellar_weight;
+      output.outputs[i].total_stellar_weight_x2 += pow(tmp_photon.stellar_weight,2.);
+      
+      output.outputs[i].ave_first_tau += tmp_photon.first_tau;
+      output.outputs[i].ave_first_tau_x2 += pow(tmp_photon.first_tau,2.);
+      
+      // update the image values
+      output.outputs[i].num_stellar_photons_xy(image_indxs[0],image_indxs[1]) += 1.0;
+      output.outputs[i].stellar_weight_xy(image_indxs[0],image_indxs[1]) += tmp_photon.stellar_weight;
+      output.outputs[i].stellar_weight_xy_x2(image_indxs[0],image_indxs[1]) += pow(tmp_photon.stellar_weight,2.0);
+      
+      //     cout << "stellar_weight (after) = " << tmp_photon.stellar_weight << " ";
+      //     cout << "first_tau = " << tmp_photon.first_tau << endl;
 #ifdef DEBUG_CSP
       if (photon.number == OUTNUM) {
 	cout << "stellar_weight (after) = " << output.outputs[i].total_stellar_weight << endl;
