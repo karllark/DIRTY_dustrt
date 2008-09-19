@@ -85,6 +85,14 @@ extern void store_absorbed_energy_grid (geometry_struct& geometry,
 extern void check_absorbed_energy_grid (geometry_struct& geometry,
 					runinfo_struct& runinfo);
 
+// setup the ERE dust emission output
+extern void setup_ere_dust_emission_output (output_struct& ere_output, 
+					    output_struct& output);
+
+// get the ere dust emission in each grid cell
+extern void get_dust_ere_emission (geometry_struct& geometry,
+				   runinfo_struct& runinfo);
+
 // get the thermal dust emission in each grid cell
 extern void get_dust_thermal_emission (geometry_struct& geometry,
 				       runinfo_struct& runinfo, 

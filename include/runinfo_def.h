@@ -19,6 +19,7 @@
 
 struct runinfo_struct {
   int verbose; // verbosity information (0=nothing)
+  int do_ere_emission;  // do ERE emission (0=no)
   int do_dust_emission; // do dust thermal emission (0=no)
   int do_emission_grain; // do emission by grain type (0=no)
                          // if set, then the emission is split by grain type 
@@ -40,6 +41,10 @@ struct runinfo_struct {
   // SED info
   std::string sed_type;
   std::vector<double> sed_lum;
+
+  // emitted ere energy info
+  int emitted_ere_energy_grid_initialized;
+  std::vector< std::vector<double> > emitted_ere_lum;
 
   // emitted energy info (by dust grain component)
   std::vector< std::vector<double> > emitted_lum;

@@ -30,7 +30,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 				 runinfo_struct& runinfo,
 				 output_struct& output,
 				 int index,
-				 int doing_dust_emission)
+				 int doing_emission)
 
 {
   // total energy absorbed in photons
@@ -85,8 +85,11 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	    // convert the absorbed energy to radiation field density
 	    double j_temp = geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index];
 	    total_energy_absorbed_photons += j_temp;
-	    if (doing_dust_emission) 
-	      j_temp *= (runinfo.emitted_lum[0][index]/output.outputs[0].total_num_photons);
+	    if (doing_emission) 
+	      if (runinfo.dust_thermal_emission)
+		j_temp *= (runinfo.emitted_lum[0][index]/output.outputs[0].total_num_photons);
+	      else
+		j_temp *= (runinfo.emitted_ere_lum[0][index]/output.outputs[0].total_num_photons);
 	    else
 	      j_temp *= (runinfo.sed_lum[index]/output.outputs[0].total_num_photons);
 
@@ -115,7 +118,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 #endif
 
 	    // add back the previously saved radiation field density
-	    if (doing_dust_emission)
+	    if (doing_emission)
 	      geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] +=
 		geometry.grids[m].grid(i,j,k).save_radiation_field_density[geometry.abs_energy_wave_index];
 	  } else geometry.grids[m].grid(i,j,k).num_H = 0.0;

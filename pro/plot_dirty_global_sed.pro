@@ -55,6 +55,11 @@ if (keyword_set(energy)) then begin
     table.flux_input *= table.wavelength
     table.flux_rt_d *= table.wavelength
     table.flux_rt_s *= table.wavelength
+    sindxs = where(table_tagnames EQ 'FLUX_ERE_D',n_sindxs)
+    if (n_sindxs GT 0) then begin
+        table.flux_ere_d *= table.wavelength
+        table.flux_ere_s *= table.wavelength
+    endif
     sindxs = where(table_tagnames EQ 'FLUX_DE_D_1',n_sindxs)
     if (n_sindxs GT 0) then begin
         table.flux_de_d_1 *= table.wavelength
@@ -101,6 +106,13 @@ koplot,table.wavelength,table.flux_input,psym=100,color=base_color,linestyle=2
 koplot,table.wavelength,table.flux_rt_d+table.flux_rt_s,psym=100,color=blue_color,linestyle=0
 koplot,table.wavelength,table.flux_rt_d,psym=100,color=blue_color,linestyle=1
 koplot,table.wavelength,table.flux_rt_s,psym=100,color=blue_color,linestyle=2
+
+sindxs = where(table_tagnames EQ 'FLUX_ERE_D',n_sindxs)
+if (n_sindxs GT 0) then begin
+    koplot,table.wavelength,table.flux_ere_d+table.flux_ere_s,psym=100,color=red_color,linestyle=0
+    koplot,table.wavelength,table.flux_ere_d,psym=100,color=red_color,linestyle=1
+    koplot,table.wavelength,table.flux_ere_s,psym=100,color=red_color,linestyle=2
+endif
 
 sindxs = where(table_tagnames EQ 'FLUX_DE_D_1',n_sindxs)
 if (n_sindxs GT 0) then begin

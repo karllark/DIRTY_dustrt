@@ -89,7 +89,7 @@ void output_results (output_struct& output,
 //       cout << runinfo.out_sed_lum.size() << " ";
 //       cout << runinfo.out_sed_lum_offset+(2*i) << endl;
       runinfo.out_sed_lum[0+runinfo.out_sed_lum_offset+(2*i)][geometry.wave_index] = stellar_sl;
-      runinfo.out_sed_lum_unc[0+runinfo.out_sed_lum_offset+(2*i)][geometry.wave_index] =  stellar_sl*total_stellar_weight_err;
+      runinfo.out_sed_lum_unc[0+runinfo.out_sed_lum_offset+(2*i)][geometry.wave_index] = stellar_sl*total_stellar_weight_err;
     }
 
     // compute total scattered weight uncertainty

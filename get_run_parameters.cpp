@@ -46,6 +46,27 @@ void get_run_parameters (ConfigFile& param_data,
   if (runinfo.verbose == -99) runinfo.verbose = 0;  // set to no output if not initially set
   check_input_param("verbose",runinfo.verbose,0,2);
 
+  runinfo.do_ere_emission = param_data.IValue("Run","do_ere_emission");
+  if (runinfo.do_ere_emission == -99) runinfo.do_ere_emission = 0;  // set to no if not initially set
+  check_input_param("do_ere_emission",runinfo.do_ere_emission,0,1);
+
+  if (runinfo.do_ere_emission) {  // get the ERE parameters
+    runinfo.ere_efficiency = param_data.FValue("Extended Red Emission","ere_efficiency");
+    check_input_param("ere_efficiency",runinfo.ere_efficiency,0.0,1.0);
+
+    runinfo.ere_excitation_wavelength = param_data.FValue("Extended Red Emission","ere_excitation_wavelength");
+    check_input_param("ere_excitation_wavelength",runinfo.ere_excitation_wavelength,0.01,1.0);
+    runinfo.ere_excitation_wavelength *= Constant::UM_CM;
+
+    runinfo.ere_peak_wavelength = param_data.FValue("Extended Red Emission","ere_peak_wavelength");
+    check_input_param("ere_peak_wavelength",runinfo.ere_peak_wavelength,0.3,1.0);
+    runinfo.ere_peak_wavelength *= Constant::UM_CM;
+
+    runinfo.ere_fwhm = param_data.FValue("Extended Red Emission","ere_fwhm");
+    check_input_param("ere_fwhm",runinfo.ere_fwhm,0.01,0.3);
+    runinfo.ere_fwhm *= Constant::UM_CM;
+  }
+
   runinfo.do_dust_emission = param_data.IValue("Run","do_dust_emission");
   if (runinfo.do_dust_emission == -99) runinfo.do_dust_emission = 0;  // set to no if not initially set
   check_input_param("do_dust_emission",runinfo.do_dust_emission,0,1);
