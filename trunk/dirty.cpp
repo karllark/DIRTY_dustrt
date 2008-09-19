@@ -19,6 +19,7 @@
 // 2008 Jan/KDG - added global output
 // 2008 Mar/KDG - fixed global output to use a FITS ASCII table
 // 2008 Aug/KDG - added continous absorption
+// 2008 Sep/KDG - added ERE
 // ======================================================================
 #include "dirty.h"
 //#define DEBUG_DIRTY
@@ -165,8 +166,89 @@ int main(int argc, char* argv[])
   geometry.emitted_energy_grid_initialized = 0;
 
   // do ERE part (no iteration needed)
-//   runinfo.out_sed_lum_offset += 2;  // increment to save ERE direct/scattered luminosity
-//   output.emission_type = "_ere"; // setup the emission_type string for dust emission
+  if (runinfo.do_ere_emission) {
+    runinfo.emitted_ere_energy_grid_initialized = 0;
+    // setup a new output stucture to handle the ere
+    output_struct ere_output;  // stucture with the output info (images, etc.)
+#ifdef DEBUG_DIRTY
+  cout << "setup ere output ";
+  cout.flush();
+#endif
+    setup_ere_dust_emission_output(ere_output, output);
+    runinfo.out_sed_lum_offset += 2;  // increment to save ERE direct/scattered luminosity
+
+    // get ERE emission
+#ifdef DEBUG_DIRTY
+  cout << "get ere ";
+  cout.flush();
+#endif
+    get_dust_ere_emission(geometry, runinfo);
+
+    // get ready for RT
+#ifdef DEBUG_DIRTY
+  cout << "setup grid for MC ";
+  cout.flush();
+#endif
+    setup_emitted_grid_for_montecarlo(geometry, runinfo, CurGrainModel);
+      
+    // do ERE RT: loop over all wavelengths
+    for (i = 0; i < runinfo.n_waves; i++) {
+
+      if (runinfo.verbose >= 1)
+	cout << "working on ere wavelength [micron] = " << runinfo.wavelength[i]*Constant::CM_UM << endl;
+
+#ifdef DEBUG_DIRTY
+      cout << endl;
+      cout << "i = " << i << endl;
+      cout << "emitted_lum = " << runinfo.emitted_ere_lum[0][i] << endl;
+#endif
+
+      if (runinfo.emitted_ere_lum[0][i] > 1e-3*runinfo.out_sed_lum[0][i]*runinfo.sed_lum[i]) {
+
+#ifdef DEBUG_DIRTY
+	cout << "doing ERE RT" << endl;
+
+	cout << "ee: saeg start; ";
+	cout.flush();
+#endif
+	// setup/(re)initialize absorbed energy grid
+	setup_absorbed_energy_grid(geometry, runinfo, i, 1);
+#ifdef DEBUG_DIRTY
+	cout << "ee: saeg done; ";
+	cout.flush();
+#endif
+      
+#ifdef DEBUG_DIRTY
+	cout << "ee: gdsp start; ";
+	cout.flush();
+#endif
+	// setup dust grains for this wavelength
+	get_dust_scat_parameters(i, runinfo, geometry);
+#ifdef DEBUG_DIRTY
+	cout << "ee: gdsp end; ";
+	cout.flush();
+#endif
+	
+#ifdef DEBUG_DIRTY
+	cout << "ee: rt start; ";
+	cout.flush();
+#endif
+	// do RT part
+	radiative_transfer(geometry, runinfo, ere_output, photon, random_obj);
+#ifdef DEBUG_DIRTY
+	cout << "ee: rt end; ";
+	cout.flush();
+#endif
+	
+	// output RT results
+	output_results(ere_output, geometry, runinfo, i);
+	
+	// store the result (either in memory or on disk)
+	// remember to zero out the absorbed energy grid
+	store_absorbed_energy_grid(geometry, runinfo, ere_output, i, 1);
+      }
+    }
+  }
 //   emit_ere_photons();
 
   // start RT+DE iteration (only if DE flag set)

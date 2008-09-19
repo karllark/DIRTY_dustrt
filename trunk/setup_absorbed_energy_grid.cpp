@@ -9,20 +9,20 @@
 void setup_absorbed_energy_grid (geometry_struct& geometry,
 				 runinfo_struct& runinfo,
 				 int wave_index,
-				 int doing_dust_emission)
+				 int doing_emission)
 
 {
   if (geometry.abs_energy_storage_type == 0) {
     geometry.abs_energy_wave_index = wave_index;
-    if (!doing_dust_emission) 
+    if (!doing_emission) 
       runinfo.absorbed_energy.resize(runinfo.wavelength.size(),0.0);
   } else {
     geometry.abs_energy_wave_index = 0;
-    if ((!geometry.abs_energy_grid_initialized) && (!doing_dust_emission))
+    if ((!geometry.abs_energy_grid_initialized) && (!doing_emission))
       runinfo.absorbed_energy.push_back(0.0);
   }
 
-//   if (doing_dust_emission == 1) cout << "saving radiation field..." << endl;
+//   if (doing_emission == 1) cout << "saving radiation field..." << endl;
 
   int i,j,k,m = 0;
   // loop over all the defined grids
@@ -31,9 +31,9 @@ void setup_absorbed_energy_grid (geometry_struct& geometry,
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
       for (j = 0; j < geometry.grids[m].index_dim[1]; j++)
 	for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
-	  if (doing_dust_emission) {
-	    // save the existing value of the radiation field (needed for dust emission)
-	    if (doing_dust_emission == 1) 
+	  if (doing_emission) {
+	    // save the existing value of the radiation field (needed for dust or ere emission)
+	    if (doing_emission == 1) 
 	      geometry.grids[m].grid(i,j,k).save_radiation_field_density[geometry.abs_energy_wave_index] =
 		geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index];
 	    // zero out the current absorbed energy value
