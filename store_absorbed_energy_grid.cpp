@@ -71,7 +71,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	      (geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] > 0.0)) {
 	    // # of H atoms in cell
 	    geometry.grids[m].grid(i,j,k).num_H = num_H_const*vol*geometry.grids[m].grid(i,j,k).dust_tau_per_pc*geometry.tau_to_tau_ref;
-	    
+    
 #ifdef DEBUG_SAEG
 	    cout << "dust tau/pc = " << geometry.grids[m].grid(i,j,k).dust_tau_per_pc << endl;
 	    cout << "# H [total] = " << geometry.grids[m].grid(i,j,k).num_H << endl;
@@ -122,6 +122,8 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	      geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] +=
 		geometry.grids[m].grid(i,j,k).save_radiation_field_density[geometry.abs_energy_wave_index];
 	  } else geometry.grids[m].grid(i,j,k).num_H = 0.0;
+
+	  if (geometry.grids[m].grid(i,j,k).num_H < 0.0) exit(8);
 
 	  // sum the absorbed energy for this wavelength
 	  runinfo.absorbed_energy[geometry.abs_energy_wave_index] += 

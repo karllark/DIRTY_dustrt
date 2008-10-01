@@ -90,161 +90,171 @@ void get_dust_ere_emission (geometry_struct& geometry,
 	      for (x = 0; x < runinfo.wavelength.size(); x++)
 		geometry.grids[m].grid(i,j,k).emitted_energy[z][x] = 0.0;
 	
-	  // determine if there is any energy absorbed needing to be remitted
-	  tot_abs_energy = 0.0;
-	  max_abs_energy = 0.0;
-	  tot_nonzero = 0;
-
-	  max_abs_energy = 0.0;
-	  for (x = 0; x < runinfo.wavelength.size(); x++) {
- 	    tmp_wave[x] = double(runinfo.wavelength[x]);
-	    tmp_abs_energy[x] = geometry.grids[m].grid(i,j,k).absorbed_energy[x]*4.*Constant::PI*runinfo.ave_C_abs[x];
-	    if (tmp_abs_energy[x] > max_abs_energy) max_abs_energy = tmp_abs_energy[x];
-	    if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0.) tot_nonzero++;
-	  }
- 	  tot_abs_energy = NumUtils::integrate<double>(tmp_wave,tmp_abs_energy)*geometry.grids[m].grid(i,j,k).num_H;
-		
-#ifdef DEBUG_GDEE
-	  cout << "total nonzero = " << tot_nonzero << endl;
-	  cout << "total absorbed energy = " << tot_abs_energy << endl;
-	  cout << "max absorbed energy = " << max_abs_energy << endl;
-#endif
-
-	  if ((tot_abs_energy > 0.0) && (tot_nonzero < int(0.5*runinfo.wavelength.size()))) {
-
-	    num_cells_too_few_waves++;
-
-	  } else if (tot_abs_energy == 0.0) {
-
-	    num_cells_zero++;
-
-	  } else {
-
-	    num_cells_enough++;
+	  if (geometry.grids[m].grid(i,j,k).dust_tau_per_pc > 0.0) {
+	    // determine if there is any energy absorbed needing to be remitted
+	    tot_abs_energy = 0.0;
+	    max_abs_energy = 0.0;
+	    tot_nonzero = 0;
 	    
-	    // interoplate the radiative field to fill all the wavelength points
-	    // if it has any nonzero points
-	    if (tot_nonzero != int(runinfo.wavelength.size())) {
-	      for (x = 0; x < runinfo.wavelength.size(); x++) {
-		if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0) {
-		  tmp_wave_for_interpol.push_back(runinfo.wavelength[x]);
-		  tmp_j_for_interpol.push_back(geometry.grids[m].grid(i,j,k).absorbed_energy[x]);
+	    max_abs_energy = 0.0;
+	    for (x = 0; x < runinfo.wavelength.size(); x++) {
+	      tmp_wave[x] = double(runinfo.wavelength[x]);
+	      tmp_abs_energy[x] = geometry.grids[m].grid(i,j,k).absorbed_energy[x]*4.*Constant::PI*runinfo.ave_C_abs[x];
+	      if (tmp_abs_energy[x] > max_abs_energy) max_abs_energy = tmp_abs_energy[x];
+	      if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0.) tot_nonzero++;
+	    }
+	    if (tot_nonzero >= int(0.5*runinfo.wavelength.size()))
+	      tot_abs_energy = NumUtils::integrate<double>(tmp_wave,tmp_abs_energy)*geometry.grids[m].grid(i,j,k).num_H;
+	    else
+	      tot_abs_energy = 0.0;
+	    
+#ifdef DEBUG_GDEE
+	    cout << "total nonzero = " << tot_nonzero << endl;
+	    cout << "total absorbed energy = " << tot_abs_energy << endl;
+	    cout << "max absorbed energy = " << max_abs_energy << endl;
+	    cout << "num_H = " << geometry.grids[m].grid(i,j,k).num_H << endl;
+#endif
+	    
+	    if ((tot_abs_energy > 0.0) && (tot_nonzero < int(0.5*runinfo.wavelength.size()))) {
+	      
+	      num_cells_too_few_waves++;
+	      
+	    } else if (tot_abs_energy == 0.0) {
+	      
+	      num_cells_zero++;
+	      
+	    } else {
+	      
+	      num_cells_enough++;
+	      
+	      // interoplate the radiative field to fill all the wavelength points
+	      // if it has any nonzero points
+	      if (tot_nonzero != int(runinfo.wavelength.size())) {
+		for (x = 0; x < runinfo.wavelength.size(); x++) {
+		  if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0) {
+		    tmp_wave_for_interpol.push_back(runinfo.wavelength[x]);
+		    tmp_j_for_interpol.push_back(geometry.grids[m].grid(i,j,k).absorbed_energy[x]);
+		  }
 		}
+		
+		tmp_new_j_from_interpol = NumUtils::interpol(tmp_j_for_interpol,tmp_wave_for_interpol,tmp_wave);
+		tmp_wave_for_interpol.resize(0);
+		tmp_j_for_interpol.resize(0);
+		
+		for (x = 0; x < runinfo.wavelength.size(); x++) {
+// 		  cout << tmp_wave[x] << " ";
+// 		  cout << runinfo.wavelength[x] << " ";
+// 		  cout << tmp_new_j_from_interpol[x] << " ";
+// 		  cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
+// 		  cout << endl;
+		  geometry.grids[m].grid(i,j,k).absorbed_energy[x] = tmp_new_j_from_interpol[x];
+		}
+		
+		tmp_new_j_from_interpol.resize(0);
+		
+		// 	      exit(1);
+	      }
+		
+	      // 	    cout << "total min = " << tot_abs_energy << " " << min_enough_energy << endl;
+	      // 	  if ((tot_abs_energy > 0.) && (tot_nonzero > int(0.75*runinfo.wavelength.size())) && (tot_abs_energy > 1e-35)) {
+#ifdef DEBUG_GDEE
+	      // output the J
+	      for (x = 0; x < runinfo.wavelength.size(); x++) {
+		cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
+	      }
+	      cout << endl;
+#endif
+	      
+	      // get the ERE emission for this cell
+	      // simple model currently
+	      //   photon conversion efficiency, max wavelength for excitation
+	      //   central wavelength, FWHM
+	      
+	      // first integrate below the max wavelength in photon units
+	      //   resuse the j vectors for the integrations
+	      x = 0;
+	      while ((runinfo.wavelength[x] <= runinfo.ere_excitation_wavelength) && 
+		     (x < runinfo.wavelength.size())) {
+		tmp_wave_for_interpol.push_back(runinfo.wavelength[x]);
+		tmp_j_for_interpol.push_back(geometry.grids[m].grid(i,j,k).absorbed_energy[x]*
+					     Constant::IPLANCKLIGHT*runinfo.wavelength[x]);
+		// remove the energy just absorbed from J (it is now in ERE) (only ere peak photon energy)
+		geometry.grids[m].grid(i,j,k).absorbed_energy[x] -= tmp_j_for_interpol[x]*runinfo.ere_efficiency*
+		  Constant::PLANCKLIGHT/runinfo.ere_peak_wavelength;
+		
+		x++;
+	      }
+	      total_ere_photons = NumUtils::integrate<double>(tmp_wave_for_interpol,tmp_j_for_interpol);
+	      
+	      // convert to the number of photons to emit in ERE
+	      total_ere_photons *= runinfo.ere_efficiency;
+	      
+#ifdef DEBUG_GDEE
+	      cout << "total_ere_photons/H atom = " << total_ere_photons << endl;
+#endif
+	      
+	      // convert to ERE energy
+	      total_ere_photons *= Constant::PLANCKLIGHT/runinfo.ere_peak_wavelength;
+	      
+	      cout << "total_ere_energy/H atom = " << total_ere_photons << endl;
+
+	      // convert to peak ERE energy (right?)
+	      total_ere_photons /= (runinfo.ere_fwhm/2.35)*pow(M_PI,0.5);
+	      
+	      // now create the Gaussian ERE emission
+	      //   need to check the conversion between fwhm and sigma - on a plane and no internet)
+	      for (x = 0; x < runinfo.wavelength.size(); x++) {
+		ere_sigma_ratio = fabs(runinfo.wavelength[x] - runinfo.ere_peak_wavelength)/(runinfo.ere_fwhm/2.35);
+		// 	      cout << ere_sigma_ratio << " ";
+		if (ere_sigma_ratio < 4.0) {
+		  geometry.grids[m].grid(i,j,k).emitted_energy[0][x] = total_ere_photons*exp(-(0.5*ere_sigma_ratio*ere_sigma_ratio));
+		  //  		cout << runinfo.wavelength[x] << " " << geometry.grids[m].grid(i,j,k).emitted_energy[0][x];
+		} else
+		  geometry.grids[m].grid(i,j,k).emitted_energy[0][x] = 0.0;
+		// 	      cout << endl;
 	      }
 	      
-	      tmp_new_j_from_interpol = NumUtils::interpol(tmp_j_for_interpol,tmp_wave_for_interpol,tmp_wave);
 	      tmp_wave_for_interpol.resize(0);
 	      tmp_j_for_interpol.resize(0);
-
-	      for (x = 0; x < runinfo.wavelength.size(); x++) {
-// 		cout << tmp_wave[x] << " ";
-// 		cout << runinfo.wavelength[x] << " ";
-// 		cout << tmp_new_j_from_interpol[x] << " ";
-// 		cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
-// 		cout << endl;
-		geometry.grids[m].grid(i,j,k).absorbed_energy[x] = tmp_new_j_from_interpol[x];
+	      
+	      total_emit_energy = 0.0;
+	      total_emit_energy = NumUtils::integrate<double>(tmp_wave,geometry.grids[m].grid(i,j,k).emitted_energy[0])*geometry.grids[m].grid(i,j,k).num_H;
+	      
+	      global_total_emitted += total_emit_energy;
+	      
+	      if (fabs(1.0 - (total_emit_energy/tot_abs_energy)) > 1e-3) {
+		cout << "energy conservations worse than 1e-3" << endl;
+		cout << "total_abs/H atom = " << tot_abs_energy << endl;
+		cout << "total_emit_energy/H atom = " << total_emit_energy << endl;
+		cout << "ratio emit/abs = " << total_emit_energy/tot_abs_energy << endl;
+		cout << "ratio emit/ere = " << total_emit_energy/(total_ere_photons*(runinfo.ere_fwhm/2.35)*pow(M_PI,0.5)*geometry.grids[m].grid(i,j,k).num_H) << endl;
+		cout << "ere/H atom = " << (total_ere_photons*(runinfo.ere_fwhm/2.35)*pow(M_PI,0.5))*geometry.grids[m].grid(i,j,k).num_H << endl;
+		// 	      exit(8);
 	      }
-
-	      tmp_new_j_from_interpol.resize(0);
-
-// 	      exit(1);
-	    }
-
-// 	    cout << "total min = " << tot_abs_energy << " " << min_enough_energy << endl;
-// 	  if ((tot_abs_energy > 0.) && (tot_nonzero > int(0.75*runinfo.wavelength.size())) && (tot_abs_energy > 1e-35)) {
-#ifdef DEBUG_GDEE
-	    // output the J
-	    for (x = 0; x < runinfo.wavelength.size(); x++) {
-	      cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
-	    }
-	    cout << endl;
-#endif
-
-	    // get the ERE emission for this cell
-	    // simple model currently
-	    //   photon conversion efficiency, max wavelength for excitation
-	    //   central wavelength, FWHM
-	    
-	    // first integrate below the max wavelength in photon units
-	    //   resuse the j vectors for the integrations
-	    x = 0;
-	    while ((runinfo.wavelength[x] <= runinfo.ere_excitation_wavelength) && 
-		   (x < runinfo.wavelength.size())) {
-	      tmp_wave_for_interpol.push_back(runinfo.wavelength[x]);
-	      tmp_j_for_interpol.push_back(geometry.grids[m].grid(i,j,k).absorbed_energy[x]*
-					   Constant::IPLANCKLIGHT*runinfo.wavelength[x]);
-	      // remove the energy just absorbed from J (it is now in ERE) (only ere peak photon energy)
-	      geometry.grids[m].grid(i,j,k).absorbed_energy[x] -= tmp_j_for_interpol[x]*runinfo.ere_efficiency*
-		Constant::PLANCKLIGHT/runinfo.ere_peak_wavelength;
-
-	      x++;
-	    }
-	    total_ere_photons = NumUtils::integrate<double>(tmp_wave_for_interpol,tmp_j_for_interpol);
-
-	    // convert to the number of photons to emit in ERE
-	    total_ere_photons *= runinfo.ere_efficiency;
-
-#ifdef DEBUG_GDEE
-	    cout << "total_ere_photons/H atom = " << total_ere_photons << endl;
-#endif
-
-	    // convert to ERE energy
-	    total_ere_photons *= Constant::PLANCKLIGHT*runinfo.ere_peak_wavelength;
-
-	    // convert to peak ERE energy (wrong, wrong, wrong...get the right number)
-	    total_ere_photons *= 0.00014/6.5;
-
-	    // now create the Gaussian ERE emission
-	    //   need to check the conversion between fwhm and sigma - on a plane and no internet)
-	    for (x = 0; x < runinfo.wavelength.size(); x++) {
-	      ere_sigma_ratio = fabs(runinfo.wavelength[x] - runinfo.ere_peak_wavelength)/(runinfo.ere_fwhm);
-// 	      cout << ere_sigma_ratio << " ";
-	      if (ere_sigma_ratio < 4.0) {
-		geometry.grids[m].grid(i,j,k).emitted_energy[0][x] = total_ere_photons*exp(-(ere_sigma_ratio*ere_sigma_ratio));
-//  		cout << runinfo.wavelength[x] << " " << geometry.grids[m].grid(i,j,k).emitted_energy[0][x];
-	      } else
-		geometry.grids[m].grid(i,j,k).emitted_energy[0][x] = 0.0;
-// 	      cout << endl;
-	    }
-
-	    tmp_wave_for_interpol.resize(0);
-	    tmp_j_for_interpol.resize(0);
-	    
-	    total_emit_energy = 0.0;
-	    total_emit_energy = NumUtils::integrate<double>(tmp_wave,geometry.grids[m].grid(i,j,k).emitted_energy[0])*geometry.grids[m].grid(i,j,k).num_H;
-	    
-	    global_total_emitted += total_emit_energy;
-
-	    if (fabs(1.0 - (total_emit_energy/tot_abs_energy)) > 1e-3) {
-	      cout << "energy conservations worse than 1e-3" << endl;
-	      cout << "total_abs/H atom = " << tot_abs_energy << endl;
-	      cout << "total_emit_energy/H atom = " << total_emit_energy << endl;
-	      cout << "ratio emit/abs = " << total_emit_energy/tot_abs_energy << endl;
-// 	      exit(8);
-	    }
-
-	    // add to the emitted energy sums
-	    for (z = 0; z < n_emit_components; z++)
-	      for (x = 0; x < runinfo.wavelength.size(); x++) {
-		// need to multiply the emitted energy passed back by dust_thermal_emission
-		// by the number of HI atoms in the cell to get the total emitted energy
-		if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
-		  cout << z << " " << x << endl;
-		  cout << geometry.grids[m].grid(i,j,k).emitted_energy[z][x] << endl;
-		  cout << " emitted ere energy is not finite (before num_H calc) " << endl;
-		  exit(8);
+	      
+	      // add to the emitted energy sums
+	      for (z = 0; z < n_emit_components; z++)
+		for (x = 0; x < runinfo.wavelength.size(); x++) {
+		  // need to multiply the emitted energy passed back by dust_thermal_emission
+		  // by the number of HI atoms in the cell to get the total emitted energy
+		  if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
+		    cout << z << " " << x << endl;
+		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[z][x] << endl;
+		    cout << " emitted ere energy is not finite (before num_H calc) " << endl;
+		    exit(8);
+		  }
+		  geometry.grids[m].grid(i,j,k).emitted_energy[z][x] *= geometry.grids[m].grid(i,j,k).num_H;
+		  // add up the emitted energy to the total emitted (per wavelength & component)
+		  if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
+		    cout << z << " " << x << endl;
+		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[z][x] << endl;
+		    cout << " emitted ere energy is not finite (after num_H calc) " << endl;
+		    exit(8);
+		  }
+		  runinfo.emitted_ere_lum[z][x] += geometry.grids[m].grid(i,j,k).emitted_energy[z][x];
 		}
-		geometry.grids[m].grid(i,j,k).emitted_energy[z][x] *= geometry.grids[m].grid(i,j,k).num_H;
-		// add up the emitted energy to the total emitted (per wavelength & component)
-		if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
-		  cout << z << " " << x << endl;
-		  cout << geometry.grids[m].grid(i,j,k).emitted_energy[z][x] << endl;
-		  cout << " emitted ere energy is not finite (after num_H calc) " << endl;
-		  exit(8);
-		}
-		runinfo.emitted_ere_lum[z][x] += geometry.grids[m].grid(i,j,k).emitted_energy[z][x];
-	      }
-	  }
+	    }
+	  } 
 	}
       }
     

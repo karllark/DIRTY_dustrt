@@ -25,6 +25,12 @@ void check_absorbed_energy_grid (geometry_struct& geometry,
 	  for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
 	    abs_energy[x] += geometry.grids[m].grid(i,j,k).absorbed_energy[x]*
 	      Constant::FPI*runinfo.ave_C_abs[x]*geometry.grids[m].grid(i,j,k).num_H;
+	    if (geometry.grids[m].grid(i,j,k).num_H < 0.0) {
+	      cout << geometry.grids[m].grid(i,j,k).num_H << endl;
+	      cout << m << " " << i << " " << j << " " << k << endl;
+	      cout << "x = " << x << endl;
+	      exit(8);
+	    }
 // 	    if (x == 1) cout << geometry.grids[m].grid(i,j,k).num_H << " ";
 	  }
     }
