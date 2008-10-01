@@ -71,6 +71,10 @@ void get_run_parameters (ConfigFile& param_data,
   if (runinfo.do_dust_emission == -99) runinfo.do_dust_emission = 0;  // set to no if not initially set
   check_input_param("do_dust_emission",runinfo.do_dust_emission,0,1);
 
+  runinfo.do_stochastic_dust_emission = param_data.IValue("Run","do_stochastic_dust_emission");
+  if (runinfo.do_stochastic_dust_emission == -99) runinfo.do_stochastic_dust_emission = 0;  // set to no if not initially set
+  check_input_param("do_stochastic_dust_emission",runinfo.do_stochastic_dust_emission,0,1);
+
   runinfo.do_emission_grain = param_data.IValue("Run","do_emission_grain");
   if (runinfo.do_emission_grain == -99) runinfo.do_emission_grain = 0;  // set to no if not initially set
   check_input_param("do_emission_grain",runinfo.do_emission_grain,0,1);

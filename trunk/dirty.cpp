@@ -130,22 +130,23 @@ int main(int argc, char* argv[])
 
     // store the result (either in memory or on disk)
     // remember to zero out the absorbed energy grid
-      if (runinfo.do_dust_emission)
+    if ((runinfo.do_dust_emission) || (runinfo.do_ere_emission)) {
 #ifdef DEBUG_DIRTY
-	cout << endl;
-	cout << "wave [cm] = " << geometry.wavelength << endl;
-	cout << "te: saeg start; ";
+      cout << endl;
+      cout << "wave [cm] = " << geometry.wavelength << endl;
+      cout << "te: saeg start; ";
       cout.flush();
 #endif
-	store_absorbed_energy_grid(geometry, runinfo, output, i, 0);
+      store_absorbed_energy_grid(geometry, runinfo, output, i, 0);
 #ifdef DEBUG_DIRTY
-	cout << "te: saeg end; ";
-	cout.flush();
+      cout << "te: saeg end; ";
+      cout.flush();
 #endif
+    }
 
 //     // check the absorbed energy grid (temp needed as energy not conserved)
 //     // KDG - 23 Mar 2008
-//     check_absorbed_energy_grid(geometry, runinfo);
+// 	check_absorbed_energy_grid(geometry, runinfo);
 //     if (i == 1) exit(8);
 //  	exit(8);
   }

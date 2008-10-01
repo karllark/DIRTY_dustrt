@@ -18,7 +18,8 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   int i,j,k,m,z = 0;
   uint x = 0;
 
-  bool DoStochastic=true;
+  bool DoStochastic = false;
+  if (runinfo.do_stochastic_dust_emission) DoStochastic = true;
 
   double global_total_emitted = 0.;
   double global_total_absorbed = 0.;

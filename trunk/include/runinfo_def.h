@@ -21,6 +21,7 @@ struct runinfo_struct {
   int verbose; // verbosity information (0=nothing)
   int do_ere_emission;  // do ERE emission (0=no)
   int do_dust_emission; // do dust thermal emission (0=no)
+  int do_stochastic_dust_emission; // do stochastic_dust thermal emission (0=no)
   int do_emission_grain; // do emission by grain type (0=no)
                          // if set, then the emission is split by grain type 
                          // and equilibrium/non-equilibrium
