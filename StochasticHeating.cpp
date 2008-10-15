@@ -30,10 +30,11 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
   bool OnePass=false; 
   int nBins=50; 
   
-  float oldTMax,oldTMin; 
+  float oldTMax = 0.0;
+  float oldTMin = 0.0; 
   float tol = 0.01; 
   float tol_max_bins = 0.1; 
-  float thistol,lasttol; 
+  float thistol,lasttol = 0.0; 
   double Ptol = 1.0e-15; 
   vector <vector<double> > TM;
 

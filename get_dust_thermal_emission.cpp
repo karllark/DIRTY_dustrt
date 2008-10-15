@@ -128,15 +128,25 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	    // if it has any nonzero points
 	    if (tot_nonzero != int(runinfo.wavelength.size())) {
 	      for (x = 0; x < runinfo.wavelength.size(); x++) {
-// 		cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
+#ifdef DEBUG_GDTE
+ 		cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
+#endif
 		if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0) {
-		  tmp_wave_for_interpol.push_back(runinfo.wavelength[x]);
-		  tmp_j_for_interpol.push_back(geometry.grids[m].grid(i,j,k).absorbed_energy[x]);
+		  tmp_wave_for_interpol.push_back(double(runinfo.wavelength[x]));
+		  tmp_j_for_interpol.push_back(double(geometry.grids[m].grid(i,j,k).absorbed_energy[x]));
 		}
 	      }
-// 	      cout << endl;
+#ifdef DEBUG_GDTE
+ 	      cout << endl;
+#endif
 	      
+#ifdef DEBUG_GDTE
+	    cout << "entering j interpol..." << endl;
+#endif
 	      tmp_new_j_from_interpol = NumUtils::interpol(tmp_j_for_interpol,tmp_wave_for_interpol,tmp_wave);
+#ifdef DEBUG_GDTE
+	    cout << "...leaving j interpol" << endl;
+#endif
 	      tmp_wave_for_interpol.resize(0);
 	      tmp_j_for_interpol.resize(0);
 
@@ -166,12 +176,16 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 
 	    // get the dust emission spectrum given the input wavlength vector and radiation field vector
 	    // emitted energy returned is in units of ergs s^-1 HI atom^-1
-	    //cout << "Calling dust emission" << endl; 
+#ifdef DEBUG_GDTE
+	    cout << "entering ComputeDustEmission..." << endl;
+#endif
 	    ComputeDustEmission(geometry.grids[m].grid(i,j,k).absorbed_energy,
 				CurGrainModel, 
 				geometry.grids[m].grid(i,j,k).emitted_energy,
 				DoStochastic); 
-	    //cout << "returning from dust emission" << endl; 
+#ifdef DEBUG_GDTE
+	    cout << "...leaving ComputeDustEmission" << endl;
+#endif
 	    total_emit_energy = 0.0;
 	    total_emit_energy = NumUtils::integrate<double>(tmp_wave,geometry.grids[m].grid(i,j,k).emitted_energy[0])*geometry.grids[m].grid(i,j,k).num_H;
 	    

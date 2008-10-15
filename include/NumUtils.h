@@ -280,8 +280,8 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       } 
       //cout << "usize " << u.size() << " " << x.size() << endl;
       vector <T> r(u.size()); 
-      T slp,extrslp1;
-      T intcpt,extrint1;
+      T slp,extrslp1 = 0;
+      T intcpt,extrint1 = 0;
       uint j;
       uint n = x.size()-1; 
       if (HiEx == -99) { 
@@ -289,8 +289,11 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
 	extrint1 = v[n] - extrslp1*x[n];
       }
 
+/*       cout << "test" << endl; */
       for (uint i=0;i<u.size();++i) {
+/* 	cout << i << endl; */
 	if (u[i] < x[0]) { // extrapolate to left.
+/* 	  cout << "left" << endl; */
 	  switch (LoEx) {
 	  case -1 :
 	    r[i] = static_cast<T>(0);
@@ -303,6 +306,7 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
 	  }
 	} else {
 	  if (u[i] > x[x.size()-1]) { // extrapolate right.
+/* 	    cout << "right" << endl; */
 	    switch (HiEx) {
 	    case -1 :
 	      r[i] = static_cast<T>(0);
@@ -318,10 +322,27 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
 	      break;
 	    }
 	  } else {
+/* 	    cout << "middle" << endl; */
+/* 	    cout << i << " "; */
+/* 	    cout.flush(); */
 	    j=0;
-	    while (u[i] > x[j]) j++;
+/* 	    cout << endl; */
+	    while (u[i] > x[j]) {
+/* 	      cout << "test1 = " << j << endl; */
+	      j++;
+	    }
+	    // take care of the case where i=j=0
+	    // seemed to work w/o this line on 32bit, but not 64bit (even unoptimized)
+	    if (j == 0) j++;  
+/* 	    cout << (u[i] > x[j]) << " " << (u[i] == x[j]) << " "; */
+/* 	    cout << j << " "; */
+/* 	    cout << u[i] << " " << x[j] << " "; */
+/* 	    cout << u[i] - x[j] << " "; */
+/* 	    cout.flush(); */
 	    slp = (v[j] - v[j-1])/(x[j]-x[j-1]);
+/* 	    cout << slp << endl; */
 	    intcpt = v[j] - slp*x[j];
+/* 	    cout << intcpt << endl; */
 	    r[i] = slp*u[i] + intcpt;
 	  }
 	}
