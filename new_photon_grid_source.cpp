@@ -9,6 +9,28 @@
 #include "new_photon_grid_source.h"
 //#define DEBUG_NPGS
 
+// function object for searching grid layer according to the emitted_energy
+struct grid_comparator: public std::binary_function<one_grid, double, bool>
+{
+  int x;
+  grid_comparator(int wave_index): x(wave_index) {}
+  inline bool operator()(one_grid &grid, double value) const
+  {
+    return grid.grid.back().emitted_energy[0][x] < value;
+  }
+};
+
+// function object for searching grid cell according to the emitted_energy
+struct cell_comparator: public std::binary_function<grid_cell, double, bool>
+{
+  int x;
+  cell_comparator(int wave_index): x(wave_index) {}
+  inline bool operator()(grid_cell &cell, double value) const
+  {
+    return cell.emitted_energy[0][x] < value;
+  }
+};
+
 void new_photon_grid_source (photon_data& photon,
 			     geometry_struct& geometry,
 			     runinfo_struct& runinfo,
@@ -42,108 +64,26 @@ void new_photon_grid_source (photon_data& photon,
   // loop through the grids and determine which grid using a random number
   double ran_val = random_obj.random_num();
   int grid_num = -1;
-  uint m = 0;
   int x = geometry.wave_index;
 
-  // check if the we are at the beginning of the grid
-  if (ran_val <= geometry.grids[m].grid(geometry.grids[m].index_dim[0]-1,
-				       geometry.grids[m].index_dim[1]-1,
-				       geometry.grids[m].index_dim[2]-1).emitted_energy[0][x])
+  // check which grid are we in
+  vector<one_grid>::iterator selected_grid;
+  if (ran_val <= geometry.grids[0].grid.back().emitted_energy[0][x]) {
+    // dedicated test for the main grid because very often we end up here
+    selected_grid = geometry.grids.begin();
     grid_num = 0;
- 
-#ifdef DEBUG_NPGS
- cout << "grid_num (1st check) = " << grid_num << endl;
-#endif
-  while ((grid_num == -1) && (m < geometry.grids.size())) {
-    m++;
-#ifdef DEBUG_NPGS
-    cout << "(2nd check) m = " << m << endl;
-#endif
-    if ((ran_val > geometry.grids[m-1].grid(geometry.grids[m-1].index_dim[0]-1,geometry.grids[m-1].index_dim[1]-1,
-					    geometry.grids[m-1].index_dim[2]-1).emitted_energy[0][x]) &&
-	ran_val <= geometry.grids[m].grid(geometry.grids[m].index_dim[0]-1,geometry.grids[m].index_dim[1]-1,
-					    geometry.grids[m].index_dim[2]-1).emitted_energy[0][x])
-      grid_num = m ;
-  } 
+  } else {
+    // binary search, O(N) => O(lnN)
+    selected_grid = lower_bound(geometry.grids.begin() + 1, geometry.grids.end(), ran_val, grid_comparator(x));
+    grid_num = selected_grid - geometry.grids.begin();
+  }
+
+  // use binary search to check which cell are we in
+  NumUtils::Cube<grid_cell>::iterator selected_cell = lower_bound(selected_grid->grid.begin(), selected_grid->grid.end(), ran_val, cell_comparator(x));
+  int cell_num = selected_cell - selected_grid->grid.begin();
+  int x_val, y_val, z_val;
+  selected_grid->grid.get_xyz(cell_num, x_val, y_val, z_val);
   
-#ifdef DEBUG_NPGS
-  cout << "grid_num = " << grid_num << endl;
-#endif
-  if (grid_num == -1) {
-    cout << "Can't emitted photon from grid, random number of " << ran_val << " larger than anything in grid." << endl;
-    exit(8);
-  }
-
-  // then go through the grid and find the cell
-  // then randomly distribute the photon in the cell
-
-  // find z plane
-  int z_val = -1;
-  int k = 0;
-
-  // check if the we are in the first z plane
-  if (ran_val <= geometry.grids[grid_num].grid(geometry.grids[grid_num].index_dim[0]-1,
-					       geometry.grids[grid_num].index_dim[1]-1,
-					       k).emitted_energy[0][x])
-
-    z_val = 0;
-  
-  while ((z_val == -1) && (k < geometry.grids[grid_num].index_dim[2]-1)) {
-    k++;
-    if ((ran_val > geometry.grids[grid_num].grid(geometry.grids[grid_num].index_dim[0]-1,
-						 geometry.grids[grid_num].index_dim[1]-1,k-1).emitted_energy[0][x]) &&
-	(ran_val <= geometry.grids[grid_num].grid(geometry.grids[grid_num].index_dim[0]-1,
-						  geometry.grids[grid_num].index_dim[1]-1,k).emitted_energy[0][x]))
-      z_val = k;
-  }
-
-  if (z_val == -1) {
-    cout << "Can't emitted photon from grid, random number of " << ran_val << " larger than anything z dim of designated grid." << endl;
-    exit(8);
-  }
-
-  // find y row
-  int y_val = -1;
-  int j = 0;
-
-  // check if the we are in the first y column
-  if (ran_val <= geometry.grids[grid_num].grid(geometry.grids[grid_num].index_dim[0]-1,
-					       j,z_val).emitted_energy[0][x])
-
-    y_val = 0;
-
-  while ((y_val == -1) && (j < geometry.grids[grid_num].index_dim[1]-1)) {
-    j++;
-    if ((ran_val > geometry.grids[grid_num].grid(geometry.grids[grid_num].index_dim[0]-1,
-						 j-1,z_val).emitted_energy[0][x]) &&
-	(ran_val <= geometry.grids[grid_num].grid(geometry.grids[grid_num].index_dim[0]-1,
-						  j,z_val).emitted_energy[0][x]))
-      y_val = j;
-  }
-  if (y_val == -1) {
-    cout << "Can't emitted photon from grid, random number of " << ran_val << " larger than anything y dim of designated grid." << endl;
-    exit(8);
-  }
-
-  // find x pixel
-  i = 0;
-  int x_val = -1;
-
-  // check if the we are in the first y column
-  if (ran_val <= geometry.grids[grid_num].grid(i,y_val,z_val).emitted_energy[0][x])
-    x_val = 0;
-
-  while ((x_val == -1) && (i < geometry.grids[grid_num].index_dim[0]-1)) {
-    i++;
-    if ((ran_val > geometry.grids[grid_num].grid(i-1,y_val,z_val).emitted_energy[0][x]) &&
-	(ran_val <= geometry.grids[grid_num].grid(i,y_val,z_val).emitted_energy[0][x]))
-      x_val = i;
-  }
-  if (x_val == -1) {
-    cout << "Can't emitted photon from grid, random number of " << ran_val << " larger than anything x dim of designated grid." << endl;
-    exit(8);
-  }
-
 #ifdef DEBUG_NPGS
   cout << "ran val & grid_cell vals = ";
   cout << x_val << " ";
