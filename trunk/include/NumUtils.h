@@ -507,15 +507,17 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
 /*       cout << Constant::PLANCKLIGHT/(Constant::BOLTZMAN*wave) << endl; */
 /*       cout << "C2 in bb: " << c2 << endl;  */
       typename vector <T2>::iterator _itbeg,_itend,_it;
+      typename vector <T>::iterator _itBB;
       //cout << "comp bb: " <<  c1 << " " << c2 << endl; 
-      vector <T> theBB;
+      vector <T> theBB(Temperature.size());
+      _itBB = theBB.begin();
       _itbeg = Temperature.begin();
       _itend = Temperature.end();
       int i=0; 
-      for (_it=_itbeg;_it!=_itend;++_it,++i) {
+      for (_it=_itbeg;_it!=_itend;++_it,++_itBB) {
 	//cout << "INBB 1: " << static_cast<T1>(wave) << " " << c1/pow((static_cast<T1>(wave)),5) << endl; 
 	//cout << (std::exp((c2/static_cast<T1>((*_it))))) << endl; 
-	theBB.push_back(c1/pow((wave),5)*(1.0/(std::exp(c2/(*_it)) - 1.0)));
+        *_itBB = c1/pow((wave),5)*(1.0/(std::exp(c2/(*_it)) - 1.0));
 	//cout << "IN BB: " << wave << " " << *_it << " "<<  theBB[i] << endl; 
       }
       return theBB;
@@ -532,13 +534,15 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*static_cast<T>(wave));
       typename vector <T2>::iterator _itbeg,_itend,_it;
       typename vector <T3>::iterator _itp;
+      typename vector <T>::iterator _itBB;
 
-      vector <T> theBB;
+      vector <T> theBB(Temperature.size());
+      _itBB = theBB.begin();
       _itbeg = Temperature.begin();
       _itend = Temperature.end();
       _itp = product.begin(); 
-      for (_it=_itbeg;_it!=_itend;++_it,++_itp) {
-	theBB.push_back((*_itp)*c1/pow((wave),5)*(1.0/(std::exp(c2/(*_it)) - 1.0)));	
+      for (_it=_itbeg;_it!=_itend;++_it,++_itp,++_itBB) {
+        *_itBB = (*_itp)*c1/pow((wave),5)*(1.0/(std::exp(c2/(*_it)) - 1.0));
       }
       return theBB;
     }
@@ -553,13 +557,15 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*static_cast<T>(wave));
       typename vector <T2>::iterator _itbeg,_itend,_it;
       typename vector <T3>::iterator _ita;
+      typename vector <T>::iterator _itBB;
 
-      vector <T> theBB;
+      vector <T> theBB(Temperature.size());
+      _itBB = theBB.begin();
       _itbeg = Temperature.begin();
       _itend = Temperature.end();
-      _ita = add.begin(); 
-      for (_it=_itbeg;_it!=_itend;++_it,++_ita) {
-	theBB.push_back( (c1/pow((wave),5)*(1.0/(std::exp(c2/(*_it)) - 1.0))) + *_ita);	
+      _ita = add.begin();
+      for (_it=_itbeg;_it!=_itend;++_it,++_ita,++_itBB) {
+        *_itBB = (c1/pow((wave),5)*(1.0/(std::exp(c2/(*_it)) - 1.0))) + *_ita;
       }
       return theBB;
     }
@@ -574,12 +580,15 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       T c1 = 2.0*Constant::PLANCK*pow(Constant::LIGHT,2);
       T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*Temperature);
       class vector <T1>::iterator _itbeg,_itend,_it;
+      class vector <T>::iterator _itBB;
 
-      vector <T> theBB;
+      vector <T> theBB(wave.size());
+      _itBB = theBB.begin();
       _itbeg = wave.begin();
       _itend = wave.end();
-      for (_it=_itbeg;_it!=_itend;++_it) 
-	theBB.push_back(c1/pow((*_it),5)*(1.0/(std::exp(c2/(*_it)) - 1.0)));
+      for (_it=_itbeg;_it!=_itend;++_it,++_itBB) {
+        *_itBB = c1/pow((*_it),5)*(1.0/(std::exp(c2/(*_it)) - 1.0));
+      }
       
       return theBB;
     }
@@ -595,13 +604,15 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*Temperature);
       class vector <T1>::iterator _itbeg,_itend,_it;
       class vector <T3>::iterator _itp; 
+      class vector <T>::iterator _itBB;
 
-      vector <T> theBB;
+      vector <T> theBB(wave.size());
+      _itBB = theBB.begin();
       _itbeg = wave.begin();
       _itend = wave.end();
       _itp = product.begin();
-      for (_it=_itbeg;_it!=_itend;++_it,++_itp) 
-	theBB.push_back((*_itp)*c1/pow((*_it),5)*(1.0/(std::exp(c2/(*_it)) - 1.0)));
+      for (_it=_itbeg;_it!=_itend;++_it,++_itp,++_itBB) 
+        *_itBB = (*_itp)*c1/pow((*_it),5)*(1.0/(std::exp(c2/(*_it)) - 1.0));
       
       return theBB;
     }
@@ -616,13 +627,14 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*Temperature);
       class vector <T1>::iterator _itbeg,_itend,_it;
       class vector <T3>::iterator _ita; 
+      class vector <T1>::iterator _itBB;
 
-      vector <T> theBB;
+      vector <T> theBB(wave.size());
       _itbeg = wave.begin();
       _itend = wave.end();
       _ita = add.begin();
-      for (_it=_itbeg;_it!=_itend;++_it,++_ita) 
-	theBB.push_back( (c1/pow((*_it),5)*(1.0/(std::exp(c2/(*_it)) - 1.0))) + *_ita);
+      for (_it=_itbeg;_it!=_itend;++_it,++_ita,++_itBB) 
+        *_itBB = (c1/pow((*_it),5)*(1.0/(std::exp(c2/(*_it)) - 1.0))) + *_ita;
       
       return theBB;
     }
@@ -832,6 +844,8 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
     int nRow ();
     int nCol ();
     int n3rd ();
+	
+	void get_xyz(int cell_num, int &n1_id, int &n2_id, int &n3_id);
     
   private: 
     // Keep track of how many elements we're allowed to have in each dimension. 
@@ -880,6 +894,20 @@ endl;
   
   // ****************************************************************************
 
+  // given the index of the cell, return the x, y and z indices
+  template <typename T> inline void Cube<T>::get_xyz(int cell_num, int &n1_id, int &n2_id, int &n3_id)
+  {
+    div_t div_result;
+    if (cell_num < 0 || cell_num > (int)this->size()) {
+      std::string ExceptionObject = "out_of_range Cube::get_xyz()"; 
+      throw std::out_of_range(ExceptionObject);
+    }
+    div_result = div(cell_num, _n2*_n1);
+    n3_id = div_result.quot;
+    div_result = div(div_result.rem, _n1);
+    n2_id = div_result.quot;
+    n1_id = div_result.rem;
+  }
 }
 
 #endif
