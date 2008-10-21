@@ -627,9 +627,10 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*Temperature);
       class vector <T1>::iterator _itbeg,_itend,_it;
       class vector <T3>::iterator _ita; 
-      class vector <T1>::iterator _itBB;
+      class vector <T>::iterator _itBB;
 
       vector <T> theBB(wave.size());
+      _itBB = theBB.begin();
       _itbeg = wave.begin();
       _itend = wave.end();
       _ita = add.begin();
