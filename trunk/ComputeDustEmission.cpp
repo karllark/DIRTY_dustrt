@@ -94,7 +94,7 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
 
     _size = GrainModel.Size(_cmp);
     // Loop over all sizes. 
-    for (uint _sz=0;_sz<_nsize;++_sz) { // Size loop
+    for (uint _sz=0;_sz<_nsize;++_sz,++_it) { // Size loop
 
       //cout << "Component " << _cmp << " size " << _sz << " " << _size[_sz] << endl; 
       _cabs = GrainModel.CAbs(_cmp,int(_sz));
@@ -107,9 +107,8 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
       // Equlibrium luminosity = C_abs*B
       EquilibriumLum[_sz] = NumUtils::prod_bbodyCGS<double>(_w,*_it,_cabs);
       
-      ++_it; 
-      _tlo = 0.3*(*(_it-1)); 
-      _thi = 3.0*(*(_it-1)); 
+      _tlo = 0.3*(*_it); 
+      _thi = 3.0*(*_it); 
 
       if (_dostochastic[_sz]) {	
 	
