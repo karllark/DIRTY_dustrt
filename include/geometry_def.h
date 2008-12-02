@@ -24,6 +24,7 @@
 #define NEW_PHOTON_DIFFUSE_FILE 3
 #define NEW_PHOTON_GRID 4
 #define NEW_PHOTON_DEXP_DISK 5
+#define NEW_PHOTON_POW_SPHERE 6
 
 // info defining a single grid (can be nested inside of other single grids)
 struct one_grid {
@@ -80,6 +81,14 @@ struct geometry_struct {
   int stellar_emit_n_xy;
   vector<double> stellar_emit_xy_vals;
   //  double stellar_emit_constant_xy;
+  
+  // power sphere variables
+  double pow_sphere_exponent;
+  double pow_sphere_inner_radius;
+  double pow_sphere_outer_radius;
+  double pow_sphere_constant1;
+  double pow_sphere_constant2;
+  double pow_sphere_constant3;
 
   int randomize_observer;  // randomize observer position to integrate over 4pi
 
