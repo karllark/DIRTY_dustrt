@@ -82,7 +82,8 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
   status = ComputeGrid(_enth,_denth,_temp,_tgrid,Temperature,Enthalpy,TMax,TMin,nBins); 
   idx = 1; 
   float MaxE = Constant::PLANCKLIGHT/wave[0]; 
-  while (_enth[idx]-_enth[0] < MaxE) ++idx; 
+  int idx_max = _tgrid.size() - 1;
+  while (_enth[idx]-_enth[0] < MaxE && idx < idx_max) ++idx; 
   TMax=_tgrid[idx]; 
   if (TMax < 1.5*TEq) { 
     if (TEq < 100.) TMax=1.5*TEq; else TMax=TEq+100.; 
@@ -103,6 +104,7 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
       _setup=false; 
   }
 
+  int loop_count = 0;
   // Convergence wrapper... 
   while (!converged) { // convergence bracket
  
@@ -206,6 +208,41 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
       OnePass=true; 
     } else converged=true;  
 
+    if (loop_count >= 100) {
+      cout << "** Breaking the convergence loop in StochasticHeating(): loop " << loop_count << endl;
+      cout << "** Input Parameters:" << endl;
+      cout << "wave:\t";
+      for (uint i = 0; i < wave.size(); i++) cout << wave[i] << ' ';
+      cout << endl;
+      cout << "cJprod:\t";
+      for (uint i = 0; i < cJprod.size(); i++) cout << cJprod[i] << ' ';
+      cout << endl;
+      cout << "cabs:\t";
+      for (uint i = 0; i < cabs.size(); i++) cout << cabs[i] << ' ';
+      cout << endl;
+      cout << "Temperature:\t";
+      for (uint i = 0; i < Temperature.size(); i++) cout << Temperature[i] << ' ';
+      cout << endl;
+      cout << "Enthalpy:\t";
+      for (uint i = 0; i < Enthalpy.size(); i++) cout << Enthalpy[i] << ' ';
+      cout << endl;
+      cout << "EAbs:\t" << EAbs << endl;
+      cout << "TMin:\t" << TMin << endl;
+      cout << "TMax:\t" << TMax << endl;
+      cout << "TEq:\t" << TEq << endl;
+      cout << "** Calculation variables:" << endl;
+      cout << "integrand:\t";
+      for (uint i = 0; i < integrand.size(); i++) cout << integrand[i] << ' ';
+      cout << endl;
+      cout << "Eemit:\t" << Eemit << endl;
+      cout << "tol:\t" << tol << endl;
+      cout << "thistol:\t" << thistol << endl;
+      cout << "lasttol:\t" << lasttol << endl;
+      cout << "nBins:\t" << nBins << endl;
+      cout << "maxBins:\t" << maxBins << endl;
+      exit(11);
+    }
+    ++loop_count;
   }
   return integrand; // this is C(lam)*Sum_T (P(T)*B(T,lam)) ~ stochastic L(lam) 
 
