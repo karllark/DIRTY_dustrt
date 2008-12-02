@@ -232,6 +232,40 @@ void setup_dust_grid (ConfigFile& param_data,
   } else if (geometry.source_type == "dexp_disk") {
     geometry.solid_angle = 4.*M_PI;
     geometry.new_photon_source_type = NEW_PHOTON_DEXP_DISK;
+	
+  } else if (geometry.source_type == "pow_sphere") {
+  
+    geometry.solid_angle = 4.*M_PI;
+    geometry.new_photon_source_type = NEW_PHOTON_POW_SPHERE;
+    
+    double alpha = param_data.FValue("Geometry","pow_sphere_exponent");
+    // if (isnan(alpha)) alpha = 0.;
+    check_input_param("pow_sphere_exponent", alpha, -100., 100.);
+    geometry.pow_sphere_exponent = alpha;
+    
+    double rmax = param_data.FValue("Geometry","radius");
+    double r1 = param_data.FValue("Geometry","pow_sphere_inner_radius");
+    // if (isnan(r1)) r1 = 0.;
+    check_input_param("pow_sphere_inner_radius", r1, 0., rmax);
+    geometry.pow_sphere_inner_radius = r1;
+    
+    double r2 = param_data.FValue("Geometry","pow_sphere_outer_radius");
+    // if (isnan(r2)) r2 = rmax;
+    check_input_param("pow_sphere_outer_radius", r2, r1, rmax);
+    geometry.pow_sphere_outer_radius = r2;
+    
+    if (alpha == -3.) {
+      cout << "pow_sphere: exponent == -3 case not implemented (need logarithm)" << endl;
+      exit(8);
+    } else if ((alpha < -3.) && (r1 == 0.)) {
+      cout << "pow_sphere: exponent < -3 and outer_radius == 0 (infinity at origin)" << endl;
+      exit(8);
+    }
+
+    geometry.pow_sphere_constant1 = pow(r2, 3.0+alpha) - pow(r1, 3.0+alpha);
+    geometry.pow_sphere_constant2 = pow(r1, 3.0+alpha);
+    geometry.pow_sphere_constant3 = 1.0/(3.0+alpha);
+    
   } else {
     cout << "Setup for input source type (" << geometry.source_type << ") not found [NEW CODE NEEDED]." << endl;
     exit(8);

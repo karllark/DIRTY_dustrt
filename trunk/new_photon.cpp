@@ -29,6 +29,9 @@ void new_photon (photon_data& photon,
     case NEW_PHOTON_DEXP_DISK:
       new_photon_dexp_disk(photon, geometry, random_obj);
       break;
+    case NEW_PHOTON_POW_SPHERE:
+      new_photon_pow_sphere(photon, geometry, random_obj);
+      break;
     default: 
       cout << "new_photon for input source type (" << geometry.source_type << ") not found [NEW CODE NEEDED]." << endl;
       exit(8);

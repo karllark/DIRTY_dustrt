@@ -20,7 +20,7 @@ extern void new_photon_diffuse_source (photon_data& photon,
 				       geometry_struct& geometry,
 				       random_dirty random_obj);
 
-// new photon for gird sources
+// new photon for grid sources
 extern void new_photon_grid_source (photon_data& photon,
 				    geometry_struct& geometry,
 				    runinfo_struct& runinfo,
@@ -30,5 +30,10 @@ extern void new_photon_grid_source (photon_data& photon,
 extern void new_photon_dexp_disk (photon_data& photon,
 				  geometry_struct& geometry,
 				  random_dirty random_obj);
+
+// new photon for power sphere
+extern void new_photon_pow_sphere (photon_data& photon,
+				     geometry_struct& geometry,
+				     random_dirty random_obj);
 
 #endif
