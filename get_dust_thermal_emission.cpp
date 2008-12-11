@@ -71,6 +71,9 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   vector<double> tmp_j_for_interpol;
   vector<double> tmp_new_j_from_interpol;
 
+  int cur_plane_good = 0;
+  int good_enough_photons = 10;
+
   // loop over all the defined grids
   for (m = 0; m < int(geometry.grids.size()); m++) {
 
@@ -78,9 +81,12 @@ void get_dust_thermal_emission (geometry_struct& geometry,
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
       for (j = 0; j < geometry.grids[m].index_dim[1]; j++) {
 
-	if (runinfo.verbose >= 1)
-	  cout << "working on dust emission grid (m,k,j) = " << m << " " << k << " " << j << endl;
+	if (runinfo.verbose >= 1) {
+	  cout << "working on dust emission grid (m,k,j) = " << m << " " << k << " " << j;
+	  cout.flush();
+	}
 
+	cur_plane_good = 0;
 	for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
 
 	  // setup emitted energy array
@@ -107,7 +113,8 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 // 	    tmp_wave[x] = double(runinfo.wavelength[x]);
 	    tmp_abs_energy[x] = geometry.grids[m].grid(i,j,k).absorbed_energy[x]*4.*Constant::PI*runinfo.ave_C_abs[x];
 	    if (tmp_abs_energy[x] > max_abs_energy) max_abs_energy = tmp_abs_energy[x];
-	    if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0.) tot_nonzero++;
+	    //	    if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0.) tot_nonzero++;
+	    if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x] >= good_enough_photons) tot_nonzero++;
 	  }
  	  tot_abs_energy = NumUtils::integrate<double>(tmp_wave,tmp_abs_energy)*geometry.grids[m].grid(i,j,k).num_H;
 		
@@ -131,7 +138,8 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 #ifdef DEBUG_GDTE
  		cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
 #endif
-		if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0) {
+// 		if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0) {
+		if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x] >= good_enough_photons) {
 		  tmp_wave_for_interpol.push_back(double(runinfo.wavelength[x]));
 		  tmp_j_for_interpol.push_back(double(geometry.grids[m].grid(i,j,k).absorbed_energy[x]));
 		}
@@ -179,6 +187,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 #ifdef DEBUG_GDTE
 	    cout << "entering ComputeDustEmission..." << endl;
 #endif
+	    cur_plane_good++;
 	    ComputeDustEmission(geometry.grids[m].grid(i,j,k).absorbed_energy,
 				CurGrainModel, 
 				geometry.grids[m].grid(i,j,k).emitted_energy,
@@ -232,6 +241,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 // 	    cout << "not enough energy (min) = " << tot_abs_energy << " (" << min_enough_energy << ")" << endl;
 	  }
 	}
+	cout << "; " << cur_plane_good << endl;
       }
     
   }

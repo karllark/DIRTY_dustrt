@@ -95,14 +95,53 @@ void get_sed_parameters (ConfigFile& param_data,
       exit(8);
     }
 
+    // bin the input SED onto the model wavelength grid
+    // to ensure all the SED energy is used in the model
+    vector<float>::iterator closeIter;
+    vector<double> temp_sed;
+    vector<int> temp_sed_npts;
+    temp_sed.resize(runinfo.wavelength.size(),0.0);
+    temp_sed_npts.resize(runinfo.wavelength.size(),0);
+    for (i = 0; i < luminosity.size(); i++) {
+      if (wavelength[i] >= runinfo.wavelength[0]) {
+	closeIter = find_if(runinfo.wavelength.begin(),runinfo.wavelength.end(),bind2nd(greater_equal<float>(),static_cast<float>(wavelength[i])));
+	uint closeIndex = distance(runinfo.wavelength.begin(),closeIter);
+	if (closeIndex > 0) {
+	  if ((runinfo.wavelength[closeIndex] - wavelength[i]) > (wavelength[i] - runinfo.wavelength[closeIndex-1])) closeIndex--;
+	}
+// 	cout << i << " ";
+// 	cout << wavelength[i] << " ";
+// 	cout << runinfo.wavelength[closeIndex] << " "; 
+// 	cout << (wavelength[i] - runinfo.wavelength[closeIndex-1]) << " ";
+// 	cout << (runinfo.wavelength[closeIndex] - wavelength[i]) << " ";
+// 	cout << endl;
+	temp_sed[closeIndex] += luminosity[i];
+	temp_sed_npts[closeIndex]++;
+      }
+    }
+
     // get the runinfo.wavelength in double form for interpol function
     vector<double> run_wave;
-    for (i = 0; i < runinfo.wavelength.size(); i++) 
+    vector<double> temp_sed_nozero;
+    vector<double> temp_sed_nozero_wave;
+    for (i = 0; i < runinfo.wavelength.size(); i++) {
       run_wave.push_back(double(runinfo.wavelength[i]));
-    
+      if (temp_sed_npts[i] > 0) {
+	temp_sed_nozero.push_back(temp_sed[i]/temp_sed_npts[i]);
+	temp_sed_nozero_wave.push_back(runinfo.wavelength[i]);
+      }
+    }
+
     // interpolate SED onto wavelength grid
     // numbers are power law coefficents for extrapolation on the left & right sides
-    runinfo.sed_lum = interpol(luminosity, wavelength, run_wave,2,-2);
+    runinfo.sed_lum = interpol(temp_sed_nozero, temp_sed_nozero_wave, run_wave,2,-2);
+
+//     for (i = 0; i < runinfo.wavelength.size(); i++) {
+//       cout << runinfo.wavelength[i] << " ";
+//       cout << runinfo.sed_lum[i] << " ";
+//       cout << endl;
+//     }
+//     exit(0);
   }    
 
   if (runinfo.do_global_output) {

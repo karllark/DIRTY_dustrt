@@ -33,26 +33,38 @@ void setup_absorbed_energy_grid (geometry_struct& geometry,
 	for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
 	  if (doing_emission) {
 	    // save the existing value of the radiation field (needed for dust or ere emission)
-	    if (doing_emission == 1) 
+	    if (doing_emission == 1) {
 	      geometry.grids[m].grid(i,j,k).save_radiation_field_density[geometry.abs_energy_wave_index] =
 		geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index];
+	      geometry.grids[m].grid(i,j,k).save_radiation_field_density_num_photons[geometry.abs_energy_wave_index] =
+		geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[geometry.abs_energy_wave_index];
+	    }
 	    // zero out the current absorbed energy value
 	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] = 0.0;
+	    geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[geometry.abs_energy_wave_index] = 0;
 	  } else {
 	    // if this is the first time or if memory storage requested
 	    // then push zero into the absorbed_energy variable in each grid cell
 	    if (geometry.abs_energy_storage_type == 1)
 	      if (!geometry.abs_energy_grid_initialized) {
 		geometry.grids[m].grid(i,j,k).absorbed_energy.push_back(0.0);
+		geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons.push_back(0);
 		geometry.grids[m].grid(i,j,k).save_radiation_field_density.push_back(0.0);
-	      } else
+		geometry.grids[m].grid(i,j,k).save_radiation_field_density_num_photons.push_back(0);
+	      } else {
 		geometry.grids[m].grid(i,j,k).absorbed_energy[0] = 0.0;
+		geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[0] = 0;
+	      }
 	    else
 	      if (!geometry.abs_energy_grid_initialized) {
 		geometry.grids[m].grid(i,j,k).absorbed_energy.resize(runinfo.wavelength.size(),0.0);
+		geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons.resize(runinfo.wavelength.size(),0);
 		geometry.grids[m].grid(i,j,k).save_radiation_field_density.resize(runinfo.wavelength.size(),0.0);
-	      } else
+		geometry.grids[m].grid(i,j,k).save_radiation_field_density_num_photons.resize(runinfo.wavelength.size(),0);
+	      } else {
 		geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] = 0.0;
+		geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[geometry.abs_energy_wave_index] = 0;
+	      }
 	  }
 	}
   }

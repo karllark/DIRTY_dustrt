@@ -75,6 +75,7 @@ void scatter_photon (geometry_struct& geometry,
   float abs_weight = (1. - geometry.albedo)*photon.scat_weight;
   for (i = 0; i < photon.path_cur_cells; i++) {
     geometry.grids[photon.path_pos_index[0][i]].grid(photon.path_pos_index[1][i],photon.path_pos_index[2][i],photon.path_pos_index[3][i]).absorbed_energy[geometry.abs_energy_wave_index] += abs_weight*(photon.path_tau[i]/photon.target_tau);
+    geometry.grids[photon.path_pos_index[0][i]].grid(photon.path_pos_index[1][i],photon.path_pos_index[2][i],photon.path_pos_index[3][i]).absorbed_energy_num_photons[geometry.abs_energy_wave_index]++;
 #ifdef DEGUG_SP
     cout << "path: ";
     cout << i << " ";

@@ -88,80 +88,16 @@ int main(int argc, char* argv[])
   cout.flush();
 #endif
 
-  // loop over all wavelengths
-  int i;
-  for (i = 0; i < runinfo.n_waves; i++) {
-    if (runinfo.verbose >= 1) {
-      cout << "working on wavelength [micron] = " << runinfo.wavelength[i]*Constant::CM_UM << endl;
-      cout << "tau = " << runinfo.tau_to_tau_ref[i]*geometry.tau << " ";
-      cout << "albedo = " << runinfo.albedo[i] << " ";
-      cout << "g = " << runinfo.g[i] << " ";
-      cout << endl;
-    }
-
-    // setup/(re)initialize absorbed energy grid
-    setup_absorbed_energy_grid(geometry, runinfo, i, 0);
-
-//     // check the absorbed energy grid (temp needed as energy not conserved)
-//     // KDG - 23 Mar 2008
-//     check_absorbed_energy_grid(geometry, runinfo);
-
-    // setup dust grains for this wavelength
-    get_dust_scat_parameters(i, runinfo, geometry);
-
-    // do RT part
-#ifdef DEBUG_DIRTY
-    cout << "rt: rt begin; ";
-    cout.flush();
-#endif
-    radiative_transfer(geometry, runinfo, output, photon, random_obj);
-#ifdef DEBUG_DIRTY
-    cout << "rt: rt end; ";
-    cout.flush();
-#endif
-
-    // output RT results
-    output_results(output, geometry, runinfo, i);
-
-//     // check the absorbed energy grid (temp needed as energy not conserved)
-//     // KDG - 23 Mar 2008
-//     cout << "**test2**" << endl;
-//     check_absorbed_energy_grid(geometry, runinfo);
-
-    // store the result (either in memory or on disk)
-    // remember to zero out the absorbed energy grid
-    if ((runinfo.do_dust_emission) || (runinfo.do_ere_emission)) {
-#ifdef DEBUG_DIRTY
-      cout << endl;
-      cout << "wave [cm] = " << geometry.wavelength << endl;
-      cout << "te: saeg start; ";
-      cout.flush();
-#endif
-      store_absorbed_energy_grid(geometry, runinfo, output, i, 0);
-#ifdef DEBUG_DIRTY
-      cout << "te: saeg end; ";
-      cout.flush();
-#endif
-    }
-
-//     // check the absorbed energy grid (temp needed as energy not conserved)
-//     // KDG - 23 Mar 2008
-// 	check_absorbed_energy_grid(geometry, runinfo);
-//     if (i == 1) exit(8);
-//  	exit(8);
-  }
-
-  // check the absorbed energy grid (temp needed as energy not conserved)
-  // KDG - 23 Mar 2008
-//   check_absorbed_energy_grid(geometry, runinfo);
-
-  // do gas emission (iteration needed as the gas provides 
-  //    an additional opacity source)
+  // do the radiative transfer over all the wavelengths
+  radiative_transfer_many_waves(geometry, runinfo, output, photon, random_obj, REG_RT, 0);
 
 #ifdef DEBUG_DIRTY
   cout << "RT done; ";
   cout.flush();
 #endif
+
+  // do gas emission (iteration needed as the gas provides 
+  //    an additional opacity source)
 
   // set this here to allow the ERE part to do the initialization
   geometry.emitted_energy_grid_initialized = 0;
@@ -192,71 +128,11 @@ int main(int argc, char* argv[])
 #endif
     setup_emitted_grid_for_montecarlo(geometry, runinfo, CurGrainModel);
       
-    // do ERE RT: loop over all wavelengths
-    for (i = 0; i < runinfo.n_waves; i++) {
-
-      if (runinfo.verbose >= 1)
-	cout << "working on ere wavelength [micron] = " << runinfo.wavelength[i]*Constant::CM_UM << endl;
-
-#ifdef DEBUG_DIRTY
-      cout << endl;
-      cout << "i = " << i << endl;
-      cout << "emitted_lum = " << runinfo.emitted_ere_lum[0][i] << endl;
-#endif
-
-      if (runinfo.emitted_ere_lum[0][i] > 1e-3*runinfo.out_sed_lum[0][i]*runinfo.sed_lum[i]) {
-
-#ifdef DEBUG_DIRTY
-	cout << "doing ERE RT" << endl;
-
-	cout << "ee: saeg start; ";
-	cout.flush();
-#endif
-	// setup/(re)initialize absorbed energy grid
-	setup_absorbed_energy_grid(geometry, runinfo, i, 1);
-#ifdef DEBUG_DIRTY
-	cout << "ee: saeg done; ";
-	cout.flush();
-#endif
-      
-#ifdef DEBUG_DIRTY
-	cout << "ee: gdsp start; ";
-	cout.flush();
-#endif
-	// setup dust grains for this wavelength
-	get_dust_scat_parameters(i, runinfo, geometry);
-#ifdef DEBUG_DIRTY
-	cout << "ee: gdsp end; ";
-	cout.flush();
-#endif
-	
-#ifdef DEBUG_DIRTY
-	cout << "ee: rt start; ";
-	cout.flush();
-#endif
-	// do RT part
-	radiative_transfer(geometry, runinfo, ere_output, photon, random_obj);
-#ifdef DEBUG_DIRTY
-	cout << "ee: rt end; ";
-	cout.flush();
-#endif
-	
-	// output RT results
-	output_results(ere_output, geometry, runinfo, i);
-	
-	// store the result (either in memory or on disk)
-	// remember to zero out the absorbed energy grid
-	store_absorbed_energy_grid(geometry, runinfo, ere_output, i, 1);
-      }
-    }
+    // do the ERE radiative transfer over all the wavelengths
+    radiative_transfer_many_waves(geometry, runinfo, ere_output, photon, random_obj, ERE_RT, 1);
   }
-//   emit_ere_photons();
 
   // start RT+DE iteration (only if DE flag set)
-  //    do DE part
-  //    do DE/RT part
-  // iterate until converged for max iterations reached
-
   int iter_num = 1;
   int iter_max = 10;
   int iter_done = 0;
@@ -315,63 +191,8 @@ int main(int argc, char* argv[])
     // setup the grid emission
     setup_emitted_grid_for_montecarlo(geometry, runinfo, CurGrainModel);
       
-    // loop over all wavelengths
-    for (i = 0; i < runinfo.n_waves; i++) {
-
-      if (runinfo.verbose >= 1)
-	cout << "working on wavelength [micron] = " << runinfo.wavelength[i]*Constant::CM_UM << endl;
-
-#ifdef DEBUG_DIRTY
-      cout << endl;
-      cout << "i = " << i << endl;
-      cout << "emitted_lum = " << runinfo.emitted_lum[0][i] << endl;
-#endif
-
-      if (runinfo.emitted_lum[0][i] > 1e-3*runinfo.out_sed_lum[0][i]*runinfo.sed_lum[i]) {
-
-#ifdef DEBUG_DIRTY
-	cout << "doing RT" << endl;
-
-	cout << "te: saeg start; ";
-	cout.flush();
-#endif
-	// setup/(re)initialize absorbed energy grid
-	setup_absorbed_energy_grid(geometry, runinfo, i, iter_num);
-#ifdef DEBUG_DIRTY
-	cout << "te: saeg done; ";
-	cout.flush();
-#endif
-      
-#ifdef DEBUG_DIRTY
-	cout << "te: gdsp start; ";
-	cout.flush();
-#endif
-	// setup dust grains for this wavelength
-	get_dust_scat_parameters(i, runinfo, geometry);
-#ifdef DEBUG_DIRTY
-	cout << "te: gdsp end; ";
-	cout.flush();
-#endif
-	
-#ifdef DEBUG_DIRTY
-	cout << "te: rt start; ";
-	cout.flush();
-#endif
-	// do RT part
-	radiative_transfer(geometry, runinfo, de_output, photon, random_obj);
-#ifdef DEBUG_DIRTY
-	cout << "te: rt end; ";
-	cout.flush();
-#endif
-	
-	// output RT results
-	output_results(de_output, geometry, runinfo, i);
-	
-	// store the result (either in memory or on disk)
-	// remember to zero out the absorbed energy grid
-	store_absorbed_energy_grid(geometry, runinfo, de_output, i, iter_num);
-      }
-    }
+    // do the DE radiative transfer over all the wavelengths
+    radiative_transfer_many_waves(geometry, runinfo, de_output, photon, random_obj, DE_RT, iter_num);
 
     // determine if energy is conserved well enough or if another
     // iteration is needed due to dust self-absorption

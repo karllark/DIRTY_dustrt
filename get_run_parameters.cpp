@@ -86,6 +86,16 @@ void get_run_parameters (ConfigFile& param_data,
   }
   runinfo.total_emitted_energy = 0.0;  // need to zero out so the first iteration always happens (measurement is a delta)
 
+  // now see if RT check converged is set
+  runinfo.rt_check_converged = param_data.IValue("Run","rt_check_converged");
+  if (runinfo.rt_check_converged == -99) runinfo.rt_check_converged = 0;  // set to no if not initially set
+  check_input_param("rt_check_converged",runinfo.rt_check_converged,0,1);
+
+  if (runinfo.rt_check_converged) {
+    runinfo.rt_converge_target = param_data.FValue("Run","rt_converge_target");
+    check_input_param("rt_converge_target",runinfo.rt_converge_target,0.,1.);
+  }
+
   // output info
 
   runinfo.do_image_output = param_data.IValue("Run","do_image_output");

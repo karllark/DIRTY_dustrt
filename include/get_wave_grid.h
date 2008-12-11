@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include "ConfigFile.h"
+#include "DataFile.h"
 #include "Constants.h"
 #include "runinfo_def.h"
 #include "check_input_param.h"

@@ -24,6 +24,7 @@
 #include "random_dirty.h"
 #include "ConfigFile.h"
 #include "GrainModel.h"   
+#include "rt_types.h"
 
 //**********************************************************************
 // external function definitions
@@ -50,40 +51,14 @@ extern void setup_dust_grid (ConfigFile& param_data,
 			     photon_data& photon,
 			     random_dirty& random_obj);
 
-// get the dust scattering parameters for the current wavelength
-extern void get_dust_scat_parameters (int i,
-				      runinfo_struct& runinfo,
-				      geometry_struct& geometry);
-
-// do the radiative transfer
-extern void radiative_transfer (geometry_struct& geometry,
-				runinfo_struct& runinfo,
-				output_struct& output,
-				photon_data& photon,
-				random_dirty random_obj);
-
-// output the results of the calculations
-extern void output_results (output_struct& output,
-			    geometry_struct& geometry,
-			    runinfo_struct& runinfo,
-			    int index);
-
-// setup absorbed energy grid
-extern void setup_absorbed_energy_grid (geometry_struct& geometry,
-					runinfo_struct& runinfo,
-					int wave_index,
-					int doing_dust_emission);
-
-// store absorbed energy grid (memory or disk)
-extern void store_absorbed_energy_grid (geometry_struct& geometry,
-					runinfo_struct& runinfo,
-					output_struct& output,
-					int index,
-					int doing_dust_emission);
-
-// check absorbed energy grid
-extern void check_absorbed_energy_grid (geometry_struct& geometry,
-					runinfo_struct& runinfo);
+// do the radiative transfer over all the wavelengths
+extern void radiative_transfer_many_waves (geometry_struct& geometry,
+					   runinfo_struct& runinfo,
+					   output_struct& output,
+					   photon_data& photon,
+					   random_dirty random_obj,
+					   int rt_type,
+					   int iter_num);
 
 // setup the ERE dust emission output
 extern void setup_ere_dust_emission_output (output_struct& ere_output, 

@@ -29,6 +29,9 @@ struct runinfo_struct {
   int n_emission_grain_types;  // number of grain emission types
   float energy_conserve_target;  // energy conservation target
 
+  int rt_check_converged;  // switch to see if we should check for rt convergence
+  float rt_converge_target; // target for rt convergance (fractional for total scattered)
+
   int empir_dust;  // set to 1 if empirical dust properties being used
   int model_dust;  // set to 1 if dust grain model properties being used
   int n_waves;
