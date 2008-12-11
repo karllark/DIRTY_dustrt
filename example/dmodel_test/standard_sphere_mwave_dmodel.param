@@ -35,7 +35,7 @@ wave_max=5000.
 wave_resolution=2.
 
 [Model Book Keeping]
-Path to Dust Properties=/home/kgordon/Dirty_v2/Dust/
+Path to Dust Properties=/home/misselt/Science/Dust/
 Cross Section SubDir=OpticalProperties/CrossSections/
 Calorimetry SubDir=OpticalProperties/Calorimetry/
 Model SubDir=Models/
@@ -47,7 +47,7 @@ ere_excite_wave=0.45
 
 [SED]
 type=ssp_file
-sed_file=/home/kgordon/Dirty_v2/SEDs/F98_p00_c_10.dat
+sed_file=/home/misselt/dirty/SEDs/F98_p00_c_10.dat
 sfr_or_mass=1.
 
 [Run]

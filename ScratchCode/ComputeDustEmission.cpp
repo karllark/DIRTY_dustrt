@@ -94,7 +94,7 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
 
     _size = GrainModel.Size(_cmp);
     // Loop over all sizes. 
-    for (uint _sz=0;_sz<_nsize;++_sz) { // Size loop
+    for (uint _sz=0;_sz<_nsize;++_sz,++_it) { // Size loop
 
       //cout << "Component " << _cmp << " size " << _sz << " " << _size[_sz] << endl; 
       _cabs = GrainModel.CAbs(_cmp,int(_sz));
@@ -103,36 +103,29 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
       // Get equilibrium temperature.  Return emitted energy as well since it's used 
       // in stochastic calculation. 
       *_it = EqTemp<float>(_w,J,_cabs,EAbs,((_tlo<0)?1.0:_tlo),((_thi>2500.0)?2500.0:_thi));
+
       // Equlibrium luminosity = C_abs*B
-      //cout << "calling eq: " << endl; 
       EquilibriumLum[_sz] = NumUtils::prod_bbodyCGS<double>(_w,*_it,_cabs);
-      //cout << "back from eq " << endl; 
-      ++_it; 
-      _tlo = 0.3*(*(_it-1)); 
-      _thi = 3.0*(*(_it-1)); 
+      
+      _tlo = 0.3*(*_it); 
+      _thi = 3.0*(*_it); 
 
       if (_dostochastic[_sz]) {	
 	
 	// Since Enthalpy and CalTemp will change as we generate transition matrix,
 	// regenerate at each size/cmp pair.
 	_Enthalpy = GrainModel.Enthalpy(_sz,_cmp); 
-	_CalTemp = GrainModel.CalTemp(_cmp);       
-	
+	_CalTemp = GrainModel.CalTemp(_cmp);       	
 	// Compute absorptive and radiative timescales to help shut off stochastic. 
 	tau_abs = HeatUtils::getTauAbs(J,_cabs,_w,mpe); 
 	Tu = HeatUtils::getTmean(_CalTemp,_Enthalpy,mpe); 
 	tau_rad = HeatUtils::getTauRad(_cabs,_w,mpe,Tu); 
 
-	if (tau_abs < tau_rad) {   // Turn off stochastic heating for this and all subsequent sizes. 
-	  //cout << "Turning off stochastic heating for Component " << _cmp << " size " << _sz << " " << _size[_sz] << endl;
+	if (tau_abs < 10*tau_rad) {   // Turn off stochastic heating for this and all subsequent sizes. 
 	  transform(_dostochastic.begin()+_sz,_dostochastic.end(),_dostochastic.begin()+_sz,
 		    bind1st(multiplies<bool>(),false));
 	} else { // Compute StochasticLum, zero out Eq. 
-	  //cout << "Tmin, TMax " << TMin << " " << TMax << endl; 
-	  //exit(8);
-	  //cout << "calling stochastic" << endl; 
 	  StochasticLum[_sz] = StochasticHeating(_w,_cJprod,_cabs,_CalTemp,_Enthalpy,EAbs,TMin,TMax,*_it); 
-	  //cout << "back from stochastic" << endl; 
 	  EquilibriumLum[_sz].resize(_nw,0.0);  
 	}  
       } else StochasticLum[_sz].resize(_nw,0.0);  // Zero stochastic so we have zero's when we don't do it.  
@@ -144,7 +137,7 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
     _integrand.resize(_nsize); 
     _integrand1.resize(_nsize); 
     _norm=GrainModel.getNormalization(_cmp);
-    //cout << _norm << endl ;
+    
     _size = GrainModel.Size(_cmp);
     _sizeDist = GrainModel.getSizeDistribution(_cmp);
     _iteec = EmmittedEnergy[2*_cmp+1].begin(); // component equilibrium

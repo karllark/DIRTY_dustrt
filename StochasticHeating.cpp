@@ -29,6 +29,7 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
   bool lastincrease=true; 
   bool OnePass=false; 
   int nBins=50; 
+  vector <double> _ExceedBins(1); 
   
   float oldTMax = 0.0;
   float oldTMin = 0.0; 
@@ -141,6 +142,8 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
 	oldTMin = TMin; 
 	oldTMax = TMax; 
 	idx = nBins-1; 
+
+	// Work on upper bounds
 	if (_P[idx] == 0.0) { 
 	  while (_P[idx] == 0.0) --idx; 
 	  if (idx < 0) { 
@@ -173,6 +176,7 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
 	  IncreaseBins=true; 
 	}
 	
+	// set lower bounds
 	idx=0; 
 	if (_P[idx] < Ptol) { 
 	  while (_P[idx] < Ptol) ++idx; 
@@ -198,7 +202,9 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
 	  if (thistol > tol_max_bins) { // still not converged well enough
 	    
 	    cout << EAbs << " " << Eemit << " " << thistol << endl; 
-	    exit(8); 
+	    for (int i=0;i<wave.size();i++) cout << wave[i] << " " << cabs[i] << " " << cJprod[i] << endl;
+	    _ExceedBins[0]=-99;
+	    return _ExceedBins; 
 	  } else {
 	    cout << "but close enough (tol_max_bins = " << tol_max_bins << "; tol = " << thistol << endl;
 	    converged=true;
