@@ -31,19 +31,58 @@ void radiative_transfer (geometry_struct& geometry,
   cout.flush();
 #endif
 
-  // TBD: add code to dynamically determine if enough photons have been
-  //      run depending on the output quantitity desired
-  for (i = 0; i < geometry.n_photons; i++) {
+  i = 0;
+  int done_rt = 0;
+  double total_stellar_weight_err = 0.0;  
+  double total_scattered_weight_err = 0.0;  
+  while ((i < geometry.n_photons) && (!done_rt)) {
+    if ((i > 0) && ((i % (geometry.n_photons/20)) == 0) && (runinfo.rt_check_converged)) {
+      // compute total stellar weight uncertainty
+      // first compute the uncertainty on the average weight of a single stellar photon
+      if (output.outputs[0].total_num_photons > 0)
+	total_stellar_weight_err = 
+	  output.outputs[0].total_stellar_weight_x2/output.outputs[0].total_num_photons -
+	  pow(output.outputs[0].total_stellar_weight/output.outputs[0].total_num_photons,2);
+      if (total_stellar_weight_err > 0.0)
+	total_stellar_weight_err = sqrt(total_stellar_weight_err/output.outputs[0].total_num_photons);
+      else
+	total_stellar_weight_err = 0.0;
+      // this converts to a fractional uncertainty which is the same as the
+      // fractional uncertainty on the total stellar weight
+      total_stellar_weight_err /= output.outputs[0].total_stellar_weight/output.outputs[0].total_num_photons;
+
+      // compute total scattered weight uncertainty
+      // first compute the uncertainty on the average weight of a single scattered photon
+      if (output.outputs[0].total_num_photons > 0)
+	total_scattered_weight_err = 
+	  output.outputs[0].total_scattered_weight_x2/output.outputs[0].total_num_scattered_photons -
+	  pow(output.outputs[0].total_scattered_weight/output.outputs[0].total_num_scattered_photons,2);
+      if (total_scattered_weight_err > 0.0)
+	total_scattered_weight_err = sqrt(total_scattered_weight_err/output.outputs[0].total_num_scattered_photons);
+      else
+	total_scattered_weight_err = 0.0;
+      // this converts to a fractional uncertainty which is the same as the
+      // fractional uncertainty on the total scattered weight
+      total_scattered_weight_err /= output.outputs[0].total_scattered_weight/output.outputs[0].total_num_scattered_photons;
+
+      if ((total_stellar_weight_err < runinfo.rt_converge_target) && (total_scattered_weight_err < runinfo.rt_converge_target)) done_rt = 1;
+
+    }
+      
+
     // print a status statement if asked
     if (runinfo.verbose >= 1) {
-      if (((geometry.n_photons > 100) && ((i % (geometry.n_photons/20)) == 0))) {
+      if (((geometry.n_photons > 100) && ((i % (geometry.n_photons/20)) == 0)) && (i > 0)) {
 	//|| ((i >= 25650) && (i <= 34200))) {
 	cout << "current # = " << i;
 	cout << " stel sl = " << output.outputs[0].total_stellar_weight/output.outputs[0].total_num_photons;
 	cout << " scat sl = " << output.outputs[0].total_scattered_weight/output.outputs[0].total_num_photons;
+	if (runinfo.rt_check_converged)
+	  cout << "(" << total_scattered_weight_err << ")";
 	cout << " ave 1st tau = " << output.outputs[0].ave_first_tau/output.outputs[0].total_num_photons;
 	cout << endl;
       }
+
     }
     // start the photon at the star position
 #ifdef DEBUG_RT
@@ -206,6 +245,7 @@ void radiative_transfer (geometry_struct& geometry,
 #endif
     }
     
+    i++;
   }
 
 }
