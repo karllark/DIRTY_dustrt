@@ -121,11 +121,15 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
 	Tu = HeatUtils::getTmean(_CalTemp,_Enthalpy,mpe); 
 	tau_rad = HeatUtils::getTauRad(_cabs,_w,mpe,Tu); 
 
-	if (tau_abs < tau_rad) {   // Turn off stochastic heating for this and all subsequent sizes. 
+	if (tau_abs < 10*tau_rad) {   // Turn off stochastic heating for this and all subsequent sizes. 
 	  transform(_dostochastic.begin()+_sz,_dostochastic.end(),_dostochastic.begin()+_sz,
 		    bind1st(multiplies<bool>(),false));
 	} else { // Compute StochasticLum, zero out Eq. 
 	  StochasticLum[_sz] = StochasticHeating(_w,_cJprod,_cabs,_CalTemp,_Enthalpy,EAbs,TMin,TMax,*_it); 
+	  if (StochasticLum[_sz][0] == -99) { 
+	    cout << "Returned from StochasticHeating() with exceeded nbins count " << endl;
+	    cout << "On Size " << _size[_sz] << endl; 
+	  }
 	  EquilibriumLum[_sz].resize(_nw,0.0);  
 	}  
       } else StochasticLum[_sz].resize(_nw,0.0);  // Zero stochastic so we have zero's when we don't do it.  

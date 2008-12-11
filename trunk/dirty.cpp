@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
 
   // read parameter file
   ConfigFile param_data(param_filename);
-
+   
   geometry_struct geometry;  // structure with geometry info (dust grid, etc.)
   output_struct output;  // stucture with the output info (images, etc.)
   photon_data photon;   // structure with the photon info (position, direction, weight, etc.)
@@ -76,6 +76,7 @@ int main(int argc, char* argv[])
 
   // get the dust grain parameters
   get_dust_parameters(param_data, CurGrainModel, runinfo);
+
 #ifdef DEBUG_DIRTY
   cout << "gdp done; ";
   cout.flush();

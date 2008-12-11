@@ -184,10 +184,11 @@ void Grain::MakeGrain(string const & fOpticalConstants,
 		     MasterSize.end());
     // trim size of MasterSize if needed. 
     vector<float>(MasterSize).swap(MasterSize);
-
+    
     // Assign correct size grid to class member. 
     nsize = MasterSize.size(); 
     copy(MasterSize.begin(),MasterSize.end(),back_inserter(size)); 
+    // Trim on amin/max
   } else { 
     // If the user has defined a_min and/or a_max, trim the file tabulated
     // size grid to the new limits. If a_min or a_max are outside the 
@@ -196,26 +197,28 @@ void Grain::MakeGrain(string const & fOpticalConstants,
     // MODEL. 
     // Copy input tabulation into class size member.
     copy(_size.begin(),_size.end(),back_inserter(size));
-
+  
     // If necessary, modify class size member. 
     if (a_min != -1) { // been set...
       // Stick in the lower limit if it is within defined bounds. 
       // Otherwise, keep lower bound as is. 
-      if (a_min > size[0])
-	size.insert(size.begin(),a_min); 
+      //if (a_min > size[0])
+      //	size.insert(size.begin(),a_min); 
+      //for (int _sz=0;_sz<size.size();++_sz) cout << _sz << " " << size[_sz] << endl; 
       // Remove everything ouside of a_min
       size.erase(remove_if(size.begin(),size.end(), 
 			   bind2nd(less<float>(),a_min)), 
 		 size.end());
-
+      //cout << "post: " << endl; 
+      //for (int _sz=0;_sz<size.size();++_sz) cout << _sz << " " << size[_sz] << endl; 
       // Since we may have modified the size distribution, do interpolate.
       interpSize = true; 
     }
     if (a_max != -1) { // been set...
       // Stick in the upper limit is it is within defined bounds
       // Otherwise, keep upper bound as is.
-      if (a_max < size[size.size()-1]) 
-	size.push_back(a_max); 
+      //if (a_max < size[size.size()-1]) 
+      //	size.push_back(a_max); 
       size.erase(remove_if(size.begin(),size.end(), 
 			   bind2nd(greater<float>(),a_max)), 
 		 size.end());

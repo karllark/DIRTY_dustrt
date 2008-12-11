@@ -34,6 +34,7 @@
   //
 //*******************************************************************************
 
+#include <cctype>
 #include <iostream>
 
 //#include "Constants.h"
@@ -134,6 +135,7 @@ private:
   // Map definitions.  
   // ModelID - Pre-defined allowed model types. 
   // SizeDist - Pre-defined allowed size distribution types
+  // SizeType - Pre-defined allowed size grid types.
   // iMap will be used to iterate through the maps. 
   map<string,int>::iterator iMap; 
   map<string,int> ModelID; 
@@ -151,6 +153,14 @@ private:
   void SizeDistMapping() { 
     if (!SizeDistID.empty()) return; 
     SizeDistID["ZDA"] = 0;
+  }
+  map<string,int> SizeTypeID; 
+  void SizeTypeMapping() { 
+    if ( !SizeTypeID.empty()) return; 
+    SizeTypeID["NULL"]=0;
+    SizeTypeID["DEF"]=0; 
+    SizeTypeID["FILE"]=1; 
+    SizeTypeID["NSIZE"]=2; 
   }
 
 }; 

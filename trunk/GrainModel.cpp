@@ -20,19 +20,25 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
 				vector <float>& MasterWave) { 
   
   string _thisSection; 
+  string _line; 
 
   string _thisCrossSectionFile; 
   string _thisCalorimetryFile; 
   string _thisSizeDistribution; 
-  
+  string _thisSizeType; 
+  string _thisSizeScale; 
+  string _thisSizeFile; 
+
   string _TopLevelPath; 
   string _CrossSectionsPath; 
   string _CalorimetryPath; 
   string _ModelDefinitionPath;  
   string _FullModelDefinitionFile; 
 
+  int _thisSizeIN; 
   float _thisA_min; 
   float _thisA_max;
+  float _delta;
 
   vector <float> _thisSize;
   vector <float> _thisCAbs; 
@@ -64,10 +70,12 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
   ModelMapping(); 
   // Setup the size distribution string->id map for case statements.
   SizeDistMapping(); 
+  // Setup the size type string->id map for case statements.
+  SizeTypeMapping();
 
   // Take input size tabulation as gospel for each grain material.
   vector <float> _MasterSize; 
-  _MasterSize.push_back(-1); 
+  //_MasterSize.push_back(-1); 
 
   // Parse the Grain config file. 
   //ConfigFile _mbkcf(ModelBookKeeping);
@@ -130,6 +138,9 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
   // Construct the Size distribution for each component. 
   for (int cmp=0;cmp<nComp;cmp++) {  // Loop over all components
     
+    // Clean out _MasterSize
+    _MasterSize.erase(_MasterSize.begin(),_MasterSize.end()); 
+
     // Construct section key for this component. 
     // Assume key is of the form "Comp i" where i=1,2,...,nComp
     _thisSection = "Component "+StringManip::vtos(cmp+1); 
@@ -137,7 +148,84 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
     _thisCalorimetryFile = _mcf.SValue(_thisSection,"Calorimetry");
     _thisA_min = _mcf.FValue(_thisSection,"a_min")*Constant::UM_CM; 
     _thisA_max = _mcf.FValue(_thisSection,"a_max")*Constant::UM_CM; 
+    _thisSizeType = _mcf.SValue(_thisSection,"Size Definition Type"); 
 
+    switch (SizeTypeID[_thisSizeType]) 
+      { 
+      case 0:  // Explicit DEF definition as well as key not found
+	{ 
+	  _MasterSize.push_back(-1); 
+	  break; 
+	}
+      case 1: 
+	{ 
+	  // Filename
+	  _thisSizeFile = _mcf.SValue(_thisSection,"Size Definition File"); 
+	  if (_thisSizeFile == _mcf.BadString()) {
+	    cout << "Unable to retrieve size grid file name, resorting to default." << endl; 
+	    _MasterSize.push_back(-1); 
+	  } else { 
+	    ifstream _file((_TopLevelPath+_ModelDefinitionPath+_thisSizeFile).c_str()); 
+	    if (! _file.is_open()) { 
+	      cout << "Unable to open size grid definition file " << _thisSizeFile << endl; 
+	      exit(8); 
+	    }
+	    while (getline(_file,_line)) { 
+	      if (_line[0] == '#') continue; else { 
+		_MasterSize.push_back(atof(_line.c_str())); 
+	      }
+	    }
+	    _MasterSize.erase(remove_if(_MasterSize.begin(),_MasterSize.end(), 
+					bind2nd(less<float>(),_thisA_min)), 
+			      _MasterSize.end());
+	    _MasterSize.erase(remove_if(_MasterSize.begin(),_MasterSize.end(), 
+					bind2nd(greater<float>(),_thisA_max)), 
+			      _MasterSize.end());
+	    if (_MasterSize[0] > _thisA_min)_MasterSize.insert(_MasterSize.begin(),_thisA_min); 
+	    if (_MasterSize[_MasterSize.size()-1] < _thisA_max) _MasterSize.push_back(_thisA_max);
+	    //for (int _sz=0;_sz<_MasterSize.size();++_sz) cout << _MasterSize[_sz] << endl; 
+	  }
+	  break; 
+	}
+      case 2: 
+	{
+	  // Get the number of sizes
+	  _thisSizeIN = _mcf.IValue(_thisSection,"Size Definition Number"); 
+	  cout << _thisSizeIN << endl; 
+	  if (_thisSizeIN <= 0) { 
+	    cout << "Unable to define size grid manually.  Resorting to default." << endl; 
+	    _thisSizeType = "DEF"; 
+	    _MasterSize.push_back(-1); 
+	  } else {
+	    _MasterSize.resize(_thisSizeIN); 
+	    // log/linear 
+	    _thisSizeScale = _mcf.SValue(_thisSection,"Size Definition Scale"); 
+	    if (_thisSizeScale == _mcf.BadString()) 
+	      _thisSizeScale="LINEAR"; 
+	    else 
+	      transform(_thisSizeScale.begin(),_thisSizeScale.end(),_thisSizeScale.begin(), 
+			(int(*)(int))toupper); 
+	    if (_thisSizeScale == "LINEAR") { // Generate Linear scale
+	      _MasterSize[0]=_thisA_min; 
+	      _delta=(_thisA_max-_thisA_min)/static_cast<float>(_thisSizeIN-1); 
+	      for (int _sz=1;_sz<_thisSizeIN;++_sz) _MasterSize[_sz] = _MasterSize[_sz-1]+_delta; 
+	    } 
+	    if (_thisSizeScale == "LOG") { // Generate Log scale.
+	      _MasterSize[0]=_thisA_min; 
+	      _delta=(1.0/static_cast<float>(_thisSizeIN-1))*log10(_thisA_max/_thisA_min); 
+	      for (int _sz=1;_sz<_thisSizeIN;++_sz) _MasterSize[_sz] = _MasterSize[_sz-1]*pow(10.0,_delta); 
+	    } 
+	  }
+	  break; 
+	}
+      default:  // Unable to identify size grid, use the default. 
+	{ 
+	  _thisSizeType = "DEF";
+	  _MasterSize.push_back(-1); 
+	  break; 
+	}
+      }
+    
     // Populate Component[i] with the appropriate Grain object.    
     Component[cmp].MakeGrain(_CrossSectionsPath+_thisCrossSectionFile,
 			     _CalorimetryPath+_thisCalorimetryFile,
