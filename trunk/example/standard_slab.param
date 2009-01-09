@@ -6,21 +6,21 @@
 [Geometry]
 distance=100.0
 n_obs_angles=1
-obs_theta=180.
+obs_theta=80.
 obs_phi=0.
 source_type=stars
 n_stars=1
 star_pos_x=0.
 star_pos_y=0.
-star_pos_z=47.5
+star_pos_z=0.
 type=slab
-size_xy=100.
-size_z=100.
-slab_z1=55.
-slab_z2=150.
+size_xy=10.
+size_z=10.
+slab_z1=-4.5.
+slab_z2=-2.
 slab_tau=1.
 # nonslab/slab density ratio
-nonslab_density_ratio=0.001
+nonslab_density_ratio=1e-10
 # filling factor & density control the clumpiness
 filling_factor=0.2
 density_ratio=1.
@@ -32,17 +32,17 @@ clump_type=cube
 grid_size=11
 
 [Dust Grains]
-type=multi_wavelength
-file=/home/kgordon/ag_grid.dustgrains.dat
+type=single_wavelength
 wavelength=0.55
-albedo=0.5
-g=0.7
+albedo=0.6
+g=0.6
 
 [Run]
-num_photons=100
-verbose=2
+num_photons=1e6
+verbose=1
 output_image_size=201
-output_filebase=example/standard_slab_tau1
+output_filebase=standard_slab_tau1
 type=single_wavelenth
 wavelength=0.55
 abs_energy_storage=0
+do_image_output=1

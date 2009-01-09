@@ -198,8 +198,8 @@ void get_dust_ere_emission (geometry_struct& geometry,
 	      
 	      cout << "total_ere_energy/H atom = " << total_ere_photons << endl;
 
-	      // convert to peak ERE energy (right?)
-	      total_ere_photons /= (runinfo.ere_fwhm/2.35)*pow(M_PI,0.5);
+	      // convert to peak ERE energy
+	      total_ere_photons /= (sqrt(2.0)*(runinfo.ere_fwhm/2.35)*pow(M_PI,0.5));
 	      
 	      // now create the Gaussian ERE emission
 	      //   need to check the conversion between fwhm and sigma - on a plane and no internet)

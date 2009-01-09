@@ -4,6 +4,7 @@
 //
 // 2007 Sep/KDG - written
 // 2008 Mar/KDG - udpated to handle global sed output setup
+// 2008 Nov/KDG - updated to bin then interpolate to conserve all the input energy
 // ======================================================================
 #include "get_sed_parameters.h"
 //#define DEBUG_GSP
@@ -13,7 +14,6 @@ void get_sed_parameters (ConfigFile& param_data,
 			 GrainModel& CurGrainModel)
 
 {
-
   using namespace NumUtils;
 
   runinfo.sed_type = param_data.SValue("SED","type");
@@ -61,6 +61,7 @@ void get_sed_parameters (ConfigFile& param_data,
 	wavelength[i] *= Constant::ANG_CM;
 	luminosity[i] = sfr_or_mass*pow(10.,luminosity[i])*(Constant::LIGHT)/pow(wavelength[i],2.0);
       }
+
     } else if (runinfo.sed_type == "bb_file") {
       // get the sed parameters
       //   assuming units are in ergs/s/Hz
@@ -75,12 +76,6 @@ void get_sed_parameters (ConfigFile& param_data,
 	// luminosity input
 	check_input_param("SED wavelength",luminosity[i],0,1e40);
 	
-#ifdef DEBUG_GSP
-	cout << i << " ";
-	cout << wavelength[i] << " ";
-	cout << luminosity[i] << endl;
-#endif
-
 	wavelength[i] *= Constant::UM_CM;
 	luminosity[i] *= (Constant::LIGHT)/pow(wavelength[i],2.0);
 
@@ -103,18 +98,28 @@ void get_sed_parameters (ConfigFile& param_data,
     temp_sed.resize(runinfo.wavelength.size(),0.0);
     temp_sed_npts.resize(runinfo.wavelength.size(),0);
     for (i = 0; i < luminosity.size(); i++) {
-      if (wavelength[i] >= runinfo.wavelength[0]) {
+      if ((wavelength[i] >= runinfo.wavelength[0]) && (wavelength[i] <= runinfo.wavelength[runinfo.wavelength.size()-1])) {
 	closeIter = find_if(runinfo.wavelength.begin(),runinfo.wavelength.end(),bind2nd(greater_equal<float>(),static_cast<float>(wavelength[i])));
 	uint closeIndex = distance(runinfo.wavelength.begin(),closeIter);
+#ifdef DEBUG_GSP
+	cout << i << " ";
+	cout << wavelength[i] << " ";
+	cout << runinfo.wavelength[closeIndex] << " "; 
+	cout << (wavelength[i] - runinfo.wavelength[closeIndex-1]) << " ";
+	cout << (runinfo.wavelength[closeIndex] - wavelength[i]) << " ";
+	cout << endl;
+#endif
 	if (closeIndex > 0) {
 	  if ((runinfo.wavelength[closeIndex] - wavelength[i]) > (wavelength[i] - runinfo.wavelength[closeIndex-1])) closeIndex--;
 	}
-// 	cout << i << " ";
-// 	cout << wavelength[i] << " ";
-// 	cout << runinfo.wavelength[closeIndex] << " "; 
+#ifdef DEBUG_GSP
+	cout << i << " ";
+	cout << wavelength[i] << " ";
+	cout << runinfo.wavelength[closeIndex] << " "; 
 // 	cout << (wavelength[i] - runinfo.wavelength[closeIndex-1]) << " ";
 // 	cout << (runinfo.wavelength[closeIndex] - wavelength[i]) << " ";
-// 	cout << endl;
+	cout << endl;
+#endif
 	temp_sed[closeIndex] += luminosity[i];
 	temp_sed_npts[closeIndex]++;
       }
@@ -129,19 +134,19 @@ void get_sed_parameters (ConfigFile& param_data,
       if (temp_sed_npts[i] > 0) {
 	temp_sed_nozero.push_back(temp_sed[i]/temp_sed_npts[i]);
 	temp_sed_nozero_wave.push_back(runinfo.wavelength[i]);
+#ifdef DEBUG_GSP
+	cout << i << " ";
+	cout << temp_sed_npts[i] << " ";
+	cout << endl;
+#endif
       }
     }
 
     // interpolate SED onto wavelength grid
     // numbers are power law coefficents for extrapolation on the left & right sides
-    runinfo.sed_lum = interpol(temp_sed_nozero, temp_sed_nozero_wave, run_wave,2,-2);
+     runinfo.sed_lum = interpol(temp_sed_nozero, temp_sed_nozero_wave, run_wave,2,-2);
+     //    runinfo.sed_lum = interpol(luminosity, wavelength, run_wave,2,-2);
 
-//     for (i = 0; i < runinfo.wavelength.size(); i++) {
-//       cout << runinfo.wavelength[i] << " ";
-//       cout << runinfo.sed_lum[i] << " ";
-//       cout << endl;
-//     }
-//     exit(0);
   }    
 
   if (runinfo.do_global_output) {

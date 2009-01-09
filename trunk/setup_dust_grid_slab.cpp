@@ -29,13 +29,13 @@ void setup_dust_grid_slab (ConfigFile& param_data,
 
   // angular radius needs to be large enough to allow for any rotation and still
   // have all the photons encompassed in the final image
-  geometry.angular_radius = atan(1.45*geometry.radius/(geometry.distance - size_z/2.));
+  geometry.angular_radius = atan(1.5*geometry.radius/(geometry.distance - size_z/2.));
 
   // slab start/end
   float slab_z1 = param_data.FValue("Geometry","slab_z1");
-  check_input_param("slab_z1",slab_z1,geometry.distance-size_z/2.,geometry.distance+size_z/2.);
+  check_input_param("slab_z1",slab_z1,-1.*size_z/2.,size_z/2.);
   float slab_z2 = param_data.FValue("Geometry","slab_z2");
-  check_input_param("slab_z2",slab_z2,geometry.distance-size_z/2.,geometry.distance+size_z/2.);
+  check_input_param("slab_z2",slab_z2,-1.*size_z/2.,size_z/2.);
 
   // check that slab_z1 < slab_z2
   if (slab_z1 > slab_z2) {
@@ -54,7 +54,7 @@ void setup_dust_grid_slab (ConfigFile& param_data,
 
   // nonslab density ratio
   float nonslab_density_ratio = param_data.FValue("Geometry","nonslab_density_ratio");
-  check_input_param("nonslab density ratio",nonslab_density_ratio,0.0,1.);
+  check_input_param("nonslab density ratio",nonslab_density_ratio,1e-20,1.);
 
   // maximum optical depth per cell (controls when a cell is subdivided)
   geometry.max_tau_per_cell = param_data.FValue("Geometry","max_tau_per_cell");
@@ -158,7 +158,7 @@ void setup_dust_grid_slab (ConfigFile& param_data,
       for (i = 0; i < main_grid.index_dim[0]; i++) {
 	x_val = (main_grid.positions[0][i] + main_grid.positions[0][i+1])/2.0;
         // slab position should be a negative z if behind stars (observer at positive z)
-	if ((z_val <= (geometry.distance-slab_z1)) && (z_val >= (geometry.distance-slab_z2))) {
+	if ((z_val >= slab_z1) && (z_val <= slab_z2)) {
 	  if (random_obj.random_num() <= geometry.filling_factor)
 	    main_grid.grid(i,j,k).dust_tau_per_pc = geometry.clump_densities[0];
 	  else

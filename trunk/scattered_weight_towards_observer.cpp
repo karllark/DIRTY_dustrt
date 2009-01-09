@@ -5,7 +5,7 @@
 // 2006 Apr/KDG - written
 // ======================================================================
 #include "scattered_weight_towards_observer.h"
-//#define OUTNUM 222074
+//#define OUTNUM 517126
 //#define DEBUG_SWTO
 
 double scattered_weight_towards_observer (photon_data photon,
