@@ -11,8 +11,8 @@
 // ======================================================================
 #include "calc_photon_trajectory.h"
 // #define PHOTON_POS
-// #define OUTNUM 4
-// #define DEBUG_CPT
+//#define OUTNUM 517126
+//#define DEBUG_CPT
 
 double calc_photon_trajectory (photon_data& photon,
 			       geometry_struct& geometry,

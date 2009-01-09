@@ -202,7 +202,7 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
 	  if (thistol > tol_max_bins) { // still not converged well enough
 	    
 	    cout << EAbs << " " << Eemit << " " << thistol << endl; 
-	    for (int i=0;i<wave.size();i++) cout << wave[i] << " " << cabs[i] << " " << cJprod[i] << endl;
+	    for (uint i=0;i<wave.size();i++) cout << wave[i] << " " << cabs[i] << " " << cJprod[i] << endl;
 	    _ExceedBins[0]=-99;
 	    return _ExceedBins; 
 	  } else {

@@ -213,7 +213,7 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
 	    if (_thisSizeScale == "LOG") { // Generate Log scale.
 	      _MasterSize[0]=_thisA_min; 
 	      _delta=(1.0/static_cast<float>(_thisSizeIN-1))*log10(_thisA_max/_thisA_min); 
-	      for (int _sz=1;_sz<_thisSizeIN;++_sz) _MasterSize[_sz] = _MasterSize[_sz-1]*pow(10.0,_delta); 
+	      for (int _sz=1;_sz<_thisSizeIN;++_sz) _MasterSize[_sz] = _MasterSize[_sz-1]*pow(10,_delta); 
 	    } 
 	  }
 	  break; 

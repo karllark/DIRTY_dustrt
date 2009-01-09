@@ -40,3 +40,4 @@ output_filebase=example/standard_sphere_tau1
 # how to store the absorbed energy (speed vs RAM size)
 # 0 to use memory, 1 to use disk
 abs_energy_storage=0
+do_image_output=1

@@ -7,8 +7,8 @@
 // 2008 Aug/KDG - added saving of trajectory for continous absorption
 // ======================================================================
 #include "calc_delta_dist.h"
-// #define OUTNUM 0
-// #define DEBUG_CDD
+//#define OUTNUM 517126
+//#define DEBUG_CDD
 
 double calc_delta_dist (photon_data& photon,
 			geometry_struct& geometry,
@@ -268,12 +268,14 @@ double calc_delta_dist (photon_data& photon,
       photon.path_pos_index[3][photon.path_cur_cells] = photon.position_index[k][2];
 
 #ifdef DEBUG_CDD      
-      cout << "path: ";
-      cout << photon.path_pos_index[0][photon.path_cur_cells] << " ";
-      cout << photon.path_pos_index[1][photon.path_cur_cells] << " ";
-      cout << photon.path_pos_index[2][photon.path_cur_cells] << " ";
-      cout << photon.path_pos_index[3][photon.path_cur_cells] << " ";
-      cout << photon.path_tau[photon.path_cur_cells] << endl;
+      if (photon.number == OUTNUM) {
+	cout << "path: ";
+	cout << photon.path_pos_index[0][photon.path_cur_cells] << " ";
+	cout << photon.path_pos_index[1][photon.path_cur_cells] << " ";
+	cout << photon.path_pos_index[2][photon.path_cur_cells] << " ";
+	cout << photon.path_pos_index[3][photon.path_cur_cells] << " ";
+	cout << photon.path_tau[photon.path_cur_cells] << endl;
+      }
 #endif
       photon.path_cur_cells++;
     }
