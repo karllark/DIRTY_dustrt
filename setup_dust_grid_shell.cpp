@@ -37,6 +37,10 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   double outer_radius = param_data.FValue("Geometry","outer_radius");
   check_input_param("outer_radius",outer_radius,0.0,geometry.radius);
 
+  // optically thin outest radius to allow for the forced first scattering in the cloudy geometry
+  double extended_outer_radius = param_data.FValue("Geometry","extended_outer_radius");
+  check_input_param("extended_outer_radius",extended_outer_radius,outer_radius,geometry.radius);
+
   // shell subdivide radius
   float subdivide_radius = param_data.FValue("Geometry","subdivide_radius");
   check_input_param("subdivide_radius",subdivide_radius,0.0,geometry.radius);
@@ -156,6 +160,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   // normalized all the radii to the outer radius (see above comment)
   very_inner_radius /= outer_radius;
   inner_radius /= outer_radius;
+  extended_outer_radius /= outer_radius;
   double save_outer_radius = outer_radius;
   outer_radius = 1.0;
 
@@ -195,8 +200,10 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	x_val = (main_grid.positions[0][i] + main_grid.positions[0][i+1])/2.0;
 	radius = sqrt(x_val*x_val + y_val*y_val + z_val*z_val);
 	radius /= save_outer_radius;
-	if (radius > outer_radius)
+	if (radius > extended_outer_radius)
 	  main_grid.grid(i,j,k).dust_tau_per_pc = -0.5;  // this means the edge of the dust
+	else if (radius > outer_radius)
+	  main_grid.grid(i,j,k).dust_tau_per_pc = 1e-16;  // negligible amount of dust
 	else {
 	  if (radius < very_inner_radius)
 	    tmp_density = 0.0;
