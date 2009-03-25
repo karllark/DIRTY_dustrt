@@ -9,7 +9,9 @@
 #include <algorithm>
 #include <functional>
 #include <numeric>
-
+#include <fstream>
+#include <iostream>
+#include "Constants.h"
 #include "DataFile.h"
 
 extern void ComputeDustEmission (vector <float> & J, 
@@ -37,7 +39,7 @@ int main (int argc, char * argv[]) {
   // Instantiate a Grain object. 
   MyGrain.MakeGrain("CrossSections/PAHneu_30_mod.srt",
 		    "Calorimetry/Graphitic_Calorimetry_1000.dat",
-		    MW,MS,"/home/misselt/Science/Dust/OpticalProperties/");
+		    MW,MS,"/work/Science/Dust/OpticalProperties/");
 
   // Get the wavelength grid MyGrain[0] is defined on.
   MW.erase(MW.begin(),MW.end());
@@ -47,35 +49,84 @@ int main (int argc, char * argv[]) {
   ISRF MyISRF(MW,1.0); 
   // Get the field from the object. 
   vector <float> thisISRF = MyISRF.getISRF();
-
+  //for (int i=0;i<MW.size();++i) cout << MW[i] << " " << thisISRF[i] << endl; 
+  //exit(8);
+  cout << "Done in test...." << endl; 
   // Generate the Grain model
-  string aConfigFile="Craptastic.cfg";
+  string aConfigFile="/work/Science/dirty/ScratchCode/Craptastic.cfg";
   ConfigFile thisConfig(aConfigFile);
   GrainModel thisGrainModel; 
   thisGrainModel.MakeGrainModel(thisConfig,MW);
   
+  cout << "Total mass (gm/H): " << thisGrainModel.getMDust() << endl; 
+  cout << "Total numer (/H): " << thisGrainModel.getNumber() << endl; 
+  
   int ncomp=thisGrainModel.getNComp();
-  //   float mysize=0.0040*1.0e-4;
-//   int sizeid=NumUtils::index(mysize,thisSize); 
+
+  cout << "Mass, number per H: " << endl; 
+  for (int i=0;i<ncomp;i++) cout << thisGrainModel.getMDust(i) << " , " << thisGrainModel.getNumber(i) << endl;  
+
+  exit(8); 
+
   vector <vector<double> > thisEmission; 
   thisEmission.resize(2*ncomp+1); 
   for (int i=0;i<(2*ncomp+1);++i) thisEmission[i].resize(nWave);
   bool DoStochastic=true; 
-  //   cout << "Calling compute emission " <<endl;
-  ComputeDustEmission(thisISRF, thisGrainModel, thisEmission, DoStochastic); 
 
-  for (int i=0;i<nWave;i++) { 
-    //cout << thisEmission[i].size() << endl; 
-    cout << MW[i] << " " << thisEmission[0][i] << " ";
-    for (int c=0;c<ncomp;++c) { 
+  // a range of ISRF scalings. 
+  int nisrf=101; 
+  vector <float> ISRF_Scaling(nisrf); 
+  float isrf_min=0.1; 
+  float isrf_max=1.0e6;
+  float isrf_delta=(1.0/static_cast<float>(nisrf-1))*log10(isrf_max/isrf_min); 
+  ISRF_Scaling[0]=isrf_min; 
+  for (int i=1;i<nisrf;++i) ISRF_Scaling[i]=ISRF_Scaling[i-1]*pow(10,isrf_delta);
+  ISRF_Scaling[14]=1.0;
+  ISRF_Scaling[29]=10.0; 
+  ISRF_Scaling[43]=100.0;
+  ISRF_Scaling[57]=1000.0;
+  ISRF_Scaling[71]=10000.0; 
+  ISRF_Scaling[86]=100000.0; 
+
+  string sOutBase="SED_ISRF";
+  string sOutput; 
+
+  // Dust masses in gr/H
+  float TotalDustMass=thisGrainModel.getMDust(); 
+  vector <float> DustMass(ncomp); 
+  for (int c=0;c<ncomp;++c) DustMass[c] = thisGrainModel.getMDust(c); 
+  
+  for (int is=0;is<nisrf;++is) {
+    
+    cout << "Working on scaling " << is << "(" << StringManip::vtos(ISRF_Scaling[is]) << ")" << endl; 
+    sOutput=sOutBase+StringManip::vtos(ISRF_Scaling[is])+"_"+thisGrainModel.getModelName()+".dat"; 
+    
+    ISRF MyISRF(MW,ISRF_Scaling[is]); 
+    thisISRF=MyISRF.getISRF(); 
+
+    //   cout << "Calling compute emission " <<endl;
+    ComputeDustEmission(thisISRF, thisGrainModel, thisEmission, DoStochastic); 
+
+    ofstream fOutput(sOutput.c_str()); 
+    
+    fOutput << "# ISRF " << ISRF_Scaling[is] << " DustModel " << thisGrainModel.getModelName() << endl; 
+    fOutput << "# This is the emission (luminosity) per unit dust mass" << endl; 
+
+    // we output the emmision per unit dust mass. 
+    for (int i=0;i<nWave;i++) { 
       
-      cout << thisEmission[2*c+1][i] << " " << thisEmission[2*c+2][i] << " "; 
-    }
-    cout << endl; 
-  }
+      fOutput << MW[i] << " " << thisISRF[i] << " " << thisEmission[0][i]/TotalDustMass << " ";
 
-//   vector <float> thissize=thisGrainModel.Size(0);
-//   for (int i=0;i<thissize.size();++i) cout << i << " " << thissize[i] << endl; 
+      for (int c=0;c<ncomp;++c) { 
+	
+	fOutput << thisEmission[2*c+1][i]/DustMass[c] << " " << thisEmission[2*c+2][i]/DustMass[c] << " "; 
+
+      }
+      fOutput << endl; 
+    }
+    
+    fOutput.close(); 
+  }
 
 
 }
