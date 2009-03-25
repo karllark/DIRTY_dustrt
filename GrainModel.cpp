@@ -135,6 +135,8 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
   //  - Wavelength grid will be set by MasterWave. 
   //  - Size grid will be set by the Cross Section file for each component.
 
+  totalnumber=0;
+  number.resize(nComp); 
   // Construct the Size distribution for each component. 
   for (int cmp=0;cmp<nComp;cmp++) {  // Loop over all components
     
@@ -149,7 +151,11 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
     _thisA_min = _mcf.FValue(_thisSection,"a_min")*Constant::UM_CM; 
     _thisA_max = _mcf.FValue(_thisSection,"a_max")*Constant::UM_CM; 
     _thisSizeType = _mcf.SValue(_thisSection,"Size Definition Type"); 
-
+    transform(_thisSizeType.begin(),_thisSizeType.end(),_thisSizeType.begin(), 
+	      (int(*)(int))toupper); 
+    //cout << _thisA_min << " " << _thisA_max << endl;
+    //cout << _thisSizeType << endl; 
+    //cout << "Size Type ID" << SizeTypeID[_thisSizeType] << endl; 
     switch (SizeTypeID[_thisSizeType]) 
       { 
       case 0:  // Explicit DEF definition as well as key not found
@@ -226,12 +232,14 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
 	}
       }
     
+    
     // Populate Component[i] with the appropriate Grain object.    
     Component[cmp].MakeGrain(_CrossSectionsPath+_thisCrossSectionFile,
 			     _CalorimetryPath+_thisCalorimetryFile,
 			     MasterWave,_MasterSize,_TopLevelPath,
 			     _thisA_min,_thisA_max); 
- 
+
+    //for (int sz=0;sz<Component[cmp].nsize;sz++) cout << sz << " " << Component[cmp].size[sz] << endl; 
     // Get the size grid defined for this component.
     //_thisNSize = Component[cmp].getNSize(); 
     //_thisSize.resize(_thisNSize); 
@@ -268,7 +276,22 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
 	    _zda_coeff[14] = _mcf.FValue(_thisSection,"m4");
 	    //SizeDistribution[cmp].resize(_thisSize.size()); 
 	    SizeDistribution[cmp] = getZDA_sdist(_zda_coeff,cmp);
-
+	  }
+	  break; 
+	  
+	case 1: // Wiengartner & Draine 2001, ApJ, 548, 296
+	  {
+	    vector <float> _wd_coeff(8); 
+	    Normalization[cmp] = 1.0;  // Defined functions already return per H
+	    _wd_coeff[0] = _mcf.FValue(_thisSection,"BC"); 
+	    _wd_coeff[1] = _mcf.FValue(_thisSection,"B1"); 
+	    _wd_coeff[2] = _mcf.FValue(_thisSection,"B2");
+	    _wd_coeff[3] = _mcf.FValue(_thisSection,"C");
+	    _wd_coeff[4] = _mcf.FValue(_thisSection,"at");
+	    _wd_coeff[5] = _mcf.FValue(_thisSection,"ac");
+	    _wd_coeff[6] = _mcf.FValue(_thisSection,"alpha");
+	    _wd_coeff[7] = _mcf.FValue(_thisSection,"beta");
+	    SizeDistribution[cmp] = getWD_sdist(_wd_coeff,cmp); 
 	  }
 	  break; 
 	  
@@ -300,13 +323,20 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
 
     }
    
-    // Compute this components contribution to the total mass. 
-    for (int sz=0;sz<Component[cmp].nsize;sz++)
-      _integrand.push_back(Component[cmp].mass[sz]*SizeDistribution[cmp][sz]);
-    //_integrand.push_back(Component[cmp].size[sz]*Component[cmp].size[sz]*Component[cmp].size[sz]*SizeDistribution[cmp][sz]); 
+    // Compute this components contribution to the total mass.
+    _integrand.resize(Component[cmp].nsize); 
+    for (int sz=0;sz<Component[cmp].nsize;sz++) 
+      _integrand[sz]=Component[cmp].mass[sz]*SizeDistribution[cmp][sz];
     DustMass[cmp] = Normalization[cmp]*NumUtils::integrate<float>(Component[cmp].size,_integrand); 
     TotalDustMass += DustMass[cmp]; 
     _integrand.erase(_integrand.begin(),_integrand.end()); 
+    
+    number[cmp] = Normalization[cmp]*NumUtils::integrate<float>(Component[cmp].size,SizeDistribution[cmp]); 
+    totalnumber += number[cmp]; 
+
+    //for (int sz=0;sz<Component[cmp].nsize;++sz) 
+    //  cout << sz << " " << Component[cmp].size[sz] << " " << SizeDistribution[cmp][sz] << endl; 
+    
 
   }
 
@@ -316,7 +346,7 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
   // Now construct the Effective grain properties.  Separate out from the size distribution 
   // definition so that the total normalization can be applied during the effective property
   // construction rather than as a new  nwave loop. 
-  cout << "Computing size averaged quantities...."; 
+  //cout << "Computing size averaged quantities...."; 
 
   iTau = Tau.begin(); 
   iAlbedo = Albedo.begin(); 
@@ -435,7 +465,7 @@ vector <float> GrainModel::getZDA_sdist(vector <float> coeff, int cmp)
       *iretvec -= coeff[12]*pow(fabs( (thissz) - coeff[13]),coeff[14]); 
     *iretvec = pow(10,(*iretvec)); // g(a) in um^-1
     *iretvec *= Constant::CM_UM;             // g(a) in cm^-1
-    *iretvec++; 
+    iretvec++; 
   } 
 
   // Renormalize retvec to 1; ~g(a) is not correctly normalized like g(a) as it is 
@@ -444,6 +474,43 @@ vector <float> GrainModel::getZDA_sdist(vector <float> coeff, int cmp)
   // simply incorporate it into Normalization[]
   float _Nfac = 1.0/NumUtils::integrate<float>(Component[cmp].size,retvec); 
   transform(retvec.begin(),retvec.end(),retvec.begin(),bind2nd(multiplies<float>(),_Nfac)); 
+
+  return retvec; 
+
+}
+
+// Return the size distribution in cm^-1 H^-1
+//  Wiengartner & Draine 2001, ApJ 548, 296
+//  
+
+vector <float> GrainModel::getWD_sdist(vector <float> coeff, int cmp) 
+{
+
+  float thissz;                     // Hold um copy of size at each point. 
+  vector <float> retvec(Component[cmp].size.size()); // The size distribution [um^-1]
+  vector <float>::iterator isz;     // Iterator through size vector
+  vector <float>::iterator iretvec; // Iterator through size dist vector
+  
+  // Set iterator to beginning of size dist vector. 
+  iretvec = retvec.begin(); 
+
+  for (isz=Component[cmp].size.begin();isz!=Component[cmp].size.end();isz++) {
+    // Compute the common part of the size distributions.
+    *iretvec = coeff[3]/(*isz)*pow((*isz/(coeff[4]*Constant::UM_CM)),coeff[6]); 
+    if (coeff[7] >= 0.0)
+      *iretvec *= (1.0 + coeff[7]*(*isz)/(coeff[4]*Constant::UM_CM)); 
+    else 
+      *iretvec /= (1.0 - coeff[7]*(*isz)/(coeff[4]*Constant::UM_CM));
+    if ((*isz) > (coeff[4]*Constant::UM_CM)) {
+      *iretvec *= exp( -1*pow(((*isz)-coeff[4]*Constant::UM_CM)/(coeff[5]*Constant::UM_CM),3)); 
+    } 
+    if ( coeff[0] > 0 && !isnan(coeff[0]) ) {
+      *iretvec += coeff[1]*coeff[0]/(*isz)*exp(-0.5*(pow((log((*isz)/(3.5*Constant::ANG_CM))/0.4),2))); 
+      *iretvec += coeff[2]*coeff[0]/(*isz)*exp(-0.5*(pow((log((*isz)/(30.0*Constant::ANG_CM))/0.4),2))); 
+    }
+    iretvec++; 
+    
+  } 
 
   return retvec; 
 

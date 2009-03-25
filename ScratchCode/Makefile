@@ -1,16 +1,14 @@
 #LIBPATH=/home/misselt/Pro/cpp
 #LIBPATH2=./lib
 
-NP_SRCS = test_de.cpp \
-	  ISRF.cpp \
-          ../StringManip.cpp \
+NP_SRCS = ce_idl.cpp \
+	  ../StringManip.cpp \
           ../ConfigFile.cpp \
 	  ../Grain.cpp \
-	  TimeEvolution.cpp \
 	  ComputeDustEmission.cpp \
+	  ISRF.cpp \
 	  StochasticHeating.cpp \
-          ../GrainModel.cpp \
-	  mt_ran.cpp
+          ../GrainModel.cpp
 
 NP_OBJS = ${NP_SRCS:.cpp=.o}
 
@@ -28,13 +26,13 @@ LDFLAGS = -lcfitsio -pg
 
 CC = g++
 
-all: testeh
+all: ce_idl
 
-testeh: $(NP_OBJS)
+ce_idl: $(NP_OBJS)
 	$(CC) -o $(@) $(NP_OBJS) $(CCFLAGS) $(LDFLAGS)
 
 clean: 
-	$(RM) $(NP_OBJS) testeh
+	$(RM) $(NP_OBJS) ce_idl
 
 .cpp.o : $(HDS)
 	$(CC) -o ${*}.o $(CCFLAGS) -c $<

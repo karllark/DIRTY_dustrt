@@ -75,6 +75,9 @@ public:
   inline vector <float> getTau( void ) { return Tau; }
   inline float getMDust( int cmp ) { return DustMass[cmp]; }
   inline float getMDust( void ) { return TotalDustMass; }
+
+  inline float getNumber( int cmp ) { return number[cmp]; }
+  inline float getNumber( void ) { return totalnumber; }
   
   inline int getNComp( void ) { return nComp; }
   inline float getNormalization( void ) { return TotalNormalization; }
@@ -83,6 +86,7 @@ public:
   // These functions interface with the Grain model to retrieve properties of 
   // individual components of the model. 
   //  - Need bound checking
+  //  r
   inline vector <float> Size ( int _cmp ) { return Component[_cmp].getSize(); }
   inline float Size ( int _cmp, int _szid ) { return Component[_cmp].getSize(_szid); }
   inline vector <float> CAbs ( int _cmp, int _szid ) { return Component[_cmp].getCAbs(_szid); }
@@ -100,6 +104,8 @@ public:
     { return Component[_cmp].getSpecificEnthalpy(); }
   inline vector <float> Enthalpy ( int _szid, int _cmp ) 
     { return Component[_cmp].getEnthalpy(_szid); } 
+
+  inline string getModelName( void ) { return ModelName; }
 
 private: 
 
@@ -119,6 +125,8 @@ private:
   float TotalNormalization;
   float TotalDustMass; 
   vector <float> DustMass; 
+  float totalnumber; 
+  vector <float> number; 
 
   //vector <float> ComponentTemperature; 
 
@@ -131,6 +139,7 @@ private:
   vector <float> phFuncEff; 
 
   vector <float> getZDA_sdist(vector <float> coeff, int cmp); 
+  vector <float> getWD_sdist(vector <float> coeff, int cmp); 
   
   // Map definitions.  
   // ModelID - Pre-defined allowed model types. 
@@ -147,12 +156,15 @@ private:
     ModelID["KG-BARE-S1"]=3; 
     ModelID["KG-BARE-S2"]=4; 
     ModelID["KG-BARE-S3"]=5; 
-    ModelID["KG-BARE-S4"]=6; 
+    ModelID["KG-BARE-S4"]=6;
+    ModelID["SMCBAR-WD01"]=7;
+    ModelID["RV31_BC6-WD01"]=8;
   }
   map<string,int> SizeDistID; 
   void SizeDistMapping() { 
     if (!SizeDistID.empty()) return; 
     SizeDistID["ZDA"] = 0;
+    SizeDistID["WD01"] = 1; 
   }
   map<string,int> SizeTypeID; 
   void SizeTypeMapping() { 
