@@ -135,7 +135,10 @@ if (n_sindxs GT 0) then begin
     koplot,table.wavelength,table.flux_de_s_4,psym=100,color=light_blue_color,linestyle=2
     koplot,table.wavelength,table.flux_de_d_5,psym=100,color=light_blue_color,linestyle=3
     koplot,table.wavelength,table.flux_de_s_5,psym=100,color=light_blue_color,linestyle=4
+endif
 
+sindxs = where(table_tagnames EQ 'FLUX_DE_D_6',n_sindxs)
+if (n_sindxs GT 0) then begin
 ; plot the DE component 
 ;purple_color=base_color
     koplot,table.wavelength,table.flux_de_d_6,psym=100,color=purple_color,linestyle=1
