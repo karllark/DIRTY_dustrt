@@ -496,7 +496,7 @@ vector <float> GrainModel::getWD_sdist(vector <float> coeff, int cmp)
 
   for (isz=Component[cmp].size.begin();isz!=Component[cmp].size.end();isz++) {
     // Compute the common part of the size distributions.
-    *iretvec = coeff[3]/(*isz)*pow((*isz/(coeff[4]*Constant::UM_CM)),coeff[6]); 
+    *iretvec = coeff[3]/(*isz)*pow((*isz/float(coeff[4]*Constant::UM_CM)),coeff[6]); 
     if (coeff[7] >= 0.0)
       *iretvec *= (1.0 + coeff[7]*(*isz)/(coeff[4]*Constant::UM_CM)); 
     else 

@@ -203,7 +203,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	if (radius > extended_outer_radius)
 	  main_grid.grid(i,j,k).dust_tau_per_pc = -0.5;  // this means the edge of the dust
 	else if (radius > outer_radius)
-	  main_grid.grid(i,j,k).dust_tau_per_pc = 1e-16;  // negligible amount of dust
+	  main_grid.grid(i,j,k).dust_tau_per_pc = 1e-20;  // negligible amount of dust
 	else {
 	  if (radius < very_inner_radius)
 	    tmp_density = 0.0;
