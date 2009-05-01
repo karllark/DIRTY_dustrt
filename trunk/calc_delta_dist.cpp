@@ -7,7 +7,7 @@
 // 2008 Aug/KDG - added saving of trajectory for continous absorption
 // ======================================================================
 #include "calc_delta_dist.h"
-//#define OUTNUM 517126
+//#define OUTNUM 0
 //#define DEBUG_CDD
 
 double calc_delta_dist (photon_data& photon,
@@ -38,6 +38,8 @@ double calc_delta_dist (photon_data& photon,
     cout << photon.position_index[0].size() << endl;
     cout << geometry.max_grid_depth << endl;
     cout << photon.position_index[k][0] << endl;
+    cout << photon.position_index[k][1] << endl;
+    cout << photon.position_index[k][2] << endl;
     cout << "end testing" << endl;
   }
 #endif

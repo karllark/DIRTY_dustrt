@@ -14,6 +14,7 @@
 #include "fitsio.h"
 #include "constants.h"
 #include "debug.h"
+#include "StringManip.h"
 
 //**********************************************************************
 // external function definitions

@@ -3,8 +3,10 @@
 //
 // 2004 Dec/KDG - written
 // 2008 Aug/KDG - added continous absorption
+// 2009 Mar/KDG - added limited polychromaticism
 // ======================================================================
 #include "scatter_photon.h"
+//#define DEBUG_SP
 
 void scatter_photon (geometry_struct& geometry,
 		     photon_data& photon,
@@ -73,10 +75,25 @@ void scatter_photon (geometry_struct& geometry,
   float tmp_sum = 0.0;
 #endif
   float abs_weight = (1. - geometry.albedo)*photon.scat_weight;
+
+//   if (runinfo.limited_polychromatic) {
+//     // now setup the weights for limited polychromaticism
+//     int k = 0;
+//     for (i = 0; i < photon.n_polyc; i++) {
+//       k = i+photon.polyc_min_index;
+//       photon.polyc_weights[i] = exp((1.0 - runinfo.tau_to_tau_ref[k])*photon.target_tau)*
+// 	runinfo.tau_to_tau_ref[k]*
+// 	(((1.0 - pow(runinfo.g[k],2))/(4.0*M_PI*pow(1.0 + pow(runinfo.g[k],2) - 2.0*runinfo.g[k]*cos_alpha,1.5)))/
+// 	 ((1.0 - pow(geometry.g,2))/(4.0*M_PI*pow(1.0 + pow(geometry.g,2) - 2.0*geometry.g*cos_alpha,1.5))))*
+// 	(1. - runinfo.albedo[k)*photon.scat_weight;
+//     }
+//   }
+
   for (i = 0; i < photon.path_cur_cells; i++) {
     geometry.grids[photon.path_pos_index[0][i]].grid(photon.path_pos_index[1][i],photon.path_pos_index[2][i],photon.path_pos_index[3][i]).absorbed_energy[geometry.abs_energy_wave_index] += abs_weight*(photon.path_tau[i]/photon.target_tau);
     geometry.grids[photon.path_pos_index[0][i]].grid(photon.path_pos_index[1][i],photon.path_pos_index[2][i],photon.path_pos_index[3][i]).absorbed_energy_num_photons[geometry.abs_energy_wave_index]++;
-#ifdef DEGUG_SP
+#ifdef DEBUG_SP
+    cout << photon.number << " ";
     cout << "path: ";
     cout << i << " ";
     cout << photon.path_pos_index[0][i] << " ";
@@ -85,8 +102,10 @@ void scatter_photon (geometry_struct& geometry,
     cout << photon.path_pos_index[3][i] << " ";
     cout << photon.path_tau[i] << " ";
     cout << geometry.grids[photon.path_pos_index[0][i]].grid(photon.path_pos_index[1][i],photon.path_pos_index[2][i],photon.path_pos_index[3][i]).dust_tau_per_pc*geometry.tau_to_tau_ref*geometry.grids[photon.path_pos_index[0][i]].phys_cube_size[0] << " ";
+    cout << abs_weight*(photon.path_tau[i]/photon.target_tau) << " ";
+    cout << abs_weight << " ";
     cout << endl;
-    tmp_sum += photon.path_tau[i];
+    //    tmp_sum += photon.path_tau[i];
 #endif
   }
 #ifdef DEGUG_SP

@@ -12,17 +12,20 @@ void get_run_parameters (ConfigFile& param_data,
 			 runinfo_struct& runinfo)
 {
   geometry.n_photons = long(param_data.DValue("Run","num_photons"));
-  check_input_param("num_photons",geometry.n_photons,1,1000000000);
+  check_input_param("num_photons",geometry.n_photons,1,1e10);
 
   // get type of energy grid storing (memory/disk) desired
-  geometry.abs_energy_storage_type = param_data.IValue("Run","abs_energy_storage");
-  check_input_param("abs_energy_storage_type",geometry.abs_energy_storage_type,0,1);
+//   geometry.abs_energy_storage_type = param_data.IValue("Run","abs_energy_storage");
+//   check_input_param("abs_energy_storage_type",geometry.abs_energy_storage_type,0,1);
+  // removed possibility to do disk storage when polyc added (KDG - 30 Mar 2009)
+  // leave in the code (where possible) in case we want to use the disk at a later date
+  geometry.abs_energy_storage_type = 0;
 
   // indicate that the absorbed energy grid has not been initialized
   geometry.abs_energy_grid_initialized = 0;
 
   geometry.n_photons = long(param_data.DValue("Run","num_photons"));
-  check_input_param("num_photons",geometry.n_photons,1,1000000000);
+  check_input_param("num_photons",geometry.n_photons,1,1e10);
 
   int image_size = param_data.IValue("Run","output_image_size");
   check_input_param("output_image_size",image_size,1,50000);

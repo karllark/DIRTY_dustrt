@@ -92,6 +92,7 @@ void radiative_transfer (geometry_struct& geometry,
 #ifdef DEBUG_OUTRANGE
     try {
 #endif
+    photon.number = i;
     new_photon(photon, geometry, runinfo, random_obj);
 #ifdef DEBUG_OUTRANGE
     } catch(std::out_of_range)
@@ -105,7 +106,6 @@ void radiative_transfer (geometry_struct& geometry,
     cout << "rt: np end; ";
     cout.flush();
 #endif
-    photon.number = i;
 #ifdef DEBUG_RT
     if (photon.number > OUTNUM) cout << photon.number << " ";
     if (photon.number > OUTNUM) cout << "np1* done; "; cout.flush();

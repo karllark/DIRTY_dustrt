@@ -9,7 +9,7 @@
 // 2008 Jul/KDG - fixed scattered photon weight in the case of subgrids (set current_grid_num = 0)
 // ======================================================================
 #include "classify_scattered_photon.h"
-//#define OUTNUM 517126
+//#define OUTNUM 73145
 //#define DEBUG_CSCP
 
 void classify_scattered_photon (output_struct& output,

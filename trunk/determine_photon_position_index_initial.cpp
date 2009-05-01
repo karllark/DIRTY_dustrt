@@ -7,7 +7,7 @@
 // ======================================================================
 #include "determine_photon_position_index_initial.h"
 //#define DEBUG_DPPII
-//#define OUTNUM 2567
+//#define OUTNUM 64
 
 void determine_photon_position_index_initial (geometry_struct& geometry,
 					      photon_data& photon)
@@ -63,8 +63,8 @@ void determine_photon_position_index_initial (geometry_struct& geometry,
 #ifdef DEBUG_DPPII
       if (photon.number == OUTNUM) {
 	cout << "pre check (debug)" << endl;
-	cout << "photon not in designated grid cell (determine_photon.position_index_initial.cpp)." << endl;
-	cout << "out of bounds of correction." << endl;
+// 	cout << "photon not in designated grid cell (determine_photon.position_index_initial.cpp)." << endl;
+// 	cout << "out of bounds of correction." << endl;
 	cout << "photon # = " << photon.number << endl;
 	cout << "i = " << i << endl;
 	cout << "photon.position[i] = " << photon.position[i] << endl;
@@ -90,7 +90,14 @@ void determine_photon_position_index_initial (geometry_struct& geometry,
 	  (photon.position[i] > geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1])) {
 	// now make changes if this is a roundoff error issue (very near the grid min/max)
 	int not_ok = 0;
-	if (photon.position[i] < geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]]) {
+	if (photon.position_index[k][i] == geometry.grids[cur_grid_num].index_dim[i]) {
+#ifdef DEBUG_DPPII
+	  cout << "photon # = " << photon.number << " ";
+	  cout << "frac_miss--(exact max boundary)" << endl;
+#endif
+	  photon.position_index[k][i]--;
+	  //	  exit(8);
+	} else if (photon.position[i] < geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]]) {
 	  float frac_miss = (geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]] - photon.position[i])/
 	    geometry.grids[cur_grid_num].phys_cube_size[k];
 	  cout << "frac_miss--(initial) = " << frac_miss << endl;

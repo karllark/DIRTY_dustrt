@@ -4,10 +4,9 @@
 // 2008 Dec/KDG - written
 // ======================================================================
 #include "radiative_transfer_many_waves.h"
-//#define DEBUG_RT
+//#define DEBUG_MRT
 //#define OUTNUM -1
 //#define OUTNUM 1559
-#define DEBUG_OUTRANGE
 
 void radiative_transfer_many_waves (geometry_struct& geometry,
 				    runinfo_struct& runinfo,
@@ -18,6 +17,13 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
 				    int iter_num)
 
 {
+#ifdef DEBUG_MRT
+      cout << "mrt: mrt begin; ";
+      cout.flush();
+#endif
+  // setup/(re)initialize absorbed energy grid
+  setup_absorbed_energy_grid(geometry, runinfo, iter_num);
+      
   // loop over all wavelengths
   int i;
   for (i = 0; i < runinfo.n_waves; i++) {
@@ -44,9 +50,12 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
 	cout << endl;
       }
 
-      // setup/(re)initialize absorbed energy grid
-      setup_absorbed_energy_grid(geometry, runinfo, i, iter_num);
-      
+      if (geometry.abs_energy_storage_type == 0) {
+	geometry.abs_energy_wave_index = i;
+      } else {
+	geometry.abs_energy_wave_index = 0;
+      }
+
       //     // check the absorbed energy grid (temp needed as energy not conserved)
       //     // KDG - 23 Mar 2008
       //     check_absorbed_energy_grid(geometry, runinfo);
@@ -55,12 +64,12 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
       get_dust_scat_parameters(i, runinfo, geometry);
       
       // do RT part
-#ifdef DEBUG_DIRTY
+#ifdef DEBUG_MRT
       cout << "rt: rt begin; ";
       cout.flush();
 #endif
       radiative_transfer(geometry, runinfo, output, photon, random_obj);
-#ifdef DEBUG_DIRTY
+#ifdef DEBUG_MRT
       cout << "rt: rt end; ";
       cout.flush();
 #endif
@@ -76,14 +85,14 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
       // store the result (either in memory or on disk)
       // remember to zero out the absorbed energy grid
       if ((runinfo.do_dust_emission) || (runinfo.do_ere_emission)) {
-#ifdef DEBUG_DIRTY
+#ifdef DEBUG_MRT
 	cout << endl;
 	cout << "wave [cm] = " << geometry.wavelength << endl;
 	cout << "te: saeg start; ";
 	cout.flush();
 #endif
 	store_absorbed_energy_grid(geometry, runinfo, output, i, iter_num);
-#ifdef DEBUG_DIRTY
+#ifdef DEBUG_MRT
 	cout << "te: saeg end; ";
 	cout.flush();
 #endif

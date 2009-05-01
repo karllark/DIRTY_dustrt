@@ -8,23 +8,13 @@
 
 void setup_absorbed_energy_grid (geometry_struct& geometry,
 				 runinfo_struct& runinfo,
-				 int wave_index,
 				 int doing_emission)
 
 {
-  if (geometry.abs_energy_storage_type == 0) {
-    geometry.abs_energy_wave_index = wave_index;
-    if (!doing_emission) 
-      runinfo.absorbed_energy.resize(runinfo.wavelength.size(),0.0);
-  } else {
-    geometry.abs_energy_wave_index = 0;
-    if ((!geometry.abs_energy_grid_initialized) && (!doing_emission))
-      runinfo.absorbed_energy.push_back(0.0);
-  }
+  if ((!geometry.abs_energy_grid_initialized) && (!doing_emission))
+    runinfo.absorbed_energy.resize(runinfo.n_waves,0.0);
 
-//   if (doing_emission == 1) cout << "saving radiation field..." << endl;
-
-  int i,j,k,m = 0;
+  int i,j,k,m,n = 0;
   // loop over all the defined grids
   for (m = 0; m < int(geometry.grids.size()); m++) {
     // loop of the cells in this grid
@@ -33,42 +23,49 @@ void setup_absorbed_energy_grid (geometry_struct& geometry,
 	for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
 	  if (doing_emission) {
 	    // save the existing value of the radiation field (needed for dust or ere emission)
-	    if (doing_emission == 1) {
-	      geometry.grids[m].grid(i,j,k).save_radiation_field_density[geometry.abs_energy_wave_index] =
-		geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index];
-	      geometry.grids[m].grid(i,j,k).save_radiation_field_density_num_photons[geometry.abs_energy_wave_index] =
-		geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[geometry.abs_energy_wave_index];
+	    // but only on the first iteratio (i.e., save the stellar RT radiation field)
+	    for (n = 0; n < runinfo.n_waves; n++) {
+	      if (doing_emission == 1) {
+		geometry.grids[m].grid(i,j,k).save_radiation_field_density[n] =
+		  geometry.grids[m].grid(i,j,k).absorbed_energy[n];
+		geometry.grids[m].grid(i,j,k).save_radiation_field_density_num_photons[n] =
+		  geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n];
+	      }
+	      // zero out the current absorbed energy value
+	      geometry.grids[m].grid(i,j,k).absorbed_energy[n] = 0.0;
+	      geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] = 0;
 	    }
-	    // zero out the current absorbed energy value
-	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] = 0.0;
-	    geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[geometry.abs_energy_wave_index] = 0;
 	  } else {
 	    // if this is the first time or if memory storage requested
 	    // then push zero into the absorbed_energy variable in each grid cell
-	    if (geometry.abs_energy_storage_type == 1)
+	    if (geometry.abs_energy_storage_type == 1) {// disk memory
+	      cout << "need new code for disk storage of absorbed energy grid" << endl;
+	      cout << "ever since limited polychromaticism was implemented (27 Mar 2009 - KDG)" << endl;
+	      exit(8);
+// 	      if (!geometry.abs_energy_grid_initialized) {
+// 		geometry.grids[m].grid(i,j,k).absorbed_energy.push_back(0.0);
+// 		geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons.push_back(0);
+// 		geometry.grids[m].grid(i,j,k).save_radiation_field_density.push_back(0.0);
+// 		geometry.grids[m].grid(i,j,k).save_radiation_field_density_num_photons.push_back(0);
+// 	      } else {
+// 		geometry.grids[m].grid(i,j,k).absorbed_energy[0] = 0.0;
+// 		geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[0] = 0;
+// 	      }
+	    } else
 	      if (!geometry.abs_energy_grid_initialized) {
-		geometry.grids[m].grid(i,j,k).absorbed_energy.push_back(0.0);
-		geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons.push_back(0);
-		geometry.grids[m].grid(i,j,k).save_radiation_field_density.push_back(0.0);
-		geometry.grids[m].grid(i,j,k).save_radiation_field_density_num_photons.push_back(0);
+		geometry.grids[m].grid(i,j,k).absorbed_energy.resize(runinfo.n_waves,0.0);
+		geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons.resize(runinfo.n_waves,0);
+		geometry.grids[m].grid(i,j,k).save_radiation_field_density.resize(runinfo.n_waves,0.0);
+		geometry.grids[m].grid(i,j,k).save_radiation_field_density_num_photons.resize(runinfo.n_waves,0);
 	      } else {
-		geometry.grids[m].grid(i,j,k).absorbed_energy[0] = 0.0;
-		geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[0] = 0;
-	      }
-	    else
-	      if (!geometry.abs_energy_grid_initialized) {
-		geometry.grids[m].grid(i,j,k).absorbed_energy.resize(runinfo.wavelength.size(),0.0);
-		geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons.resize(runinfo.wavelength.size(),0);
-		geometry.grids[m].grid(i,j,k).save_radiation_field_density.resize(runinfo.wavelength.size(),0.0);
-		geometry.grids[m].grid(i,j,k).save_radiation_field_density_num_photons.resize(runinfo.wavelength.size(),0);
-	      } else {
-		geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] = 0.0;
-		geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[geometry.abs_energy_wave_index] = 0;
+		for (n = 0; n < runinfo.n_waves; n++) {
+		  geometry.grids[m].grid(i,j,k).absorbed_energy[n] = 0.0;
+		  geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] = 0;
+		}
 	      }
 	  }
 	}
   }
   // set to know that the absorbed energy grid has been initialized the first time
-  // each cell has an absorbed_energy vector of 1 element
   if (!geometry.abs_energy_grid_initialized) geometry.abs_energy_grid_initialized = 1;
 }

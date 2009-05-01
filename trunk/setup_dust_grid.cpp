@@ -84,6 +84,8 @@ void setup_dust_grid (ConfigFile& param_data,
     setup_dust_grid_slab(param_data, geometry, random_obj);
   } else if (geometry.type == "dexp_disk") {
     setup_dust_grid_dexp_disk(param_data, geometry, random_obj);
+   } else if (geometry.type == "file") {
+     setup_dust_grid_file(param_data, geometry);
   } else {
     cout << "Setup for input geometry type (" << geometry.type << ") not found [NEW CODE NEEDED]." << endl;
     exit(8);

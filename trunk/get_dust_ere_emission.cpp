@@ -4,6 +4,8 @@
 // the ERE carrier to compute the ERE emission.
 //
 // 2008 Sep/KDG - created from get_dust_thermal_emission
+// 2009 Jan/KDG - finished (fixed the ERE scaling problem - do in absorbed
+//                          absorbed energy, not J units)
 // ======================================================================
 #include "get_dust_ere_emission.h"
 //#define DEBUG_GDEE
@@ -56,6 +58,7 @@ void get_dust_ere_emission (geometry_struct& geometry,
   vector<double> tmp_new_j_from_interpol;
 
   double total_ere_photons = 0.0;
+  double total_ere_energy = 0.0;
   double ere_sigma_ratio = 0.0;
 
   // calculate the total absorbed energy from the previously saved total abosrbed energy by wavelength
@@ -181,7 +184,8 @@ void get_dust_ere_emission (geometry_struct& geometry,
 		// remove the energy just absorbed from J (it is now in ERE) (only ere peak photon energy)
 		geometry.grids[m].grid(i,j,k).absorbed_energy[x] -= tmp_j_for_interpol[x]*runinfo.ere_efficiency*
 		  Constant::PLANCKLIGHT/runinfo.ere_peak_wavelength;
-		
+		// convert from rad field density to the absorbed energy density
+		tmp_j_for_interpol[x] *= 4.*Constant::PI*runinfo.ave_C_abs[x];
 		x++;
 	      }
 	      total_ere_photons = NumUtils::integrate<double>(tmp_wave_for_interpol,tmp_j_for_interpol);
@@ -196,18 +200,25 @@ void get_dust_ere_emission (geometry_struct& geometry,
 	      // convert to ERE energy
 	      total_ere_photons *= Constant::PLANCKLIGHT/runinfo.ere_peak_wavelength;
 	      
+#ifdef DEBUG_GDEE	
 	      cout << "total_ere_energy/H atom = " << total_ere_photons << endl;
+#endif
 
 	      // convert to peak ERE energy
 	      total_ere_photons /= (sqrt(2.0)*(runinfo.ere_fwhm/2.35)*pow(M_PI,0.5));
-	      
+
 	      // now create the Gaussian ERE emission
 	      //   need to check the conversion between fwhm and sigma - on a plane and no internet)
+ 	      // adjust to account for non-zero width of emission
+	      //   this is a factor that works for a specific set of values
+	      //   need to work out the correct correction factor (takes into account width)
+	      //   KDG - 9 Jan 2009
+	      //   this is the 1.42 factor
 	      for (x = 0; x < runinfo.wavelength.size(); x++) {
 		ere_sigma_ratio = fabs(runinfo.wavelength[x] - runinfo.ere_peak_wavelength)/(runinfo.ere_fwhm/2.35);
 		// 	      cout << ere_sigma_ratio << " ";
 		if (ere_sigma_ratio < 4.0) {
-		  geometry.grids[m].grid(i,j,k).emitted_energy[0][x] = total_ere_photons*exp(-(0.5*ere_sigma_ratio*ere_sigma_ratio));
+		  geometry.grids[m].grid(i,j,k).emitted_energy[0][x] = (total_ere_photons/1.42)*exp(-(0.5*ere_sigma_ratio*ere_sigma_ratio));
 		  //  		cout << runinfo.wavelength[x] << " " << geometry.grids[m].grid(i,j,k).emitted_energy[0][x];
 		} else
 		  geometry.grids[m].grid(i,j,k).emitted_energy[0][x] = 0.0;
@@ -222,8 +233,9 @@ void get_dust_ere_emission (geometry_struct& geometry,
 	      
 	      global_total_emitted += total_emit_energy;
 	      
-	      if (fabs(1.0 - (total_emit_energy/tot_abs_energy)) > 1e-3) {
-		cout << "energy conservations worse than 1e-3" << endl;
+	      total_ere_energy = (total_ere_photons*(runinfo.ere_fwhm/2.35)*pow(M_PI,0.5)*geometry.grids[m].grid(i,j,k).num_H);
+	      if (fabs(1.0 - (total_emit_energy/total_ere_energy) > 1e-1)) {
+		cout << "energy conservations worse than 1e-1" << endl;
 		cout << "total_abs/H atom = " << tot_abs_energy << endl;
 		cout << "total_emit_energy/H atom = " << total_emit_energy << endl;
 		cout << "ratio emit/abs = " << total_emit_energy/tot_abs_energy << endl;
