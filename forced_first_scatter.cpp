@@ -9,7 +9,7 @@
 #include "forced_first_scatter.h"
 #include <unistd.h>
 //#define DEBUG_FFS
-//#define OUTNUM 222074
+//#define OUTNUM 64
 
 void forced_first_scatter (geometry_struct& geometry,
 			   photon_data& photon,

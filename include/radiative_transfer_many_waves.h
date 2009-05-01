@@ -43,7 +43,6 @@ extern void output_results (output_struct& output,
 // setup absorbed energy grid
 extern void setup_absorbed_energy_grid (geometry_struct& geometry,
 					runinfo_struct& runinfo,
-					int wave_index,
 					int doing_dust_emission);
 
 // store absorbed energy grid (memory or disk)

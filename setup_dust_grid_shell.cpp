@@ -37,10 +37,6 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   double outer_radius = param_data.FValue("Geometry","outer_radius");
   check_input_param("outer_radius",outer_radius,0.0,geometry.radius);
 
-  // optically thin outest radius to allow for the forced first scattering in the cloudy geometry
-  double extended_outer_radius = param_data.FValue("Geometry","extended_outer_radius");
-  check_input_param("extended_outer_radius",extended_outer_radius,outer_radius,geometry.radius);
-
   // shell subdivide radius
   float subdivide_radius = param_data.FValue("Geometry","subdivide_radius");
   check_input_param("subdivide_radius",subdivide_radius,0.0,geometry.radius);
@@ -160,7 +156,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   // normalized all the radii to the outer radius (see above comment)
   very_inner_radius /= outer_radius;
   inner_radius /= outer_radius;
-  extended_outer_radius /= outer_radius;
+  //  extended_outer_radius /= outer_radius;
   double save_outer_radius = outer_radius;
   outer_radius = 1.0;
 
@@ -200,9 +196,9 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	x_val = (main_grid.positions[0][i] + main_grid.positions[0][i+1])/2.0;
 	radius = sqrt(x_val*x_val + y_val*y_val + z_val*z_val);
 	radius /= save_outer_radius;
-	if (radius > extended_outer_radius)
+	if (radius > geometry.radius/save_outer_radius)
 	  main_grid.grid(i,j,k).dust_tau_per_pc = -0.5;  // this means the edge of the dust
-	else if (radius > outer_radius)
+	else if ((radius > outer_radius) && (radius < geometry.radius/save_outer_radius))
 	  main_grid.grid(i,j,k).dust_tau_per_pc = 1e-20;  // negligible amount of dust
 	else {
 	  if (radius < very_inner_radius)
@@ -212,7 +208,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	  else if (radius <= outer_radius) 
 	    tmp_density = tmp_den_constant2*pow(radius,radial_density_poly);
 	  tmp_density /= save_outer_radius;
-	  
+
 	  if (random_obj.random_num() <= geometry.filling_factor)
 	    main_grid.grid(i,j,k).dust_tau_per_pc = tmp_density*geometry.clump_densities[0];
 	  else {
@@ -220,6 +216,10 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	    if (radius > max_good_radius) max_good_radius = radius;
 	    main_grid.grid(i,j,k).dust_tau_per_pc = tmp_density*geometry.clump_densities[1];
 	  }
+// 	  cout << main_grid.grid(i,j,k).dust_tau_per_pc << " ";
+// 	  cout << radius << " ";
+// 	  cout << pow(radius,radial_density_poly) << " ";
+// 	  cout << endl;
 	}
 
 #ifdef DEBUG_SDG
@@ -228,6 +228,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
       }
     }
   }
+//   exit(8);
 
 #ifdef DEBUG_SDG
   cout << min_good_radius << " " << inner_radius << endl;

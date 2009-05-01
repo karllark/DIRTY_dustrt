@@ -46,7 +46,7 @@ void new_photon_diffuse_source (photon_data& photon,
     int pos_index = i;
 #ifdef DEBUG_NPDS
     cout << "theta = " << geometry.diffuse_source_theta[pos_index] << endl;
-    cout << "cos(phi) = " << geometry.diffuse_source_phi[pos_index] << endl;
+    cout << "phi = " << geometry.diffuse_source_phi[pos_index] << endl;
 #endif
     
     // direction of photon 
@@ -58,6 +58,12 @@ void new_photon_diffuse_source (photon_data& photon,
     photon.dir_cosines[1] = sin(phi)*temp; 
   }
   
+#ifdef DEBUG_NPDS
+  cout << "photon.dir_cosines[0..2] = ";
+  cout << photon.dir_cosines[0] << " ";
+  cout << photon.dir_cosines[1] << " ";
+  cout << photon.dir_cosines[2] << endl;
+#endif
   // start the photon in a plane which is perpendicular to the direction
   // first setup the photon in the xy plane
   double pos_phi = M_PI*(2.0*random_obj.random_num() - 1.0);
@@ -86,18 +92,42 @@ void new_photon_diffuse_source (photon_data& photon,
   rotate_transform[2][1] = 0.0;
   rotate_transform[2][2] = cos_theta;
 
+#ifdef DEBUG_NPDS
+  cout << "np; start rotate" << " ";
+  cout.flush();
+#endif
   // apply the rotation (use the existing routine)
   rotate_zaxis_for_observer(rotate_transform, photon);
+#ifdef DEBUG_NPDS
+  cout << "np; done rotate" << endl;
+  cout << "photon # = " << photon.number << endl;
+  for (i = 0; i < 3; i++)
+    cout << i << " " << photon.position[i] << " " << photon.dir_cosines[i] << endl;
+  cout.flush();
+#endif
 
   // now determine the position indexes of the photon
   determine_photon_position_index_initial(geometry, photon);
+#ifdef DEBUG_NPDS
+  cout << "np; done index pos" << " ";
+  cout.flush();
+#endif
 
   // now move the photon to the edge
   double target_tau = 1e20;
   int escape = 0;
   double distance_traveled = 0.0;
   double tau_to_surface = 0.0;
+  photon.path_cur_cells = -1;  // set to -1 *not* to save cells tranversed
+#ifdef DEBUG_NPDS
+  cout << "np; start distance traveled" << " ";
+  cout.flush();
+#endif
   distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_to_surface);
+#ifdef DEBUG_NPDS
+  cout << "np; done distance traveled" << " ";
+  cout.flush();
+#endif
 
   // now flip dir_cosines so the photon is heading into the nebula, not out
   for (i = 0; i < 3; i++) {
@@ -113,5 +143,12 @@ void new_photon_diffuse_source (photon_data& photon,
 
   // now determine the position indexes of the photon (again to handle the edges)
   determine_photon_position_index_initial(geometry, photon);
+
+#ifdef DEBUG_NPDS
+  cout << "2: photon position and dir_cosine at edge" << endl;
+  cout << "photon # = " << photon.number << endl;
+  for (i = 0; i < 3; i++)
+    cout << i << " " << photon.position[i] << " " << photon.dir_cosines[i] << endl;
+#endif
 
 }

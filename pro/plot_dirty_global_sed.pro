@@ -75,6 +75,9 @@ if (keyword_set(energy)) then begin
             table.flux_de_s_4 *= table.wavelength
             table.flux_de_d_5 *= table.wavelength
             table.flux_de_s_5 *= table.wavelength
+        endif
+        sindxs = where(table_tagnames EQ 'FLUX_DE_D_6',n_sindxs)
+        if (n_sindxs GT 0) then begin
             table.flux_de_d_6 *= table.wavelength
             table.flux_de_s_6 *= table.wavelength
             table.flux_de_d_7 *= table.wavelength

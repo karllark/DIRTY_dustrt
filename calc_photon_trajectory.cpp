@@ -11,7 +11,7 @@
 // ======================================================================
 #include "calc_photon_trajectory.h"
 // #define PHOTON_POS
-//#define OUTNUM 517126
+//#define OUTNUM 0
 //#define DEBUG_CPT
 
 double calc_photon_trajectory (photon_data& photon,
@@ -21,8 +21,13 @@ double calc_photon_trajectory (photon_data& photon,
 			       double& tau_traveled)
 
 {
-  double distance_traveled = 0.0;
   double tau_left = target_tau;  // reduce till zero = done
+#ifdef DEBUG_CPT
+  cout << "start cpt; ";
+  cout << "tau_left = " << tau_left << endl;
+  cout.flush();
+#endif
+  double distance_traveled = 0.0;
   double delta_tau = 0.0;
   double delta_dist = 0.0;
 

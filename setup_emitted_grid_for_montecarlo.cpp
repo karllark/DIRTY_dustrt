@@ -49,10 +49,18 @@ void setup_emitted_grid_for_montecarlo (geometry_struct& geometry,
 	    for (x = 0; x < runinfo.wavelength.size(); x++) {
 
 	      // normalize if there we need the emission by grain/emission type
-	      if (runinfo.do_emission_grain && runinfo.dust_thermal_emission) 
-		if (geometry.grids[m].grid(i,j,k).emitted_energy[0][x] > 0) 
+	      if (runinfo.do_emission_grain && runinfo.dust_thermal_emission)
+		if (geometry.grids[m].grid(i,j,k).emitted_energy[0][x] > 0) {
+// 		  if (geometry.grids[m].grid(i,j,k).emitted_energy[0][x] > 1.) {
+// 		    cout << i << " ";
+// 		    cout << j << " ";
+// 		    cout << k << " ";
+// 		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[0][x] << " ";
+// 		    cout << endl;
+// 		  }
 		  for (z = 1; z < n_emit_components; z++)
 		    geometry.grids[m].grid(i,j,k).emitted_energy[z][x] /= geometry.grids[m].grid(i,j,k).emitted_energy[0][x];
+		}
 
 	      sum_emitted_lum[x] += geometry.grids[m].grid(i,j,k).emitted_energy[0][x];
 	      if (runinfo.dust_thermal_emission) 
@@ -64,5 +72,7 @@ void setup_emitted_grid_for_montecarlo (geometry_struct& geometry,
     
 	}
   }
+
+//   exit(8);
 
 }

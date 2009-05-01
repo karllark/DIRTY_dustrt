@@ -54,7 +54,7 @@ void setup_dust_grid_slab (ConfigFile& param_data,
 
   // nonslab density ratio
   float nonslab_density_ratio = param_data.FValue("Geometry","nonslab_density_ratio");
-  check_input_param("nonslab density ratio",nonslab_density_ratio,1e-20,1.);
+  check_input_param("nonslab density ratio",nonslab_density_ratio,0.99e-7,1.);
 
   // maximum optical depth per cell (controls when a cell is subdivided)
   geometry.max_tau_per_cell = param_data.FValue("Geometry","max_tau_per_cell");

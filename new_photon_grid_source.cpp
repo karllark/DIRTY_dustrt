@@ -83,7 +83,7 @@ void new_photon_grid_source (photon_data& photon,
   int cell_num = selected_cell - selected_grid->grid.begin();
   int x_val, y_val, z_val;
   selected_grid->grid.get_xyz(cell_num, x_val, y_val, z_val);
-  
+
 #ifdef DEBUG_NPGS
   cout << "ran val & grid_cell vals = ";
   cout << x_val << " ";

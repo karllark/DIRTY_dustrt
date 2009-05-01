@@ -252,6 +252,9 @@ void output_results (output_struct& output,
 	ss << (index+1);
 	ss >> wave_index;
 	filename += "_w" + wave_index;
+
+	// convert the wavelength in microns to a string
+	filename += "_" + StringManip::vtos(runinfo.wavelength[index]*Constant::CM_UM) + "um";
       }
       filename += ".fits";
       
