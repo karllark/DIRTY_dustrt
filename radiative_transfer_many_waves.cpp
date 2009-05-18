@@ -41,6 +41,12 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
 	}
     }
 
+    if (geometry.abs_energy_storage_type == 0) {
+      geometry.abs_energy_wave_index = i;
+    } else {
+      geometry.abs_energy_wave_index = 0;
+    }
+
     if (do_rt) {
       if (runinfo.verbose >= 1) {
 	cout << "working on wavelength [micron] = " << runinfo.wavelength[i]*Constant::CM_UM << endl;
@@ -48,12 +54,6 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
 	cout << "albedo = " << runinfo.albedo[i] << " ";
 	cout << "g = " << runinfo.g[i] << " ";
 	cout << endl;
-      }
-
-      if (geometry.abs_energy_storage_type == 0) {
-	geometry.abs_energy_wave_index = i;
-      } else {
-	geometry.abs_energy_wave_index = 0;
       }
 
       //     // check the absorbed energy grid (temp needed as energy not conserved)
@@ -77,6 +77,7 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
       // output RT results
       output_results(output, geometry, runinfo, i);
       
+    }
       //     // check the absorbed energy grid (temp needed as energy not conserved)
       //     // KDG - 23 Mar 2008
       //     cout << "**test2**" << endl;
@@ -84,19 +85,18 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
       
       // store the result (either in memory or on disk)
       // remember to zero out the absorbed energy grid
-      if ((runinfo.do_dust_emission) || (runinfo.do_ere_emission)) {
+    if ((runinfo.do_dust_emission) || (runinfo.do_ere_emission)) {
 #ifdef DEBUG_MRT
-	cout << endl;
-	cout << "wave [cm] = " << geometry.wavelength << endl;
-	cout << "te: saeg start; ";
-	cout.flush();
+      cout << endl;
+      cout << "wave [cm] = " << geometry.wavelength << endl;
+      cout << "te: saeg start; ";
+      cout.flush();
 #endif
-	store_absorbed_energy_grid(geometry, runinfo, output, i, iter_num);
+      store_absorbed_energy_grid(geometry, runinfo, output, i, iter_num);
 #ifdef DEBUG_MRT
-	cout << "te: saeg end; ";
-	cout.flush();
+      cout << "te: saeg end; ";
+      cout.flush();
 #endif
-      }
       
       //     // check the absorbed energy grid (temp needed as energy not conserved)
       //     // KDG - 23 Mar 2008
