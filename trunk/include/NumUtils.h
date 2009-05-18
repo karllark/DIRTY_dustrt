@@ -14,6 +14,11 @@
 
 using namespace std;
 
+// needed as apples don't define unit properly (or at least like linux)
+#ifdef __APPLE__
+typedef unsigned int uint;
+#endif 
+
 namespace NumUtils { // Define a namespace to avoid confusion with other 
                      // classes/libraries. 
 

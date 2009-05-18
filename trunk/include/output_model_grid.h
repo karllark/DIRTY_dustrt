@@ -11,7 +11,7 @@
 #include "geometry_def.h"
 #include "output_def.h"
 #include "fitsio.h"
-#include "constants.h"
+#include "Constants.h"
 #include "debug.h"
 
 //**********************************************************************

@@ -11,7 +11,7 @@
 #include "geometry_def.h"
 #include "photon_data.h"
 #include "random_dirty.h"
-#include "constants.h"
+#include "Constants.h"
 #include "debug.h"
 
 //**********************************************************************
