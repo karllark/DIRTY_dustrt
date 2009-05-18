@@ -52,6 +52,9 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   }
   global_total_absorbed = NumUtils::integrate<double>(tmp_wave,tmp_abs_energy);
 
+  cout << "global_total_absorbed = " << global_total_absorbed << endl;
+  if (global_total_absorbed == 0.0) exit(8);
+
   double min_enough_energy = 0.1*runinfo.energy_conserve_target*global_total_absorbed/geometry.num_cells;
   long num_cells_enough = 0;
   long num_cells_not_enough = 0;
@@ -112,6 +115,10 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	  for (x = 0; x < runinfo.wavelength.size(); x++) {
 // 	    tmp_wave[x] = double(runinfo.wavelength[x]);
 	    tmp_abs_energy[x] = geometry.grids[m].grid(i,j,k).absorbed_energy[x]*4.*Constant::PI*runinfo.ave_C_abs[x];
+// 	    if ((k == 5) && (j == 5) && (i == 5)) {
+// 	      cout << x << " " << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
+// 	      cout << geometry.grids[m].grid(i,j,k).save_radiation_field_density[x] << endl;
+// 	    }
 	    if (tmp_abs_energy[x] > max_abs_energy) max_abs_energy = tmp_abs_energy[x];
 	    //	    if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0.) tot_nonzero++;
 	    if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x] >= good_enough_photons) tot_nonzero++;

@@ -23,7 +23,7 @@ void setup_absorbed_energy_grid (geometry_struct& geometry,
 	for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
 	  if (doing_emission) {
 	    // save the existing value of the radiation field (needed for dust or ere emission)
-	    // but only on the first iteratio (i.e., save the stellar RT radiation field)
+	    // but only on the first iteration (i.e., save the stellar RT radiation field)
 	    for (n = 0; n < runinfo.n_waves; n++) {
 	      if (doing_emission == 1) {
 		geometry.grids[m].grid(i,j,k).save_radiation_field_density[n] =
@@ -31,6 +31,9 @@ void setup_absorbed_energy_grid (geometry_struct& geometry,
 		geometry.grids[m].grid(i,j,k).save_radiation_field_density_num_photons[n] =
 		  geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n];
 	      }
+// 	      if ((k == 5) && (j == 5) && (i == 5)) {
+// 		cout << n << " " << geometry.grids[m].grid(i,j,k).save_radiation_field_density[n] << endl;
+// 	      }
 	      // zero out the current absorbed energy value
 	      geometry.grids[m].grid(i,j,k).absorbed_energy[n] = 0.0;
 	      geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] = 0;

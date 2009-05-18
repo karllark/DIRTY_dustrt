@@ -117,18 +117,22 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	    cout << "prev_J(lambda) = " << geometry.grids[m].grid(i,j,k).save_radiation_field_density << endl;
 #endif
 
-	    // add back the previously saved radiation field density
-	    if (doing_emission)
-	      geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] +=
-		geometry.grids[m].grid(i,j,k).save_radiation_field_density[geometry.abs_energy_wave_index];
 	  } else geometry.grids[m].grid(i,j,k).num_H = 0.0;
+
+	  // add back the previously saved radiation field density
+	  if (doing_emission) {
+	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] +=
+	      geometry.grids[m].grid(i,j,k).save_radiation_field_density[geometry.abs_energy_wave_index];
+	    geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[geometry.abs_energy_wave_index] +=
+	      geometry.grids[m].grid(i,j,k).save_radiation_field_density_num_photons[geometry.abs_energy_wave_index];
+	  }
 
 	  if (geometry.grids[m].grid(i,j,k).num_H < 0.0) exit(8);
 
 	  // sum the absorbed energy for this wavelength
 	  runinfo.absorbed_energy[geometry.abs_energy_wave_index] += 
 	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index]*geometry.grids[m].grid(i,j,k).num_H;
-	  
+
 #ifdef DEBUG_SAEG
 	    cout << "final J(lambda) = " << geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] << endl;
 #endif
@@ -154,5 +158,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
     exit(8);
   }
   // nothing needed for geometry.abs_energy_storage_type == 0 (memory)
+
+//   cout << "total abs energy = " << runinfo.absorbed_energy[geometry.abs_energy_wave_index] << endl;
 
 }

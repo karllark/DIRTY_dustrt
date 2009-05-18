@@ -58,6 +58,7 @@ void setup_emitted_grid_for_montecarlo (geometry_struct& geometry,
 // 		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[0][x] << " ";
 // 		    cout << endl;
 // 		  }
+// 		  cout << "emitted energy = " << geometry.grids[m].grid(i,j,k).emitted_energy[0][x] << endl;
 		  for (z = 1; z < n_emit_components; z++)
 		    geometry.grids[m].grid(i,j,k).emitted_energy[z][x] /= geometry.grids[m].grid(i,j,k).emitted_energy[0][x];
 		}
