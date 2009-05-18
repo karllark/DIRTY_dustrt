@@ -51,6 +51,8 @@ int main(int argc, char* argv[])
   photon_data photon;   // structure with the photon info (position, direction, weight, etc.)
   runinfo_struct runinfo; // structure with information about the run
 
+  runinfo.param_filename = param_filename; // save the filename
+
   random_dirty random_obj;  // object for random number generator
   random_obj.random_num(long(-987654321));  // initialize
 
