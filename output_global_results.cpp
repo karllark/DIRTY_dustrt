@@ -187,6 +187,11 @@ void output_global_results (runinfo_struct& runinfo,
   fits_create_tbl(out_ptr, ASCII_TBL, 0, tfields, &ttype[0], &tform[0], &tunit[0], "Global_Outputs", &status);
   check_fits_io(status,"fits_create_tbl : output_global_results");
   
+  // put parameter file into header
+  fits_params_to_header(runinfo.param_filename, out_ptr);
+
+  // return to regularly scheduled work
+
   double thmass = geometry.total_h_mass;
   fits_write_key(out_ptr, TDOUBLE, "TOT_HMASS", &thmass, "Total H atom mass", &status);
   check_fits_io(status,"fits_write_key : output_global_results");

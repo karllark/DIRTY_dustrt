@@ -17,7 +17,11 @@
 //
 // lots more will go here as things are fleshed out
 
+using namespace std;
+
 struct runinfo_struct {
+  string param_filename; // name of file with all the parameters
+
   int verbose; // verbosity information (0=nothing)
   int do_ere_emission;  // do ERE emission (0=no)
   int do_dust_emission; // do dust thermal emission (0=no)
