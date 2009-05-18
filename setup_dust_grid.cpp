@@ -221,7 +221,7 @@ void setup_dust_grid (ConfigFile& param_data,
 
       if (geometry.type == "sphere") {
 	// muliple by the size of the nebula in cm^2
-	geometry.total_source_luminosity *= M_PI*pow(0.95*geometry.radius*PC_TO_CM,2.0);
+	geometry.total_source_luminosity *= M_PI*pow(0.95*geometry.radius*Constant::PC_CM,2.0);
 // 	cout << geometry.total_source_luminosity << endl;
       } else {
 	cout << "diffuse source from file not setup for anything but sphere" << endl;

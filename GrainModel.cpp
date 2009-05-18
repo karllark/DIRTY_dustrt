@@ -486,7 +486,7 @@ vector <float> GrainModel::getZDA_sdist(vector <float> coeff, int cmp)
 vector <float> GrainModel::getWD_sdist(vector <float> coeff, int cmp) 
 {
 
-  float thissz;                     // Hold um copy of size at each point. 
+  //float thissz;                     // Hold um copy of size at each point. 
   vector <float> retvec(Component[cmp].size.size()); // The size distribution [um^-1]
   vector <float>::iterator isz;     // Iterator through size vector
   vector <float>::iterator iretvec; // Iterator through size dist vector

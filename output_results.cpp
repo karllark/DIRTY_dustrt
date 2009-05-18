@@ -72,7 +72,7 @@ void output_results (output_struct& output,
 
     // determine conversion from lum to flux 4*pi*d^2 in cm^2
     double lum_to_flux = 0.0;
-    lum_to_flux = 1.0/(4.*M_PI*pow(geometry.distance*(PC_TO_CM),2.0));
+    lum_to_flux = 1.0/(4.*M_PI*pow(geometry.distance*(Constant::PC_CM),2.0));
 //     cout << "lum_to_flux = " << lum_to_flux << endl;
 
     // determine stellar flux
