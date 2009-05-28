@@ -115,16 +115,23 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	  for (x = 0; x < runinfo.wavelength.size(); x++) {
 // 	    tmp_wave[x] = double(runinfo.wavelength[x]);
 	    tmp_abs_energy[x] = geometry.grids[m].grid(i,j,k).absorbed_energy[x]*4.*Constant::PI*runinfo.ave_C_abs[x];
-// 	    if ((k == 5) && (j == 5) && (i == 5)) {
-// 	      cout << x << " " << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
-// 	      cout << geometry.grids[m].grid(i,j,k).save_radiation_field_density[x] << endl;
-// 	    }
+ 	    if ((k == 5) && (j == 5) && (i == 5)) {
+ 	      cout << x << " " << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
+	      cout << geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x] << " ";
+ 	      cout << geometry.grids[m].grid(i,j,k).save_radiation_field_density[x] << endl;
+ 	    }
 	    if (tmp_abs_energy[x] > max_abs_energy) max_abs_energy = tmp_abs_energy[x];
 	    //	    if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0.) tot_nonzero++;
 	    if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x] >= good_enough_photons) tot_nonzero++;
 	  }
  	  tot_abs_energy = NumUtils::integrate<double>(tmp_wave,tmp_abs_energy)*geometry.grids[m].grid(i,j,k).num_H;
 		
+	  if ((k == 5) && (j == 5) && (i == 5)) {
+	    cout << geometry.grids[m].grid(i,j,k).num_H << endl;
+	    cout << "total nonzero = " << tot_nonzero << endl;
+	    cout << "total absorbed energy = " << tot_abs_energy << endl;
+	    cout << "max absorbed energy = " << max_abs_energy << endl;
+	  }
 #ifdef DEBUG_GDTE
 	  cout << "total nonzero = " << tot_nonzero << endl;
 	  cout << "total absorbed energy = " << tot_abs_energy << endl;
@@ -225,6 +232,23 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 		// need to multiply the emitted energy passed back by dust_thermal_emission
 		// by the number of HI atoms in the cell to get the total emitted energy
 		if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
+		  cout << endl;
+		  cout << i << " ";
+		  cout << j << " ";
+		  cout << k << endl;
+		  uint xx = 0;
+		  for (xx = 0; xx < runinfo.wavelength.size(); xx++) {
+		    cout << xx << " " << geometry.grids[m].grid(i,j,k).absorbed_energy[xx] << " ";
+		    cout << geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[xx] << " ";
+		    cout << geometry.grids[m].grid(i,j,k).save_radiation_field_density[xx] << " ";
+		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[0][xx] << " ";
+		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[1][xx] << " ";
+		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[2][xx] << " ";
+		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[3][xx] << " ";
+		    cout << endl;
+		  }
+		  cout << geometry.grids[m].grid(i,j,k).emitted_energy.size() << endl;
+		  cout << geometry.grids[m].grid(i,j,k).emitted_energy[z].size() << endl;
 		  cout << z << " " << x << endl;
 		  cout << geometry.grids[m].grid(i,j,k).emitted_energy[z][x] << endl;
 		  cout << " emitted energy is not finite (before num_H calc) " << endl;

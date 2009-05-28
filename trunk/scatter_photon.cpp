@@ -20,7 +20,31 @@ void scatter_photon (geometry_struct& geometry,
   // determine the cosine of the scattering angle
   //   if g is to near zero (isotropic), just randomly determine angle
   //   equations tested to work as long as g > 1e-15  (KDG 28 Dec 2004)
-  if (geometry.g > ROUNDOFF_ERR_TRIG) {
+  if (geometry.g == -2) { // model phase function
+    double rannum = random_obj.random_num();
+    uint i1,i2,i3;
+    i1 = 0;
+    i3 = geometry.phi.size();
+    i2 = (i1 + i3)/2;
+    while ((i3 - i1) > 1) {
+      if (rannum > geometry.phi_sum[i2]) i1 = i2; else i3 = i2;
+//       cout << rannum << " ";
+//       cout << geometry.phi[i1] << " " << geometry.phi[i3] << " ";
+//       cout << i1 << " " << i3 << endl;
+      i2 = (i1 + i3)/2;
+    }
+    cos_alpha = geometry.phi_angle[i1] - 
+      ((rannum - geometry.phi_sum[i3])/(geometry.phi_sum[i1] - geometry.phi_sum[i3]))*
+      (geometry.phi_angle[i1] - geometry.phi_angle[i3]);
+//     cout << float(i1)/float(geometry.phi.size()) << " ";
+//     cout << (rannum - geometry.phi_sum[i3])/(geometry.phi_sum[i1] - geometry.phi_sum[i3]) << endl;
+//     cout << "cos_angle = " << cos_alpha << endl;
+//     exit(8);
+//     cout << geometry.phi_angle[i1] << " ";
+//     cout << cos_alpha << " ";
+//     cout << geometry.phi_angle[i3] << endl;
+//     cout.flush();
+  } else if (geometry.g > ROUNDOFF_ERR_TRIG) {
     sqr_g = pow(geometry.g,2);
     cos_alpha = (1.0 + sqr_g) - 
       pow((1.0 - sqr_g)/(1.0 - geometry.g + 2.0*geometry.g*random_obj.random_num()),2);

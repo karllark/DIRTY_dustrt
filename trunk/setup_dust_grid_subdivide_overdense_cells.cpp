@@ -129,7 +129,7 @@ void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
 // 	    if (geometry.grids[m].grid(i,j,k).dust_tau_per_pc > 0.0)
 // 	      geometry.grids[m].grid(i,j,k).num_H = num_H_const*vol*geometry.grids[m].grid(i,j,k).dust_tau_per_pc*geometry.tau_to_tau_ref;
 // 	    else
-// 	      geometry.grids[m].grid(i,j,k).num_H = 0.0;
+	    geometry.grids[m].grid(i,j,k).num_H = 0.0;
 	  }
 	}
   }

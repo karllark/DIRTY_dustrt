@@ -182,8 +182,8 @@ void get_dust_ere_emission (geometry_struct& geometry,
 		tmp_j_for_interpol.push_back(geometry.grids[m].grid(i,j,k).absorbed_energy[x]*
 					     Constant::IPLANCKLIGHT*runinfo.wavelength[x]);
 		// remove the energy just absorbed from J (it is now in ERE) (only ere peak photon energy)
-		geometry.grids[m].grid(i,j,k).absorbed_energy[x] -= tmp_j_for_interpol[x]*runinfo.ere_efficiency*
-		  Constant::PLANCKLIGHT/runinfo.ere_peak_wavelength;
+ 		geometry.grids[m].grid(i,j,k).absorbed_energy[x] -= tmp_j_for_interpol[x]*runinfo.ere_efficiency*
+ 		  Constant::PLANCKLIGHT/runinfo.ere_peak_wavelength;
 		// convert from rad field density to the absorbed energy density
 		tmp_j_for_interpol[x] *= 4.*Constant::PI*runinfo.ave_C_abs[x];
 		x++;

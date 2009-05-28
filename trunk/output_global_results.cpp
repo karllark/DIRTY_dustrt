@@ -127,7 +127,7 @@ void output_global_results (runinfo_struct& runinfo,
 	runinfo.out_sed_lum_unc[1+out_sed_lum_offset][i]*runinfo.out_sed_lum_unc[1+out_sed_lum_offset][i];
       flux_total_unc[i] = pow(flux_total_unc[i],0.5);
 
-      out_sed_lum_offset += 1;
+      out_sed_lum_offset += 2;
     }
     if (runinfo.do_dust_emission) {
       // offset (adjust if ERE also)

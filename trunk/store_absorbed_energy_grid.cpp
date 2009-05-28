@@ -67,10 +67,14 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	  // only do the computation the dust optical depth is positive
 	  // *and* when there is a nonzero amount of energy absorbed
 	  //   easy way to avoid subgrids and the edges (no dust)
-	  if ((geometry.grids[m].grid(i,j,k).dust_tau_per_pc > 0.0) &&
-	      (geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] > 0.0)) {
+	  if (geometry.grids[m].grid(i,j,k).dust_tau_per_pc > 0.0) {
 	    // # of H atoms in cell
 	    geometry.grids[m].grid(i,j,k).num_H = num_H_const*vol*geometry.grids[m].grid(i,j,k).dust_tau_per_pc*geometry.tau_to_tau_ref;
+// 	    cout << "; num_h = " << geometry.grids[m].grid(i,j,k).num_H << "; ";
+	  }
+
+	  if ((geometry.grids[m].grid(i,j,k).dust_tau_per_pc > 0.0) &&
+	      (geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] > 0.0)) {
     
 #ifdef DEBUG_SAEG
 	    cout << "dust tau/pc = " << geometry.grids[m].grid(i,j,k).dust_tau_per_pc << endl;
@@ -117,7 +121,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	    cout << "prev_J(lambda) = " << geometry.grids[m].grid(i,j,k).save_radiation_field_density << endl;
 #endif
 
-	  } else geometry.grids[m].grid(i,j,k).num_H = 0.0;
+	  }
 
 	  // add back the previously saved radiation field density
 	  if (doing_emission) {

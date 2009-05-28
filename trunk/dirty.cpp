@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
     output_model_grid(geometry, output);
 
   // get the dust grain parameters
-  get_dust_parameters(param_data, CurGrainModel, runinfo);
+  get_dust_parameters(param_data, CurGrainModel, geometry, runinfo);
 
 #ifdef DEBUG_DIRTY
   cout << "gdp done; ";
@@ -162,6 +162,10 @@ int main(int argc, char* argv[])
       cout << "Set do_emission_type=0 to get multiple-lines-of-sight and total IR emission." << endl;
       exit(8);
     } else if (runinfo.do_emission_grain) {
+
+      // set this here to allow the DE part to do the initialization (or reinitialize)
+      geometry.emitted_energy_grid_initialized = 0;
+
 #ifdef DEBUG_DIRTY
       cout << "te: stdeo start";
       cout.flush();
