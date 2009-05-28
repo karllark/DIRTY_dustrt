@@ -84,10 +84,40 @@ double scattered_weight_towards_observer (photon_data photon,
 
   double scat_weight = photon.scat_weight;
 
+  double scat_weight_angle = 0.0;
   // calculate the portion of the probability from the angle
-  double scat_weight_angle = ((1.0 - pow(geometry.g,2))/
-			      (4.0*M_PI*pow(1.0 + pow(geometry.g,2) - 
-					    2.0*geometry.g*cos_alpha,1.5)))*geometry.solid_angle;
+  if (geometry.g == -2) { // model phase function
+    uint i1,i2,i3;
+    i1 = 0;
+    i3 = geometry.phi.size();
+    i2 = (i1 + i3)/2;
+//     cout << i3 << endl;
+    while ((i3 - i1) > 1) {
+      if (cos_alpha < geometry.phi_angle[i2]) i1 = i2; else i3 = i2;
+//       cout << cos_alpha << " ";
+//       cout << geometry.phi_angle[i1] << " " << geometry.phi_angle[i3] << " ";
+//       cout << i1 << " " << i3 << endl;
+      i2 = (i1 + i3)/2;
+    }
+    scat_weight_angle = geometry.phi[i1] + 
+      ((cos_alpha - geometry.phi_angle[i3])/(geometry.phi_angle[i1] - geometry.phi_angle[i3]))*
+      (geometry.phi[i1] - geometry.phi[i3]); 
+//     cout << ((cos_alpha - geometry.phi_angle[i3])/(geometry.phi_angle[i1] - geometry.phi_angle[i3])) <<  endl;
+//     cout << cos_alpha << endl;
+//     cout << geometry.phi_angle[i1] << endl;
+//     cout << geometry.phi[i1] << " " << geometry.phi[i3] << endl;
+//     cout << scat_weight_angle << endl;
+//     double tmp_g = 0.384;
+//     cout << ((1.0 - pow(tmp_g,2))/
+// 	     (4.0*M_PI*pow(1.0 + pow(tmp_g,2) - 
+// 			   2.0*tmp_g*cos_alpha,1.5))) << endl;
+//     exit(8);
+  } else {
+    scat_weight_angle = ((1.0 - pow(geometry.g,2))/
+			 (4.0*M_PI*pow(1.0 + pow(geometry.g,2) - 
+				       2.0*geometry.g*cos_alpha,1.5)));
+  }
+  scat_weight_angle *= geometry.solid_angle;
 
   // calculate the portion of the probability from the tau
   double scat_weight_tau = exp(-tau_scat_to_obs);

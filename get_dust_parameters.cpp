@@ -4,13 +4,16 @@
 //
 // 2006 Nov/KDG - written
 // 2007 Apr/KDG - added dustgrains (from KM)
+// 2009 May/KDG - added model scattering phase function
 // ======================================================================
 #include "get_dust_parameters.h"
 //#define DEBUG_GDP
 
 void get_dust_parameters (ConfigFile& param_data,
 			  GrainModel& CurGrainModel,
+			  geometry_struct& geometry,
 			  runinfo_struct& runinfo)
+
 {
   // TBD: interpolate the dust scattering parameters to the SED grid
   runinfo.empir_dust = 0;
@@ -28,6 +31,71 @@ void get_dust_parameters (ConfigFile& param_data,
     float g = param_data.FValue("Dust Grains","g");
     check_input_param("g",g,-1.,1.);
     runinfo.g.push_back(g);
+
+    float wavelength = param_data.FValue("Dust Grains","wavelength");
+    check_input_param("wavelength",wavelength,0.001,1e5);
+    runinfo.wavelength.push_back(wavelength);
+
+    // set the tau_to_tau_ref value to 1.
+    runinfo.tau_to_tau_ref.push_back(1.);
+
+    // set the grain info we won't have or really use
+    runinfo.tau_to_h.push_back(1.0);
+    runinfo.ave_C_abs.push_back(1.);
+
+  } else if (strcmp(dust_type.c_str(),"single_wavelength_modelg") == 0) {
+    runinfo.empir_dust = 1;
+    runinfo.n_waves = 1;
+
+    float albedo = param_data.FValue("Dust Grains","albedo");
+    check_input_param("albedo",albedo,0.,1.);
+    runinfo.albedo.push_back(albedo);
+
+    // get the filename with the scattering phase function
+    string phi_filename = param_data.SValue("Dust Grains","phi_file");
+    // check that the file exists
+    ifstream phi_file(phi_filename.c_str());
+    if (phi_file.fail()) {
+      cout << "scattering phase function phi file (" << phi_filename << ") does not exist." << endl;
+      exit(8);
+    }
+    phi_file.close();
+
+    // get the dust scattering parameters
+    vector<double> angle, phi;
+    DataFile(phi_filename, angle, phi);
+
+    // go through the values and make sure they are within bounds
+    uint i;
+
+    double cur_weight = 0.;
+    double weight = 0.;
+
+    check_input_param("model scattering phase function (phi)",phi[0],0.,1e10);
+    angle[0] = cos(angle[0]*Constant::PI/180.0);    
+    geometry.phi.push_back(phi[0]);
+    geometry.phi_sum.push_back(0.0);
+    geometry.phi_angle.push_back(angle[0]);
+    for (i = 1; i < angle.size(); i++) {
+      // phi is between 0 and 1
+      check_input_param("model scattering phase function (phi)",phi[i],0.,1e10);
+      angle[i] = cos(angle[i]*Constant::PI/180.0);
+
+      cur_weight = 0.5*(phi[i] + phi[i-1])*(angle[i-1] - angle[i]);
+      weight += cur_weight;
+      geometry.phi_angle.push_back(angle[i]);
+      geometry.phi.push_back(phi[i]);
+      geometry.phi_sum.push_back(weight);
+    }
+    cout << "integral = " << geometry.phi_sum[angle.size()-1] << endl;
+
+    // now normalized so that it runs from 0 to 1
+    double save_sum = geometry.phi_sum[angle.size()-1];
+    for (i = 1; i < angle.size(); i++) {
+      geometry.phi[i] /= save_sum*(2.*Constant::PI);
+      geometry.phi_sum[i] /= save_sum;
+    }
+    runinfo.g.push_back(-2); // set to -2 to trigger use of model phase function
 
     float wavelength = param_data.FValue("Dust Grains","wavelength");
     check_input_param("wavelength",wavelength,0.001,1e5);

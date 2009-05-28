@@ -38,6 +38,7 @@ extern void get_run_parameters (ConfigFile& param_data,
 // get the dust parameters
 extern void get_dust_parameters (ConfigFile& param_data,
 				 GrainModel& CurGrainModel,
+				 geometry_struct& geometry,
 				 runinfo_struct& runinfo);
 
 // ger the sed parameters

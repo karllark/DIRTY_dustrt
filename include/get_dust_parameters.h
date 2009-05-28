@@ -5,6 +5,7 @@
 
 #include "ConfigFile.h"
 #include "DataFile.h"
+#include "geometry_def.h"
 #include "runinfo_def.h"
 #include "check_input_param.h"
 #include "GrainModel.h"   
