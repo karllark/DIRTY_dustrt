@@ -20,6 +20,9 @@
 // 2008 Mar/KDG - fixed global output to use a FITS ASCII table
 // 2008 Aug/KDG - added continous absorption
 // 2008 Sep/KDG - added ERE
+// 2009 Jun/KAM - create DirtyFailure instance on each iteration and 
+//                output iteration specific file containing dust emission 
+//                failure info if instructed by the parameter file. 
 // ======================================================================
 #include "dirty.h"
 //#define DEBUG_DIRTY
@@ -45,7 +48,11 @@ int main(int argc, char* argv[])
 
   // read parameter file
   ConfigFile param_data(param_filename);
-   
+
+  // Are we outputing a failure log - do it here so I don't have to mess with KDGs structures. 
+  // Output failure will only be set if we find a 'yes' entry in the param file. 
+  bool OutputFailure=param_data.BValue("Run","Output Failure Log"); 
+ 
   geometry_struct geometry;  // structure with geometry info (dust grid, etc.)
   output_struct output;  // stucture with the output info (images, etc.)
   photon_data photon;   // structure with the photon info (position, direction, weight, etc.)
@@ -67,6 +74,7 @@ int main(int argc, char* argv[])
 
   // get the run parameters (basic info)
   get_run_parameters(param_data, output, geometry, runinfo);
+  
 #ifdef DEBUG_DIRTY
   cout << "grp done; ";
   cout.flush();
@@ -182,14 +190,23 @@ int main(int argc, char* argv[])
     runinfo.dust_thermal_emission = 1;
   }
 
+  // hold output failure file name. 
+  string fFailureFilename; 
+
   while (!iter_done) {
+
+    // Create a DirtyFailure Object
+    // Will remain empty if we don't do an output.  Do all the allocations regardless 
+    // if whether OutputFailure is true or not to avoid compile  warnings. 
+    fFailureFilename=output.file_base+"_iter"+StringManip::vtos(iter_num)+"_failure.log"; 
+    DirtyFailure * Failure = new DirtyFailure(fFailureFilename,runinfo.n_waves);
 
 #ifdef DEBUG_DIRTY
     cout << "te: gdt start; ";
     cout.flush();
 #endif
     // get the dust emission at each point in the model
-    get_dust_thermal_emission(geometry, runinfo, CurGrainModel);
+    get_dust_thermal_emission(geometry, runinfo, CurGrainModel, Failure);
 #ifdef DEBUG_DIRTY
     cout << "te: gdt done; ";
     cout.flush();
@@ -207,6 +224,11 @@ int main(int argc, char* argv[])
 
     // limit the max iterations
     if (iter_num >= iter_max) iter_done = 1; else iter_num++;
+    
+    // If output puting failure log, then do it. 
+    if (OutputFailure) Failure->WriteFailureLog();
+    // Destroy the Failure Object. 
+    delete Failure; 
   }
 
   // output global, multiwavelength luminosities

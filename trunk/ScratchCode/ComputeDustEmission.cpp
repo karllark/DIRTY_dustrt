@@ -2,15 +2,21 @@
 #include "GrainModel.h"
 #include "NumUtils.h"
 
-extern vector <double> StochasticHeating(vector <float> & wave, 
-					 vector <float> & J, vector <float> & cabs, 
-					 vector <float> & Temp, vector <float> & Enthalpy, 
-					 float EAbs, float & TMin, float & TMax, float & TEq);
+#include "DirtyFailure.h"
 
-void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel, 
-			  vector <vector<double> > & EmmittedEnergy, bool & DoStochastic)
+//#include "DirtyFlags.h"
+
+extern int StochasticHeating(vector <float> & wave, 
+			     vector <float> & J, vector <float> & cabs, 
+			     vector <float> & Temp, vector <float> & Enthalpy, 
+			     float EAbs, float & TMin, float & TMax, float & TEq,
+			     uint _sz, vector <vector<double> > & StochasticLum);
+
+int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel, 
+			 vector <vector<double> > & EmmittedEnergy, bool & DoStochastic,
+			 float & _FailureSz, int & _FailureComp)
 {
-
+ 
   // Stochastic state for each size. 
   vector <bool> _dostochastic;
   
@@ -42,9 +48,12 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
   vector <float> _cJprod(_nw); 
   uint _nsize; 
 
+  int status; 
+
   // Check J is defined on same wave grid as wave....
-  if (J.size() != _nw) { cout << "FUCK!!! J/nwave don't match!" << endl; exit(8);}
-  
+  if (J.size() != _nw) { 
+    return Flags::FCDE_VECTOR_SIZE_MISMATCH; 
+  }
   // Some local variables.  
   // EAbs computed in EqTemp() and passed back for StochasticHeating() to test convergence. 
   float EAbs;
@@ -72,6 +81,7 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
   //for (uint i=0;i<_nw;++i) cout << i << " "<< _w[i] << " " << J[i] << endl; 
   for (int _cmp=0;_cmp<_ncmp;++_cmp) { // Component loop
 
+    _FailureComp = _cmp; 
     // Default starting values.  Works well for size distributions that start small...
     nBins=50; 
     TMin=0.1; 
@@ -96,14 +106,16 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
     // Loop over all sizes. 
     for (uint _sz=0;_sz<_nsize;++_sz,++_it) { // Size loop
 
+      _FailureSz = _size[_sz]; 
       //cout << "Component " << _cmp << " size " << _sz << " " << _size[_sz] << endl; 
       _cabs = GrainModel.CAbs(_cmp,int(_sz));
       for (uint _wv=0;_wv<_nw;++_wv) _cJprod[_wv] = _cabs[_wv]*J[_wv]; 
       
       // Get equilibrium temperature.  Return emitted energy as well since it's used 
       // in stochastic calculation. 
-      *_it = EqTemp<float>(_w,J,_cabs,EAbs,((_tlo<0)?1.0:_tlo),((_thi>2500.0)?2500.0:_thi));
-
+      status = EqTemp(_w,J,_cabs,EAbs,*_it,((_tlo<0)?1.0:_tlo),((_thi>2500.0)?2500.0:_thi));   
+      if (status != Flags::FSUCCESS) return status; // we've had an equilibrium heating failure. 
+      
       // Equlibrium luminosity = C_abs*B
       EquilibriumLum[_sz] = NumUtils::prod_bbodyCGS<double>(_w,*_it,_cabs);
       
@@ -125,7 +137,8 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
 	  transform(_dostochastic.begin()+_sz,_dostochastic.end(),_dostochastic.begin()+_sz,
 		    bind1st(multiplies<bool>(),false));
 	} else { // Compute StochasticLum, zero out Eq. 
-	  StochasticLum[_sz] = StochasticHeating(_w,_cJprod,_cabs,_CalTemp,_Enthalpy,EAbs,TMin,TMax,*_it); 
+	  status = StochasticHeating(_w,_cJprod,_cabs,_CalTemp,_Enthalpy,EAbs,TMin,TMax,*_it,_sz,StochasticLum); 
+	  if (status != Flags::FSUCCESS) return status; // There's been a stochastic heating failure. 
 	  EquilibriumLum[_sz].resize(_nw,0.0);  
 	}  
       } else StochasticLum[_sz].resize(_nw,0.0);  // Zero stochastic so we have zero's when we don't do it.  
@@ -167,4 +180,14 @@ void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
 
   }
 
+  // Successfully completed ComputeDustEmission()
+  return Flags::FSUCCESS; 
+
 }  
+
+
+
+
+
+
+

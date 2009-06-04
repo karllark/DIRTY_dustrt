@@ -13,11 +13,13 @@
 #include <iostream>
 #include "Constants.h"
 #include "DataFile.h"
+#include "DirtyFailure.h" 
+#include "DirtyFlags.h"
 
-extern void ComputeDustEmission (vector <float> & J, 
+extern int  ComputeDustEmission (vector <float> & J, 
 				 GrainModel & GrainModel,
 				 vector <vector<double> > & EmmittedEnergy, 
-				 bool & DoStochastic);
+				 bool & DoStochastic, float & _FailureSz, int & _FailureComp);
 
 using namespace std; 
 
@@ -65,19 +67,27 @@ int main (int argc, char * argv[]) {
 
   cout << "Mass, number per H: " << endl; 
   for (int i=0;i<ncomp;i++) cout << thisGrainModel.getMDust(i) << " , " << thisGrainModel.getNumber(i) << endl;  
+  
+//   vector <float> size=thisGrainModel.Size(2);
+//   for (int i=0;i<size.size();++i) cout << i << " " << size[i] << endl; 
+  vector <float> cabs=thisGrainModel.CAbs(2,9); 
+  //for (int i=0;i<cabs.size();++i) cout << MW[i] << " " << cabs[i] << endl; 
 
-  exit(8); 
+  //exit(8); 
 
   vector <vector<double> > thisEmission; 
   thisEmission.resize(2*ncomp+1); 
   for (int i=0;i<(2*ncomp+1);++i) thisEmission[i].resize(nWave);
   bool DoStochastic=true; 
 
+  float thise=-100.0; 
+  int thisid=0; 
+
   // a range of ISRF scalings. 
-  int nisrf=101; 
+  int nisrf=5; 
   vector <float> ISRF_Scaling(nisrf); 
   float isrf_min=0.1; 
-  float isrf_max=1.0e6;
+  float isrf_max=10.0;
   float isrf_delta=(1.0/static_cast<float>(nisrf-1))*log10(isrf_max/isrf_min); 
   ISRF_Scaling[0]=isrf_min; 
   for (int i=1;i<nisrf;++i) ISRF_Scaling[i]=ISRF_Scaling[i-1]*pow(10,isrf_delta);
@@ -96,36 +106,61 @@ int main (int argc, char * argv[]) {
   vector <float> DustMass(ncomp); 
   for (int c=0;c<ncomp;++c) DustMass[c] = thisGrainModel.getMDust(c); 
   
+  int status;
+  string sErrorOutBase,sErrorOut; 
+
+  int x,y,z,m;
+  x=-1; y=-2; z=-3; m=10; 
+  double eeee=0.0; 
+
   for (int is=0;is<nisrf;++is) {
     
     cout << "Working on scaling " << is << "(" << StringManip::vtos(ISRF_Scaling[is]) << ")" << endl; 
     sOutput=sOutBase+StringManip::vtos(ISRF_Scaling[is])+"_"+thisGrainModel.getModelName()+".dat"; 
+
+    sErrorOut=sErrorOutBase+"_isrf"+StringManip::vtos(is+1)+"_failure.log"; 
+    DirtyFailure * Failure = new DirtyFailure(sErrorOut,nWave); 
     
     ISRF MyISRF(MW,ISRF_Scaling[is]); 
     thisISRF=MyISRF.getISRF(); 
 
+    if ( is == 2) thisISRF.resize(nWave-1);
     //   cout << "Calling compute emission " <<endl;
-    ComputeDustEmission(thisISRF, thisGrainModel, thisEmission, DoStochastic); 
+    status = ComputeDustEmission(thisISRF, thisGrainModel, thisEmission, DoStochastic,thise,thisid); 
 
-    ofstream fOutput(sOutput.c_str()); 
-    
-    fOutput << "# ISRF " << ISRF_Scaling[is] << " DustModel " << thisGrainModel.getModelName() << endl; 
-    fOutput << "# This is the emission (luminosity) per unit dust mass" << endl; 
-
-    // we output the emmision per unit dust mass. 
-    for (int i=0;i<nWave;i++) { 
+    if (status != Flags::FSUCCESS) {
+      cout << "************" << endl; 
+      cout << "FAILED!!!!!!" << endl; 
+      cout << "************" << endl; 
+      Failure->AddFailure(status); 
+      Failure->AddCellBook(x,y,z,m); 
+      Failure->AddGrainInfo(thisGrainModel.getModelName(),thise,thisid); 
+      Failure->AddEnergyInfo(eeee,thisISRF); 
+      Failure->WriteFailureLog(); 
+    }  else {
       
-      fOutput << MW[i] << " " << thisISRF[i] << " " << thisEmission[0][i]/TotalDustMass << " ";
-
-      for (int c=0;c<ncomp;++c) { 
+      ofstream fOutput(sOutput.c_str()); 
+      
+      fOutput << "# ISRF " << ISRF_Scaling[is] << " DustModel " << thisGrainModel.getModelName() << endl; 
+      fOutput << "# This is the emission (luminosity) per unit dust mass" << endl; 
+      
+      // we output the emmision per unit dust mass. 
+      for (int i=0;i<nWave;i++) { 
 	
-	fOutput << thisEmission[2*c+1][i]/DustMass[c] << " " << thisEmission[2*c+2][i]/DustMass[c] << " "; 
-
+	fOutput << MW[i] << " " << thisISRF[i] << " " << thisEmission[0][i]/TotalDustMass << " ";
+	
+	for (int c=0;c<ncomp;++c) { 
+	  
+	  fOutput << thisEmission[2*c+1][i]/DustMass[c] << " " << thisEmission[2*c+2][i]/DustMass[c] << " "; 
+	  
+	}
+	fOutput << endl; 
       }
-      fOutput << endl; 
-    }
     
-    fOutput.close(); 
+      fOutput.close();
+    }
+    delete Failure; 
+
   }
 
 
