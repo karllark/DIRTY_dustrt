@@ -1,21 +1,25 @@
+// Jun 3-4 2009: Modified to be DirtyFailure aware, eg. Teq is return in parameter list and return value 
+//               is an int holding failure status from DirtyFlags. 
 #ifndef _EQTMP_H
 #define _EQTMP_H
 
 #include <iostream>
 #include <vector> 
 
+#include "DirtyFlags.h"
 #include "NumUtils.h"
 
 using namespace std;
 
-template <class T1, class T2, class T3> T1 EqTemp (vector <T2>& wave, 
-						   vector <T2>& J, 
-						   vector <T2>& Q,
-						   T1 & EAbs, 
-						   T3 Tlo=1, T3 Thi=2500)
+template <class T1, class T2, class T3> int EqTemp (vector <T2>& wave, 
+						    vector <T2>& J, 
+						    vector <T2>& Q,
+						    T1 & EAbs,
+						    T1 & _Tk,
+						    T3 Tlo=1, T3 Thi=2500)
 { 
   // Local variables
-  T1 _Tk;                                  // Equilibrium temperature of grain, returned value
+  //T1 _Tk;                                  // Equilibrium temperature of grain, returned value
   T1 _LHS, _RHS;                           // Left and Right hand sides of equilibrium equation
   vector <T1> _integrand;                  // Um, the integrands?
   T1 _Convergence=0.001;                   // Fractional convergence in (RHS/LHS) - 0.1%
@@ -25,6 +29,9 @@ template <class T1, class T2, class T3> T1 EqTemp (vector <T2>& wave,
   T1 _Delta;                               // Computed difference between LHS and RHS
   class vector <T2>::iterator _iJ,_iQ;     // Iterators for input vectors
   class vector <T2>::iterator _ib,_ie,_it; // Generic iterators
+  
+  T3 lolim=Tlo;
+  T3 hilim=Thi;
 
   if (J.size() != Q.size()) { 
     cout << "Input energy density arrays and grain arrays do not match in size" << endl;
@@ -57,14 +64,30 @@ template <class T1, class T2, class T3> T1 EqTemp (vector <T2>& wave,
 	Tlo = _Tk; 
     }
     if (Tlo == Thi) { 
-      cout << "Equilibrium heating algorithm failure. Bye-bye." << endl; 
-      exit(8); 
+      //cout << "Equilibrium heating algorithm failure. Bye-bye." << endl; 
+      //exit(8); 
+      if (Tlo == lolim) 
+	return Flags::FEQ_ZEROBOUND_LOLIM;
+      if (Thi == hilim)  
+	return Flags::FEQ_ZEROBOUND_HILIM;
+      return Flags::FEQ_ZEROBOUND; 
     }
     
   }
 
-  return _Tk; 
+  return Flags::FSUCCESS; 
 
 }
 
 #endif
+
+
+
+
+
+
+
+
+
+
+

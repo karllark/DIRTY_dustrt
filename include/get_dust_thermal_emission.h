@@ -7,10 +7,12 @@
 #include "GrainModel.h"
 #include "Constants.h"
 #include "debug.h"
+#include "DirtyFailure.h"
 
 //**********************************************************************
 // external function definitions
-extern void ComputeDustEmission (vector <float> & J, GrainModel & GrainModel, 
-				 vector <vector<double> > & EmmittedEnergy, bool & DoStochastic);
+extern int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel, 
+				vector <vector<double> > & EmmittedEnergy, 
+				bool & DoStochastic, float & _FailureSz, int & _FailureComp);
 
 #endif

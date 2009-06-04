@@ -125,4 +125,6 @@ void get_run_parameters (ConfigFile& param_data,
   output.num_outputs = geometry.num_observers;
   runinfo.dust_thermal_emission = 0;
 
+  // Get failure record preferences. 
+
 }

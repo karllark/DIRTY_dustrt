@@ -6,17 +6,28 @@
 // 2007 Oct/KDG - written
 // 2008 Mar/KDG - updated calculation to do the units of the emitted energy correctly
 // 2008 Sept 2 - added explicit cast to NumUtils::integrate
+// 2009 Jun 3-4 - Modified handling of ComputeDustEmission returns to be failure 
+//                mode aware. Code will populate Failure instance with information 
+//                if dust heating code fails for any bin.
+//                If more failure modes (not related to dust emission) need to be added,
+//                it should be straitforward...
 // ======================================================================
 #include "get_dust_thermal_emission.h"
 //#define DEBUG_GDTE
 
 void get_dust_thermal_emission (geometry_struct& geometry,
 				runinfo_struct& runinfo, 
-				GrainModel& CurGrainModel)
+				GrainModel& CurGrainModel, 
+				DirtyFailure * Failure)
 
 {
+  float _FailureSz; 
+  int _FailureComp;
+
   int i,j,k,m,z = 0;
   uint x = 0;
+
+  int status; 
 
   bool DoStochastic = false;
   if (runinfo.do_stochastic_dust_emission) DoStochastic = true;
@@ -76,6 +87,9 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 
   int cur_plane_good = 0;
   int good_enough_photons = 10;
+
+  // Required energy conservation per bin - input parameter? 
+  float econs_tolerance = 1.0e-3; 
 
   // loop over all the defined grids
   for (m = 0; m < int(geometry.grids.size()); m++) {
@@ -202,70 +216,80 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	    cout << "entering ComputeDustEmission..." << endl;
 #endif
 	    cur_plane_good++;
-	    ComputeDustEmission(geometry.grids[m].grid(i,j,k).absorbed_energy,
-				CurGrainModel, 
-				geometry.grids[m].grid(i,j,k).emitted_energy,
-				DoStochastic); 
+	    status = ComputeDustEmission(geometry.grids[m].grid(i,j,k).absorbed_energy,
+					 CurGrainModel, 
+					 geometry.grids[m].grid(i,j,k).emitted_energy,
+					 DoStochastic,_FailureSz,_FailureComp); 
 #ifdef DEBUG_GDTE
 	    cout << "...leaving ComputeDustEmission" << endl;
 #endif
-	    total_emit_energy = 0.0;
-	    total_emit_energy = NumUtils::integrate<double>(tmp_wave,geometry.grids[m].grid(i,j,k).emitted_energy[0])*geometry.grids[m].grid(i,j,k).num_H;
-	    
-	    global_total_emitted += total_emit_energy;
-
-	    if (fabs(1.0 - (total_emit_energy/tot_abs_energy)) > 1e-3) {
-	      cout << "energy conservations worse than 1e-3" << endl;
-	      cout << "total_abs/H atom = " << tot_abs_energy << endl;
-	      cout << "total_emit_energy/H atom = " << total_emit_energy << endl;
-	      cout << "ratio emit/abs = " << total_emit_energy/tot_abs_energy << endl;
-// 	      exit(8);
-	    }
-
-	    // add to the emitted energy sums
-	    for (z = 0; z < n_emit_components; z++)
-	      for (x = 0; x < runinfo.wavelength.size(); x++) {
-		// temp stuff
-// 		geometry.grids[m].grid(i,j,k).emitted_energy[z][x] = 1.0;
-
-		// perm stuff
-		// need to multiply the emitted energy passed back by dust_thermal_emission
-		// by the number of HI atoms in the cell to get the total emitted energy
-		if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
-		  cout << endl;
-		  cout << i << " ";
-		  cout << j << " ";
-		  cout << k << endl;
-		  uint xx = 0;
-		  for (xx = 0; xx < runinfo.wavelength.size(); xx++) {
-		    cout << xx << " " << geometry.grids[m].grid(i,j,k).absorbed_energy[xx] << " ";
-		    cout << geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[xx] << " ";
-		    cout << geometry.grids[m].grid(i,j,k).save_radiation_field_density[xx] << " ";
-		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[0][xx] << " ";
-		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[1][xx] << " ";
-		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[2][xx] << " ";
-		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[3][xx] << " ";
-		    cout << endl;
-		  }
-		  cout << geometry.grids[m].grid(i,j,k).emitted_energy.size() << endl;
-		  cout << geometry.grids[m].grid(i,j,k).emitted_energy[z].size() << endl;
-		  cout << z << " " << x << endl;
-		  cout << geometry.grids[m].grid(i,j,k).emitted_energy[z][x] << endl;
-		  cout << " emitted energy is not finite (before num_H calc) " << endl;
-		  exit(8);
-		}
-		geometry.grids[m].grid(i,j,k).emitted_energy[z][x] *= geometry.grids[m].grid(i,j,k).num_H;
-		// add up the emitted energy to the total emitted (per wavelength & component)
-		if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
-		  cout << z << " " << x << endl;
-		  cout << geometry.grids[m].grid(i,j,k).emitted_energy[z][x] << endl;
-		  cout << " emitted energy is not finite (after num_H calc) " << endl;
-		  exit(8);
-		}
-		runinfo.emitted_lum[z][x] += geometry.grids[m].grid(i,j,k).emitted_energy[z][x];
+	    if (status != Flags::FSUCCESS) { //  Returned a failure from ComputeDustEmission
+	      Failure->AddFailure(status); 
+	      Failure->AddCellBook(m,i,j,k); 
+	      Failure->AddGrainInfo(CurGrainModel.getModelName(),_FailureSz,_FailureComp); 
+	      Failure->AddEnergyInfo(tot_abs_energy,geometry.grids[m].grid(i,j,k).absorbed_energy); 
+	    }  else { 
+	      total_emit_energy = 0.0;
+	      total_emit_energy = NumUtils::integrate<double>(tmp_wave,geometry.grids[m].grid(i,j,k).emitted_energy[0])*geometry.grids[m].grid(i,j,k).num_H;
+	      
+	      global_total_emitted += total_emit_energy;
+	      
+	      if (fabs(1.0 - (total_emit_energy/tot_abs_energy)) > econs_tolerance) {
+		// Add a failure status for this? 
+		cout << "energy conservations worse than " << econs_tolerance << endl;
+		cout << "total_abs/H atom = " << tot_abs_energy << endl;
+		cout << "total_emit_energy/H atom = " << total_emit_energy << endl;
+		cout << "ratio emit/abs = " << total_emit_energy/tot_abs_energy << endl;
+		// 	      exit(8);
 	      }
+	      
+	      // add to the emitted energy sums
+	      for (z = 0; z < n_emit_components; z++)
+		for (x = 0; x < runinfo.wavelength.size(); x++) {
+		  // temp stuff
+		  // 		geometry.grids[m].grid(i,j,k).emitted_energy[z][x] = 1.0;
+		  
+		  // perm stuff
+		  // need to multiply the emitted energy passed back by dust_thermal_emission
+		  // by the number of HI atoms in the cell to get the total emitted energy
+		  if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
+		    // Add failure status for this? 
+		    cout << endl;
+		    cout << i << " ";
+		    cout << j << " ";
+		    cout << k << endl;
+		    uint xx = 0;
+		    for (xx = 0; xx < runinfo.wavelength.size(); xx++) {
+		      cout << xx << " " << geometry.grids[m].grid(i,j,k).absorbed_energy[xx] << " ";
+		      cout << geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[xx] << " ";
+		      cout << geometry.grids[m].grid(i,j,k).save_radiation_field_density[xx] << " ";
+		      cout << geometry.grids[m].grid(i,j,k).emitted_energy[0][xx] << " ";
+		      cout << geometry.grids[m].grid(i,j,k).emitted_energy[1][xx] << " ";
+		      cout << geometry.grids[m].grid(i,j,k).emitted_energy[2][xx] << " ";
+		      cout << geometry.grids[m].grid(i,j,k).emitted_energy[3][xx] << " ";
+		      cout << endl;
+		    }
+		    cout << geometry.grids[m].grid(i,j,k).emitted_energy.size() << endl;
+		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[z].size() << endl;
+		    cout << z << " " << x << endl;
+		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[z][x] << endl;
+		    cout << " emitted energy is not finite (before num_H calc) " << endl;
+		    exit(8);
+		  }
+		  geometry.grids[m].grid(i,j,k).emitted_energy[z][x] *= geometry.grids[m].grid(i,j,k).num_H;
+		  // add up the emitted energy to the total emitted (per wavelength & component)
+		  if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
+		    // Add failure status for this? 
+		    cout << z << " " << x << endl;
+		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[z][x] << endl;
+		    cout << " emitted energy is not finite (after num_H calc) " << endl;
+		    exit(8);
+		  }
+		  runinfo.emitted_lum[z][x] += geometry.grids[m].grid(i,j,k).emitted_energy[z][x];
+		}
+	    }
 	  } else {
-
+	    
 	    num_cells_not_enough++;
 	    if (tot_abs_energy == 0) num_cells_zero++;
 

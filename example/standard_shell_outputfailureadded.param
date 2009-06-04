@@ -1,0 +1,44 @@
+# Test parameter file for DIRTY_v2
+#  created KDG 6 Jul 2006
+#  standard tau=1, constant density shell
+#
+# Model parameters
+[Geometry]
+distance=100.0
+n_obs_angles=1
+obs_theta=60.
+obs_phi=60.
+n_stars=1
+star_pos_x=0.
+star_pos_y=0.
+star_pos_z=0.
+type=shell
+radius=1.0
+inner_radius=0.9		
+outer_radius=1.0
+# radial optical depth
+tau=0.1
+# filling factor & density control the clumpiness
+filling_factor=0.05
+density_ratio=1.0
+# this controls how to subdivide cells
+max_tau_per_cell=50.0
+# spherical or cubical clumps [choices are sphere/cube]
+clump_type=cube
+# size of grid (all dimensions equal)
+grid_size=200
+
+[Dust Grains]
+type=single_wavelenth
+wavelength=0.55
+albedo=0.5
+g=0.7
+
+[Run]
+num_photons=500000
+output_image_size=201
+output_filebase=example/standard_shell_tau0.1
+type=single_wavelenth
+wavelength=0.55
+Output Failure Log=yes
+# if Output Failure is true, it output name will be base+iter+'_failure.log'

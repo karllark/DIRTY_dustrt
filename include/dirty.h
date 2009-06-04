@@ -26,6 +26,8 @@
 #include "GrainModel.h"   
 #include "rt_types.h"
 
+#include "DirtyFailure.h"
+
 //**********************************************************************
 // external function definitions
 
@@ -72,7 +74,8 @@ extern void get_dust_ere_emission (geometry_struct& geometry,
 // get the thermal dust emission in each grid cell
 extern void get_dust_thermal_emission (geometry_struct& geometry,
 				       runinfo_struct& runinfo, 
-				       GrainModel& CurGrainModel);
+				       GrainModel& CurGrainModel, 
+				       DirtyFailure * Failure);
 
 // setup for the thermal dust emission output (used for separate grain/emission output)
 extern void setup_thermal_dust_emission_output (runinfo_struct& runinfo,

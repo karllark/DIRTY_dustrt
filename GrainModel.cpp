@@ -197,7 +197,7 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
 	{
 	  // Get the number of sizes
 	  _thisSizeIN = _mcf.IValue(_thisSection,"Size Definition Number"); 
-	  cout << _thisSizeIN << endl; 
+	  //cout << _thisSizeIN << endl; 
 	  if (_thisSizeIN <= 0) { 
 	    cout << "Unable to define size grid manually.  Resorting to default." << endl; 
 	    _thisSizeType = "DEF"; 

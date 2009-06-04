@@ -1,6 +1,11 @@
+// Jun 3-4 2009: Changed return value to int indicating status.  StochasticLum is now returned in the parameter list. 
+//               Added DirtyFlags.h dependency. 
+//               Modified return values of all sub calls to be int - will return status to be passed back up the line
+//               -KAM
 #include <iostream>
 #include <vector> 
 
+#include "DirtyFlags.h"
 #include "HeatUtils.h" 
 #include "NumUtils.h" 
 
@@ -10,27 +15,27 @@ int ComputeGrid(vector <float>& enth, vector <float>& denth, vector <float>& tem
 		vector <float>& tgrid, vector <float> & Temperature, vector <float> & Enthalpy, 
 		float & TMax, float & TMin, int & nBins);
 
-void ComputeTransitionMatrix (vector <vector<double> >& TM, vector <float>& wave, vector <float>& temp, 
-			      vector <float>& enth, vector <float>& cabs, vector <float>& cJprod, 
-			      vector <float>& denth, int & nBins);
+int ComputeTransitionMatrix (vector <vector<double> >& TM, vector <float>& wave, vector <float>& temp, 
+			     vector <float>& enth, vector <float>& cabs, vector <float>& cJprod, 
+			     vector <float>& denth, int & nBins);
 
-void SolveTransitionMatrix ( vector <vector<double> >& TM, int & nBins, vector <double>& P );
+int SolveTransitionMatrix ( vector <vector<double> >& TM, int & nBins, vector <double>& P );
 
-vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod, 
-				  vector <float> & cabs, vector <float> & Temperature, 
-				  vector <float> & Enthalpy, float EAbs, float & TMin,
-				  float & TMax, float & TEq)
+int StochasticHeating(vector <float> & wave, vector <float> & cJprod, 
+		      vector <float> & cabs, vector <float> & Temperature, 
+		      vector <float> & Enthalpy, float EAbs, float & TMin,
+		      float & TMax, float & TEq, 
+		      uint _sz, vector <vector<double> > & StochasticLum)
 
 {
-  
+
   int maxBins = 1000; 
   bool converged=false; 
   bool IncreaseBins=false;
   bool lastincrease=true; 
   bool OnePass=false; 
   int nBins=50; 
-  vector <double> _ExceedBins(1); 
-  
+
   float oldTMax = 0.0;
   float oldTMin = 0.0; 
   float tol = 0.01; 
@@ -56,18 +61,12 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
 
   vector <float> _enth,_denth,_temp,_tgrid;
 
-  vector <float> thisWave,thisCabs,thisJ;
+  vector <double> integrand(nWave); 
 
-  vector <double> integrand; 
+  StochasticLum[_sz].resize(nWave); 
 
   double Eemit; 
 
-  // Reserve maximum sizes for our vectors.     
-  // wavelength
-  thisWave.reserve(nWave); 
-  thisCabs.reserve(nWave); 
-  thisJ.reserve(nWave);
-  integrand.reserve(nWave); 
   // bins
   _enth.reserve(maxBins); 
   _denth.reserve(maxBins); 
@@ -95,9 +94,10 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
     // Setup Grid
     status = ComputeGrid(_enth,_denth,_temp,_tgrid,Temperature,Enthalpy,TMax,TMin,nBins); 
     // Setup transition matrix
-    ComputeTransitionMatrix(TM,wave,_temp,_enth,cabs,cJprod,_denth,nBins); 
+    status = ComputeTransitionMatrix(TM,wave,_temp,_enth,cabs,cJprod,_denth,nBins); 
     // Setup probability distribution
-    SolveTransitionMatrix(TM,nBins,_P); 
+    status = SolveTransitionMatrix(TM,nBins,_P); 
+    if (status != Flags::FSUCCESS) return status; 
     // Adjust temperature
     if (_P[nBins-1] > Ptol) 
       TMax *= 1.5; 
@@ -105,6 +105,7 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
       _setup=false; 
   }
 
+  
   int loop_count = 0;
   // Convergence wrapper... 
   while (!converged) { // convergence bracket
@@ -112,21 +113,24 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
     // Compute grid
     _enth.resize(nBins,0); _denth.resize(nBins,0); _temp.resize(nBins,0); _tgrid.resize(nBins+1,0); 
     status = ComputeGrid(_enth,_denth,_temp,_tgrid,Temperature,Enthalpy,TMax,TMin,nBins); 
+    if (status != Flags::FSUCCESS) return status; 
     // Compute transition matrix
-    ComputeTransitionMatrix(TM,wave,_temp,_enth,cabs,cJprod,_denth,nBins); 
+    status = ComputeTransitionMatrix(TM,wave,_temp,_enth,cabs,cJprod,_denth,nBins);
+    if (status != Flags::FSUCCESS) return status; 
     // Solve transition matrix
-    SolveTransitionMatrix(TM,nBins,_P); 
+    status = SolveTransitionMatrix(TM,nBins,_P); 
+    if (status != Flags::FSUCCESS) return status; 
 
-    integrand.resize(nWave); 
+    //integrand.resize(nWave); 
     idb=integrand.begin();
-    ide=integrand.end();
     it1=wave.begin(); 
     it=cabs.begin();
-    for (idt=idb;idt!=ide;++idt,++it,++it1) { 
+    for (int i=0;i<nWave;i++,idb++,it1++,it++) { 
       _pofTint = NumUtils::prod_bbodyCGS<double>(*it1,_temp,_P); // P(T)*B(T) at wv,_sz
       _pFac = 0.0; 
       _pFac = accumulate(_pofTint.begin(),_pofTint.end(),0.0);   // Sum_T (P(T)*B(T))
-      *idt = (*it)*_pFac; 
+      *idb = (*it)*_pFac; 
+      StochasticLum[_sz][i] = *idb; // this is C(lam)*Sum_T (P(T)*B(T,lam)) ~ stochastic L(lam) 
     }
     Eemit = NumUtils::integrate<double>(wave,integrand); 
     thistol = abs(EAbs-Eemit)/EAbs;
@@ -146,16 +150,10 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
 	// Work on upper bounds
 	if (_P[idx] == 0.0) { 
 	  while (_P[idx] == 0.0) --idx; 
-	  if (idx < 0) { 
-	    cout << "Failure 1.0, stochastic heating algorithm" << endl; 
-	    exit(8); 
-	  }
+	  if (idx < 0) return Flags::FST_ZERO_PROBABILITY; 
 	  if (_P[idx] < Ptol) { 
 	    while (_P[idx] < Ptol) --idx; 
-	    if (idx < 0) { 
-	      cout << "Failure 1.1, stochastic heating algorithm" << endl; 
-	      exit(8); 
-	    } 
+	    if (idx < 0) return Flags::FST_SMALL_PROBABILITY_HI; 
 	    TMax = _tgrid[idx+1]; 
 	  } else { 
 	    TMax = _tgrid[nBins]; 
@@ -164,10 +162,7 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
 	
 	if (_P[idx] < Ptol) { 
 	  while (_P[idx] < Ptol) --idx; 
-	  if (idx < 0) { 
-	    cout << "Failure 2.0, stochastic heating algorithm" << endl; 
-	    exit(8); 
-	  }
+	  if (idx < 0) return Flags::FST_SMALL_PROBABILITY_HI;
 	  TMax=_tgrid[idx+1]; 
 	}
 	
@@ -180,10 +175,7 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
 	idx=0; 
 	if (_P[idx] < Ptol) { 
 	  while (_P[idx] < Ptol) ++idx; 
-	  if (idx > nBins-1) { 
-	    cout << "Failure 3.0, stochastic heating algorithm" << endl; 
-	    exit(8); 
-	  }
+	  if (idx > nBins-1) return Flags::FST_SMALL_PROBABILITY_LO; 
 	  if (idx == 0) 
 	    TMin = _tgrid[idx]; 
 	  else 
@@ -198,15 +190,9 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
       if (nBins > maxBins)  {
 	if (lastincrease) { 
 	  // accept a lower tolerance for these cases
-	  cout << "EXCEEDED BIN COUNT IN StochasticHeating()" << endl; 
 	  if (thistol > tol_max_bins) { // still not converged well enough
-	    
-	    cout << EAbs << " " << Eemit << " " << thistol << endl; 
-	    for (uint i=0;i<wave.size();i++) cout << wave[i] << " " << cabs[i] << " " << cJprod[i] << endl;
-	    _ExceedBins[0]=-99;
-	    return _ExceedBins; 
-	  } else {
-	    cout << "but close enough (tol_max_bins = " << tol_max_bins << "; tol = " << thistol << endl;
+	    return Flags::FST_EXCEED_MAXBINS; 
+	  } else { // close enough for DIRTY work.
 	    converged=true;
 	  }
 	} 
@@ -246,11 +232,13 @@ vector <double> StochasticHeating(vector <float> & wave, vector <float> & cJprod
       cout << "lasttol:\t" << lasttol << endl;
       cout << "nBins:\t" << nBins << endl;
       cout << "maxBins:\t" << maxBins << endl;
-      exit(11);
+      return Flags::FST_EXCEED_CONVERGENCE_LOOP_COUNT; 
     }
     ++loop_count;
+
   }
-  return integrand; // this is C(lam)*Sum_T (P(T)*B(T,lam)) ~ stochastic L(lam) 
+
+  return Flags::FSUCCESS; 
 
 }
 
@@ -284,11 +272,12 @@ int ComputeGrid(vector <float>& enth, vector <float>& denth, vector <float>& tem
   _it2 = denth.begin(); 
   for (_it=_itb;_it!=_ite;++_it,++_it1,++_it2) { *_it1=(*_it+*(_it-1))/2.0; *_it2 = (*_it-*(_it-1)); }
 
-  return 0; 
+  // No Failure modes...
+  return Flags::FSUCCESS; 
 }
 
 
-void ComputeTransitionMatrix (vector <vector<double> >& TM, vector <float>& wave, vector <float>& temp, 
+int ComputeTransitionMatrix (vector <vector<double> >& TM, vector <float>& wave, vector <float>& temp, 
 			      vector <float>& enth, vector <float>& cabs, vector <float>& cJprod, 
 			      vector <float>& denth, int & nBins) 
 {
@@ -317,18 +306,21 @@ void ComputeTransitionMatrix (vector <vector<double> >& TM, vector <float>& wave
     } // Done with cooling transitions. 
     
     for (int i=0;i<f;++i) { // Heating transitions - all initial < final.
-      if ((enth[f]-enth[i]) != 0) _wT = Constant::PLANCKLIGHT/(enth[f]-enth[i]); 
-      else { cout << "zero denominator " << f << " " << i << endl; exit(8);}// wavelength of transitions
+      if ((enth[f]-enth[i]) != 0) 
+	_wT = Constant::PLANCKLIGHT/(enth[f]-enth[i]); 
+      else 
+	return Flags::FST_CTM_ZERO_ENTH_DEN;
       if (_wT < wave[0] || _wT > wave[_nw-1]) TM[f][i] =0.0; 
       else { // Photons exist that will induce this transition
 	idx=0; 
 	while (wave[idx] < _wT) idx++;
-	if (idx > _nw-1) { cout << "idx error!! " << _wT << " "<< wave[0] << " " << wave[_nw-1] << " " << idx << " " << wave.size() << endl; exit(8); }
+	if (idx > _nw-1) return Flags::FST_CTM_TRANSITIONID_EXCEEDS_WAVEID;
 	if (idx == 0 || idx == _nw-1) _thiscjprod=cJprod[idx];
 	else { 
 	  if ((wave[idx]-wave[idx-1]) != 0)
 	    _slp=(cJprod[idx]-cJprod[idx-1])/(wave[idx]-wave[idx-1]);
-	  else { cout << " zero demon, wave-wave " << idx << endl; exit(8); }
+	  else 
+	    return Flags::FST_CTM_WAVE_ZERO;
 	  _icpt = cJprod[idx]-_slp*wave[idx]; 
 	  _thiscjprod = _icpt + _slp*_wT;
 	} 
@@ -353,9 +345,11 @@ void ComputeTransitionMatrix (vector <vector<double> >& TM, vector <float>& wave
     for (int j=i-1;j<nBins;++j)
       if (i!=j) TM[i][i] -= TM[j][i]; 
 
+  return Flags::FSUCCESS; 
+
 }
 
-void SolveTransitionMatrix ( vector <vector<double> >& TM, int & nBins, vector <double>& P )
+int SolveTransitionMatrix ( vector <vector<double> >& TM, int & nBins, vector <double>& P )
 {
   
   vector <vector<double> > _Bij; 
@@ -376,14 +370,28 @@ void SolveTransitionMatrix ( vector <vector<double> >& TM, int & nBins, vector <
     } 
     if (TM[f-1][f] != 0.0)
       P[f] /= TM[f-1][f]; 
-    else {
-      cout << "Problem with matrix cooling element...." << endl; 
-      cout << "Can't solve the transition matrix." << endl; 
-      exit(8); 
-    }
+    else 
+      return Flags::FST_STM_ZERO_COOLING;  
     _norm += P[f]; 
   }
   
   transform(P.begin(),P.end(),P.begin(),bind2nd(divides<double>(),_norm)); 
 
+  return Flags::FSUCCESS; 
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
