@@ -65,13 +65,16 @@ void DirtyFailure::WriteFailureLog ( void )
     // Write some header info....
     for (long i=0;i<nFailure;++i) {
       failurelog << "**********************************************************************" << endl; 
-      failurelog << "Begin failure " << i << " of " << nFailure << endl; 
+      failurelog << "Begin failure " << i+1 << " of " << nFailure << endl; 
       failurelog << "Failed on cell " << iaxis[i] << "," << jaxis[i] << "," << kaxis[i] << " of " << maxis[i] << endl; 
+      failurelog << "--> Failure info: " << endl; 
+      failurelog << "    Failure Flag - " << FailureFlag[i] << endl; 
+      failurelog << "    Failure Description - " << FailureDescription[i] << endl; 
       failurelog << "--> Grain info: " << endl ;
-      failurelog << "    Grain Model Name " << GrainModelName[i] << endl; 
-      failurelog << "    Size " << GrainSize[i] << " cm  of component " << GrainComponent[i] << endl; 
+      failurelog << "    Grain Model Name - " << GrainModelName[i] << endl; 
+      failurelog << "    Size - " << GrainSize[i] << " cm  of component " << GrainComponent[i] << endl; 
       failurelog << "--> Energy/Radiation Field info: " << endl; 
-      failurelog << "    Total energy absorbed in bin: " << AbsorbedEnergy[i] << endl;
+      failurelog << "    Total energy absorbed in bin-  " << AbsorbedEnergy[i] << endl;
       failurelog << "    Radiation field" << endl; 
       failurelog << "    ---------------" << endl; 
       iter1 = RadiationField[i].begin();
