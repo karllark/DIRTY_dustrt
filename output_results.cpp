@@ -75,6 +75,12 @@ void output_results (output_struct& output,
     lum_to_flux = 1.0/(4.*M_PI*pow(geometry.distance*(Constant::PC_CM),2.0));
 //     cout << "lum_to_flux = " << lum_to_flux << endl;
 
+    // constant to convert from ratio to surface brightness for images
+    double ratio_to_sb_image = geometry.total_source_luminosity*lum_to_flux*
+      pow(geometry.angular_radius/output.image_size[0],-2.0);
+    if (runinfo.verbose >= 2)
+      cout << "ratio_to_sb_image = " << ratio_to_sb_image << endl;
+
     // determine stellar flux
     double stellar_flux = 0.0;
     stellar_flux = stellar_sl*geometry.total_source_luminosity*lum_to_flux;
@@ -180,21 +186,27 @@ void output_results (output_struct& output,
 	  output.outputs[i].scattered_weight_xy_x2(j,k) /=
 	    output.outputs[i].scattered_weight_xy(j,k)/output.outputs[i].num_photons_xy(j,k);
 
-	  // divide by luminosity
+	  // divide by luminosity (in photon units)
 	  output.outputs[i].scattered_weight_xy(j,k) /= output.outputs[i].total_num_photons;
 	  output.outputs[i].stellar_weight_xy(j,k) /= output.outputs[i].total_num_photons;
-	  
-	  // divide by area of each pixel in sr to get a surface brightness
-	  // needs to be done!
 	  
 	  // now convert the fractional uncertainty to a absolute uncertainty
 	  output.outputs[i].stellar_weight_xy_x2(j,k) *= output.outputs[i].stellar_weight_xy(j,k);
 	  output.outputs[i].scattered_weight_xy_x2(j,k) *= output.outputs[i].scattered_weight_xy(j,k);
 
+	  // convert the images to surface brightnesses if asked
+	  if (output.type == "sbrightness") {
+	    output.outputs[i].scattered_weight_xy(j,k) *= ratio_to_sb_image;
+	    output.outputs[i].scattered_weight_xy_x2(j,k) *= ratio_to_sb_image;
+	    output.outputs[i].stellar_weight_xy(j,k) *= ratio_to_sb_image;
+	    output.outputs[i].stellar_weight_xy_x2(j,k) *= ratio_to_sb_image;
+	  }
+
 	  // add the two together to get get the "observed" image
 	  total_weight_xy(j,k) = output.outputs[i].stellar_weight_xy(j,k) + output.outputs[i].scattered_weight_xy(j,k);
 	  total_weight_xy_x2(j,k) = sqrt(output.outputs[i].stellar_weight_xy_x2(j,k)*output.outputs[i].stellar_weight_xy_x2(j,k) +
 					 output.outputs[i].scattered_weight_xy_x2(j,k)*output.outputs[i].scattered_weight_xy_x2(j,k));
+
 	}
    
 

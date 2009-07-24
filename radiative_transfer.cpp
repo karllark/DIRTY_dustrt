@@ -8,7 +8,7 @@
 #include "radiative_transfer.h"
 //#define DEBUG_RT
 //#define OUTNUM -1
-//#define OUTNUM 1559
+//#define OUTNUM 453
 #define DEBUG_OUTRANGE
 
 void radiative_transfer (geometry_struct& geometry,
@@ -135,7 +135,7 @@ void radiative_transfer (geometry_struct& geometry,
       }
 #endif
 #ifdef DEBUG_RT
-    if (photon.number > OUTNUM) cout << "ffs done; "; cout.flush();
+    if (photon.number >= OUTNUM) cout << "ffs done; "; cout.flush();
 #endif
 
 #ifdef SAVE_TRAJ
@@ -148,6 +148,9 @@ void radiative_transfer (geometry_struct& geometry,
 #endif
 
     // classify stellar photon(s)
+#ifdef DEBUG_RT
+    if (photon.number >= OUTNUM) cout << "cstp start; "; cout.flush();
+#endif
 #ifdef DEBUG_OUTRANGE
     try {
 #endif
@@ -161,7 +164,7 @@ void radiative_transfer (geometry_struct& geometry,
       }
 #endif
 #ifdef DEBUG_RT
-    if (photon.number > OUTNUM) cout << "cstp done; "; cout.flush();
+    if (photon.number >= OUTNUM) cout << "cstp done; "; cout.flush();
 #endif
 
     // loop until photon escapes

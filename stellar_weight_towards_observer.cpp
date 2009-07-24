@@ -47,6 +47,17 @@ double stellar_weight_towards_observer (photon_data photon,
   double target_tau = 1e20;
   int escape = 0;
   double tau_birth_to_obs = 0.0;
+
+
+  // check that the direction to the observer will not force an
+  // immediate exit from the grid, step back slightly to avoid this
+  for (i = 0; i < 3; i++) {
+    if ((photon.dir_cosines[i] < 0.) && (photon.position[i] == geometry.grids[photon.current_grid_num].positions[i][0]))
+      photon.position[i] += 0.01*geometry.grids[photon.current_grid_num].phys_cube_size[i];
+    else if ((photon.dir_cosines[i] > 0.) && (photon.position[i] == geometry.grids[photon.current_grid_num].positions[i][geometry.grids[photon.current_grid_num].index_dim[i]+1]))
+      photon.position[i] -= 0.01*geometry.grids[photon.current_grid_num].phys_cube_size[i];
+  }
+
 #ifdef DEBUG_STWTO
   if (photon.number == OUTNUM) {
     cout << "stellar weight" << endl;

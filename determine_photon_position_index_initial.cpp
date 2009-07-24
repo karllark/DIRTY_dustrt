@@ -7,7 +7,7 @@
 // ======================================================================
 #include "determine_photon_position_index_initial.h"
 //#define DEBUG_DPPII
-//#define OUTNUM 64
+//#define OUTNUM 453
 
 void determine_photon_position_index_initial (geometry_struct& geometry,
 					      photon_data& photon)
