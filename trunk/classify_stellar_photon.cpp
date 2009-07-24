@@ -11,7 +11,7 @@
 // ======================================================================
 #include "classify_stellar_photon.h"
 //#define DEBUG_CSP
-//#define OUTNUM 0
+//#define OUTNUM 453
 
 void classify_stellar_photon (output_struct& output,
 			      photon_data& photon,
@@ -40,9 +40,9 @@ void classify_stellar_photon (output_struct& output,
       for (k = 0; k < 3; k++) {
 	tmp_photon.position[k] = tmp_photon.birth_position[k];
 #ifdef DEBUG_CSP
-  if (photon.number == OUTNUM) {
-	cout << "pos; k = " << k << " " << tmp_photon.position[k] << endl;
-  }
+	if (photon.number == OUTNUM) {
+	  cout << "pos; k = " << k << " " << tmp_photon.position[k] << endl;
+	}
 #endif
       }
 
@@ -50,10 +50,10 @@ void classify_stellar_photon (output_struct& output,
       determine_photon_position_index_initial(geometry, tmp_photon);
 
 #ifdef DEBUG_CSP
-  if (photon.number == OUTNUM) {
-      cout << "photon number = " << photon.number << endl;
-      cout << "classify_stellar_photon: in stellar_weight = " << tmp_photon.stellar_weight << endl;
-  }
+      if (photon.number == OUTNUM) {
+	cout << "photon number = " << photon.number << endl;
+	cout << "classify_stellar_photon: in stellar_weight = " << tmp_photon.stellar_weight << endl;
+      }
 #endif
 
       // if averging over the entire 4pi steradians is desired, randomize the observer position

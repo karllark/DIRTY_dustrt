@@ -189,8 +189,8 @@ void setup_dust_grid (ConfigFile& param_data,
       source_file.close();
       
       // read in the radiation field
-      vector<double> theta, phi, intensity;
-      DataFile(source_filename, theta, phi, intensity);
+      vector<double> theta, phi, intensity, sr_area;
+      DataFile(source_filename, theta, phi, intensity, sr_area);
       
       // test the results and put them into the appropriate locations
       int i;
@@ -199,11 +199,12 @@ void setup_dust_grid (ConfigFile& param_data,
 	check_input_param("diffuse source theta",theta[i],-1*M_PI/2.,M_PI/2.);
 	check_input_param("diffuse source phi",phi[i],0.0,2.*M_PI);
 	check_input_param("diffuse source intensity",intensity[i],0,1e40);
+	check_input_param("diffuse source sr area",sr_area[i],0.,4.*M_PI);
 	
 	geometry.diffuse_source_theta.push_back(theta[i]);
 	geometry.diffuse_source_phi.push_back(phi[i]);
 	geometry.diffuse_source_intensity.push_back(intensity[i]);
-	geometry.total_source_luminosity += intensity[i];
+	geometry.total_source_luminosity += intensity[i]*sr_area[i];
 	geometry.diffuse_source_sum_intensity.push_back(geometry.total_source_luminosity);
       }
       // now divide the sum_intensity by the total luminosity to get a number between
@@ -216,7 +217,8 @@ void setup_dust_grid (ConfigFile& param_data,
       // need to get ride of cm^-2 and sr^-1 for total luminosity
 
       // multiply by the size of each cell in sr (assumed to be equal in size)
-      geometry.total_source_luminosity *= 4.*M_PI/theta.size();
+      // no longer needed as this the size of each cell is explicitly in calculation
+      //geometry.total_source_luminosity *= 4.*M_PI/theta.size();
 //       cout << geometry.total_source_luminosity << endl;
 
       if (geometry.type == "sphere") {

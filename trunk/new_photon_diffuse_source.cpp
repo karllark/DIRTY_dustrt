@@ -131,9 +131,15 @@ void new_photon_diffuse_source (photon_data& photon,
 
   // now flip dir_cosines so the photon is heading into the nebula, not out
   for (i = 0; i < 3; i++) {
+//     if (photon.number == 453) {
+//       cout << i << " ";
+//       cout << photon.dir_cosines[i] << " ";
+//       cout << photon.position[i] << endl;
+//     }
     photon.dir_cosines[i] *= -1.;
     photon.birth_position[i] = photon.position[i];
   }
+  //if (photon.number == 453) exit(8);
 
 #ifdef DEBUG_NPDS
   cout << "1: photon position and dir_cosine at edge" << endl;
@@ -150,5 +156,7 @@ void new_photon_diffuse_source (photon_data& photon,
   for (i = 0; i < 3; i++)
     cout << i << " " << photon.position[i] << " " << photon.dir_cosines[i] << endl;
 #endif
+
+  //if (photon.number == 453) exit(8);
 
 }
