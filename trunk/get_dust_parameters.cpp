@@ -151,6 +151,8 @@ void get_dust_parameters (ConfigFile& param_data,
     // get dust grain info
     CurGrainModel.MakeGrainModel(param_data,runinfo.wavelength);
     // now get the tau, albedo, and g values
+    runinfo.effective_grain_heating = param_data.BValue("Model Book Keeping","Effective Grain for Heating"); 
+    cout << "Effective heating is " << runinfo.effective_grain_heating << endl; 
     runinfo.albedo = CurGrainModel.getAlbedo();
     runinfo.g = CurGrainModel.getphFuncEff();
     runinfo.tau_to_h = CurGrainModel.getTau(); // getTau returns tau/H I atom

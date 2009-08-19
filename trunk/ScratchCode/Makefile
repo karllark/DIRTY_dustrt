@@ -18,9 +18,10 @@ RM = /bin/rm -f
 #SOURCEDIR=./
 LIBDIR=./include
 LIBDIR2=../include
+INCDIR_FEDORA = /usr/include/cfitsio
 
 #CCFLAGS = -I$(LIBDIR)/lib -I$(LIBDIR) -I$(LIBPATH)/$(LIBDIR) -O3 -pg 
-CCFLAGS = -I$(LIBDIR) -I$(LIBDIR2) -O3 -pg -g
+CCFLAGS = -I$(LIBDIR) -I$(LIBDIR2) -I$(INCDIR_FEDORA) -O3 -pg -g
 #LDFLAGS = -O3 -L$(LIBDIR) -lConfigFile -lDataFile -lNumUtils -lStringManip -lcfitsio
 LDFLAGS = -lcfitsio -pg 
 #LDFLAGS = -O3 -L$(LIBDIR) -l90Prime -lcfitsio

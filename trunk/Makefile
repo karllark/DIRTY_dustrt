@@ -9,6 +9,8 @@ RM = /bin/rm -f
 CPP = g++
 
 INCDIR = include
+# Fedora with dist cfitsio
+INCDIR_FEDORA = /usr/include/cfitsio
 #LIBS = -lcfitsio -lefence
 LIBS = -lcfitsio
 
@@ -18,7 +20,7 @@ SOURCES = $(wildcard *.cpp)
 
 OBJECTS = ${SOURCES:.cpp=.o}
 #CPPFLAGS = -I${INCDIR} -O2 -Wall -Wextra -g
-CPPFLAGS = -I${INCDIR} -O2 -Wall -Wextra 
+CPPFLAGS = -I${INCDIR} -I${INCDIR_FEDORA} -O2 -Wall -Wextra 
 #CPPFLAGS = -I${INCDIR} -Wall -Wextra 
 
 BUILDOBJ = $(CPP) $(CPPFLAGS)
