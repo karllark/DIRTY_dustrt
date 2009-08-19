@@ -16,12 +16,13 @@ extern int StochasticHeating(vector <float> & wave,
 
 int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel, 
 			 vector <vector<double> > & EmmittedEnergy, bool & DoStochastic,
+			 bool & UseEffective_Grain, 
 			 float & _FailureSz, int & _FailureComp)
 {
  
   // Stochastic state for each size. 
   vector <bool> _dostochastic;
-  
+  //cout << "UseEffective_Grain is " << UseEffective_Grain << endl; 
   // Hold eq. and st. luminosity as f(size,wave)
   vector <vector<double> > StochasticLum; 
   vector <vector<double> > EquilibriumLum; 
@@ -42,7 +43,8 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
   // Some Grain model derived parameters.
   vector <float> _w = GrainModel.getWave();
   vector <float> _E = GrainModel.getEScale();
-  int _ncmp = GrainModel.getNComp(); 
+  int _ncmp;
+  if (!UseEffective_Grain) _ncmp = GrainModel.getNComp(); else _ncmp=1; 
   uint _nw = _w.size();
   vector <float> _Enthalpy; 
   vector <float> _CalTemp;
@@ -90,8 +92,14 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
     TMax=5000.;
 
     // Populate GrainModel() for each component
-    _nsize = GrainModel.nSize(_cmp);
-    _cabs = GrainModel.CAbs(_cmp,(int)0); 
+    if (UseEffective_Grain) {
+      // Set _cabs to effective cabs; with _nsize=1, we only loop once.
+      _nsize = 1; 
+      _cabs = GrainModel.getCAbsEff();  
+    } else { 
+      _nsize = GrainModel.nSize(_cmp);
+      _cabs = GrainModel.CAbs(_cmp,(int)0);
+    } 
     // initilize _t and _dostochastic
     _t.resize(_nsize);
     _dostochastic.resize(_nsize,DoStochastic);  // Populate local with global default. 
@@ -107,10 +115,12 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
     _size = GrainModel.Size(_cmp);
     // Loop over all sizes. 
     for (uint _sz=0;_sz<_nsize;++_sz,++_it) { // Size loop
-
-      _FailureSz = _size[_sz]; 
-      //cout << "Component " << _cmp << " size " << _sz << " " << _size[_sz] << endl; 
-      _cabs = GrainModel.CAbs(_cmp,int(_sz));
+      
+      if (!UseEffective_Grain) {
+	_cabs = GrainModel.CAbs(_cmp,int(_sz));
+	_FailureSz = _size[_sz]; 
+      } else _FailureSz=-1; 
+      
       for (uint _wv=0;_wv<_nw;++_wv) _cJprod[_wv] = _cabs[_wv]*J[_wv]; 
       
       // Get equilibrium temperature.  Return emitted energy as well since it's used 
@@ -123,7 +133,7 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
       
       _tlo = 0.3*(*_it); 
       _thi = 3.0*(*_it); 
-
+      
       if (_dostochastic[_sz]) {	
 	
 	// Since Enthalpy and CalTemp will change as we generate transition matrix,
@@ -134,7 +144,7 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
 	tau_abs = HeatUtils::getTauAbs(J,_cabs,_w,mpe); 
 	Tu = HeatUtils::getTmean(_CalTemp,_Enthalpy,mpe); 
 	tau_rad = HeatUtils::getTauRad(_cabs,_w,mpe,Tu); 
-
+	
 	if (tau_abs < 10*tau_rad) {   // Turn off stochastic heating for this and all subsequent sizes. 
 	  transform(_dostochastic.begin()+_sz,_dostochastic.end(),_dostochastic.begin()+_sz,
 		    bind1st(multiplies<bool>(),false));
@@ -144,44 +154,56 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
 	  EquilibriumLum[_sz].resize(_nw,0.0);  
 	}  
       } else StochasticLum[_sz].resize(_nw,0.0);  // Zero stochastic so we have zero's when we don't do it.  
-
+      
     }
 
-    // Now we have E_eq(w,a) = C(w,a)*B(w,T(a)) and E_st(w,a) = C(w,a)*SUM(P(T(a))*B(w,T(a))
-    // Need to compute integrals over size distribution. 
-    _integrand.resize(_nsize); 
-    _integrand1.resize(_nsize); 
-    _norm=GrainModel.getNormalization(_cmp);
-    
-    _size = GrainModel.Size(_cmp);
-    _sizeDist = GrainModel.getSizeDistribution(_cmp);
-    _iteec = EmmittedEnergy[2*_cmp+1].begin(); // component equilibrium
-    _itees = EmmittedEnergy[2*_cmp+2].begin(); // component stochastic
-    _itet = EmmittedEnergy[0].begin(); 
-
-    for (uint _wv=0;_wv<_nw;++_wv,++_iteec,++_itees,++_itet) { // wavelength loop
-    
-      // _integrand contains the equilibrium contribution to luminosity
-      // _integrand1 contains the stochastic contribution to luminosity
-      for (uint _sz=0;_sz<_nsize;++_sz) { // size loop
-
-	if (!_dostochastic[_sz]) { // compute the equilibrium contribution 
-	  _integrand[_sz] = _sizeDist[_sz]*EquilibriumLum[_sz][_wv];
-	  _integrand1[_sz] = 0.0; 
-	} else { // compute the stochastic contribution
-	  _integrand[_sz] = 0.0; 
-	  _integrand1[_sz] = _sizeDist[_sz]*StochasticLum[_sz][_wv]; 
+    if (!UseEffective_Grain) { 
+      // Now we have E_eq(w,a) = C(w,a)*B(w,T(a)) and E_st(w,a) = C(w,a)*SUM(P(T(a))*B(w,T(a))
+      // Need to compute integrals over size distribution. 
+      _integrand.resize(_nsize); 
+      _integrand1.resize(_nsize); 
+      _norm=GrainModel.getNormalization(_cmp);
+      
+      _size = GrainModel.Size(_cmp);
+      _sizeDist = GrainModel.getSizeDistribution(_cmp);
+      _iteec = EmmittedEnergy[2*_cmp+1].begin(); // component equilibrium
+      _itees = EmmittedEnergy[2*_cmp+2].begin(); // component stochastic
+      _itet = EmmittedEnergy[0].begin(); 
+      
+      for (uint _wv=0;_wv<_nw;++_wv,++_iteec,++_itees,++_itet) { // wavelength loop
+	
+	// _integrand contains the equilibrium contribution to luminosity
+	// _integrand1 contains the stochastic contribution to luminosity
+	for (uint _sz=0;_sz<_nsize;++_sz) { // size loop
+	  
+	  if (!_dostochastic[_sz]) { // compute the equilibrium contribution 
+	    _integrand[_sz] = _sizeDist[_sz]*EquilibriumLum[_sz][_wv];
+	    _integrand1[_sz] = 0.0; 
+	  } else { // compute the stochastic contribution
+	    _integrand[_sz] = 0.0; 
+	    _integrand1[_sz] = _sizeDist[_sz]*StochasticLum[_sz][_wv]; 
+	  }
 	}
+	
+	*_iteec = _norm*Constant::FPI*NumUtils::integrate<double>(_size,_integrand); 
+	*_itees = _norm*Constant::FPI*NumUtils::integrate<double>(_size,_integrand1); 
+	*_itet += (*_iteec + *_itees); 
+	
       }
       
-      *_iteec = _norm*Constant::FPI*NumUtils::integrate<double>(_size,_integrand); 
-      *_itees = _norm*Constant::FPI*NumUtils::integrate<double>(_size,_integrand1); 
-      *_itet += (*_iteec + *_itees); 
-
+    } else { 
+      _itet = EmmittedEnergy[0].begin(); 
+      _iteec = EmmittedEnergy[1].begin(); 
+      _itees = EmmittedEnergy[2].begin(); 
+      for (uint _wv=0;_wv<_nw;++_wv,++_itet,++_iteec,++_itees) { 
+	*_iteec = GrainModel.getNormalization()*Constant::FPI*EquilibriumLum[0][_wv]; 
+	*_itees = 0.0;
+	*_itet = (*_iteec + *_itees); 
+      }
+      
     }
-
+    
   }
-
   // Successfully completed ComputeDustEmission()
   return Flags::FSUCCESS; 
 

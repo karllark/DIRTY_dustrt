@@ -31,6 +31,8 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 
   bool DoStochastic = false;
   if (runinfo.do_stochastic_dust_emission) DoStochastic = true;
+  // For now, turn off stochastic heating when using effective grain heating.  
+  if (runinfo.effective_grain_heating) DoStochastic = false; 
 
   double global_total_emitted = 0.;
   double global_total_absorbed = 0.;
@@ -89,7 +91,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   int good_enough_photons = 10;
 
   // Required energy conservation per bin - input parameter? 
-  float econs_tolerance = 1.0e-3; 
+  float econs_tolerance = 5.0e-3; 
 
   // loop over all the defined grids
   for (m = 0; m < int(geometry.grids.size()); m++) {
@@ -219,7 +221,8 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	    status = ComputeDustEmission(geometry.grids[m].grid(i,j,k).absorbed_energy,
 					 CurGrainModel, 
 					 geometry.grids[m].grid(i,j,k).emitted_energy,
-					 DoStochastic,_FailureSz,_FailureComp); 
+					 DoStochastic,runinfo.effective_grain_heating,
+					 _FailureSz,_FailureComp); 
 #ifdef DEBUG_GDTE
 	    cout << "...leaving ComputeDustEmission" << endl;
 #endif
@@ -240,7 +243,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 		cout << "total_abs/H atom = " << tot_abs_energy << endl;
 		cout << "total_emit_energy/H atom = " << total_emit_energy << endl;
 		cout << "ratio emit/abs = " << total_emit_energy/tot_abs_energy << endl;
-		// 	      exit(8);
+		// 	      exit(8)
 	      }
 	      
 	      // add to the emitted energy sums

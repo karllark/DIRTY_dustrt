@@ -19,7 +19,8 @@
 extern int  ComputeDustEmission (vector <float> & J, 
 				 GrainModel & GrainModel,
 				 vector <vector<double> > & EmmittedEnergy, 
-				 bool & DoStochastic, float & _FailureSz, int & _FailureComp);
+				 bool & DoStochastic, bool & UseEffective_Grain,
+	 		         float & _FailureSz, int & _FailureComp);
 
 using namespace std; 
 
@@ -39,9 +40,9 @@ int main (int argc, char * argv[]) {
   // Just to define a wavelength grid. 
   Grain MyGrain; 
   // Instantiate a Grain object. 
-  MyGrain.MakeGrain("CrossSections/PAHneu_30_mod.srt",
+  MyGrain.MakeGrain("CrossSections/PAH_28_1201_neu",
 		    "Calorimetry/Graphitic_Calorimetry_1000.dat",
-		    MW,MS,"/work/Science/Dust/OpticalProperties/");
+		    MW,MS,"/home/misselt/Dust/OpticalProperties/");
 
   // Get the wavelength grid MyGrain[0] is defined on.
   MW.erase(MW.begin(),MW.end());
@@ -55,112 +56,53 @@ int main (int argc, char * argv[]) {
   //exit(8);
   cout << "Done in test...." << endl; 
   // Generate the Grain model
-  string aConfigFile="/work/Science/dirty/ScratchCode/Craptastic.cfg";
+  string aConfigFile="/home/misselt/dirty/ScratchCode/Craptastic.cfg";
   ConfigFile thisConfig(aConfigFile);
   GrainModel thisGrainModel; 
+
+  cout << thisConfig.SValue("Model Book Keeping","Model Name") << endl;
   thisGrainModel.MakeGrainModel(thisConfig,MW);
   
   cout << "Total mass (gm/H): " << thisGrainModel.getMDust() << endl; 
   cout << "Total numer (/H): " << thisGrainModel.getNumber() << endl; 
+
+  bool UseEffective_Grain=false;
   
   int ncomp=thisGrainModel.getNComp();
+
+  int ncomp_effective; 
+  if (UseEffective_Grain) ncomp_effective=1; else ncomp_effective=ncomp;
 
   cout << "Mass, number per H: " << endl; 
   for (int i=0;i<ncomp;i++) cout << thisGrainModel.getMDust(i) << " , " << thisGrainModel.getNumber(i) << endl;  
   
-//   vector <float> size=thisGrainModel.Size(2);
-//   for (int i=0;i<size.size();++i) cout << i << " " << size[i] << endl; 
-  vector <float> cabs=thisGrainModel.CAbs(2,9); 
-  //for (int i=0;i<cabs.size();++i) cout << MW[i] << " " << cabs[i] << endl; 
-
-  //exit(8); 
-
   vector <vector<double> > thisEmission; 
-  thisEmission.resize(2*ncomp+1); 
-  for (int i=0;i<(2*ncomp+1);++i) thisEmission[i].resize(nWave);
-  bool DoStochastic=true; 
-
-  float thise=-100.0; 
-  int thisid=0; 
-
-  // a range of ISRF scalings. 
-  int nisrf=5; 
-  vector <float> ISRF_Scaling(nisrf); 
-  float isrf_min=0.1; 
-  float isrf_max=10.0;
-  float isrf_delta=(1.0/static_cast<float>(nisrf-1))*log10(isrf_max/isrf_min); 
-  ISRF_Scaling[0]=isrf_min; 
-  for (int i=1;i<nisrf;++i) ISRF_Scaling[i]=ISRF_Scaling[i-1]*pow(10,isrf_delta);
-  ISRF_Scaling[14]=1.0;
-  ISRF_Scaling[29]=10.0; 
-  ISRF_Scaling[43]=100.0;
-  ISRF_Scaling[57]=1000.0;
-  ISRF_Scaling[71]=10000.0; 
-  ISRF_Scaling[86]=100000.0; 
-
+  thisEmission.resize(2*ncomp_effective+1); 
+  for (int i=0;i<(2*ncomp_effective+1);++i) thisEmission[i].resize(nWave);
+  bool DoStochastic=false; 
+  if (UseEffective_Grain) DoStochastic=false; 
+  
   string sOutBase="SED_ISRF";
   string sOutput; 
 
   // Dust masses in gr/H
   float TotalDustMass=thisGrainModel.getMDust(); 
   vector <float> DustMass(ncomp); 
-  for (int c=0;c<ncomp;++c) DustMass[c] = thisGrainModel.getMDust(c); 
-  
-  int status;
-  string sErrorOutBase,sErrorOut; 
-
-  int x,y,z,m;
-  x=-1; y=-2; z=-3; m=10; 
-  double eeee=0.0; 
-
-  for (int is=0;is<nisrf;++is) {
+  for (int c=0;c<ncomp_effective;++c) DustMass[c] = thisGrainModel.getMDust(c); 
+  int status; 
+  thisISRF=MyISRF.getISRF(); 
+  float thise; int thisid;
+  status = ComputeDustEmission(thisISRF, thisGrainModel, thisEmission, DoStochastic,UseEffective_Grain,thise,thisid); 
+  for (int i=0;i<nWave;i++) { 
     
-    cout << "Working on scaling " << is << "(" << StringManip::vtos(ISRF_Scaling[is]) << ")" << endl; 
-    sOutput=sOutBase+StringManip::vtos(ISRF_Scaling[is])+"_"+thisGrainModel.getModelName()+".dat"; 
-
-    sErrorOut=sErrorOutBase+"_isrf"+StringManip::vtos(is+1)+"_failure.log"; 
-    DirtyFailure * Failure = new DirtyFailure(sErrorOut,nWave); 
+    cout << MW[i] << " " << thisISRF[i] << " " << thisEmission[0][i] << " ";
     
-    ISRF MyISRF(MW,ISRF_Scaling[is]); 
-    thisISRF=MyISRF.getISRF(); 
-
-    if ( is == 2) thisISRF.resize(nWave-1);
-    //   cout << "Calling compute emission " <<endl;
-    status = ComputeDustEmission(thisISRF, thisGrainModel, thisEmission, DoStochastic,thise,thisid); 
-
-    if (status != Flags::FSUCCESS) {
-      cout << "************" << endl; 
-      cout << "FAILED!!!!!!" << endl; 
-      cout << "************" << endl; 
-      Failure->AddFailure(status); 
-      Failure->AddCellBook(x,y,z,m); 
-      Failure->AddGrainInfo(thisGrainModel.getModelName(),thise,thisid); 
-      Failure->AddEnergyInfo(eeee,thisISRF); 
-      Failure->WriteFailureLog(); 
-    }  else {
+    for (int c=0;c<ncomp_effective;++c) { 
       
-      ofstream fOutput(sOutput.c_str()); 
+      cout << thisEmission[2*c+1][i] << " " << thisEmission[2*c+2][i] << " "; 
       
-      fOutput << "# ISRF " << ISRF_Scaling[is] << " DustModel " << thisGrainModel.getModelName() << endl; 
-      fOutput << "# This is the emission (luminosity) per unit dust mass" << endl; 
-      
-      // we output the emmision per unit dust mass. 
-      for (int i=0;i<nWave;i++) { 
-	
-	fOutput << MW[i] << " " << thisISRF[i] << " " << thisEmission[0][i]/TotalDustMass << " ";
-	
-	for (int c=0;c<ncomp;++c) { 
-	  
-	  fOutput << thisEmission[2*c+1][i]/DustMass[c] << " " << thisEmission[2*c+2][i]/DustMass[c] << " "; 
-	  
-	}
-	fOutput << endl; 
-      }
-    
-      fOutput.close();
     }
-    delete Failure; 
-
+    cout << endl; 
   }
 
 

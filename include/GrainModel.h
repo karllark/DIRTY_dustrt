@@ -150,21 +150,22 @@ private:
   map<string,int> ModelID; 
   void ModelMapping() { 
     if ( !ModelID.empty()) return; 
-    ModelID["MRN"]=0; 
-    ModelID["BARE-GR-S"]=1; 
+    ModelID["MRN"]=0;              // Standard MRN
+    ModelID["BARE-GR-S"]=1;        // Zubko et al. bare graphite+silicate
     ModelID["KG-BARE-S"]=2; 
     ModelID["KG-BARE-S1"]=3; 
     ModelID["KG-BARE-S2"]=4; 
     ModelID["KG-BARE-S3"]=5; 
     ModelID["KG-BARE-S4"]=6;
-    ModelID["SMCBAR-WD01"]=7;
-    ModelID["RV31_BC6-WD01"]=8;
+    ModelID["SMCBAR-WD01"]=7;      // Wiengartner+Draine SMC
+    ModelID["RV31_BC6-WD01"]=8;    // Wiengartner+Draine MW R_V=3.1
   }
   map<string,int> SizeDistID; 
   void SizeDistMapping() { 
     if (!SizeDistID.empty()) return; 
     SizeDistID["ZDA"] = 0;
     SizeDistID["WD01"] = 1; 
+    SizeDistID["NULL"] = 99;
   }
   map<string,int> SizeTypeID; 
   void SizeTypeMapping() { 
