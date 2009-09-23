@@ -914,6 +914,101 @@ endl;
     n2_id = div_result.quot;
     n1_id = div_result.rem;
   }
+  // ****************************************************************************
+
+  // ****************************************************************************
+  // FourVector class.
+  template <typename T> class FourVector : public std::vector<T> {
+    
+  public:
+    // Constructors/destructors.
+    FourVector() : std::vector<T>() {} 
+    FourVector(int n1, int n2, int n3, int n4, const T& ival) : std::vector<T>(n1*n2*n3*n4,ival), _n1 (n1),_n2 (n2), _n3 (n3), _n4 (n4) {}
+    explicit FourVector(int n1, int n2, int n3, int n4) : std::vector<T>(n1*n2*n3*n4), _n1 (n1), _n2 (n2), _n3 (n3), _n4 (n4) {}
+    ~FourVector() {}
+    // Return reference to correct element in vector; All vector type assignments
+    //   should work.
+    T& operator() (int n1_id, int n2_id, int n3_id, int n4_id);
+    void FVSize (int n1_id, int n2_id, int n3_id, int n4_id);
+    
+    int nRow ();
+    int nCol ();
+    int n3rd ();
+    int n4th ();
+	
+       void get_xyzz(int cell_num, int &n1_id, int &n2_id, int &n3_id, int &n4_id);
+    
+  private: 
+    // Keep track of how many elements we're allowed to have in each dimension. 
+    int _n1,_n2,_n3,_n4;
+    
+  };
+  
+  // Overload of operator() 
+  template <typename T> inline T& FourVector<T>::operator() (int n1_id, int n2_id, int n3_id, int n4_id)
+    {
+      if (n1_id < 0 || n1_id >= _n1) { 
+	cout << "out_of_range FourVector::operator(), element 1 " << n1_id << "," << n2_id << "," << n3_id << " " << n4_id << " " << _n1 << 
+endl;
+	std::string ExceptionObject = "out_of_range FourVector::operator(), element 1"; 
+	throw std::out_of_range(ExceptionObject);
+      }
+      if (n2_id < 0 || n2_id >= _n2) { 
+	cout << "out_of_range FourVector::operator(), element 2 " << n1_id << "," << n2_id << "," << n3_id << " " << n4_id << " " << _n2 << 
+endl;
+	std::string ExceptionObject = "out_of_range FourVector::operator(), element 2"; 
+	throw std::out_of_range(ExceptionObject);
+      }
+      if (n3_id < 0 || n3_id >= _n3) {
+	cout << "out_of_range FourVector::operator(), element 3 " << n1_id << "," << n2_id << "," << n3_id << " " << n4_id << " " << _n3 << 
+endl; 
+	std::string ExceptionObject = "out_of_range FourVector::operator(), element 3"; 
+	throw std::out_of_range(ExceptionObject);
+      }
+      if (n4_id < 0 || n4_id >= _n4) {
+	cout << "out_of_range FourVector::operator(), element 4 " << n1_id << "," << n2_id << "," << n3_id << " " << n4_id << " " << _n4 << 
+endl; 
+	std::string ExceptionObject = "out_of_range FourVector::operator(), element 3"; 
+	throw std::out_of_range(ExceptionObject);
+      }
+      return *( this->begin() + n4_id*_n1*_n2*_n3 + n3_id*_n1*_n2 + n2_id*_n1 +  n1_id);
+      
+    }
+
+  // Size the FourVector after instatiation. 
+  template <typename T> void FourVector<T>::FVSize(int n1_id, int n2_id, int n3_id, int n4_id)
+    {
+      _n1 = n1_id;
+      _n2 = n2_id; 
+      _n3 = n3_id;
+      _n4 = n4_id;
+      FourVector::clear();
+      FourVector::resize(n1_id*n2_id*n3_id*n4_id);
+    }
+  
+  template <typename T> int FourVector<T>::nRow() { return _n1; }
+  template <typename T> int FourVector<T>::nCol() { return _n2; }
+  template <typename T> int FourVector<T>::n3rd() { return _n3; }
+  template <typename T> int FourVector<T>::n4th() { return _n4; }
+  
+  // ****************************************************************************
+
+  // given the index of the cell, return the x, y and z indices
+  template <typename T> inline void FourVector<T>::get_xyzz(int cell_num, int &n1_id, int &n2_id, int &n3_id, int &n4_id)
+  {
+    div_t div_result;
+    if (cell_num < 0 || cell_num > (int)this->size()) {
+      std::string ExceptionObject = "out_of_range FourVector::get_xyzz()"; 
+      throw std::out_of_range(ExceptionObject);
+    }
+    div_result = div(cell_num, _n3*_n2*_n1);
+    n4_id = div_result.quot;
+    div_result = div(div_result.rem, _n2*_n1);
+    n3_id = div_result.quot;
+    div_result = div(div_result.rem, _n1);
+    n2_id = div_result.quot;
+    n1_id = div_result.rem;
+  }
 }
 
 #endif

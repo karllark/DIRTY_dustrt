@@ -99,6 +99,7 @@ extern void output_global_results (runinfo_struct& runinfo,
 
 // output the model grid
 extern void output_model_grid (geometry_struct& geometry,
-			       output_struct& output);
+			       output_struct& output,
+			       runinfo_struct& runinfo);
 
 #endif

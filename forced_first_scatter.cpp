@@ -34,6 +34,7 @@ void forced_first_scatter (geometry_struct& geometry,
   dummy_photon.path_cur_cells = -1;  // set to -1 *not* to save cells tranversed
   distance_traveled = calc_photon_trajectory(dummy_photon, geometry, target_tau, escape, tau_to_surface);
   photon.first_tau = tau_to_surface;
+
 #ifdef DEBUG_FFS
   if (photon.number == OUTNUM) cout << "surface tau done; "; cout.flush();
 #endif

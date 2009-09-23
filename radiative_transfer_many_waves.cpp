@@ -58,7 +58,7 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
 
       //     // check the absorbed energy grid (temp needed as energy not conserved)
       //     // KDG - 23 Mar 2008
-      //     check_absorbed_energy_grid(geometry, runinfo);
+//       check_absorbed_energy_grid(geometry, runinfo);
       
       // setup dust grains for this wavelength
       get_dust_scat_parameters(i, runinfo, geometry);
@@ -85,7 +85,7 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
       
       // store the result (either in memory or on disk)
       // remember to zero out the absorbed energy grid
-    if ((runinfo.do_dust_emission) || (runinfo.do_ere_emission)) {
+//     if ((runinfo.do_dust_emission) || (runinfo.do_ere_emission)) {
 #ifdef DEBUG_MRT
       cout << endl;
       cout << "wave [cm] = " << geometry.wavelength << endl;
@@ -103,10 +103,10 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
       // 	check_absorbed_energy_grid(geometry, runinfo);
       //     if (i == 1) exit(8);
       //  	exit(8);
-    }
+//     }
     
     // check the absorbed energy grid (temp needed as energy not conserved)
     // KDG - 23 Mar 2008
-    //   check_absorbed_energy_grid(geometry, runinfo);
+//     check_absorbed_energy_grid(geometry, runinfo);
   }
 }

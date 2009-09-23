@@ -127,6 +127,14 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
     cout << "z_grid_size (real) = " << 2.*dust_vertical_trunc/start_grid_size << endl;
     exit(8);
   }
+  // arbitrarily make the z a finer grid
+  float subdiv_z = param_data.FValue("Geometry","subdivide_z_factor");
+  if (isnan(subdiv_z)) subdiv_z = 1;
+  check_input_param("subdivide_z_factor",subdiv_z,1,10);
+//   z_grid_size *= subdiv_z;
+//   cout << subdiv_z << endl;
+//   exit(8);
+
 #ifdef DEBUG_SDGDD
   cout << "grid size = " << xy_grid_size << " ";
   cout << xy_grid_size << " ";
@@ -270,7 +278,7 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
 #endif
 	    
 	    subgrid.index_dim[1] = subgrid.index_dim[0];
-	    subgrid.index_dim[2] = subgrid.index_dim[0];
+	    subgrid.index_dim[2] = int(float(subgrid.index_dim[0])*subdiv_z);
 	    
 	    vector<double> x_subpos(subgrid.index_dim[0]+1);
 	    vector<double> y_subpos(subgrid.index_dim[1]+1);
@@ -346,5 +354,75 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
 
   // subdivide all overdense cells
   setup_dust_grid_subdivide_overdense_cells(geometry, spherical_clumps);
+
+  //******************************************************************
+  // test that the geometry has the right vertical optical depth
+  // ***does not work*** argh!
+
+//   photon_data tmp_photon;
+
+//   // setup the weights
+//   tmp_photon.number = 0;
+//   tmp_photon.stellar_weight = 1.0;
+//   tmp_photon.scat_weight = 0.0;
+
+//   // initialize statistics variables
+//   tmp_photon.num_scat = 0;
+
+//   // direction of tmp_photon; assuming an isotropic source
+//   // in direction cosines...
+//   tmp_photon.dir_cosines[0] = 0.0;
+//   tmp_photon.dir_cosines[1] = 0.0;
+//   tmp_photon.dir_cosines[2] = 1.0;
+
+//   // direction of photon; assuming an isotropic source
+//   // in direction cosines...
+//   double phi = M_PI*(2.0*random_obj.random_num() - 1.0);
+//   tmp_photon.dir_cosines[2] = 2.0*random_obj.random_num() - 1.0;
+//   double temp = sqrt(1.0 - pow(tmp_photon.dir_cosines[2],2));
+//   tmp_photon.dir_cosines[0] = cos(phi)*temp;
+//   tmp_photon.dir_cosines[1] = sin(phi)*temp;
+
+//   // set the tmp_photon position to the star position
+//   for (i = 0; i < 3; i++) {
+//     tmp_photon.position[i] = 1.0;
+//     tmp_photon.birth_position[i] = tmp_photon.position[i];
+//   }
+
+//   // setup the photon structure with positions for the maximum grid depth
+//   vector<int> one_index(3);
+//   for (i = 0; i < geometry.max_grid_depth; i++) {
+//     tmp_photon.position_index.push_back(one_index);
+//     tmp_photon.grid_number.push_back(long(0));
+//   }
+
+//   // add in the initialization for the photon path variables
+//   tmp_photon.path_max_cells = 10;
+//   vector<int> tmp_index(tmp_photon.path_max_cells);
+//   for (i = 0; i < 4; i++)
+//     tmp_photon.path_pos_index.push_back(tmp_index);
+//   tmp_photon.path_tau.resize(tmp_photon.path_max_cells);
+
+//   // now determine the position indexes of the tmp_photon
+//   determine_photon_position_index_initial(geometry, tmp_photon);
+  
+//   // now move the tmp_photon to the edge
+//   double target_tau = 1e20;
+//   int escape = 0;
+//   double distance_traveled = 0.0;
+//   double tau_to_surface = 0.0;
+//   tmp_photon.path_cur_cells = 0;  // set to -1 *not* to save cells tranversed
+
+//   distance_traveled = calc_photon_trajectory(tmp_photon, geometry, target_tau, escape, tau_to_surface);
+
+//   for (i = 0; i < tmp_photon.path_cur_cells; i++) {
+//     cout << tmp_photon.path_tau[i] << " ";
+//   }
+//   cout << endl;
+
+//   cout << "optical depth to surface = " << tau_to_surface << endl;
+//   cout << "escape = " << escape << endl;
+  //  exit(8);
+  //******************************************************************
 
 }
