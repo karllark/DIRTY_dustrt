@@ -125,28 +125,42 @@ void get_sed_parameters (ConfigFile& param_data,
       }
     }
 
+    // setup for the interpolation to get ride of zeros
     // get the runinfo.wavelength in double form for interpol function
+    // put the luminosity in log space to make the interpolation better for rapidly changing seds
     vector<double> run_wave;
     vector<double> temp_sed_nozero;
     vector<double> temp_sed_nozero_wave;
     for (i = 0; i < runinfo.wavelength.size(); i++) {
+//       run_wave.push_back(log10l(double(runinfo.wavelength[i])));
       run_wave.push_back(double(runinfo.wavelength[i]));
       if (temp_sed_npts[i] > 0) {
-	temp_sed_nozero.push_back(temp_sed[i]/temp_sed_npts[i]);
-	temp_sed_nozero_wave.push_back(runinfo.wavelength[i]);
-#ifdef DEBUG_GSP
+	temp_sed_nozero.push_back(log10l(double(temp_sed[i]/temp_sed_npts[i])));
+	//	temp_sed_nozero.push_back(temp_sed[i]/temp_sed_npts[i]);
+// 	temp_sed_nozero_wave.push_back(log10l(runinfo.wavelength[i]));
+ 	temp_sed_nozero_wave.push_back(runinfo.wavelength[i]);
+	//#ifdef DEBUG_GSP
 	cout << i << " ";
 	cout << temp_sed_npts[i] << " ";
 	cout << endl;
-#endif
+	//#endif
       }
     }
 
     // interpolate SED onto wavelength grid
     // numbers are power law coefficents for extrapolation on the left & right sides
-     runinfo.sed_lum = interpol(temp_sed_nozero, temp_sed_nozero_wave, run_wave,2,-2);
-     //    runinfo.sed_lum = interpol(luminosity, wavelength, run_wave,2,-2);
+    runinfo.sed_lum = interpol(temp_sed_nozero, temp_sed_nozero_wave, run_wave,0,0);
+    //    runinfo.sed_lum = interpol(luminosity, wavelength, run_wave,2,-2);
 
+    // now un-log10 the luminosity 
+    for (i = 0; i < runinfo.wavelength.size(); i++) {
+      cout << runinfo.wavelength[i] << " ";
+      cout << runinfo.sed_lum[i] << " ";
+      runinfo.sed_lum[i] = pow(10.0,runinfo.sed_lum[i]);
+      cout << runinfo.sed_lum[i] << endl;
+    }
+
+    //    exit(8);
   }    
 
   if (runinfo.do_global_output) {

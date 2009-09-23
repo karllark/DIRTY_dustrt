@@ -28,6 +28,12 @@ void new_photon_dexp_disk (photon_data& photon,
   photon.dir_cosines[0] = cos(phi)*temp;
   photon.dir_cosines[1] = sin(phi)*temp;
 
+  // direction of tmp_photon; assuming an isotropic source
+  // in direction cosines...
+//   photon.dir_cosines[0] = 0.0;
+//   photon.dir_cosines[1] = 0.0;
+//   photon.dir_cosines[2] = -1.0;
+
   int i = 0;
 #ifdef DEBUG_NPDD
   for (i = 0; i < 3; i++)
@@ -92,6 +98,10 @@ void new_photon_dexp_disk (photon_data& photon,
   phi = M_PI*(2.0*random_obj.random_num() - 1.0);
   photon.position[0] = cos(phi)*rho_xy;
   photon.position[1] = sin(phi)*rho_xy;
+
+//   photon.position[0] = 0.0;
+//   photon.position[1] = 0.0;
+//   photon.position[2] = 0.0;
 
   // save the birth position
   for (i = 0; i < 3; i++) {

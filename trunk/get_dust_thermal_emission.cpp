@@ -34,6 +34,14 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   // For now, turn off stochastic heating when using effective grain heating.  
   if (runinfo.effective_grain_heating) DoStochastic = false; 
 
+  // define the cutoffs for passing to the dust emission code
+  float cutoff_frac = 0.05;
+  float min_energy_frac = 0.001;
+  if (DoStochastic) {
+    cutoff_frac = 0.5;
+    min_energy_frac = 0.1;
+  }
+
   double global_total_emitted = 0.;
   double global_total_absorbed = 0.;
   double total_emit_energy = 0.0;
@@ -68,7 +76,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   cout << "global_total_absorbed = " << global_total_absorbed << endl;
   if (global_total_absorbed == 0.0) exit(8);
 
-  double min_enough_energy = 0.1*runinfo.energy_conserve_target*global_total_absorbed/geometry.num_cells;
+  double min_enough_energy = min_energy_frac*runinfo.energy_conserve_target*global_total_absorbed/geometry.num_cells;
   long num_cells_enough = 0;
   long num_cells_not_enough = 0;
   long num_cells_zero = 0;
@@ -131,29 +139,18 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	  for (x = 0; x < runinfo.wavelength.size(); x++) {
 // 	    tmp_wave[x] = double(runinfo.wavelength[x]);
 	    tmp_abs_energy[x] = geometry.grids[m].grid(i,j,k).absorbed_energy[x]*4.*Constant::PI*runinfo.ave_C_abs[x];
- 	    if ((k == 5) && (j == 5) && (i == 5)) {
- 	      cout << x << " " << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
-	      cout << geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x] << " ";
- 	      cout << geometry.grids[m].grid(i,j,k).save_radiation_field_density[x] << endl;
- 	    }
 	    if (tmp_abs_energy[x] > max_abs_energy) max_abs_energy = tmp_abs_energy[x];
 	    //	    if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0.) tot_nonzero++;
 	    if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x] >= good_enough_photons) tot_nonzero++;
 	  }
  	  tot_abs_energy = NumUtils::integrate<double>(tmp_wave,tmp_abs_energy)*geometry.grids[m].grid(i,j,k).num_H;
 		
-	  if ((k == 5) && (j == 5) && (i == 5)) {
-	    cout << geometry.grids[m].grid(i,j,k).num_H << endl;
-	    cout << "total nonzero = " << tot_nonzero << endl;
-	    cout << "total absorbed energy = " << tot_abs_energy << endl;
-	    cout << "max absorbed energy = " << max_abs_energy << endl;
-	  }
 #ifdef DEBUG_GDTE
 	  cout << "total nonzero = " << tot_nonzero << endl;
 	  cout << "total absorbed energy = " << tot_abs_energy << endl;
 	  cout << "max absorbed energy = " << max_abs_energy << endl;
 #endif
-	  if ((tot_abs_energy > 0.0) && (tot_nonzero < int(0.5*runinfo.wavelength.size()))) {
+	  if ((tot_abs_energy > 0.0) && (tot_nonzero < int(cutoff_frac*runinfo.wavelength.size()))) {
 
 	    num_cells_too_few_waves++;
 
@@ -163,7 +160,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	    
 	    // interoplate the radiative field to fill all the wavelength points
 	    // if it has any nonzero points
-	    if (tot_nonzero != int(runinfo.wavelength.size())) {
+	    if ((tot_nonzero != int(runinfo.wavelength.size())) && (DoStochastic)) {
 	      for (x = 0; x < runinfo.wavelength.size(); x++) {
 #ifdef DEBUG_GDTE
  		cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";

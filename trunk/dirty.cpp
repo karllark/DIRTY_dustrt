@@ -80,10 +80,6 @@ int main(int argc, char* argv[])
   cout.flush();
 #endif
   
-  // output model_grid info
-  if (output.do_output_model_grid)
-    output_model_grid(geometry, output);
-
   // get the dust grain parameters
   get_dust_parameters(param_data, CurGrainModel, geometry, runinfo);
 
@@ -143,9 +139,13 @@ int main(int argc, char* argv[])
     radiative_transfer_many_waves(geometry, runinfo, ere_output, photon, random_obj, ERE_RT, 1);
   }
 
+  // output model_grid info
+  if (output.do_output_model_grid)
+    output_model_grid(geometry, output, runinfo);
+
   // start RT+DE iteration (only if DE flag set)
   int iter_num = 1;
-  int iter_max = 10;
+  int iter_max = 5;
   int iter_done = 0;
 
 #ifdef DEBUG_DIRTY

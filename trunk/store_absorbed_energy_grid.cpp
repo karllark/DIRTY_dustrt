@@ -112,6 +112,9 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	      cout << "j_temp = " << j_temp << endl;
 	      exit(8);
 	    }
+// 	    cout << geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] << " ";
+// 	    cout << j_temp << endl;
+// 	    exit(8);
 	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] = float(j_temp);
 
 #ifdef DEBUG_SAEG

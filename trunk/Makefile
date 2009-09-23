@@ -41,6 +41,7 @@ $(PROGRAM) : $(OBJECTS)
 
 clean:
 	$(RM) $(OBJECTS)
+	$(RM) *.d
 	$(RM) dirty
 
 .cpp.o : 

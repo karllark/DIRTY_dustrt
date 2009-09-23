@@ -39,6 +39,7 @@ struct runinfo_struct {
   int empir_dust;  // set to 1 if empirical dust properties being used
   int model_dust;  // set to 1 if dust grain model properties being used
   int n_waves;
+  float norm_tau_wave;  // wavelength to normalize tau
   bool effective_grain_heating; // true if using effective grain in heating - defaults false.
   std::vector<float> wavelength;
   std::vector<float> albedo;

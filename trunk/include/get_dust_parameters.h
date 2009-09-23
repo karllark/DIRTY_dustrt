@@ -2,6 +2,7 @@
 #define _DIRTY_GET_DUST_PARAMETERS_
 
 #include <cstring>
+#include <algorithm>
 
 #include "ConfigFile.h"
 #include "DataFile.h"

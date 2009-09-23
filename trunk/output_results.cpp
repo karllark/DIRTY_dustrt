@@ -77,7 +77,7 @@ void output_results (output_struct& output,
 
     // constant to convert from ratio to surface brightness for images
     double ratio_to_sb_image = geometry.total_source_luminosity*lum_to_flux*
-      pow(geometry.angular_radius/output.image_size[0],-2.0);
+      pow(2.*geometry.angular_radius/output.image_size[0],-2.0);
     if (runinfo.verbose >= 2)
       cout << "ratio_to_sb_image = " << ratio_to_sb_image << endl;
 

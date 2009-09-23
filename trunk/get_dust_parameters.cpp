@@ -160,7 +160,16 @@ void get_dust_parameters (ConfigFile& param_data,
     runinfo.ave_C_abs = CurGrainModel.getCAbsEffNorm();  // getCAbsEffNorm returns cm^2/H I atom
     runinfo.n_emission_grain_types = 1 + 2*CurGrainModel.getNComp();
 
-    float norm_tau = CurGrainModel.getTau(0.55*(Constant::UM_CM));
+    runinfo.norm_tau_wave = param_data.FValue("Geometry","tau_wave");
+    if (isnan(runinfo.norm_tau_wave)) runinfo.norm_tau_wave = 0.55;
+    check_input_param("wavelength to normalize tau",runinfo.norm_tau_wave*(Constant::UM_CM),
+		      *min_element(runinfo.wavelength.begin(),runinfo.tau_to_h.end()),
+		      *max_element(runinfo.wavelength.begin(),runinfo.tau_to_h.end()));
+
+    float norm_tau = CurGrainModel.getTau(runinfo.norm_tau_wave*(Constant::UM_CM));
+//     cout << CurGrainModel.getTau(0.1*(Constant::UM_CM))/norm_tau << endl;
+//     exit(8);
+
     int i;
 #ifdef DEBUG_GDP
       cout << "wavelength" << " ";
