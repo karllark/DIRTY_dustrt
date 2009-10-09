@@ -139,11 +139,11 @@ void get_sed_parameters (ConfigFile& param_data,
 	//	temp_sed_nozero.push_back(temp_sed[i]/temp_sed_npts[i]);
 // 	temp_sed_nozero_wave.push_back(log10l(runinfo.wavelength[i]));
  	temp_sed_nozero_wave.push_back(runinfo.wavelength[i]);
-	//#ifdef DEBUG_GSP
+#ifdef DEBUG_GSP
 	cout << i << " ";
 	cout << temp_sed_npts[i] << " ";
 	cout << endl;
-	//#endif
+#endif
       }
     }
 
@@ -154,10 +154,10 @@ void get_sed_parameters (ConfigFile& param_data,
 
     // now un-log10 the luminosity 
     for (i = 0; i < runinfo.wavelength.size(); i++) {
-      cout << runinfo.wavelength[i] << " ";
-      cout << runinfo.sed_lum[i] << " ";
+//       cout << runinfo.wavelength[i] << " ";
+//       cout << runinfo.sed_lum[i] << " ";
       runinfo.sed_lum[i] = pow(10.0,runinfo.sed_lum[i]);
-      cout << runinfo.sed_lum[i] << endl;
+//       cout << runinfo.sed_lum[i] << endl;
     }
 
     //    exit(8);

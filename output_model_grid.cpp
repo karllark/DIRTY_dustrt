@@ -68,17 +68,17 @@ void output_model_grid (geometry_struct& geometry,
       if (geometry.grids[m].index_dim[i] > max_index) max_index = geometry.grids[m].index_dim[i];
 
     // create a 3d matrix to copy the grid info into for output
-    NumUtils::Matrix<float> tmp_pos;
-    tmp_pos.MSize(3,max_index+1);
+    NumUtils::Matrix<double> tmp_pos;
+    tmp_pos.MSize(max_index+1,3);
 
     // get pos data
     // fill each dimension separately to allow for non-cubes
     for (i = 0; i <= geometry.grids[m].index_dim[0]; i++)
-      tmp_pos(0,i) = geometry.grids[m].positions[0][i];
+      tmp_pos(i,0) = geometry.grids[m].positions[0][i];
     for (i = 0; i <= geometry.grids[m].index_dim[1]; i++)
-      tmp_pos(1,i) = geometry.grids[m].positions[1][i];
+      tmp_pos(i,1) = geometry.grids[m].positions[1][i];
     for (i = 0; i <= geometry.grids[m].index_dim[2]; i++)
-      tmp_pos(2,i) = geometry.grids[m].positions[2][i];
+      tmp_pos(i,2) = geometry.grids[m].positions[2][i];
     
     // loop of the cells in this grid
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
@@ -108,36 +108,42 @@ void output_model_grid (geometry_struct& geometry,
 
     // create and output each grid (positions)
     long tmp_pos_index[2];
-    tmp_pos_index[0] = 3;
-    tmp_pos_index[1] = geometry.grids[m].index_dim[0] + 1;
-    fits_create_img(out_pos_ptr, -32, 2, tmp_pos_index, &status);
+    tmp_pos_index[0] = max_index+1;
+    tmp_pos_index[1] = 3;
+    fits_create_img(out_pos_ptr, -64, 2, tmp_pos_index, &status);
     check_fits_io(status,"fits_create_image : output_model_grid (pos)");
       
-    fits_write_img(out_pos_ptr, TFLOAT, 1, tmp_pos_index[0]*tmp_pos_index[1], 
+    fits_write_img(out_pos_ptr, TDOUBLE, 1, tmp_pos_index[0]*tmp_pos_index[1], 
 		   &tmp_pos[0], &status);
 
-    // output extra info needed to fully define geometry
-    fits_write_key(out_pos_ptr, TLONG, "XSIZE", &geometry.grids[m].index_dim[0], "index dimension of x vals", &status);
-    fits_write_key(out_pos_ptr, TLONG, "YSIZE", &geometry.grids[m].index_dim[1], "index dimension of y vals", &status);
-    fits_write_key(out_pos_ptr, TLONG, "ZSIZE", &geometry.grids[m].index_dim[2], "index dimension of z vals", &status);
-    check_fits_io(status,"fits_write_key : output_model_grid (pos)");
+//     // output extra info needed to fully define geometry
+//     fits_write_key(out_pos_ptr, TLONG, "XSIZE", &geometry.grids[m].index_dim[0], "index dimension of x vals", &status);
+//     fits_write_key(out_pos_ptr, TLONG, "YSIZE", &geometry.grids[m].index_dim[1], "index dimension of y vals", &status);
+//     fits_write_key(out_pos_ptr, TLONG, "ZSIZE", &geometry.grids[m].index_dim[2], "index dimension of z vals", &status);
+//     check_fits_io(status,"fits_write_key : output_model_grid (pos)");
 
-    if (m == 0) {
+    if (m != 0) {
+      fits_write_key(out_tau_ptr, TINT, "PAR_GRID", &geometry.grids[m].parent_grid_num, "grid number of partent", &status);
+    } else {
       // populate the primary header with the details of the run
       
       // final stuff for primary header
       fits_write_comment(out_ptr, "**---------------------------------**",&status);
       fits_write_comment(out_ptr, "Output of the DIRTY model",&status);
       fits_write_comment(out_ptr, "Karl D. Gordon & Karl A. Misselt", &status);
-      fits_write_comment(out_ptr, "version v2.0prealpha (Aug 2008)", &status);
+      fits_write_comment(out_ptr, "version v2.0prealpha (Oct 2009)", &status);
       fits_write_comment(out_ptr, "**---------------------------------**",&status);
       check_fits_io(status,"fits_write_comment : output_model_grid");
       
+      // extra information needed for setting up the geometry
+      fits_write_key(out_tau_ptr, TFLOAT, "RAD_TAU", &geometry.tau, "radial optical depth", &status);
+      fits_write_key(out_tau_ptr, TLONG, "GRDDEPTH", &geometry.max_grid_depth, "maximum depth of the grid", &status);
+
       // final stuff for primary header
       fits_write_comment(out_tau_ptr, "**---------------------------------**",&status);
       fits_write_comment(out_tau_ptr, "Output of the DIRTY model",&status);
       fits_write_comment(out_tau_ptr, "Karl D. Gordon & Karl A. Misselt", &status);
-      fits_write_comment(out_tau_ptr, "version v2.0prealpha (Aug 2008)", &status);
+      fits_write_comment(out_tau_ptr, "version v2.0prealpha (Oct 2009)", &status);
       fits_write_comment(out_tau_ptr, "**---------------------------------**",&status);
       check_fits_io(status,"fits_write_comment : output_model_grid (tau)");
       
@@ -145,7 +151,7 @@ void output_model_grid (geometry_struct& geometry,
       fits_write_comment(out_pos_ptr, "**---------------------------------**",&status);
       fits_write_comment(out_pos_ptr, "Output of the DIRTY model",&status);
       fits_write_comment(out_pos_ptr, "Karl D. Gordon & Karl A. Misselt", &status);
-      fits_write_comment(out_pos_ptr, "version v2.0prealpha (Aug 2008)", &status);
+      fits_write_comment(out_pos_ptr, "version v2.0prealpha (Oct 2009)", &status);
       fits_write_comment(out_pos_ptr, "**---------------------------------**",&status);
       check_fits_io(status,"fits_write_comment : output_model_grid (pos)");
     }
