@@ -29,7 +29,7 @@ void setup_dust_grid_slab (ConfigFile& param_data,
 
   // angular radius needs to be large enough to allow for any rotation and still
   // have all the photons encompassed in the final image
-  geometry.angular_radius = atan(1.5*geometry.radius/(geometry.distance - size_z/2.));
+  geometry.angular_radius = atan(1.5*geometry.radius/(geometry.distance - geometry.radius));
 
   // slab start/end
   float slab_z1 = param_data.FValue("Geometry","slab_z1");
