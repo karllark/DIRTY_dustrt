@@ -44,6 +44,8 @@ void new_photon_diffuse_source (photon_data& photon,
     double ran_num = random_obj.random_num();
     while ((i < int(geometry.diffuse_source_sum_intensity.size())) && (ran_num > geometry.diffuse_source_sum_intensity[i])) i++; 
     int pos_index = i;
+//     cout << geometry.diffuse_source_theta[pos_index] << " ";
+//     cout << geometry.diffuse_source_phi[pos_index] << endl;
 #ifdef DEBUG_NPDS
     cout << "theta = " << geometry.diffuse_source_theta[pos_index] << endl;
     cout << "phi = " << geometry.diffuse_source_phi[pos_index] << endl;
@@ -52,7 +54,7 @@ void new_photon_diffuse_source (photon_data& photon,
     // direction of photon 
     // from diffuse source location
     phi = geometry.diffuse_source_phi[pos_index];
-    photon.dir_cosines[2] = cos(geometry.diffuse_source_theta[pos_index]);
+    photon.dir_cosines[2] = cos(geometry.diffuse_source_theta[pos_index]+(M_PI/2.));
     double temp = sqrt(1.0 - pow(photon.dir_cosines[2],2));
     photon.dir_cosines[0] = cos(phi)*temp;
     photon.dir_cosines[1] = sin(phi)*temp; 

@@ -177,7 +177,7 @@ void setup_dust_grid (ConfigFile& param_data,
     if (source_filename == "isotropic") {
       geometry.new_photon_source_type = NEW_PHOTON_DIFFUSE_ISOTROPIC;
       // current set this to a default value (maybe use input for later)
-      geometry.total_source_luminosity = 1.;
+      geometry.total_source_luminosity = 4.0*M_PI;
     } else {
       geometry.new_photon_source_type = NEW_PHOTON_DIFFUSE_FILE;
       // check that the file exists
@@ -221,16 +221,16 @@ void setup_dust_grid (ConfigFile& param_data,
       //geometry.total_source_luminosity *= 4.*M_PI/theta.size();
 //       cout << geometry.total_source_luminosity << endl;
 
-      if (geometry.type == "sphere") {
-	// muliple by the size of the nebula in cm^2
-	geometry.total_source_luminosity *= M_PI*pow(0.95*geometry.radius*Constant::PC_CM,2.0);
-// 	cout << geometry.total_source_luminosity << endl;
-      } else {
-	cout << "diffuse source from file not setup for anything but sphere" << endl;
-	cout << "geometry.type = " << geometry.type << endl;
-	cout << "switch to sphere or write some more code" << endl;
-	exit(8);
-      }
+    }
+    if (geometry.type == "sphere") {
+      // muliple by the size of the nebula in cm^2
+      geometry.total_source_luminosity *= M_PI*pow(0.95*geometry.radius*Constant::PC_CM,2.0);
+      //      cout << geometry.total_source_luminosity << endl;
+    } else {
+      cout << "diffuse source from file not setup for anything but sphere" << endl;
+      cout << "geometry.type = " << geometry.type << endl;
+      cout << "switch to sphere or write some more code" << endl;
+      exit(8);
     }
     
   } else if (geometry.source_type == "dexp_disk") {
