@@ -140,26 +140,60 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
  // Simple "one-pass" algorithm for mean/variance.
   template <typename T> T stats(vector <T> & vect, T & var)
     {
-      T M0=vect[0];
+/*       T M0=vect[0]; */
+/*       T Q0=0; */
+/*       T M1,Q1; */
+/*       for (int i=1;i<vect.size();i++) { */
+/* 	M1 = M0 + (vect[i]-M0)/(T)(i+1); */
+/* 	Q1 = Q0 + ((T)i)*pow((vect[i]-M0),2)/(T)(i+1); */
+/* 	M0 = M1; */
+/* 	Q0 = Q1; */
+/*       } */
+/*       var = sqrt(Q1/(T)(vect.size()-1)); */
+
+/*       return M1; */
+      long nNaN=0; 
+      while (isnan(vect[nNaN])) ++nNaN; 
+      T M0=vect[nNaN];
       T Q0=0;
       T M1,Q1;
-      for (int i=1;i<vect.size();i++) {
-	M1 = M0 + (vect[i]-M0)/(T)(i+1);
-	Q1 = Q0 + ((T)i)*pow((vect[i]-M0),2)/(T)(i+1);
-	M0 = M1;
-	Q0 = Q1;
-      }
-      var = sqrt(Q1/(T)(vect.size()-1));
+      for (int i=nNaN+1;i<vect.size();i++) {
+	if (isnan(vect[i])) {
+	  ++nNaN; 
+	} else { 
+	  M1 = M0 + (vect[i]-M0)/(T)(i+1-nNaN);
+	  Q1 = Q0 + ((T)(i-nNaN))*pow((vect[i]-M0),2)/(T)(i+1-nNaN);
+	  M0 = M1;
+	  Q0 = Q1;
+	}
+      } 
+      var = sqrt(Q1/(T)(vect.size()-1-nNaN));
 
       return M1;
     }
   // ****************************************************************************
 
+
+
   template <typename T> T sigma_clip(vector <T> & vect, T & hi_clip, T & lo_clip)
     {
-      vect.erase(remove_if(vect.begin(),vect.end(),bind2nd(greater<T>(),hi_clip)),vect.end());
-      vect.erase(remove_if(vect.begin(),vect.end(),bind1st(greater<T>(),lo_clip)),vect.end()); 
+      replace_if(vect.begin(),vect.end(),bind2nd(greater<T>(),hi_clip),NaN<T>()); 
+      replace_if(vect.begin(),vect.end(),bind1st(greater<T>(),lo_clip),NaN<T>());
+/*       vect.erase(remove_if(vect.begin(),vect.end(),bind2nd(greater<T>(),hi_clip)),vect.end()); */
+/*       vect.erase(remove_if(vect.begin(),vect.end(),bind1st(greater<T>(),lo_clip)),vect.end());  */
     }
+
+  // "Clip" max/min values from a vector.  The nMax largest and nMin smalles values 
+  // are replaced with nans. 
+  template <typename T> void minmax_clip( vector <T> & vect, long nMin, long nMax) 
+    {
+      if ( (nMin+nMax) < vect.size() ) {
+	typename vector <T>::iterator _it; 
+	for (long _i=0;_i<nMin;++_i) *(min_element(vect.begin(),vect.end())) = NaN<T>(); 
+	for (long _i=0;_i<nMax;++_i) *(max_element(vect.begin(),vect.end())) = NaN<T>(); 
+      }
+    }
+
 
   // Get max element (index) of vector.
   template <typename T> int maxID(vector <T>& vect)

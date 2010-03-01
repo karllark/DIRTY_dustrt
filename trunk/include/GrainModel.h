@@ -57,7 +57,14 @@ public:
   // Create a specific GrainModel object
   void MakeGrainModel ( ConfigFile & ModelConfigFile , vector <float> & MasterWave); 
 
-  inline vector <float> getSizeDistribution ( int _cmp ) { return SizeDistribution[_cmp]; }
+  // Note that SizeDistribution is not normalized to per H - except in the case of WD01 models, 
+  // but there we've set Normalization==1
+  inline vector <float> getSizeDistribution ( int _cmp ) { 
+    vector <float> NormSizeDistribution; 
+    transform(SizeDistribution[_cmp].begin(),SizeDistribution[_cmp].end(),back_inserter(NormSizeDistribution),
+	      bind2nd(multiplies<float>(),Normalization[_cmp])); 
+    return NormSizeDistribution; 
+  }
   inline vector <float> getCAbsEff( void ) { return CAbsEff; } 
   inline vector <float> getCAbsEffNorm( void ) { 
     vector <float> CAbsEffNorm; 
@@ -86,7 +93,7 @@ public:
   // These functions interface with the Grain model to retrieve properties of 
   // individual components of the model. 
   //  - Need bound checking
-  //  r
+  // 
   inline vector <float> Size ( int _cmp ) { return Component[_cmp].getSize(); }
   inline float Size ( int _cmp, int _szid ) { return Component[_cmp].getSize(_szid); }
   inline vector <float> CAbs ( int _cmp, int _szid ) { return Component[_cmp].getCAbs(_szid); }
@@ -106,6 +113,9 @@ public:
     { return Component[_cmp].getEnthalpy(_szid); } 
 
   inline string getModelName( void ) { return ModelName; }
+
+  inline float getDustToGasMassRatio ( void ) { return DustToGasMassRatio; } 
+  inline float getMeanMolecularWeight ( void ) { return MeanMolecularWeight; }
 
 private: 
 
@@ -140,6 +150,11 @@ private:
 
   vector <float> getZDA_sdist(vector <float> coeff, int cmp); 
   vector <float> getWD_sdist(vector <float> coeff, int cmp); 
+  vector <float> getGauss_sdist(vector <float> coeff, int cmp); 
+
+  // for cases we need to specify an input Dust to gas mass ratio: 
+  float DustToGasMassRatio;
+  float MeanMolecularWeight; 
   
   // Map definitions.  
   // ModelID - Pre-defined allowed model types. 
@@ -163,8 +178,9 @@ private:
   map<string,int> SizeDistID; 
   void SizeDistMapping() { 
     if (!SizeDistID.empty()) return; 
-    SizeDistID["ZDA"] = 0;
-    SizeDistID["WD01"] = 1; 
+    SizeDistID["ZDA"] = 0;         // Zubko et al. Size distribution function
+    SizeDistID["WD01"] = 1;        // Wiengartner+Draine Size distribution function
+    SizeDistID["GAUSS"] = 10;      // Appox. single size grain distribution - Guassian 
     SizeDistID["NULL"] = 99;
   }
   map<string,int> SizeTypeID; 

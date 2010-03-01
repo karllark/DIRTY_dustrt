@@ -11,6 +11,8 @@
 #define __CONFIG_FILE_H__
 
 #include <algorithm>
+#include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 #include <map>
@@ -43,6 +45,21 @@ class ConfigFile {
   inline bool BadDouble ( double _val ) { return _val != _val; } 
   inline int BadInt ( void ) { return _BadInt; } 
   inline long BadLong ( void ) { return _BadLong; }
+
+  inline bool isBadFloat ( float _val ) { 
+    if (isnan(_val)) 
+      return true; 
+    else 
+      return false; 
+  }
+
+  inline bool isBadDouble( float _val ) { 
+    if (isnan(_val)) 
+      return true; 
+    else 
+      return false; 
+  }
+ 
 
 };
 

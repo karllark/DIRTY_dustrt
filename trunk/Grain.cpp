@@ -33,7 +33,7 @@ void Grain::MakeGrain(string const & fOpticalConstants,
 { 
   
   cout << "Instantiating Grain Object for " << fOpticalConstants << endl; 
-
+  
   // ***************************************************************************
   // Check if we are going to interpolate onto new wavelength and/or size grids
   bool interpWave=true; 
@@ -162,7 +162,8 @@ void Grain::MakeGrain(string const & fOpticalConstants,
 
   // Done with optical "constants" file. 
   _file.close(); 
-
+  //for (int _sz=0;_sz<MasterSize.size();++_sz) cout << _sz << " " << MasterSize[_sz] << endl; 
+  //for (int _sz=0;_sz<_nsize;++_sz) cout << _sz << " " << _size[_sz] << endl; 
   // Assign MasterWave to the object. 
   if (interpWave) { 
     nwave = MasterWave.size(); 
@@ -176,6 +177,7 @@ void Grain::MakeGrain(string const & fOpticalConstants,
   // comes in outside the bounds of where Q's are defined, MasterSize
   // WILL BE MODIFIED!
   if (interpSize) { 
+    
     MasterSize.erase(remove_if(MasterSize.begin(),MasterSize.end(),
 			       bind2nd(less<float>(),_size[0])),
 		     MasterSize.end());

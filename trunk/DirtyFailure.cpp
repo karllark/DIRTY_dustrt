@@ -2,7 +2,7 @@
 #include "DirtyFailure.h"
 
 // Constructor.
-DirtyFailure::DirtyFailure ( string & _FailureLogName, int & _nWave) 
+DirtyFailure::DirtyFailure ( string & _FailureLogName, int & _nWave ) 
 {
   nFailure            = 0;
   sFileName           = _FailureLogName;
