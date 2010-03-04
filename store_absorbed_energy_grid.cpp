@@ -88,16 +88,23 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 
 	    // convert the absorbed energy to radiation field density
 	    double j_temp = geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index];
+	    double j_temp_x2 = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[geometry.abs_energy_wave_index];
 	    total_energy_absorbed_photons += j_temp;
+	    double flux_mult_factor = 0.0;
 	    if (doing_emission) 
 	      if (runinfo.dust_thermal_emission)
-		j_temp *= (runinfo.emitted_lum[0][index]/output.outputs[0].total_num_photons);
+		flux_mult_factor = (runinfo.emitted_lum[0][index]/output.outputs[0].total_num_photons);
 	      else
-		j_temp *= (runinfo.emitted_ere_lum[0][index]/output.outputs[0].total_num_photons);
+		flux_mult_factor = (runinfo.emitted_ere_lum[0][index]/output.outputs[0].total_num_photons);
 	    else
-	      j_temp *= (runinfo.sed_lum[index]/output.outputs[0].total_num_photons);
+	      flux_mult_factor = (runinfo.sed_lum[index]/output.outputs[0].total_num_photons);
 
-	    j_temp /= (geometry.grids[m].grid(i,j,k).num_H*4.0*(Constant::PI)*runinfo.ave_C_abs[index]);
+	    j_temp *= flux_mult_factor;
+	    j_temp_x2 *= flux_mult_factor*flux_mult_factor;
+
+	    flux_mult_factor = (geometry.grids[m].grid(i,j,k).num_H*4.0*(Constant::PI)*runinfo.ave_C_abs[index]);
+	    j_temp /= flux_mult_factor;
+	    j_temp_x2 /= (flux_mult_factor*flux_mult_factor);
 
 	    // check for roundoff error before converting to double
 	    if (j_temp < 1e-38) {
@@ -116,6 +123,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 // 	    cout << j_temp << endl;
 // 	    exit(8);
 	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] = float(j_temp);
+	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] = float(j_temp_x2);
 
 #ifdef DEBUG_SAEG
 	    cout << "J_temp = " << j_temp << endl;
@@ -130,6 +138,8 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	  if (doing_emission) {
 	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] +=
 	      geometry.grids[m].grid(i,j,k).save_radiation_field_density[geometry.abs_energy_wave_index];
+	    geometry.grids[m].grid(i,j,k).absorbed_energy_x2[geometry.abs_energy_wave_index] +=
+	      geometry.grids[m].grid(i,j,k).save_radiation_field_density_x2[geometry.abs_energy_wave_index];
 	    geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[geometry.abs_energy_wave_index] +=
 	      geometry.grids[m].grid(i,j,k).save_radiation_field_density_num_photons[geometry.abs_energy_wave_index];
 	  }

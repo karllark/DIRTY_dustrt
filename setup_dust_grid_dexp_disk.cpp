@@ -131,7 +131,7 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
   float subdiv_z = param_data.FValue("Geometry","subdivide_z_factor");
   if (isnan(subdiv_z)) subdiv_z = 1;
   check_input_param("subdivide_z_factor",subdiv_z,1,10);
-//   z_grid_size *= subdiv_z;
+  z_grid_size *= subdiv_z;
 //   cout << subdiv_z << endl;
 //   exit(8);
 
@@ -299,11 +299,15 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
 	    y_subpos[0] = geometry.grids[m].positions[1][j];
 	    z_subpos[0] = geometry.grids[m].positions[2][k];
 
-	    for (l = 1; l < subgrid.index_dim[0]; l++) {
+	    for (l = 1; l < subgrid.index_dim[0]; l++)
 	      x_subpos[l] = geometry.grids[m].positions[0][i] + (double(l)/subgrid.index_dim[0])*subgrid.phys_grid_size[0];
+
+	    for (l = 1; l < subgrid.index_dim[1]; l++)
 	      y_subpos[l] = geometry.grids[m].positions[1][j] + (double(l)/subgrid.index_dim[1])*subgrid.phys_grid_size[1];
+
+	    for (l = 1; l < subgrid.index_dim[2]; l++)
 	      z_subpos[l] = geometry.grids[m].positions[2][k] + (double(l)/subgrid.index_dim[2])*subgrid.phys_grid_size[2];
-	    }
+
 	    // ensure that the last position exactly equals the edge of the parent cell
 	    //   no roundoff error problems (hopefully)
 	    x_subpos[subgrid.index_dim[0]] = geometry.grids[m].positions[0][i+1];

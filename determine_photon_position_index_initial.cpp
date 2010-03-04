@@ -121,6 +121,7 @@ void determine_photon_position_index_initial (geometry_struct& geometry,
 	  cout << "out of bounds of correction." << endl;
 	  cout << "photon # = " << photon.number << endl;
 	  cout << "i = " << i << endl;
+	  cout << "cur_grid_num = " << cur_grid_num << endl;
 	  cout << "photon.position[i] = " << photon.position[i] << endl;
 	  cout << "photon.birth_position[i] = " << photon.birth_position[i] << endl;
 	  cout << "photon.dir_consines[i] = " << photon.dir_cosines[i] << endl;
