@@ -148,11 +148,17 @@ void get_dust_parameters (ConfigFile& param_data,
   } else if (strcmp(dust_type.c_str(),"dust_model") == 0) {
     runinfo.model_dust = 1;
     get_wave_grid(param_data,runinfo);
+    // save the dust grain filename (full path)
+    string grainpath = param_data.SValue("Model Book Keeping","Path to Dust Properties");
+    string grainsubdir = param_data.SValue("Model Book Keeping","Model SubDir"); 
+    runinfo.dust_grain_filename = grainpath+grainsubdir+param_data.SValue("Model Book Keeping","Model Name");
     // get dust grain info
     CurGrainModel.MakeGrainModel(param_data,runinfo.wavelength);
     // now get the tau, albedo, and g values
     runinfo.effective_grain_heating = param_data.BValue("Model Book Keeping","Effective Grain for Heating"); 
+#ifdef DEBUG_GDP
     cout << "Effective heating is " << runinfo.effective_grain_heating << endl; 
+#endif
     runinfo.albedo = CurGrainModel.getAlbedo();
     runinfo.g = CurGrainModel.getphFuncEff();
     runinfo.tau_to_h = CurGrainModel.getTau(); // getTau returns tau/H I atom

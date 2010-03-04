@@ -284,16 +284,30 @@ void output_results (output_struct& output,
       fits_create_img(out_ptr, 8, 0, 0, &status);
       check_fits_io(status,"fits_create_img : output_results");
       
-      // populate the primary header with the details of the run
-      // TBD
-      
       // final stuff for primary header
       fits_write_comment(out_ptr, "**---------------------------------**",&status);
       fits_write_comment(out_ptr, "Output of the DIRTY model",&status);
       fits_write_comment(out_ptr, "Karl D. Gordon & Karl A. Misselt", &status);
-      fits_write_comment(out_ptr, "version v2.0prealpha (Jun 2007)", &status);
+      fits_write_comment(out_ptr, "version v2.0-r84ish (Mar 2010)", &status);
       fits_write_comment(out_ptr, "**---------------------------------**",&status);
       check_fits_io(status,"fits_write_comment : output results");
+      
+      // populate the primary header with the details of the run
+      // put parameter file into header
+      fits_write_comment(out_ptr, "**---------------------------------**",&status);
+      fits_write_comment(out_ptr, "**-Parameter File------------------**",&status);
+      fits_params_to_header(runinfo.param_filename, out_ptr);
+      fits_write_comment(out_ptr, "**---------------------------------**",&status);
+      check_fits_io(status,"fits_write_comment : output results (param_file)");
+
+      // put the dust grain file in the header (if using a dust grain model)
+      if (runinfo.model_dust) {
+	fits_write_comment(out_ptr, "**---------------------------------**",&status);
+	fits_write_comment(out_ptr, "**-Dust grain file-----------------**",&status);
+	fits_params_to_header(runinfo.dust_grain_filename, out_ptr);
+	fits_write_comment(out_ptr, "**---------------------------------**",&status);
+	check_fits_io(status,"fits_write_comment : output results (dust_grain_file)");
+      }
       
       fits_write_key(out_ptr, TFLOAT, "RADIUS", &geometry.radius, "model radius [pc]", &status);
       fits_write_key(out_ptr, TFLOAT, "DIST", &geometry.distance, "distance to model [pc]", &status);

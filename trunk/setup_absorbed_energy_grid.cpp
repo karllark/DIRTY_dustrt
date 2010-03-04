@@ -28,6 +28,8 @@ void setup_absorbed_energy_grid (geometry_struct& geometry,
 	      if (doing_emission == 1) {
 		geometry.grids[m].grid(i,j,k).save_radiation_field_density[n] =
 		  geometry.grids[m].grid(i,j,k).absorbed_energy[n];
+		geometry.grids[m].grid(i,j,k).save_radiation_field_density_x2[n] =
+		  geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n];
 		geometry.grids[m].grid(i,j,k).save_radiation_field_density_num_photons[n] =
 		  geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n];
 	      }
@@ -36,6 +38,7 @@ void setup_absorbed_energy_grid (geometry_struct& geometry,
 // 	      }
 	      // zero out the current absorbed energy value
 	      geometry.grids[m].grid(i,j,k).absorbed_energy[n] = 0.0;
+	      geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n] = 0.0;
 	      geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] = 0;
 	    }
 	  } else {
@@ -57,12 +60,15 @@ void setup_absorbed_energy_grid (geometry_struct& geometry,
 	    } else
 	      if (!geometry.abs_energy_grid_initialized) {
 		geometry.grids[m].grid(i,j,k).absorbed_energy.resize(runinfo.n_waves,0.0);
+		geometry.grids[m].grid(i,j,k).absorbed_energy_x2.resize(runinfo.n_waves,0.0);
 		geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons.resize(runinfo.n_waves,0);
 		geometry.grids[m].grid(i,j,k).save_radiation_field_density.resize(runinfo.n_waves,0.0);
+		geometry.grids[m].grid(i,j,k).save_radiation_field_density_x2.resize(runinfo.n_waves,0.0);
 		geometry.grids[m].grid(i,j,k).save_radiation_field_density_num_photons.resize(runinfo.n_waves,0);
 	      } else {
 		for (n = 0; n < runinfo.n_waves; n++) {
 		  geometry.grids[m].grid(i,j,k).absorbed_energy[n] = 0.0;
+		  geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n] = 0.0;
 		  geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] = 0;
 		}
 	      }

@@ -21,6 +21,7 @@ using namespace std;
 
 struct runinfo_struct {
   string param_filename; // name of file with all the parameters
+  string dust_grain_filename; // name of the file with the dust grain information
 
   int verbose; // verbosity information (0=nothing)
   int do_ere_emission;  // do ERE emission (0=no)

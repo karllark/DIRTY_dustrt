@@ -14,6 +14,9 @@ int fits_params_to_header(string param_filename,
   string line;
   int status = 0;
 
+  // first output the filename
+  fits_write_comment(out_ptr, param_filename.c_str(), &status);
+
   while (getline(param_file,line)) {
     
     //    if (!line.length()) continue;

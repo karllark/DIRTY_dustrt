@@ -187,8 +187,30 @@ void output_global_results (runinfo_struct& runinfo,
   fits_create_tbl(out_ptr, ASCII_TBL, 0, tfields, &ttype[0], &tform[0], &tunit[0], "Global_Outputs", &status);
   check_fits_io(status,"fits_create_tbl : output_global_results");
   
+  // final stuff for primary header
+  fits_write_comment(out_ptr, "**---------------------------------**",&status);
+  fits_write_comment(out_ptr, "Output of the DIRTY model",&status);
+  fits_write_comment(out_ptr, "Karl D. Gordon & Karl A. Misselt", &status);
+  fits_write_comment(out_ptr, "version v2.0-r84ish (Mar 2010)", &status);
+  fits_write_comment(out_ptr, "**---------------------------------**",&status);
+  check_fits_io(status,"fits_write_comment : output results");
+
+  // populate the primary header with the details of the run
   // put parameter file into header
+  fits_write_comment(out_ptr, "**---------------------------------**",&status);
+  fits_write_comment(out_ptr, "**-Parameter File------------------**",&status);
   fits_params_to_header(runinfo.param_filename, out_ptr);
+  fits_write_comment(out_ptr, "**---------------------------------**",&status);
+  check_fits_io(status,"fits_write_comment : output results (param_file)");
+  
+  // put the dust grain file in the header (if using a dust grain model)
+  if (runinfo.model_dust) {
+    fits_write_comment(out_ptr, "**---------------------------------**",&status);
+    fits_write_comment(out_ptr, "**-Dust grain file-----------------**",&status);
+    fits_params_to_header(runinfo.dust_grain_filename, out_ptr);
+    fits_write_comment(out_ptr, "**---------------------------------**",&status);
+    check_fits_io(status,"fits_write_comment : output results (dust_grain_file)");
+  }
 
   // return to regularly scheduled work
 
