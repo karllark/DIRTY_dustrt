@@ -101,7 +101,7 @@ void output_model_grid (geometry_struct& geometry,
 	    tmp_rad_field(i,j,k,n) = geometry.grids[m].grid(i,j,k).absorbed_energy[n];
 	    if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] >= 5) {
 	      rad_unc = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] -
-		pow(geometry.grids[m].grid(i,j,k).absorbed_energy[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n],2.0);
+		pow(geometry.grids[m].grid(i,j,k).absorbed_energy[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n],2);
 	      if (rad_unc > 0.0)
 		rad_unc = sqrt(rad_unc);
 	      else
