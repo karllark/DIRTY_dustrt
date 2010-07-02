@@ -7,7 +7,7 @@
 // 2009 May/KDG - added model scattering phase function
 // ======================================================================
 #include "get_dust_parameters.h"
-//#define DEBUG_GDP
+// #define DEBUG_GDP
 
 void get_dust_parameters (ConfigFile& param_data,
 			  GrainModel& CurGrainModel,
@@ -164,13 +164,29 @@ void get_dust_parameters (ConfigFile& param_data,
     runinfo.tau_to_h = CurGrainModel.getTau(); // getTau returns tau/H I atom
     runinfo.tau_to_tau_ref = runinfo.tau_to_h;
     runinfo.ave_C_abs = CurGrainModel.getCAbsEffNorm();  // getCAbsEffNorm returns cm^2/H I atom
-    runinfo.n_emission_grain_types = 1 + 2*CurGrainModel.getNComp();
+    if (runinfo.effective_grain_heating) 
+      runinfo.n_emission_grain_types = 3;
+    else
+      runinfo.n_emission_grain_types = 1 + 2*CurGrainModel.getNComp();
+
+#ifdef DEBUG_GDP
+    cout << "getting tau_wave next..." << endl; 
+#endif
 
     runinfo.norm_tau_wave = param_data.FValue("Geometry","tau_wave");
     if (isnan(runinfo.norm_tau_wave)) runinfo.norm_tau_wave = 0.55;
+
+#ifdef DEBUG_GDP
+    cout << "tau_wave = " << runinfo.norm_tau_wave << endl; 
+#endif
+
     check_input_param("wavelength to normalize tau",runinfo.norm_tau_wave*(Constant::UM_CM),
-		      *min_element(runinfo.wavelength.begin(),runinfo.tau_to_h.end()),
-		      *max_element(runinfo.wavelength.begin(),runinfo.tau_to_h.end()));
+		      *min_element(runinfo.wavelength.begin(),runinfo.wavelength.end()),
+		      *max_element(runinfo.wavelength.begin(),runinfo.wavelength.end()));
+
+#ifdef DEBUG_GDP
+    cout << "just checked in the input parameter" << endl; 
+#endif
 
     float norm_tau = CurGrainModel.getTau(runinfo.norm_tau_wave*(Constant::UM_CM));
 //     cout << CurGrainModel.getTau(0.1*(Constant::UM_CM))/norm_tau << endl;

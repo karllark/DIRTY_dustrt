@@ -115,18 +115,18 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
   int xy_grid_size = 2*int(geometry.radius/start_grid_size);
   int z_grid_size = 2*int(dust_vertical_trunc/start_grid_size);
   // make sure this defines a cube
-  if (((0.5*xy_grid_size*start_grid_size) != geometry.radius) ||
-      ((0.5*z_grid_size*start_grid_size) != dust_vertical_trunc)) {
-    cout << "non cubical cells required -> not allowed (maybe check if this could be allowed?)" << endl;
-    cout << "start_grid_size [pc] = " << start_grid_size << endl;
-    cout << "dust_vertical_trunc [pc] = " << dust_vertical_trunc << endl;
-    cout << "radius [pc] = " << geometry.radius << endl;
-    cout << "xy_grid_size = " << xy_grid_size << endl;
-    cout << "xy_grid_size (real) = " << 2.*geometry.radius/start_grid_size << endl;
-    cout << "z_grid_size = " << z_grid_size << endl;
-    cout << "z_grid_size (real) = " << 2.*dust_vertical_trunc/start_grid_size << endl;
-    exit(8);
-  }
+//   if (((0.5*xy_grid_size*start_grid_size) != geometry.radius) ||
+//       ((0.5*z_grid_size*start_grid_size) != dust_vertical_trunc)) {
+//     cout << "non cubical cells required -> not allowed (maybe check if this could be allowed?)" << endl;
+//     cout << "start_grid_size [pc] = " << start_grid_size << endl;
+//     cout << "dust_vertical_trunc [pc] = " << dust_vertical_trunc << endl;
+//     cout << "radius [pc] = " << geometry.radius << endl;
+//     cout << "xy_grid_size = " << xy_grid_size << endl;
+//     cout << "xy_grid_size (real) = " << 2.*geometry.radius/start_grid_size << endl;
+//     cout << "z_grid_size = " << z_grid_size << endl;
+//     cout << "z_grid_size (real) = " << 2.*dust_vertical_trunc/start_grid_size << endl;
+//     exit(8);
+//   }
   // arbitrarily make the z a finer grid
   float subdiv_z = param_data.FValue("Geometry","subdivide_z_factor");
   if (isnan(subdiv_z)) subdiv_z = 1;
@@ -273,12 +273,14 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
 	    if (poss_index > int(start_min_frac)) poss_index = int(start_min_frac);
 	    subgrid.index_dim[0] = poss_index;
 #ifdef DEBUG_SDGDD
-	    cout << "subgrid cube size = " << geometry.grids[m].phys_cube_size[0]/float(poss_index) << endl;
-	    cout << "subgird cubes (1 dim) = " << subgrid.index_dim[0] << endl;
+	    cout << "subgrid x cube size = " << geometry.grids[m].phys_cube_size[0]/float(poss_index) << endl;
+	    cout << "subgird x cubes (1 dim) = " << subgrid.index_dim[0] << endl;
 #endif
 	    
 	    subgrid.index_dim[1] = subgrid.index_dim[0];
 	    subgrid.index_dim[2] = int(float(subgrid.index_dim[0])*subdiv_z);
+	    subgrid.index_dim[0] = 2;
+	    subgrid.index_dim[1] = 2;
 	    
 	    vector<double> x_subpos(subgrid.index_dim[0]+1);
 	    vector<double> y_subpos(subgrid.index_dim[1]+1);
@@ -293,6 +295,13 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
 	    subgrid.phys_cube_size[2] = subgrid.phys_grid_size[2]/subgrid.index_dim[2];
 
 	    int l;
+#ifdef DEBUG_SDGDD
+	    cout << cur_subgrid_num << " ";
+	    for (l = 0; l < 3; l++)
+	      cout << subgrid.phys_cube_size[l] << " ";
+	    cout << endl;
+#endif
+		
 	    // ensure that the first position exactly equals the edge of the parent cell
 	    //   no roundoff error problems (hopefully)
 	    x_subpos[0] = geometry.grids[m].positions[0][i];

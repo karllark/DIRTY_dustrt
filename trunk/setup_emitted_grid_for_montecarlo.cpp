@@ -20,9 +20,10 @@ void setup_emitted_grid_for_montecarlo (geometry_struct& geometry,
   int i,j,k,m,z = 0;
   uint x = 0;
 
-  int n_emit_components = 1;
-  if (runinfo.do_emission_grain && runinfo.dust_thermal_emission) 
-    n_emit_components += 2*CurGrainModel.getNComp();
+  int n_emit_components = runinfo.n_emission_grain_types;
+//   int n_emit_components = 1;
+//   if (runinfo.do_emission_grain && runinfo.dust_thermal_emission) 
+//     n_emit_components += 2*CurGrainModel.getNComp();
 #ifdef DEBUG_SEGFMC
   cout << "n_emit_components = " << n_emit_components << endl;
 #endif
