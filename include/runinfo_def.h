@@ -34,6 +34,8 @@ struct runinfo_struct {
   int n_emission_grain_types;  // number of grain emission types
   float energy_conserve_target;  // energy conservation target
 
+  int iter_max;   // maximum number of iterations allowed
+
   int rt_check_converged;  // switch to see if we should check for rt convergence
   float rt_converge_target; // target for rt convergance (fractional for total scattered)
 

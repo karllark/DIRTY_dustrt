@@ -25,7 +25,7 @@
 //                failure info if instructed by the parameter file. 
 // ======================================================================
 #include "dirty.h"
-//#define DEBUG_DIRTY
+// #define DEBUG_DIRTY
 
 int main(int argc, char* argv[]) 
 
@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
 
   // start RT+DE iteration (only if DE flag set)
   int iter_num = 1;
-  int iter_max = 5;
+//   int iter_max = 5;
   int iter_done = 0;
 
 #ifdef DEBUG_DIRTY
@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
     check_de_energy_conservation(runinfo, iter_done);
 
     // limit the max iterations
-    if (iter_num >= iter_max) iter_done = 1; else iter_num++;
+    if (iter_num >= runinfo.iter_max) iter_done = 1; else iter_num++;
     
     // If output puting failure log, then do it. 
     if (OutputFailure) Failure->WriteFailureLog();

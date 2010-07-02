@@ -115,7 +115,7 @@ void scatter_photon (geometry_struct& geometry,
 
   for (i = 0; i < photon.path_cur_cells; i++) {
     geometry.grids[photon.path_pos_index[0][i]].grid(photon.path_pos_index[1][i],photon.path_pos_index[2][i],photon.path_pos_index[3][i]).absorbed_energy[geometry.abs_energy_wave_index] += abs_weight*(photon.path_tau[i]/photon.target_tau);
-    geometry.grids[photon.path_pos_index[0][i]].grid(photon.path_pos_index[1][i],photon.path_pos_index[2][i],photon.path_pos_index[3][i]).absorbed_energy_x2[geometry.abs_energy_wave_index] += pow(abs_weight*(photon.path_tau[i]/photon.target_tau),2.0);
+    geometry.grids[photon.path_pos_index[0][i]].grid(photon.path_pos_index[1][i],photon.path_pos_index[2][i],photon.path_pos_index[3][i]).absorbed_energy_x2[geometry.abs_energy_wave_index] += pow(double(abs_weight*(photon.path_tau[i]/photon.target_tau)),double(2.0));
     geometry.grids[photon.path_pos_index[0][i]].grid(photon.path_pos_index[1][i],photon.path_pos_index[2][i],photon.path_pos_index[3][i]).absorbed_energy_num_photons[geometry.abs_energy_wave_index]++;
 #ifdef DEBUG_SP
     cout << photon.number << " ";

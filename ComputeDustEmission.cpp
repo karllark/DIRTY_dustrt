@@ -127,7 +127,7 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
       // in stochastic calculation. 
       status = EqTemp(_w,J,_cabs,EAbs,*_it,((_tlo<0)?1.0:_tlo),((_thi>2500.0)?2500.0:_thi));   
       if (status != Flags::FSUCCESS) return status; // we've had an equilibrium heating failure. 
-      
+
       // Equlibrium luminosity = C_abs*B
       EquilibriumLum[_sz] = NumUtils::prod_bbodyCGS<double>(_w,*_it,_cabs);
       

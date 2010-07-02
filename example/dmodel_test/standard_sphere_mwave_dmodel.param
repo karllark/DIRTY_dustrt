@@ -51,7 +51,7 @@ type=bb_file
 sed_file=/home/kgordon/Dirty_v2/local_copy/SEDs/bluesg_T20000_R10.dat
 
 [Run]
-num_photons=100000
+num_photons=10000
 output_image_size=201
 output_filebase=standard_sphere_mwave_dmodel_18aug09_effgrain
 Output Failure Log=yes
@@ -67,4 +67,4 @@ energy_conserve_target=0.05
 do_emission_grain=1
 do_global_output=1
 do_image_output=0
-do_stochastic_dust_emission=1
+do_stochastic_dust_emission=0

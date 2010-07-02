@@ -89,6 +89,11 @@ void get_run_parameters (ConfigFile& param_data,
   }
   runinfo.total_emitted_energy = 0.0;  // need to zero out so the first iteration always happens (measurement is a delta)
 
+  // get the maximum number of iterations allowed (DE+RT)
+  runinfo.iter_max = param_data.IValue("Run","maximum_iterations");
+  if (runinfo.iter_max == -99) runinfo.iter_max = 5;  // set to 5 if not initially set
+  check_input_param("iter_max",runinfo.iter_max,0,100);
+
   // now see if RT check converged is set
   runinfo.rt_check_converged = param_data.IValue("Run","rt_check_converged");
   if (runinfo.rt_check_converged == -99) runinfo.rt_check_converged = 0;  // set to no if not initially set

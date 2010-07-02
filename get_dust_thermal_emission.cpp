@@ -35,8 +35,11 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   if (runinfo.effective_grain_heating) DoStochastic = false; 
 
   // define the cutoffs for passing to the dust emission code
-  float cutoff_frac = 0.05;
-  float min_energy_frac = 0.001;
+//   float cutoff_frac = 0.05;
+//   float min_energy_frac = 0.001;
+  int good_enough_photons = 10;
+  float cutoff_frac = 0.5;
+  float min_energy_frac = 0.1;
   if (DoStochastic) {
     cutoff_frac = 0.5;
     min_energy_frac = 0.1;
@@ -46,8 +49,8 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   double global_total_absorbed = 0.;
   double total_emit_energy = 0.0;
   // get the number of emission components
-  int n_emit_components = 1;
-  if (runinfo.do_emission_grain) n_emit_components += 2*CurGrainModel.getNComp();
+  int n_emit_components = runinfo.n_emission_grain_types;
+  //if (runinfo.do_emission_grain) n_emit_components += 2*CurGrainModel.getNComp();
   if (runinfo.verbose >= 2) 
     cout << "n_emit_components = " << n_emit_components << endl;
 
@@ -96,10 +99,11 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   vector<double> tmp_new_j_from_interpol;
 
   int cur_plane_good = 0;
-  int good_enough_photons = 10;
 
   // Required energy conservation per bin - input parameter? 
   float econs_tolerance = 5.0e-3; 
+  //float econs_tolerance_throwaway = 0.5; 
+  float econs_tolerance_throwaway = 10.; 
 
   // loop over all the defined grids
   for (m = 0; m < int(geometry.grids.size()); m++) {
@@ -137,11 +141,11 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 
 	  max_abs_energy = 0.0;
 	  for (x = 0; x < runinfo.wavelength.size(); x++) {
-// 	    tmp_wave[x] = double(runinfo.wavelength[x]);
-	    tmp_abs_energy[x] = geometry.grids[m].grid(i,j,k).absorbed_energy[x]*4.*Constant::PI*runinfo.ave_C_abs[x];
-	    if (tmp_abs_energy[x] > max_abs_energy) max_abs_energy = tmp_abs_energy[x];
-	    //	    if (geometry.grids[m].grid(i,j,k).absorbed_energy[x] > 0.) tot_nonzero++;
-	    if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x] >= good_enough_photons) tot_nonzero++;
+	    if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x] >= good_enough_photons) {
+	      tot_nonzero++;
+	      tmp_abs_energy[x] = geometry.grids[m].grid(i,j,k).absorbed_energy[x]*4.*Constant::PI*runinfo.ave_C_abs[x];
+	      if (tmp_abs_energy[x] > max_abs_energy) max_abs_energy = tmp_abs_energy[x];
+	    } else tmp_abs_energy[x] = 0.0;
 	  }
  	  tot_abs_energy = NumUtils::integrate<double>(tmp_wave,tmp_abs_energy)*geometry.grids[m].grid(i,j,k).num_H;
 		
@@ -161,6 +165,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	    // interoplate the radiative field to fill all the wavelength points
 	    // if it has any nonzero points
 	    if ((tot_nonzero != int(runinfo.wavelength.size())) && (DoStochastic)) {
+	      // 	    if (tot_nonzero != int(runinfo.wavelength.size())) {
 	      for (x = 0; x < runinfo.wavelength.size(); x++) {
 #ifdef DEBUG_GDTE
  		cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
@@ -172,15 +177,15 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 		}
 	      }
 #ifdef DEBUG_GDTE
- 	      cout << endl;
+	      cout << endl;
 #endif
 	      
 #ifdef DEBUG_GDTE
-	    cout << "entering j interpol..." << endl;
+	      cout << "entering j interpol..." << endl;
 #endif
 	      tmp_new_j_from_interpol = NumUtils::interpol(tmp_j_for_interpol,tmp_wave_for_interpol,tmp_wave);
 #ifdef DEBUG_GDTE
-	    cout << "...leaving j interpol" << endl;
+	      cout << "...leaving j interpol" << endl;
 #endif
 	      tmp_wave_for_interpol.resize(0);
 	      tmp_j_for_interpol.resize(0);
@@ -202,13 +207,28 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 // 	    cout << "total min = " << tot_abs_energy << " " << min_enough_energy << endl;
 // 	  if ((tot_abs_energy > 0.) && (tot_nonzero > int(0.75*runinfo.wavelength.size())) && (tot_abs_energy > 1e-35)) {
 #ifdef DEBUG_GDTE
-	    // output the J
-	    //for (x = 0; x < runinfo.wavelength.size(); x++) {
-	    //  cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
-	    //}
-	    //cout << endl;
+	    //output the J
+	    float rad_unc = 0.0;
+	    for (x = 0; x < runinfo.wavelength.size(); x++) {
+	      cout << geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x] << " ";
+	      cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
+	      cout << geometry.grids[m].grid(i,j,k).absorbed_energy_x2[x] << " ";
+	      rad_unc = (geometry.grids[m].grid(i,j,k).absorbed_energy_x2[x]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x]) -
+		pow(double(geometry.grids[m].grid(i,j,k).absorbed_energy[x]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x]),double(2.0));
+	      cout << rad_unc << " ";
+	      if (rad_unc > 0.0)
+		rad_unc = sqrt(rad_unc);///geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x];
+	      else
+		rad_unc = 0.0;
+	      cout << rad_unc << " ";
+// 	      rad_unc *= geometry.grids[m].grid(i,j,k).absorbed_energy[x];
+// 	      cout << rad_unc << " ";
+	      // the S/N reduces to the below equation (modulo a factor of (N-1)/N)
+	      cout << geometry.grids[m].grid(i,j,k).absorbed_energy[x]/rad_unc << " ";
+	      cout << endl;
+	    }
+	    cout << endl;
 #endif
-
 	    // get the dust emission spectrum given the input wavlength vector and radiation field vector
 	    // emitted energy returned is in units of ergs s^-1 HI atom^-1
 #ifdef DEBUG_GDTE
@@ -228,20 +248,31 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	      Failure->AddCellBook(m,i,j,k); 
 	      Failure->AddGrainInfo(CurGrainModel.getModelName(),_FailureSz,_FailureComp); 
 	      Failure->AddEnergyInfo(tot_abs_energy,geometry.grids[m].grid(i,j,k).absorbed_energy); 
-	    }  else { 
+	    }  else {
 	      total_emit_energy = 0.0;
 	      total_emit_energy = NumUtils::integrate<double>(tmp_wave,geometry.grids[m].grid(i,j,k).emitted_energy[0])*geometry.grids[m].grid(i,j,k).num_H;
-	      
-	      global_total_emitted += total_emit_energy;
-	      
-	      if (fabs(1.0 - (total_emit_energy/tot_abs_energy)) > econs_tolerance) {
-		// Add a failure status for this? 
+
+	      float energy_diff = fabs(1.0 - (total_emit_energy/tot_abs_energy));
+	      if (energy_diff > econs_tolerance) {
+		// Add a failure status for this?  - maybe
+		// right now - testing by not using this cell
 		cout << "energy conservations worse than " << econs_tolerance << endl;
 		cout << "total_abs/H atom = " << tot_abs_energy << endl;
 		cout << "total_emit_energy/H atom = " << total_emit_energy << endl;
-		cout << "ratio emit/abs = " << total_emit_energy/tot_abs_energy << endl;
+		cout << "ratio emit/abs = " << total_emit_energy/tot_abs_energy << " ";
+		cout << total_emit_energy << endl;
 		// 	      exit(8)
-	      }
+		// zeroing out the emitted energy - test
+		if (energy_diff > econs_tolerance_throwaway) {
+		  cout << "not using the energy emitted in this cell" << endl;
+		  for (z = 0; z < n_emit_components; z++)
+		    for (x = 0; x < runinfo.wavelength.size(); x++) {
+		      geometry.grids[m].grid(i,j,k).emitted_energy[z][x] = 0.0;
+		    }
+		} else {
+		  global_total_emitted += total_emit_energy;
+		}
+	      }	
 	      
 	      // add to the emitted energy sums
 	      for (z = 0; z < n_emit_components; z++)

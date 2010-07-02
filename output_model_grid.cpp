@@ -4,6 +4,7 @@
 // 2008 Aug/KDG - written
 // ======================================================================
 #include "output_model_grid.h"
+//#define DEBUG_OMG
 
 void output_model_grid (geometry_struct& geometry,
 			output_struct& output,
@@ -39,7 +40,7 @@ void output_model_grid (geometry_struct& geometry,
   check_fits_io(status, "fits_create_file : output_model_grid (rad_field)");
 
   fitsfile *out_unc_ptr;   // pointer to the output fits file
-  fits_create_file(&out_ptr,filename_unc.c_str(), &status);
+  fits_create_file(&out_unc_ptr,filename_unc.c_str(), &status);
   check_fits_io(status, "fits_create_file : output_model_grid (rad_field unc)");
 
   // create a FITS file with extensions to fill with the output of the model
@@ -57,6 +58,10 @@ void output_model_grid (geometry_struct& geometry,
   fits_create_file(&out_pos_ptr,filename_pos.c_str(), &status);
   check_fits_io(status, "fits_create_file : output_model_grid (pos)");
       
+#ifdef DEBUG_OMG
+  cout << "entering the big copy loop" << endl;
+#endif
+
   int i,j,k,n = 0;
   uint m = 0;
   int n_waves = geometry.grids[0].grid(0,0,0).absorbed_energy.size();
@@ -82,6 +87,10 @@ void output_model_grid (geometry_struct& geometry,
     NumUtils::Matrix<double> tmp_pos;
     tmp_pos.MSize(max_index+1,3);
 
+#ifdef DEBUG_OMG
+    cout << "done defining the temp vectors" << endl;
+#endif
+
     // get pos data
     // fill each dimension separately to allow for non-cubes
     for (i = 0; i <= geometry.grids[m].index_dim[0]; i++)
@@ -101,7 +110,7 @@ void output_model_grid (geometry_struct& geometry,
 	    tmp_rad_field(i,j,k,n) = geometry.grids[m].grid(i,j,k).absorbed_energy[n];
 	    if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] >= 5) {
 	      rad_unc = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] -
-		pow(geometry.grids[m].grid(i,j,k).absorbed_energy[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n],2);
+		pow(double(geometry.grids[m].grid(i,j,k).absorbed_energy[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n]),double(2.0));
 	      if (rad_unc > 0.0)
 		rad_unc = sqrt(rad_unc);
 	      else
@@ -111,15 +120,28 @@ void output_model_grid (geometry_struct& geometry,
 	  }
 	}
   
+#ifdef DEBUG_OMG
+    cout << "done filling the temp vectors" << endl;
+#endif
+
     // create and output each grid (rad_field)
     long four_vector_size[4];
     for (i = 0; i < 3; i++) four_vector_size[i] = geometry.grids[m].index_dim[i];
     four_vector_size[3] = n_waves;
+
+#ifdef DEBUG_OMG
+    cout << "done setting up four_vector size" << endl;
+#endif
+
     fits_create_img(out_ptr, -32, 4, four_vector_size, &status);
     check_fits_io(status,"fits_create_image : output_model_grid (rad_field)");
       
     fits_write_img(out_ptr, TFLOAT, 1, geometry.grids[m].index_dim[0]*geometry.grids[m].index_dim[1]*geometry.grids[m].index_dim[2]*n_waves, 
 		   &tmp_rad_field[0], &status);
+
+#ifdef DEBUG_OMG
+    cout << "done writing rad field" << endl;
+#endif
 
     // create and output each grid (rad_field unc)
     fits_create_img(out_unc_ptr, -32, 4, four_vector_size, &status);
@@ -127,6 +149,10 @@ void output_model_grid (geometry_struct& geometry,
       
     fits_write_img(out_unc_ptr, TFLOAT, 1, geometry.grids[m].index_dim[0]*geometry.grids[m].index_dim[1]*geometry.grids[m].index_dim[2]*n_waves, 
 		   &tmp_rad_field_unc[0], &status);
+
+#ifdef DEBUG_OMG
+    cout << "done writing rad field unc" << endl;
+#endif
 
     // create and output each grid (tau)
     fits_create_img(out_tau_ptr, -32, 3, geometry.grids[m].index_dim, &status);
@@ -144,6 +170,10 @@ void output_model_grid (geometry_struct& geometry,
       
     fits_write_img(out_pos_ptr, TDOUBLE, 1, tmp_pos_index[0]*tmp_pos_index[1], 
 		   &tmp_pos[0], &status);
+
+#ifdef DEBUG_OMG
+    cout << "done writing the grids to FITS" << endl;
+#endif
 
 //     // output extra info needed to fully define geometry
 //     fits_write_key(out_pos_ptr, TLONG, "XSIZE", &geometry.grids[m].index_dim[0], "index dimension of x vals", &status);
