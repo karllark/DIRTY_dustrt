@@ -2,7 +2,7 @@
 
 ISRF::ISRF(vector <float> in_wave, float in_XMMP) { 
 
-  cout << "Instantiating ISRF Object with scaling " <<  in_XMMP << endl; 
+  //cout << "Instantiating ISRF Object with scaling " <<  in_XMMP << endl; 
 
   float _a[] = {-6.46657e-09,8.80371e-06,1.29912e-06,
 		1.84887e-08,-0.00106653,13.1090};  
@@ -74,7 +74,7 @@ ISRF::ISRF(vector <float> in_wave, float in_XMMP) {
   // by X_MMP
   float UtoJ=1.0/JtoU*XMMP; 
   transform(theISRF.begin(),theISRF.end(),theISRF.begin(),bind2nd(multiplies<float>(),UtoJ)); 
-  cout << "DONE!" << endl; 
+  //cout << "DONE!" << endl; 
 
 }
 
