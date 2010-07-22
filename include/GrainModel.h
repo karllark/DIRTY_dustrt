@@ -59,12 +59,14 @@ public:
 
   // Note that SizeDistribution is not normalized to per H - except in the case of WD01 models, 
   // but there we've set Normalization==1
-  inline vector <float> getSizeDistribution ( int _cmp ) { 
-    vector <float> NormSizeDistribution; 
-    transform(SizeDistribution[_cmp].begin(),SizeDistribution[_cmp].end(),back_inserter(NormSizeDistribution),
-	      bind2nd(multiplies<float>(),Normalization[_cmp])); 
-    return NormSizeDistribution; 
-  }
+  inline vector <float> getSizeDistribution ( int _cmp ) { return SizeDistribution[_cmp]; }
+  inline vector <float> getSizeDistributionNorm ( int _cmp ) { return SizeDistributionNorm[_cmp]; }
+/*   inline vector <float> getSizeDistributionNorm ( int _cmp ) {  */
+/*     vector <float> NormSizeDistribution;  */
+/*     transform(SizeDistribution[_cmp].begin(),SizeDistribution[_cmp].end(),back_inserter(NormSizeDistribution), */
+/* 	      bind2nd(multiplies<float>(),Normalization[_cmp]));  */
+/*     return NormSizeDistribution;  */
+/*   } */
   inline vector <float> getCAbsEff( void ) { return CAbsEff; } 
   inline vector <float> getCAbsEffNorm( void ) { 
     vector <float> CAbsEffNorm; 
@@ -126,7 +128,8 @@ private:
   vector <Grain> Component; 
   string ModelName; 
   
-  vector <vector<float> > SizeDistribution; 
+  vector <vector<float> > SizeDistribution;
+  vector <vector<float> > SizeDistributionNorm; 
   vector <float> Temperature;      // Hold a single component temperature at a time...
 
   //vector <vector<float> > Temperature;      // Hold a single component temperature at a time...
@@ -167,11 +170,6 @@ private:
     if ( !ModelID.empty()) return; 
     ModelID["MRN"]=0;              // Standard MRN
     ModelID["BARE-GR-S"]=1;        // Zubko et al. bare graphite+silicate
-    ModelID["KG-BARE-S"]=2; 
-    ModelID["KG-BARE-S1"]=3; 
-    ModelID["KG-BARE-S2"]=4; 
-    ModelID["KG-BARE-S3"]=5; 
-    ModelID["KG-BARE-S4"]=6;
     ModelID["SMCBAR-WD01"]=7;      // Wiengartner+Draine SMC
     ModelID["RV31_BC6-WD01"]=8;    // Wiengartner+Draine MW R_V=3.1
   }
@@ -180,7 +178,8 @@ private:
     if (!SizeDistID.empty()) return; 
     SizeDistID["ZDA"] = 0;         // Zubko et al. Size distribution function
     SizeDistID["WD01"] = 1;        // Wiengartner+Draine Size distribution function
-    SizeDistID["GAUSS"] = 10;      // Appox. single size grain distribution - Guassian 
+    SizeDistID["POWERLAW"] = 2;    // Power law size distribution. 
+    SizeDistID["GAUSS"] = 3;      // Appox. single size grain distribution - Guassian 
     SizeDistID["NULL"] = 99;
   }
   map<string,int> SizeTypeID; 

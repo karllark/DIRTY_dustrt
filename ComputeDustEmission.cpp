@@ -61,7 +61,7 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
   // Some local variables.  
   // EAbs computed in EqTemp() and passed back for StochasticHeating() to test convergence. 
   float EAbs;
-  float _tlo,_thi,_norm,mpe,tau_abs,tau_rad,Tu; 
+  float _tlo,_thi,mpe,tau_abs,tau_rad,Tu; 
 
   // Some default starting values for stochastic caluclation - will return with best guess 
   // from StochasticHeating for next size. 
@@ -130,7 +130,7 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
 
       // Equlibrium luminosity = C_abs*B
       EquilibriumLum[_sz] = NumUtils::prod_bbodyCGS<double>(_w,*_it,_cabs);
-      
+      cout << "eq temp: " << *_it << endl; 
       _tlo = 0.3*(*_it); 
       _thi = 3.0*(*_it); 
       
@@ -162,10 +162,10 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
       // Need to compute integrals over size distribution. 
       _integrand.resize(_nsize); 
       _integrand1.resize(_nsize); 
-      _norm=GrainModel.getNormalization(_cmp);
+      //_norm=GrainModel.getNormalization(_cmp);
       
       _size = GrainModel.Size(_cmp);
-      _sizeDist = GrainModel.getSizeDistribution(_cmp);
+      _sizeDist = GrainModel.getSizeDistributionNorm(_cmp);
       _iteec = EmmittedEnergy[2*_cmp+1].begin(); // component equilibrium
       _itees = EmmittedEnergy[2*_cmp+2].begin(); // component stochastic
       _itet = EmmittedEnergy[0].begin(); 
@@ -185,8 +185,8 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
 	  }
 	}
 	
-	*_iteec = _norm*Constant::FPI*NumUtils::integrate<double>(_size,_integrand); 
-	*_itees = _norm*Constant::FPI*NumUtils::integrate<double>(_size,_integrand1); 
+	*_iteec = Constant::FPI*NumUtils::integrate<double>(_size,_integrand); 
+	*_itees = Constant::FPI*NumUtils::integrate<double>(_size,_integrand1); 
 	*_itet += (*_iteec + *_itees); 
 	
       }

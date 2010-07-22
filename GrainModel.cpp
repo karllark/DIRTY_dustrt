@@ -97,17 +97,15 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
   // Check that model name exists in pre-defined map.
   if (ModelID.find(ModelName) == ModelID.end()) { // NO!
     cout << "****************************************************" << endl; 
-    cout << "MODEL NAME " << ModelName << " HAS NOT BEEN DEFINED!" << endl; 
-    cout << endl << "Allowed model names are: " << endl; 
+    cout << "You are not using a predefined grain model.         " << endl; 
+    cout << endl <<  "Pre-deined models are: " << endl; 
     for (iMap=ModelID.begin();iMap!=ModelID.end();iMap++)
-      cout << iMap->first << endl; 
-    cout << endl << "ASSUMING YOU HAVE PROPERLY DEFINED THE" << endl ;
-    cout <<         "         MODEL CONFIGURATION          " << endl; 
+      cout << iMap->first << endl;
     cout << "****************************************************" << endl; 
     //exit(8); 
   }
   // YES! Check and make sure model definition file exists. 
-  _FullModelDefinitionFile = _TopLevelPath+_ModelDefinitionPath+ModelName; 
+  _FullModelDefinitionFile = _TopLevelPath+_ModelDefinitionPath+ModelName;
   if (!StringManip::FileExists(_FullModelDefinitionFile)) { // NO!
     cout << "****************************************************" << endl; 
     cout << "Model Definition File " << _FullModelDefinitionFile << " not found."  << endl; 
@@ -124,6 +122,7 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
   Component.resize(nComp);
   Normalization.resize(nComp); 
   SizeDistribution.resize(nComp);
+  SizeDistributionNorm.resize(nComp); 
   Temperature.resize(nComp);
   DustMass.resize(nComp);
   TotalDustMass = 0.0;
@@ -225,19 +224,28 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
       case 1: 
 	{ 
 	  // Filename
+	  // Assumptions: 
+	  //   - Model configuration file provides the full path to file. 
+	  //     eg. if the file is in the current directory, the config 
+          //     file should have "Size Definition File=MySizeGrid.dat"
+          //     If the file lives in /home/dirty, the config file should have
+          //     "Size Definition File=/home/dirty/MySizeGrid.dat"
+	  //   - The units of the size grid are assumed to be in um and are converted
+          //     to cm via Constant::UM_CM
 	  _thisSizeFile = _mcf.SValue(_thisSection,"Size Definition File"); 
 	  if (_thisSizeFile == _mcf.BadString()) {
 	    cout << "Unable to retrieve size grid file name, resorting to default." << endl; 
 	    _MasterSize.push_back(-1); 
 	  } else { 
-	    ifstream _file((_TopLevelPath+_ModelDefinitionPath+_thisSizeFile).c_str()); 
+	    //ifstream _file((_TopLevelPath+_ModelDefinitionPath+_thisSizeFile).c_str());
+	    ifstream _file((_thisSizeFile).c_str()); 
 	    if (! _file.is_open()) { 
 	      cout << "Unable to open size grid definition file " << _thisSizeFile << endl; 
 	      exit(8); 
 	    }
 	    while (getline(_file,_line)) { 
 	      if (_line[0] == '#') continue; else { 
-		_MasterSize.push_back(atof(_line.c_str())); 
+		_MasterSize.push_back(atof(_line.c_str())*Constant::UM_CM); 
 	      }
 	    }
 	    _MasterSize.erase(remove_if(_MasterSize.begin(),_MasterSize.end(), 
@@ -301,10 +309,10 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
 			     MasterWave,_MasterSize,_TopLevelPath,
 			     _thisA_min,_thisA_max); 
 
-    SizeDistribution[cmp].resize(Component[cmp].nsize); 
+    SizeDistribution[cmp].resize(Component[cmp].nsize);
 
     // Wrap in a .find since SizeDist[key] will add members.
-    if (SizeDistID.find(_thisSizeDistribution) != SizeDistID.end()) { 
+    if (SizeDistID.find(_thisSizeDistribution) != SizeDistID.end()) {  // Determine which sd to use
       
       switch (SizeDistID[_thisSizeDistribution]) 
 	{
@@ -350,7 +358,14 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
 	  }
 	  break; 
 
-	case 10: // Gaussian 
+	case 2: // Power law 
+	  {
+	    vector <float> _pl_coeff(2); 
+	    
+
+	  }
+
+	case 3: // Gaussian 
 	  { 
 	    vector <float> _gauss_coeff(3); 
 	    // Get input dust to gas ratio and mean molecular weight
@@ -385,14 +400,14 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
 	    for (int sz=0;sz<Component[cmp].nsize;sz++)
 	      _integrand[sz] = Component[cmp].mass[sz]*SizeDistribution[cmp][sz]; 
 	     
-	    // size is in cm, integrand is in grams, _mmw is dimensionless, gdmr is dimensionless, 
+	    // size is in cm, integrand is in grams, _mmw is dimensionless, gdmris dimensionless, 
 	    // AMU_CGS is gm/H, the dimensions os _newAmp are cm^-1 H^-1 ... 
 	    // float _newAmp = (DustToGasMassRatio*MeanMolecularWeight*Constant::AMU_CGS)/NumUtils::integrate<float>(Component[cmp].size,_integrand); 
 	    // ... as are the dim. of SizeDistribution  since SizeDistribution was previously 
 	    // dimensionless = 1.0 * exp(-z^2/2). 
 	    Normalization[cmp] = (DustToGasMassRatio*MeanMolecularWeight*Constant::AMU_CGS*_massfrac)/
 	      NumUtils::integrate<float>(Component[cmp].size,_integrand); 
-	    cout << Normalization[cmp] << endl; 
+	    // cout << Normalization[cmp] << endl; 
 	   //  transform(SizeDistribution[cmp].begin(),SizeDistribution[cmp].end(),SizeDistribution[cmp].begin(),
 // 		      bind2nd(multiplies<float>(),_newAmp));
 	  }
@@ -431,7 +446,7 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
     _integrand.resize(Component[cmp].nsize); 
     for (int sz=0;sz<Component[cmp].nsize;sz++) 
       _integrand[sz]=Component[cmp].mass[sz]*SizeDistribution[cmp][sz];
-    cout << Normalization[cmp] << endl; 
+    //cout << Normalization[cmp] << endl; 
     DustMass[cmp] = Normalization[cmp]*NumUtils::integrate<float>(Component[cmp].size,_integrand); 
     TotalDustMass += DustMass[cmp]; 
     _integrand.erase(_integrand.begin(),_integrand.end()); 
@@ -440,10 +455,13 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf,
     totalnumber += number[cmp]; 
 
     //for (int sz=0;sz<Component[cmp].nsize;++sz) 
-    //  cout << sz << " " << Component[cmp].size[sz] << " " << SizeDistribution[cmp][sz] << endl; 
-    
+    //  cout << sz << " " << Component[cmp].size[sz] << " " << SizeDistribution[cmp][sz] << endl;  
 
-  }
+    // Generate the normalized size distribution to avoid computational loops everytime it's called
+    transform(SizeDistribution[cmp].begin(),SizeDistribution[cmp].end(),back_inserter(SizeDistributionNorm[cmp]),
+	      bind2nd(multiplies<float>(),Normalization[cmp])); 
+
+  } // End Component loop. 
 
   // Total normalization; this is the denominator for C_abs,sca size integrated, comp summed quantities. 
   TotalNormalization = accumulate(Normalization.begin(),Normalization.end(),0.0); 
@@ -587,7 +605,6 @@ vector <float> GrainModel::getZDA_sdist(vector <float> coeff, int cmp)
 
 // Return the size distribution in cm^-1 H^-1
 //  Wiengartner & Draine 2001, ApJ 548, 296
-//  
 vector <float> GrainModel::getWD_sdist(vector <float> coeff, int cmp) 
 {
 
@@ -623,7 +640,21 @@ vector <float> GrainModel::getWD_sdist(vector <float> coeff, int cmp)
 
 }
 
-// Return Gaussian size distribution. 
+// Return a power law size distribution in cm^-1
+// vector <float> GrainModel::getPL_sdist(vector <float> coeff, int cmp) 
+// {  
+//   vector <float> retvec(Component[cmp].size.size()); // The size distribution [cm^-1]
+//   vector <float>::iterator isz;     // Iterator through size vector
+//   vector <float>::iterator iretvec; // Iterator through size dist vector
+  
+//   // Set iterator to beginning of size dist vector. 
+//   iretvec = retvec.begin(); 
+  
+//   return retvec; 
+
+// }
+
+// Return Gaussian size distribution in cm^-1
 vector <float> GrainModel::getGauss_sdist( vector <float> coeff, int cmp) 
 { 
   
