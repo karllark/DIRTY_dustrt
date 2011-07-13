@@ -60,8 +60,7 @@ int main(int argc, char* argv[])
 
   runinfo.param_filename = param_filename; // save the filename
 
-  random_dirty random_obj;  // object for random number generator
-  random_obj.random_num(long(-987654321));  // initialize
+  random_dirty random_obj(long(-987654321));  // object for random number generator
 
   GrainModel CurGrainModel;  // object for grain model
 

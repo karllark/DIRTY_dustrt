@@ -24,17 +24,18 @@
 using namespace std;
 
 //constructor
-int random_dirty::random_num (long seed)
+random_dirty::random_dirty (long seed)
 
 {
     int j;
     long k;
-    static long idum2 = 123456789;
-    static long iy = 0;
     //float temp;
+    idum2 = 123456789;
+    iy = 0;
 
     // setup shuffle array if not done so already
-    if (seed <= 0) {
+    assert(seed <= 0);
+    //if (seed <= 0) {
       _idum = seed;
       if (-_idum < 1) _idum = 1;
       else _idum = -_idum;
@@ -48,8 +49,7 @@ int random_dirty::random_num (long seed)
 	}
       }
       iy = _iv[0];
-    }
-    return 0;
+    //}
 }
 
 /* ====================================================================== */
@@ -60,8 +60,6 @@ float random_dirty::random_num ()
 
     int j;
     long k;
-    static long idum2 = 123456789;
-    static long iy = 0;
     float temp;
 
     k = _idum/IQ1;

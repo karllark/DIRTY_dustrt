@@ -12,7 +12,7 @@
 
 void new_photon_discrete_stars (photon_data& photon,
 				geometry_struct& geometry,
-				random_dirty random_obj)
+				random_dirty& random_obj)
 
 
 {

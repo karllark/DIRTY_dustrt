@@ -9,7 +9,7 @@
 
 void new_photon_pow_sphere (photon_data& photon,
 				geometry_struct& geometry,
-				random_dirty random_obj)
+				random_dirty& random_obj)
 
 
 {

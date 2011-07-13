@@ -17,7 +17,7 @@ void classify_stellar_photon (output_struct& output,
 			      photon_data& photon,
 			      geometry_struct& geometry,
 			      runinfo_struct& runinfo,
-			      random_dirty random_obj)
+			      random_dirty& random_obj)
 
 {
   int i;

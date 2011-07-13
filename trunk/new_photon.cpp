@@ -11,7 +11,7 @@
 void new_photon (photon_data& photon,
 		 geometry_struct& geometry,
 		 runinfo_struct& runinfo,
-		 random_dirty random_obj)
+		 random_dirty& random_obj)
 
 {
   switch(geometry.new_photon_source_type)

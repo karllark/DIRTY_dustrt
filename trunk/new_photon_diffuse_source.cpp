@@ -12,7 +12,7 @@
 
 void new_photon_diffuse_source (photon_data& photon,
 				geometry_struct& geometry,
-				random_dirty random_obj)
+				random_dirty& random_obj)
 
 
 {

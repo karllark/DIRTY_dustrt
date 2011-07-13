@@ -34,7 +34,7 @@ struct cell_comparator: public std::binary_function<grid_cell, double, bool>
 void new_photon_grid_source (photon_data& photon,
 			     geometry_struct& geometry,
 			     runinfo_struct& runinfo,
-			     random_dirty random_obj)
+			     random_dirty& random_obj)
   
 
 {
