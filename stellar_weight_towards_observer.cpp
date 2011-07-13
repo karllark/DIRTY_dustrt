@@ -54,7 +54,7 @@ double stellar_weight_towards_observer (photon_data photon,
   for (i = 0; i < 3; i++) {
     if ((photon.dir_cosines[i] < 0.) && (photon.position[i] == geometry.grids[photon.current_grid_num].positions[i][0]))
       photon.position[i] += 0.01*geometry.grids[photon.current_grid_num].phys_cube_size[i];
-    else if ((photon.dir_cosines[i] > 0.) && (photon.position[i] == geometry.grids[photon.current_grid_num].positions[i][geometry.grids[photon.current_grid_num].index_dim[i]+1]))
+    else if ((photon.dir_cosines[i] > 0.) && (photon.position[i] == geometry.grids[photon.current_grid_num].positions[i][geometry.grids[photon.current_grid_num].index_dim[i]]))
       photon.position[i] -= 0.01*geometry.grids[photon.current_grid_num].phys_cube_size[i];
   }
 

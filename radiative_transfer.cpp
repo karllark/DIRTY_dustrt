@@ -15,7 +15,7 @@ void radiative_transfer (geometry_struct& geometry,
 			 runinfo_struct& runinfo,
 			 output_struct& output,
 			 photon_data& photon,
-			 random_dirty random_obj)
+			 random_dirty& random_obj)
 
 {
   long i;

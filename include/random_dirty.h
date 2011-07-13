@@ -1,12 +1,13 @@
 #define NTAB 32 
 
 #include <iostream>
+#include <cassert>
 
 class random_dirty {
  public:
   // Constructors/destructors. 
   // need some
-  int random_num(long seed);
+  random_dirty(long seed);
   
   // get new random value
   float random_num();
@@ -14,5 +15,8 @@ class random_dirty {
  private:
   long _idum;
   long _iv[NTAB];
+
+  long idum2;
+  long iy;
 };
 
