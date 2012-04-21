@@ -272,7 +272,9 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 		} else {
 		  global_total_emitted += total_emit_energy;
 		}
-	      }	
+              } else {
+                global_total_emitted += total_emit_energy;
+              }
 	      
 	      // add to the emitted energy sums
 	      for (z = 0; z < n_emit_components; z++)

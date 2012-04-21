@@ -18,7 +18,7 @@
 // external function definitions
 
 extern int check_fits_io(int status,
-			 char text[100]);
+			 const char text[100]);
 
 extern void setup_dust_grid_check_grid (geometry_struct& geometry,
 					int cur_grid);

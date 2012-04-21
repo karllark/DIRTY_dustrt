@@ -86,6 +86,10 @@ void get_run_parameters (ConfigFile& param_data,
     // now see what energy conservation is required
     runinfo.energy_conserve_target = param_data.FValue("Run","energy_conserve_target");
     check_input_param("energy_conserve_target",runinfo.energy_conserve_target,0.,1.);
+
+    runinfo.energy_conserve_target2 = param_data.FValue("Run","energy_conserve_target2");
+    if (param_data.isBadFloat(runinfo.energy_conserve_target2)) runinfo.energy_conserve_target2 = 0;  // set to zero if not initially set
+    check_input_param("energy_conserve_target2",runinfo.energy_conserve_target2,0.,1.);
   }
   runinfo.total_emitted_energy = 0.0;  // need to zero out so the first iteration always happens (measurement is a delta)
 

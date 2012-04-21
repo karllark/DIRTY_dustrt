@@ -6,7 +6,7 @@
 #include "check_fits_io.h"
 
 int check_fits_io(int status,
-		  char text[100])
+		  const char text[100])
 
 {
   char errtxt[FLEN_ERRMSG];

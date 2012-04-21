@@ -22,7 +22,7 @@
 // external function definitions
 
 extern int check_fits_io(int status,
-			 char text[100]);
+			 const char text[100]);
 
 extern int fits_params_to_header(string param_filename,
 				 fitsfile *out_ptr);

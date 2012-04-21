@@ -14,6 +14,6 @@
 using namespace std;
 
 extern int check_fits_io(int status,
-			 char text[100]);
+			 const char text[100]);
 
 #endif

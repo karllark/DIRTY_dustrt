@@ -130,7 +130,7 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
 
       // Equlibrium luminosity = C_abs*B
       EquilibriumLum[_sz] = NumUtils::prod_bbodyCGS<double>(_w,*_it,_cabs);
-      cout << "eq temp: " << *_it << endl; 
+      //cout << "eq temp: " << *_it << endl;
       _tlo = 0.3*(*_it); 
       _thi = 3.0*(*_it); 
       

@@ -206,6 +206,9 @@ int main(int argc, char* argv[])
 #endif
     // get the dust emission at each point in the model
     get_dust_thermal_emission(geometry, runinfo, CurGrainModel, Failure);
+
+    // save the total absorbed energy from the initial (stellar) radiative transfer
+    if (iter_num == 1) runinfo.total_absorbed_stellar_energy = runinfo.total_absorbed_energy;
 #ifdef DEBUG_DIRTY
     cout << "te: gdt done; ";
     cout.flush();
