@@ -23,4 +23,14 @@ extern double calc_photon_trajectory (photon_data& photon,
 				      int& escape,
 				      double& tau_traveled);
 
+extern void deposit_energy (const photon_data& photon,
+                     geometry_struct& geometry,
+                     const double photon_weight);
+
+extern void move_photon (photon_data& photon,
+                  const photon_data& dummy_photon,
+                  geometry_struct& geometry,
+                  const double target_tau,
+                  double& tau_traveled);
+
 #endif

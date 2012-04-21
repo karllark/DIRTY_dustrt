@@ -31,6 +31,7 @@
 #define DEBUG_CSCP
 #define DEBUG_OUTR
 #define DEBUG_SWTO
+#define DEBUG_CONT_ABS
 #endif
 
 // debug for main dirty.cc code

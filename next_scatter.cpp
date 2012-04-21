@@ -13,8 +13,20 @@ int next_scatter (geometry_struct& geometry,
 		  random_dirty& random_obj)
 
 {
+  // find path_tau[]
+  photon_data dummy_photon = photon;
+  dummy_photon.path_cur_cells = 0; // set to 0 to save cells traversed
+
+  double target_tau = 1e20;
+  int escape = 0;
+  double tau_to_surface = 0.0;
+  calc_photon_trajectory(dummy_photon, geometry, target_tau, escape, tau_to_surface);
+
+  // use path_tau info to deposit energy
+  deposit_energy(dummy_photon, geometry, dummy_photon.scat_weight);
+
   // determine the optical depth to the next scattering
-  double target_tau = 0.0;
+  //double target_tau = 0.0;
   target_tau = -log(random_obj.random_num());
   photon.target_tau = target_tau;
   
@@ -26,12 +38,19 @@ int next_scatter (geometry_struct& geometry,
     photon.current_grid_num = 0;
   }
 
+  /*
   // determine the site of the next scattering
   int escape = 0;
   double distance_traveled = 0.0;
   double tau_traveled = 0.0;
   photon.path_cur_cells = 0;  // set to 0 to save cells tranversed
   distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_traveled);
+  */
+
+  // move the photon to the next scattering site
+  double tau_traveled = 0.0;
+  move_photon(photon, dummy_photon, geometry, target_tau, tau_traveled);
+
 #ifdef DEBUG_NS
   cout << "ns cpt done; ";
   cout << "distance_traveled = " << distance_traveled << endl;
