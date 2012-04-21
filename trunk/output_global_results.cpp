@@ -169,7 +169,7 @@ void output_global_results (runinfo_struct& runinfo,
       cout << "Emitted(de direct) = " << total_de_direct_energy << endl;
       cout << "Emitted(de scat) = " << total_de_scat_energy << endl;
       cout << "Absorbed(rt) = " << (total_stellar_energy - total_rt_direct_energy - total_rt_scat_energy) << endl;
-      cout << "Emitted(de) = " << (total_de_direct_energy - total_de_scat_energy) << endl;
+      cout << "Emitted(de) = " << (total_de_direct_energy + total_de_scat_energy) << endl;
     }
   }
 

@@ -45,7 +45,7 @@ void check_de_energy_conservation (runinfo_struct& runinfo,
   cout << "Absorbed(rt) = " << runinfo.total_absorbed_energy << endl;
   cout << "Emitted(de) = " << new_total_emit << endl;
   cout << "Emitted(de) previous = " << runinfo.total_emitted_energy << endl;
-  cout << "Energy Conservation = " << new_total_emit/runinfo.total_absorbed_energy << endl;
+  //cout << "Energy Conservation = " << new_total_emit/runinfo.total_absorbed_energy << endl;
   //#endif
 
   float emitted_ratio = runinfo.total_emitted_energy/new_total_emit;
@@ -67,4 +67,16 @@ void check_de_energy_conservation (runinfo_struct& runinfo,
   }
 
   runinfo.total_emitted_energy = new_total_emit;
+
+
+  // Compare dust emitted (escaped) energy to stellar absorbed energy
+  if (!iter_done && (runinfo.energy_conserve_target2 > 0)) {
+    double energy_conserve_ratio = new_total_emit/runinfo.total_absorbed_stellar_energy;
+    cout << "energy_conserve_target2 = " << runinfo.energy_conserve_target2 << endl;
+    cout << "energy_conserve_ratio = " << energy_conserve_ratio << endl;
+    if (fabs(1.0 - energy_conserve_ratio) <= runinfo.energy_conserve_target2) {
+      iter_done = 1;
+      cout << "energy_conserve_target2 is met" << endl;
+    }
+  }
 }

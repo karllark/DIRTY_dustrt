@@ -33,6 +33,7 @@ struct runinfo_struct {
   int dust_thermal_emission;  // set when doing thermal dust emission (used when do_emission_grain=1)
   int n_emission_grain_types;  // number of grain emission types
   float energy_conserve_target;  // energy conservation target
+  float energy_conserve_target2;  // energy conservation target 2
 
   int iter_max;   // maximum number of iterations allowed
 
@@ -65,6 +66,7 @@ struct runinfo_struct {
   // absorbed energy
   std::vector<double> absorbed_energy;  // aborbed energy by wavelength
   double total_absorbed_energy;   // total absorbed energy (computed in get_thermal_dust_emission.cpp)
+  double total_absorbed_stellar_energy;  // total absorbed energy from the very first RT, for use with energy_conserve_target2
 
   // emitted energy
   double total_emitted_energy;   // total emitted energy
