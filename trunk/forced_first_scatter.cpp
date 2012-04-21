@@ -31,7 +31,8 @@ void forced_first_scatter (geometry_struct& geometry,
 
   // get the optical depth to the edge of the dust in the current direction
   dummy_photon = photon;
-  dummy_photon.path_cur_cells = -1;  // set to -1 *not* to save cells tranversed
+  //dummy_photon.path_cur_cells = -1;  // set to -1 *not* to save cells tranversed
+  dummy_photon.path_cur_cells = 0;  // set to 0 to save cells transversed
   distance_traveled = calc_photon_trajectory(dummy_photon, geometry, target_tau, escape, tau_to_surface);
   photon.first_tau = tau_to_surface;
 
@@ -104,4 +105,33 @@ void forced_first_scatter (geometry_struct& geometry,
 //     determine_photon_position_index_initial(geometry, photon);
   }
 
+  {
+    /*
+     * Continuous absorption
+     * tau_entering/tau_leaving:
+     *   total tau traveled when the photon packet enters/leaves the grid cell
+     * prob_entering/prob_leaving:
+     *   probability that the photon packet enters/leaves the grid cell
+     */
+    const double abs_weight_init = (1. - geometry.albedo)*dummy_photon.stellar_weight; // not the reduced scat_weight
+    double tau_entering = 0.;
+    double prob_entering = 1.;
+
+    for (int i = 0; i < dummy_photon.path_cur_cells; i++) {
+      // find the absorbed weight
+      double tau_leaving = tau_entering + dummy_photon.path_tau[i];
+      double prob_leaving = exp(-tau_leaving);
+      double abs_weight = abs_weight_init*(prob_entering - prob_leaving);
+
+      // deposit the energy
+      grid_cell& this_cell = geometry.grids[dummy_photon.path_pos_index[0][i]].grid(dummy_photon.path_pos_index[1][i],dummy_photon.path_pos_index[2][i],dummy_photon.path_pos_index[3][i]);
+      this_cell.absorbed_energy[geometry.abs_energy_wave_index] += abs_weight;
+      this_cell.absorbed_energy_x2[geometry.abs_energy_wave_index] += abs_weight*abs_weight;
+      this_cell.absorbed_energy_num_photons[geometry.abs_energy_wave_index]++;
+
+      // move to the next grid cell
+      tau_entering = tau_leaving;
+      prob_entering = prob_leaving;
+    }
+  }
 }
