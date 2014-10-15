@@ -33,7 +33,7 @@ extern void new_photon (photon_data& photon,
 			random_dirty& random_obj);
 
 // determines the first scattering site (forced)
-extern void forced_first_scatter (geometry_struct& geometry,
+extern int forced_first_scatter (geometry_struct& geometry,
 				  photon_data& photon,
 				  random_dirty& random_obj);
 

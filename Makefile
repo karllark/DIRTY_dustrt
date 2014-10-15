@@ -8,23 +8,32 @@
 RM = /bin/rm -f
 CPP = g++
 
+# standard
 INCDIR = include
+LIBS = -lcfitsio
+
+# STSCI
+INCDIR_STSCI = /usr/stsci/cfitsio/include
+LIBS = -L/usr/stsci/cfitsio/lib -lcfitsio
+
 # Fedora with dist cfitsio
 INCDIR_FEDORA = /usr/include/cfitsio
-#LIBS = -lcfitsio -lefence
-LIBS = -lcfitsio
 
 PROGRAM = dirty
 
 SOURCES = $(wildcard *.cpp)
 
 OBJECTS = ${SOURCES:.cpp=.o}
+
 #CPPFLAGS = -I${INCDIR} -O2 -Wall -Wextra -g
-CPPFLAGS = -I${INCDIR} -I${INCDIR_FEDORA} -O2 -Wall -Wextra 
+#CPPFLAGS = -I${INCDIR} -I${INCDIR_FEDORA} -O2 -Wall -Wextra 
+CPPFLAGS = -I${INCDIR} -I${INCDIR_STSCI} -O2 -Wall -Wextra 
 #CPPFLAGS = -I${INCDIR} -Wall -Wextra 
 
+LDFLAGS = ${LIBS}
+
 BUILDOBJ = $(CPP) $(CPPFLAGS)
-BUILDLNK = $(CPP) $(LDFLAGS)
+BUILDLNK = $(CPP)
 
 all:  ${PROGRAM}
 
