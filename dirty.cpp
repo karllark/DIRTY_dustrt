@@ -94,8 +94,11 @@ int main(int argc, char* argv[])
   cout.flush();
 #endif
 
+  // temp to reset the random number generator
+  random_dirty random_obj2(long(-987654321));  // object for random number generator
+  
   // do the radiative transfer over all the wavelengths
-  radiative_transfer_many_waves(geometry, runinfo, output, photon, random_obj, REG_RT, 0);
+  radiative_transfer_many_waves(geometry, runinfo, output, photon, random_obj2, REG_RT, 0);
 
 #ifdef DEBUG_DIRTY
   cout << "RT done; ";

@@ -6,7 +6,7 @@
 // ======================================================================
 #include "stellar_weight_towards_observer.h"
 //#define DEBUG_STWTO
-//#define OUTNUM 108473
+//#define OUTNUM 1
 
 double stellar_weight_towards_observer (photon_data photon,
 					geometry_struct& geometry,
@@ -65,6 +65,20 @@ double stellar_weight_towards_observer (photon_data photon,
 #endif
   // redetermine the location of the photon in the grid
   determine_photon_position_index_initial(geometry, photon);
+
+#ifdef DEBUG_STWTO
+  if (photon.number == OUTNUM) {
+    cout << "initial indexs done" << endl;
+    cout << "num_current_grids = " << photon.num_current_grids << endl;
+    cout << "current_grid_num = " << photon.current_grid_num << endl;
+    for (i = 0; i < 3; i++) cout << photon.position_index[photon.current_grid_num][i] << " ";
+    cout << endl;
+    int k =  photon.current_grid_num;
+    int grid_val = photon.grid_number[k];
+    cout << geometry.grids[grid_val].grid(photon.position_index[k][0],photon.position_index[k][1],photon.position_index[k][2]).dust_tau_per_pc << endl;
+    cout << "done" << endl;
+  }
+#endif
 
   double distance_traveled = 0.0;
   distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_birth_to_obs);

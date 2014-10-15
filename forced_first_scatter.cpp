@@ -5,25 +5,29 @@
 // 2004 Dec/KDG - written
 // 28 Feb 2007/KDG - updated to move calculation of stellar weight to 
 //                   classify stellar photon
+// 22 Oct 2013/KDG - added option to deal with tau_to_surface = 0
 // ======================================================================
 #include "forced_first_scatter.h"
 #include <unistd.h>
-#include <cassert>
 //#define DEBUG_FFS
-//#define OUTNUM 453
+//#define OUTNUM 0
 
-void forced_first_scatter (geometry_struct& geometry,
-			   photon_data& photon,
-			   random_dirty& random_obj)
+int forced_first_scatter (geometry_struct& geometry,
+			  photon_data& photon,
+			  random_dirty& random_obj)
 
 {
 #ifdef DEBUG_FFS
-  if (photon.number == OUTNUM) cout << "ffs started; "; cout.flush();
+  if (photon.number == OUTNUM) {
+    cout << "ffs started; "; cout.flush();
+    cout << "ffs1: photon.path_cur_cells = " << photon.path_cur_cells << endl;
+  }
+
 #endif
 
   // variables
   double target_tau = 1e20;
-  int escape = 0;
+  int ffs_escape = 0;
   double distance_traveled = 0.0;
   double tau_traveled = 0.0;
   double tau_to_surface = 0.0;
@@ -32,16 +36,26 @@ void forced_first_scatter (geometry_struct& geometry,
 
   // get the optical depth to the edge of the dust in the current direction
   dummy_photon = photon;
-  //dummy_photon.path_cur_cells = -1;  // set to -1 *not* to save cells traversed
-  dummy_photon.path_cur_cells = 0;  // set to 0 to save cells traversed
-  distance_traveled = calc_photon_trajectory(dummy_photon, geometry, target_tau, escape, tau_to_surface);
+  //dummy_photon.path_cur_cells = -1;  // set to -1 *not* to save cells tranversed
+  dummy_photon.path_cur_cells = 0;  // set to 0 to save cells transversed
+
+  distance_traveled = calc_photon_trajectory(dummy_photon, geometry, target_tau, ffs_escape, tau_to_surface);
   photon.first_tau = tau_to_surface;
 
-  deposit_energy(dummy_photon, geometry, dummy_photon.stellar_weight);
-
 #ifdef DEBUG_FFS
+  cout << "ffs2: photon.path_cur_cells = " << photon.path_cur_cells << endl;
   if (photon.number == OUTNUM) cout << "surface tau done; "; cout.flush();
 #endif
+
+  //  cout << photon.number << " " << tau_to_surface << endl;
+
+  ffs_escape = 0;
+  if (tau_to_surface == 0.0) {
+    ffs_escape = 1;
+#ifdef DEBUG_FFS
+    cout << "photon escaping w/o interacting" << endl;
+#endif
+  } else {
 
   // do the weights
   // calculate the stellar weight (part of photon which escapes)
@@ -60,21 +74,29 @@ void forced_first_scatter (geometry_struct& geometry,
   target_tau = -log(1.0 - random_obj.random_num()*(1.0 - new_stellar_weight));
   photon.target_tau = target_tau;
 
-//   cout << "tau_to_surf = " << tau_to_surface << endl;
 #ifdef DEBUG_FFS
   if (photon.number == OUTNUM) cout << "target_tau = " << target_tau << endl;
   if (photon.number == OUTNUM) cout << "tau_to_surface = " << tau_to_surface << endl;
 #endif
-		   
+
+  // check if the optical depth to the forced scattering is effectively
+  // the same as the optical depth to the surface - adjust as necessary
+  if ((1.0 - (target_tau/tau_to_surface)) <= ROUNDOFF_ERR_TRIG) {
+#ifdef DEBUG_FFS
+    cout << "tau_to_surface and target_tau the same ";
+    cout << tau_to_surface << " " << target_tau << " ";
+    cout << (1.0 - (target_tau/tau_to_surface)) << endl;
+#endif
+    target_tau = (1.0 - ROUNDOFF_ERR_TRIG)*tau_to_surface;
+  }
+
   // move photon to location determined by target_tau and get the distance traveled
-  escape = 0;  // reset escape
+  int escape = 0;  // reset escape
   photon.path_cur_cells = 0;  // set to 0 to save cells tranversed
 #ifdef DEBUG_FFS
   if (photon.number == OUTNUM) cout << "tau_traveled in = " << tau_traveled << endl;
 #endif
-  //distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_traveled);
-
-  move_photon(photon, dummy_photon, geometry, target_tau, tau_traveled);
+  distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_traveled);
 
 #ifdef DEBUG_FFS
   if (photon.number == OUTNUM) {
@@ -109,4 +131,39 @@ void forced_first_scatter (geometry_struct& geometry,
 
 //     determine_photon_position_index_initial(geometry, photon);
   }
+
+  {
+    /*
+     * Continuous absorption
+     * tau_entering/tau_leaving:
+     *   total tau traveled when the photon packet enters/leaves the grid cell
+     * prob_entering/prob_leaving:
+     *   probability that the photon packet enters/leaves the grid cell
+     */
+    const double abs_weight_init = (1. - geometry.albedo)*dummy_photon.stellar_weight; // not the reduced scat_weight
+    double tau_entering = 0.;
+    double prob_entering = 1.;
+
+    for (int i = 0; i < dummy_photon.path_cur_cells; i++) {
+      // find the absorbed weight
+      double tau_leaving = tau_entering + dummy_photon.path_tau[i];
+      double prob_leaving = exp(-tau_leaving);
+      double abs_weight = abs_weight_init*(prob_entering - prob_leaving);
+
+      // deposit the energy
+      grid_cell& this_cell = geometry.grids[dummy_photon.path_pos_index[0][i]].grid(dummy_photon.path_pos_index[1][i],dummy_photon.path_pos_index[2][i],dummy_photon.path_pos_index[3][i]);
+      this_cell.absorbed_energy[geometry.abs_energy_wave_index] += abs_weight;
+      this_cell.absorbed_energy_x2[geometry.abs_energy_wave_index] += abs_weight*abs_weight;
+      this_cell.absorbed_energy_num_photons[geometry.abs_energy_wave_index]++;
+
+      // move to the next grid cell
+      tau_entering = tau_leaving;
+      prob_entering = prob_leaving;
+    }
+
+  }
+
+  }
+
+  return(ffs_escape);
 }

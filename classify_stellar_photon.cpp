@@ -11,7 +11,7 @@
 // ======================================================================
 #include "classify_stellar_photon.h"
 //#define DEBUG_CSP
-//#define OUTNUM 453
+//#define OUTNUM 0
 
 void classify_stellar_photon (output_struct& output,
 			      photon_data& photon,
@@ -24,6 +24,13 @@ void classify_stellar_photon (output_struct& output,
   photon_data tmp_photon;
   double save_stellar_weight = 0.0;
   int image_indxs[2];
+
+#ifdef DEBUG_CSP
+  if (photon.number == OUTNUM) {
+    cout << "in cstp" << endl;
+    cout << "photon.path_cur_cells = " << photon.path_cur_cells << endl;
+  }
+#endif
 
   // loop over the line-of-sights or albedos or whatever
   for (i = 0; i < output.num_outputs; i++) {

@@ -30,6 +30,7 @@ void setup_dust_grid_slab (ConfigFile& param_data,
   // angular radius needs to be large enough to allow for any rotation and still
   // have all the photons encompassed in the final image
   geometry.angular_radius = atan(1.5*geometry.radius/(geometry.distance - geometry.radius));
+  //  geometry.angular_radius = atan(1.5*geometry.radius/(geometry.distance - geometry.radius));
 
   // slab start/end
   float slab_z1 = param_data.FValue("Geometry","slab_z1");
@@ -54,7 +55,8 @@ void setup_dust_grid_slab (ConfigFile& param_data,
 
   // nonslab density ratio
   float nonslab_density_ratio = param_data.FValue("Geometry","nonslab_density_ratio");
-  check_input_param("nonslab density ratio",nonslab_density_ratio,0.99e-7,1.);
+  //  check_input_param("nonslab density ratio",nonslab_density_ratio,0.99e-7,1.);
+  check_input_param("nonslab density ratio",nonslab_density_ratio,0.0,1.);
 
   // maximum optical depth per cell (controls when a cell is subdivided)
   geometry.max_tau_per_cell = param_data.FValue("Geometry","max_tau_per_cell");

@@ -4,6 +4,7 @@
 // 2004 Dec/KDG - written
 // 2008 Aug/KDG - added continous absorption
 // 2009 Mar/KDG - added limited polychromaticism
+// 2013 Oct/KDG - updated to work with subgrids
 // ======================================================================
 #include "scatter_photon.h"
 //#define DEBUG_SP
@@ -135,12 +136,83 @@ void scatter_photon (geometry_struct& geometry,
 #endif
   }
   */
-#ifdef DEGUG_SP
-  cout << "total tau = " << photon.target_tau << " " << tmp_sum << endl;
+#ifdef DEBUG_SP
+  cout << "# scat = " << photon.num_scat << endl;
+  cout << "total tau = " << photon.target_tau << endl;
 #endif  
+
   // update the scattered weight
   photon.scat_weight *= geometry.albedo;
 
   // update the number of scatterings
   photon.num_scat++;
+
+  // new continuous absorption (written by Ka-Hei Law)
+  // appears after adjusting the photon.scat_weight as this absorption
+  // is for the *next* scattering/interaction
+  {
+    // find path_tau[]
+    photon_data dummy_photon = photon;
+    dummy_photon.current_grid_num = 0;  // set to the base grid to start tarjectory correctly
+    dummy_photon.path_cur_cells = 0; // set to 0 to save cells traversed
+
+    double target_tau = 1e20;
+    int escape = 0;
+    double tau_to_surface = 0.0;
+    calc_photon_trajectory(dummy_photon, geometry, target_tau, escape, tau_to_surface);
+
+    /*
+     * Continuous absorption
+     * tau_entering/tau_leaving:
+     *   total tau traveled when the photon packet enters/leaves the grid cell
+     * prob_entering/prob_leaving:
+     *   probability that the photon packet enters/leaves the grid cell
+     */
+    const double abs_weight_init = (1. - geometry.albedo)*dummy_photon.scat_weight;
+    double tau_entering = 0.;
+    double prob_entering = 1.;
+    
+#ifdef DEBUG_SP
+    double tot_abs_temp = 0.;
+#endif
+
+    double tau_leaving = 0.0;
+    double prob_leaving = 0.0;
+    double abs_weight = 0.0;
+
+    for (int i = 0; i < dummy_photon.path_cur_cells; i++) {
+      // find the absorbed weight
+      tau_leaving = tau_entering + dummy_photon.path_tau[i];
+      prob_leaving = exp(-tau_leaving);
+      abs_weight = abs_weight_init*(prob_entering - prob_leaving);
+
+#ifdef DEBUG_SP
+      cout << i << " ";
+      cout << tau_entering << " ";
+      cout << tau_leaving << " ";
+      cout << prob_entering << " ";
+      cout << prob_leaving << " ";
+      cout << abs_weight << endl;
+      
+      tot_abs_temp += abs_weight;
+#endif  
+
+      // deposit the energy
+      grid_cell& this_cell = geometry.grids[dummy_photon.path_pos_index[0][i]].grid(dummy_photon.path_pos_index[1][i],dummy_photon.path_pos_index[2][i],dummy_photon.path_pos_index[3][i]);
+      this_cell.absorbed_energy[geometry.abs_energy_wave_index] += abs_weight;
+      this_cell.absorbed_energy_x2[geometry.abs_energy_wave_index] += abs_weight*abs_weight;
+      this_cell.absorbed_energy_num_photons[geometry.abs_energy_wave_index]++;
+
+      // move to the next grid cell
+      tau_entering = tau_leaving;
+      prob_entering = prob_leaving;
+    }
+
+#ifdef DEBUG_SP
+  cout << abs_weight_init << " ";
+  cout << tot_abs_temp << endl;
+  if (photon.target_tau > 0.5) exit(8);
+#endif
+
+  }
 }

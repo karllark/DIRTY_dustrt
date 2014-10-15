@@ -45,6 +45,7 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
   vector <float> _E = GrainModel.getEScale();
   int _ncmp;
   if (!UseEffective_Grain) _ncmp = GrainModel.getNComp(); else _ncmp=1; 
+
   uint _nw = _w.size();
   vector <float> _Enthalpy; 
   vector <float> _CalTemp;

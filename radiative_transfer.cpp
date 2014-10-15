@@ -4,6 +4,7 @@
 //
 // 2004 Dec/KDG - written
 // 2005 May/KDG - added output stuff
+// 22 Oct 2013/KDG - added option to deal with forced_first_scatter getting zero optical depth
 // ======================================================================
 #include "radiative_transfer.h"
 //#define DEBUG_RT
@@ -19,6 +20,7 @@ void radiative_transfer (geometry_struct& geometry,
 
 {
   long i;
+  int escape = 0;
 
 #ifdef DEBUG_RT
   cout << "rt: io start; ";
@@ -125,7 +127,8 @@ void radiative_transfer (geometry_struct& geometry,
 #ifdef DEBUG_OUTRANGE
     try {
 #endif
-    forced_first_scatter(geometry, photon, random_obj);
+    escape = forced_first_scatter(geometry, photon, random_obj);
+    //    cout << escape << endl;
 #ifdef DEBUG_OUTRANGE
     } catch(std::out_of_range)
       {
@@ -135,6 +138,7 @@ void radiative_transfer (geometry_struct& geometry,
       }
 #endif
 #ifdef DEBUG_RT
+    if (photon.number >= OUTNUM) cout << "esc=" << escape << "; "; cout.flush();
     if (photon.number >= OUTNUM) cout << "ffs done; "; cout.flush();
 #endif
 
@@ -168,7 +172,6 @@ void radiative_transfer (geometry_struct& geometry,
 #endif
 
     // loop until photon escapes
-    int escape = 0;
     while (!escape) {
 
       // classify the scattered photon

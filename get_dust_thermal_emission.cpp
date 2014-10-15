@@ -33,7 +33,6 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   if (runinfo.do_stochastic_dust_emission) DoStochastic = true;
   // For now, turn off stochastic heating when using effective grain heating.  
   if (runinfo.effective_grain_heating) DoStochastic = false; 
-
   // define the cutoffs for passing to the dust emission code
 //   float cutoff_frac = 0.05;
 //   float min_energy_frac = 0.001;

@@ -14,6 +14,10 @@ void get_sed_parameters (ConfigFile& param_data,
 			 GrainModel& CurGrainModel)
 
 {
+#ifdef DEBUG_GSP
+  cout << "entering get_sed_parameters.." << endl;
+#endif
+
   using namespace NumUtils;
 
   runinfo.sed_type = param_data.SValue("SED","type");
@@ -25,6 +29,9 @@ void get_sed_parameters (ConfigFile& param_data,
       runinfo.sed_lum.push_back(1.);
 
   } else {
+#ifdef DEBUG_GSP
+    cout << "getting the sed_filename and reading..." << endl;
+#endif
     // get the filename
     string sed_filename = param_data.SValue("SED","sed_file");
     // check that the file exists
@@ -65,6 +72,9 @@ void get_sed_parameters (ConfigFile& param_data,
 	luminosity[i] = sfr_or_mass*pow(10.,luminosity[i])*(Constant::LIGHT)/pow(wavelength[i],2.0);
       }
 
+#ifdef DEBUG_GSP
+      cout << "done reading ssp_file." << endl;
+#endif
     } else if (runinfo.sed_type == "bb_file") {
       // get the sed parameters
       //   assuming units are in ergs/s/Hz
@@ -93,6 +103,9 @@ void get_sed_parameters (ConfigFile& param_data,
       exit(8);
     }
 
+#ifdef DEBUG_GSP
+    cout << "starting SED binning..." << endl;
+#endif
     // bin the input SED onto the model wavelength grid
     // to ensure all the SED energy is used in the model
     vector<float>::iterator closeIter;
@@ -100,15 +113,32 @@ void get_sed_parameters (ConfigFile& param_data,
     vector<int> temp_sed_npts;
     temp_sed.resize(runinfo.wavelength.size(),0.0);
     temp_sed_npts.resize(runinfo.wavelength.size(),0);
+#ifdef DEBUG_GSP
+    cout << "starting SED binning loop..." << endl;
+#endif
     for (i = 0; i < luminosity.size(); i++) {
+#ifdef DEBUG_GSP
+      cout << "i = " << i;
+      cout << " " << runinfo.wavelength.size() << endl;
+      cout << wavelength[i] << " ";
+      cout << runinfo.wavelength[0] << " ";
+      cout << runinfo.wavelength[runinfo.wavelength.size()-1] << endl;
+#endif
       if ((wavelength[i] >= runinfo.wavelength[0]) && (wavelength[i] <= runinfo.wavelength[runinfo.wavelength.size()-1])) {
 	closeIter = find_if(runinfo.wavelength.begin(),runinfo.wavelength.end(),bind2nd(greater_equal<float>(),static_cast<float>(wavelength[i])));
+#ifdef DEBUG_GSP
+    cout << "closeIter done" << endl;
+#endif
 	uint closeIndex = distance(runinfo.wavelength.begin(),closeIter);
 #ifdef DEBUG_GSP
 	cout << i << " ";
 	cout << wavelength[i] << " ";
 	cout << runinfo.wavelength[closeIndex] << " "; 
-	cout << (wavelength[i] - runinfo.wavelength[closeIndex-1]) << " ";
+	if (closeIndex > 0) {
+	  cout << (wavelength[i] - runinfo.wavelength[closeIndex-1]) << " ";
+	} else {
+	  cout << wavelength[i] << " ";
+	}
 	cout << (runinfo.wavelength[closeIndex] - wavelength[i]) << " ";
 	cout << endl;
 #endif
