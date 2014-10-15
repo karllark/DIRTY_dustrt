@@ -29,11 +29,19 @@ double scattered_weight_towards_observer (photon_data photon,
 
 #ifdef DEBUG_SWTO
   if (photon.number == OUTNUM) {
+    cout << "pos vector = ";
+    for (i = 0; i < 3; i++) 
+      cout << photon.position[i] << " ";
+    cout << endl;
+    cout << "dir cosines vector = ";
+    for (i = 0; i < 3; i++) 
+      cout << photon.dir_cosines[i] << " ";
+    cout << endl;
     cout << "scat_to_obs vector = ";
     for (i = 0; i < 3; i++) 
       cout << scat_to_obs[i] << " ";
     cout << endl;
-    cout << "scat_to_obs dir_cosines = ";
+     cout << "scat_to_obs dir_cosines = ";
     for (i = 0; i < 3; i++) 
       cout << dir_cosines_scat_to_obs[i] << " ";
     cout << endl;
@@ -69,12 +77,21 @@ double scattered_weight_towards_observer (photon_data photon,
   int escape = 0;
   double tau_scat_to_obs = 0.0;
   double distance_traveled = 0.0;
+  photon.current_grid_num = 0;  // set to the base grid to start tarjectory correctly
 #ifdef DEBUG_SWTO
   if (photon.number == OUTNUM) {
     cout << "starting calc_photon_traj..." << endl;
   }
 #endif
-  distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_scat_to_obs);
+  try {
+    distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_scat_to_obs);
+  } catch(std::out_of_range)
+    {
+      cout << "photon # = " << photon.number << endl;
+      cout << "num scat = " << photon.num_scat << endl;
+      cout << "scattered_weight_towards_observer: calc_photon_trajectory - out of range." << endl;
+      exit(8);
+    }
 #ifdef DEBUG_SWTO
   if (photon.number == OUTNUM) {
     cout << "Tau from scattering site to surface = " << tau_scat_to_obs << endl;

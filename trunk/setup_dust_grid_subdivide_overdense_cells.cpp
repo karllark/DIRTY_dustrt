@@ -78,19 +78,27 @@ void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
 	    subgrid.phys_cube_size[2] = subgrid.phys_grid_size[2]/subgrid.index_dim[2];
 
 	    int l;
-	    for (l = 0; l <= subgrid.index_dim[0]; l++) {
+	    // ensure that the first position exactly equals the edge of the parent cell
+	    //   no roundoff error problems (hopefully)
+	    x_subpos[0] = geometry.grids[m].positions[0][i];
+	    y_subpos[0] = geometry.grids[m].positions[1][j];
+	    z_subpos[0] = geometry.grids[m].positions[2][k];
+	    
+	    for (l = 1; l < subgrid.index_dim[0]; l++)
 	      x_subpos[l] = geometry.grids[m].positions[0][i] + (double(l)/subgrid.index_dim[0])*subgrid.phys_grid_size[0];
+	    
+	    for (l = 1; l < subgrid.index_dim[1]; l++)
 	      y_subpos[l] = geometry.grids[m].positions[1][j] + (double(l)/subgrid.index_dim[1])*subgrid.phys_grid_size[1];
+	    
+	    for (l = 1; l < subgrid.index_dim[2]; l++)
 	      z_subpos[l] = geometry.grids[m].positions[2][k] + (double(l)/subgrid.index_dim[2])*subgrid.phys_grid_size[2];
-
-// 	    cout << "size = " << x_subpos[l] << " ";
-// 	    cout << y_subpos[l] << " ";
-// 	    cout << z_subpos[l] << endl;
-	    }
-
-// 	    cout << x_subpos[0] << " ";
-// 	    cout << geometry.grids[m].positions[0][i] << endl;
-
+	    
+	    // ensure that the last position exactly equals the edge of the parent cell
+	    //   no roundoff error problems (hopefully)
+	    x_subpos[subgrid.index_dim[0]] = geometry.grids[m].positions[0][i+1];
+	    y_subpos[subgrid.index_dim[1]] = geometry.grids[m].positions[1][j+1];
+	    z_subpos[subgrid.index_dim[2]] = geometry.grids[m].positions[2][k+1];
+	    
 	    subgrid.positions.push_back(x_subpos);
 	    subgrid.positions.push_back(y_subpos);
 	    subgrid.positions.push_back(z_subpos);

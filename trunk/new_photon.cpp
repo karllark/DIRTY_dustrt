@@ -37,4 +37,7 @@ void new_photon (photon_data& photon,
       exit(8);
     }
 
+  // set to ensure this is always initialized to zero
+  photon.path_cur_cells = 0;
+
 }

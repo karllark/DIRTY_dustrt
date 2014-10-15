@@ -81,7 +81,7 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
       //     // check the absorbed energy grid (temp needed as energy not conserved)
       //     // KDG - 23 Mar 2008
       //     cout << "**test2**" << endl;
-      //     check_absorbed_energy_grid(geometry, runinfo);
+    //    check_absorbed_energy_grid(geometry, runinfo);
       
       // store the result (either in memory or on disk)
       // remember to zero out the absorbed energy grid
@@ -100,7 +100,7 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
       
       //     // check the absorbed energy grid (temp needed as energy not conserved)
       //     // KDG - 23 Mar 2008
-      // 	check_absorbed_energy_grid(geometry, runinfo);
+      //check_absorbed_energy_grid(geometry, runinfo);
       //     if (i == 1) exit(8);
       //  	exit(8);
 //     }

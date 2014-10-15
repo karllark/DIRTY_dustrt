@@ -20,6 +20,10 @@ double calc_delta_dist (photon_data& photon,
 #ifdef DEBUG_CDD
   if (photon.number == OUTNUM) {
     cout << "starting cdd.." << endl;
+    cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nRow() << " ";
+    cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
+    cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
+    cout << "photon.path_cur_cells = " << photon.path_cur_cells << endl;
   }
 #endif
   tau_traveled = 0.0;
@@ -40,6 +44,9 @@ double calc_delta_dist (photon_data& photon,
     cout << photon.position_index[k][0] << endl;
     cout << photon.position_index[k][1] << endl;
     cout << photon.position_index[k][2] << endl;
+    cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nRow() << " ";
+    cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
+    cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
     cout << "end testing" << endl;
   }
 #endif
@@ -70,6 +77,9 @@ double calc_delta_dist (photon_data& photon,
     cout << "number of grids = " << geometry.grids.size() << endl;
     cout << "photon.current_grid_num = " << photon.current_grid_num << endl;
     cout << "photon.grid_number[photon.current_grid_num] = " << photon.grid_number[photon.current_grid_num] << endl;
+    cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nRow() << " ";
+    cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
+    cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
   }
 #endif
 
@@ -79,6 +89,9 @@ double calc_delta_dist (photon_data& photon,
       cout << endl << "=============" << endl;
       cout << "k, num_current_grids, dust_tau_per_pc, dust_tau_ref_per_pc = " << k << " " << photon.num_current_grids;
       cout << " " << dust_tau_per_pc << " " << dust_tau_ref_per_pc << endl;
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nRow() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
     }
 #endif
     photon.current_grid_num++;
@@ -120,11 +133,25 @@ double calc_delta_dist (photon_data& photon,
       cout << "subgrid found" << endl;
       cout << "target_tau = " << target_tau << endl;
       cout << "tau_traveled = " << tau_traveled << endl;
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nRow() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
     }
 #endif
     
     distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_traveled);
     
+#ifdef DEBUG_CDD
+    if (photon.number == OUTNUM) {
+      cout << "emerging from subgrid" << endl;
+      cout << "target_tau = " << target_tau << endl;
+      cout << "tau_traveled = " << tau_traveled << endl;
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nRow() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
+    }
+#endif
+
     int escape_grid = 0;
     if (escape) { // determine which of x,y,z exited first
       photon.current_grid_num--;
@@ -164,6 +191,9 @@ double calc_delta_dist (photon_data& photon,
       cout << photon.current_grid_num << " ";
       cout << photon.num_current_grids << endl;
       cout << "min_index = " << min_index << endl;
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nRow() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
       cout << "=============" << endl;
     }
 #endif
@@ -208,6 +238,9 @@ double calc_delta_dist (photon_data& photon,
 	cout << geometry.grids[photon.grid_number[photon.current_grid_num]].positions[i][photon.position_index[k][i]+1] << " ";
 	cout << photon.position[i] << " ";
 	cout << endl;
+	cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nRow() << " ";
+	cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
+	cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
       }
 #endif
     }
@@ -237,6 +270,9 @@ double calc_delta_dist (photon_data& photon,
 #ifdef DEBUG_CDD
     if (photon.number == OUTNUM) {
       cout << "index transversed = " << min_index << endl;
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nRow() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
     }
 #endif    
     // save the current cell dust coeff (tau/pc)
@@ -253,8 +289,19 @@ double calc_delta_dist (photon_data& photon,
       exit_cell = 0;
     }
 
+#ifdef DEBUG_CDD
+    if (photon.number == OUTNUM) {
+      cout << "path info" << endl;
+      cout << photon.path_cur_cells << endl;
+      cout << photon.path_max_cells << endl;
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nRow() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
+    }
+#endif    
+
     if (photon.path_cur_cells >= 0) { // if -1, don't save
-      if ((photon.path_cur_cells+1) > photon.path_max_cells) {
+      if (photon.path_cur_cells >= photon.path_max_cells) {
 	// lengthen the photon.path variables
 	photon.path_tau.push_back(0.0);
 	photon.path_pos_index[0].push_back(0);
@@ -263,6 +310,10 @@ double calc_delta_dist (photon_data& photon,
 	photon.path_pos_index[3].push_back(0);
 	photon.path_max_cells++;
       } 
+      if (photon.path_max_cells < photon.path_cur_cells) {
+	cout << "photon path # cells is smaller than the current cell number" << endl;
+	exit(8);
+      }
       photon.path_tau[photon.path_cur_cells] = tau_traveled;
       photon.path_pos_index[0][photon.path_cur_cells] = grid_val;
       photon.path_pos_index[1][photon.path_cur_cells] = photon.position_index[k][0];
@@ -280,6 +331,10 @@ double calc_delta_dist (photon_data& photon,
       }
 #endif
       photon.path_cur_cells++;
+
+#ifdef DEBUG_CDD      
+      cout << "photon.path_cur_cells = " << photon.path_cur_cells << endl;
+#endif
     }
 
 #ifdef DEBUG_CDD
@@ -292,6 +347,9 @@ double calc_delta_dist (photon_data& photon,
       cout << photon.current_grid_num << " ";
       cout << photon.num_current_grids << endl;
       cout << "min_index = " << min_index << endl;
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nRow() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
       cout << "-----" << endl;
     }
 #endif
@@ -334,6 +392,11 @@ double calc_delta_dist (photon_data& photon,
 
 #ifdef DEBUG_CDD
     if (photon.number == OUTNUM) {
+      cout << photon.position_index[k][min_index] << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].index_dim[min_index] << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nRow() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
+      cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
       cout << "escape (post check1) = " << escape << endl;
     }
 #endif
@@ -372,6 +435,10 @@ double calc_delta_dist (photon_data& photon,
     cout << endl;
     cout << "exit_cell = " << exit_cell << endl;
     cout << "escape = " << escape << endl;
+    cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nRow() << " ";
+    cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
+    cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
+    cout << "photon.path_cur_cells = " << photon.path_cur_cells << endl;
   }
 #endif
 

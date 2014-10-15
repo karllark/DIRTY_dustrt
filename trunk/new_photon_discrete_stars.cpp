@@ -9,6 +9,7 @@
 //                1 to n stars with specific positions and luminosities
 // ======================================================================
 #include "new_photon_discrete_stars.h"
+//#define DEBUG_NPDS
 
 void new_photon_discrete_stars (photon_data& photon,
 				geometry_struct& geometry,

@@ -10,7 +10,7 @@
 // 2003 Jun/KDG - written
 // ======================================================================
 #include "calc_photon_trajectory.h"
-// #define PHOTON_POS
+//#define PHOTON_POS
 //#define OUTNUM 0
 //#define DEBUG_CPT
 
@@ -23,9 +23,12 @@ double calc_photon_trajectory (photon_data& photon,
 {
   double tau_left = target_tau;  // reduce till zero = done
 #ifdef DEBUG_CPT
-  cout << "start cpt; ";
-  cout << "tau_left = " << tau_left << endl;
-  cout.flush();
+  if (photon.number == OUTNUM) {
+    cout << "oooooooooooooooooooooooooooooooooo" << endl;
+    cout << "start cpt; ";
+    cout << "tau_left = " << tau_left << endl;
+    cout.flush();
+  }
 #endif
   double distance_traveled = 0.0;
   double delta_tau = 0.0;
@@ -60,6 +63,7 @@ double calc_photon_trajectory (photon_data& photon,
     distance_traveled += delta_dist;
 #ifdef DEBUG_CPT
     if (photon.number == OUTNUM) {
+      cout << "cpt: photon.path_cur_cells = " << photon.path_cur_cells << endl;
       cout << "delta distance & tau_left & delta_tau & escape = ";
       cout << delta_dist << " ";
       cout << tau_left << " ";

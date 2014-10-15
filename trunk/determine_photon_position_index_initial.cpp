@@ -17,6 +17,7 @@ void determine_photon_position_index_initial (geometry_struct& geometry,
 
   int done = 0;
   int k = 0;
+  photon.grid_number[0] = 0;
   int cur_grid_num = 0;
   int tmp_save_pindex = -1;
   while (not done) {
