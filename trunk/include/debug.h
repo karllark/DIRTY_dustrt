@@ -9,7 +9,7 @@
 /* #endif */
 
 #define OUTNUM -1
-//#define OUTNUM 4628428
+//#define OUTNUM 25994
 
 //  overall debug statment
 //#define DEBUG
@@ -31,7 +31,6 @@
 #define DEBUG_CSCP
 #define DEBUG_OUTR
 #define DEBUG_SWTO
-#define DEBUG_CONT_ABS
 #endif
 
 // debug for main dirty.cc code
