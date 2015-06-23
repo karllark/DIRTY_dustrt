@@ -38,10 +38,11 @@
 pro generate_blackbody_input,temperature,radius,out_filename, $
   silent=silent,tot_lum=tot_lum
 
-solar_lum = 3.845d33
+solar_lum = 3.839d33
+light_speed = 2.99792458d14
 
 min_wave = 0.09
-max_wave = 5000.0
+max_wave = 2100.0
 wave_res = 1000.
 
 ;min_wave = 0.1
@@ -72,20 +73,20 @@ endif
 bb = blackbody_dirtyv2(waves,temperature)
 
 ; convert radius from solar radii
-radius_m = radius*6.95508d10
+radius_m = radius*6.955d10
 
 ; convert to ergs s^-1 Hz^-1
 bb_output = bb*1d7*4.d0*!PI*radius_m^2
 
 ; integrate to determine the total luminosity
 if (keyword_set(tot_lum)) then begin
-    freq = 2.998e14/waves
+    freq = light_speed/waves
     bb_int = bb_output
     lum = int_tabulated(freq,bb_int,/double,/sort)
     bb_output *= tot_lum/(lum/solar_lum)
 endif
 
-freq = 2.998e14/waves
+freq = light_speed/waves
 bb_int = bb_output
 lum = int_tabulated(freq,bb_int,/double,/sort)
 print,'total luminosity [solar] = ', lum/solar_lum
@@ -94,11 +95,13 @@ print,'total luminosity [solar] = ', lum/solar_lum
 openw,unit1,out_filename,/get_lun
 printf,unit1,'#Blackbody from generate_blackbody_input.pro'
 printf,unit1,'#temperature = ', temperature
-printf,unit1,'#radius (solar radii) = ',  radius
+if (not keyword_set(tot_lum)) then printf,unit1,'#radius (solar radii) = ',  radius
+printf,unit1,'#total luminosity [ergs s^-1] = ', lum
+printf,unit1,'#total luminosity [solar] = ', lum/solar_lum
 printf,unit1,'#'
-printf,unit1,'#wavelength [microns], luminosity [ergs s^-1 Hz^-1]'
+printf,unit1,'#wavelength [microns], luminosity [ergs s^-1 Hz^-1], luminosity [ergs s^-1 um^-1]'
 for i = 0,(n_waves-1) do begin
-    printf,unit1,waves[i],bb_output[i]
+    printf,unit1,waves[i],bb_output[i],bb_output[i]*light_speed/(waves[i]^2)
 endfor
 free_lun,unit1
 

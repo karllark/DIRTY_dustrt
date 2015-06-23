@@ -4,6 +4,7 @@
 // KDG 15 May 2008 - Written (taken from setup_dust_grid_shell)
 // KDG 16 Jun 2008 - fixed max_grid_depth calculation & fixed assignment of grid number to parent
 // KDG 14 Jul 2008 - fixed error of interating over recently created subgrids
+// KDG 17 Jun 2015 - modified code to all for different subdivision for different axes
 // ======================================================================
 #include "setup_dust_grid_subdivide_overdense_cells.h"
 
@@ -14,7 +15,7 @@ void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
   int i,j,k,m = 0;
 
   // loop over all existing grids and subgrid any overdense cells
-  float x_tau = 0.0;
+  float x_tau, y_tau, z_tau = 0.0;
   int cur_subgrid_num = int(geometry.grids.size());
   int subdivide = 0;
   int subdivide_any = 0;
@@ -35,9 +36,15 @@ void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
 	  // assumes a cubical cell
 	  x_tau = (geometry.grids[m].positions[0][i+1] - geometry.grids[m].positions[0][i])*
 	    geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
+	  y_tau = (geometry.grids[m].positions[1][i+1] - geometry.grids[m].positions[1][i])*
+	    geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
+	  z_tau = (geometry.grids[m].positions[2][i+1] - geometry.grids[m].positions[2][i])*
+	    geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
 
 	  subdivide = 0;
-	  if (x_tau > geometry.max_tau_per_cell) subdivide = 1;
+	  if (x_tau > geometry.max_tau_per_cell_x) subdivide = 1;
+	  if (y_tau > geometry.max_tau_per_cell_y) subdivide = 1;
+	  if (z_tau > geometry.max_tau_per_cell_z) subdivide = 1;
 	  if ((spherical_clumps) && (geometry.grids[0].grid(i,j,k).dust_tau_per_pc == geometry.clump_densities[0])) subdivide = 1;
 
 	  if (subdivide) {
@@ -55,16 +62,32 @@ void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
 	    subdivide_any = 1;
 
 	    one_grid subgrid;
-	    if (x_tau > geometry.max_tau_per_cell) 
-	      subgrid.index_dim[0] = int(x_tau/geometry.max_tau_per_cell) + 1;
-	    else if (spherical_clumps) {
+	    if (spherical_clumps) {
 	      subgrid.index_dim[0] = 10;  // make a sphere
+	      subgrid.index_dim[1] = subgrid.index_dim[0];
+	      subgrid.index_dim[2] = subgrid.index_dim[0];
+	    } else {
+	      if (x_tau > geometry.max_tau_per_cell_x) 
+		subgrid.index_dim[0] = int(x_tau/geometry.max_tau_per_cell_x) + 1;
+	      if (y_tau > geometry.max_tau_per_cell_y) 
+		subgrid.index_dim[1] = int(y_tau/geometry.max_tau_per_cell_y) + 1;
+	      if (z_tau > geometry.max_tau_per_cell_z) 
+		subgrid.index_dim[2] = int(z_tau/geometry.max_tau_per_cell_z) + 1;
+
+	      // cout << subgrid.index_dim[0] << " ";
+	      // cout << subgrid.index_dim[1] << " ";
+	      // cout << subgrid.index_dim[2] << endl;
+
+	      // cout << x_tau << " ";
+	      // cout << y_tau << " ";
+	      // cout << z_tau << endl;
+
+	      // cout << geometry.max_tau_per_cell_x << " ";
+	      // cout << geometry.max_tau_per_cell_y << " ";
+	      // cout << geometry.max_tau_per_cell_z << endl;
+	      // exit(8);
 	    }
 	    
-	    subgrid.index_dim[1] = subgrid.index_dim[0];
-	    subgrid.index_dim[2] = subgrid.index_dim[0];
-// 	  cout << subgrid.index_dim[0] << endl;
-
 	    vector<double> x_subpos(subgrid.index_dim[0]+1);
 	    vector<double> y_subpos(subgrid.index_dim[1]+1);
 	    vector<double> z_subpos(subgrid.index_dim[2]+1);

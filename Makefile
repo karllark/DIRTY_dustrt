@@ -13,11 +13,11 @@ INCDIR = include
 LIBS = -lcfitsio
 
 # STSCI
-INCDIR_STSCI = /usr/stsci/cfitsio/include
-LIBS = -L/usr/stsci/cfitsio/lib -lcfitsio
+INCDIR_STSCI = /user/kgordon/Dirty_v2/cfitsio
+LIBS = -L/user/kgordon/Dirty_v2/cfitsio -lcfitsio
 
 # Fedora with dist cfitsio
-INCDIR_FEDORA = /usr/include/cfitsio
+#INCDIR_FEDORA = /usr/include/cfitsio
 
 PROGRAM = dirty
 

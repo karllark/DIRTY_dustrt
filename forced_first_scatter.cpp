@@ -41,6 +41,7 @@ int forced_first_scatter (geometry_struct& geometry,
 
   distance_traveled = calc_photon_trajectory(dummy_photon, geometry, target_tau, ffs_escape, tau_to_surface);
   photon.first_tau = tau_to_surface;
+  photon.prev_tau_surface = tau_to_surface;
 
 #ifdef DEBUG_FFS
   cout << "ffs2: photon.path_cur_cells = " << photon.path_cur_cells << endl;

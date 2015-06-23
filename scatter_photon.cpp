@@ -144,6 +144,10 @@ void scatter_photon (geometry_struct& geometry,
   // update the scattered weight
   photon.scat_weight *= geometry.albedo;
 
+  // updated to include the weight reduction due to continuous absorption - KDG 17 jun 15
+  // does not seem to work - KDG 17 jun 15
+  //photon.scat_weight *= geometry.albedo*(1.0 - exp(-1.0*photon.prev_tau_surface));
+
   // update the number of scatterings
   photon.num_scat++;
 
@@ -161,6 +165,8 @@ void scatter_photon (geometry_struct& geometry,
     double tau_to_surface = 0.0;
     calc_photon_trajectory(dummy_photon, geometry, target_tau, escape, tau_to_surface);
 
+    photon.prev_tau_surface = tau_to_surface;
+
     /*
      * Continuous absorption
      * tau_entering/tau_leaving:
@@ -169,6 +175,7 @@ void scatter_photon (geometry_struct& geometry,
      *   probability that the photon packet enters/leaves the grid cell
      */
     const double abs_weight_init = (1. - geometry.albedo)*dummy_photon.scat_weight;
+
     double tau_entering = 0.;
     double prob_entering = 1.;
     
