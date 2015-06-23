@@ -103,116 +103,138 @@ void get_sed_parameters (ConfigFile& param_data,
       exit(8);
     }
 
-#ifdef DEBUG_GSP
-    cout << "starting SED binning..." << endl;
-#endif
-    // bin the input SED onto the model wavelength grid
-    // to ensure all the SED energy is used in the model
-    vector<float>::iterator closeIter;
-    vector<double> temp_sed;
-    vector<int> temp_sed_npts;
-    temp_sed.resize(runinfo.wavelength.size(),0.0);
-    temp_sed_npts.resize(runinfo.wavelength.size(),0);
-#ifdef DEBUG_GSP
-    cout << "starting SED binning loop..." << endl;
-#endif
-    for (i = 0; i < luminosity.size(); i++) {
-#ifdef DEBUG_GSP
-      cout << "i = " << i;
-      cout << " " << runinfo.wavelength.size() << endl;
-      cout << wavelength[i] << " ";
-      cout << runinfo.wavelength[0] << " ";
-      cout << runinfo.wavelength[runinfo.wavelength.size()-1] << endl;
-#endif
-      if ((wavelength[i] >= runinfo.wavelength[0]) && (wavelength[i] <= runinfo.wavelength[runinfo.wavelength.size()-1])) {
-	closeIter = find_if(runinfo.wavelength.begin(),runinfo.wavelength.end(),bind2nd(greater_equal<float>(),static_cast<float>(wavelength[i])));
-#ifdef DEBUG_GSP
-    cout << "closeIter done" << endl;
-#endif
-	uint closeIndex = distance(runinfo.wavelength.begin(),closeIter);
-#ifdef DEBUG_GSP
-	cout << i << " ";
-	cout << wavelength[i] << " ";
-	cout << runinfo.wavelength[closeIndex] << " "; 
-	if (closeIndex > 0) {
-	  cout << (wavelength[i] - runinfo.wavelength[closeIndex-1]) << " ";
-	} else {
-	  cout << wavelength[i] << " ";
-	}
-	cout << (runinfo.wavelength[closeIndex] - wavelength[i]) << " ";
-	cout << endl;
-#endif
-	if (closeIndex > 0) {
-	  if ((runinfo.wavelength[closeIndex] - wavelength[i]) > (wavelength[i] - runinfo.wavelength[closeIndex-1])) closeIndex--;
-	}
-#ifdef DEBUG_GSP
-	cout << i << " ";
-	cout << wavelength[i] << " ";
-	cout << runinfo.wavelength[closeIndex] << " "; 
-// 	cout << (wavelength[i] - runinfo.wavelength[closeIndex-1]) << " ";
-// 	cout << (runinfo.wavelength[closeIndex] - wavelength[i]) << " ";
-	cout << endl;
-#endif
-	temp_sed[closeIndex] += luminosity[i];
-	temp_sed_npts[closeIndex]++;
-      }
-    }
+    // determine if the mapping the input SED to the requested wavelength grid will be 
+    // done by binning or interpolation
+    int mapping_bin;
+    mapping_bin = param_data.IValue("SED","sed_bin");
+    if (mapping_bin == -99) mapping_bin = 0;  
+    check_input_param("SED mapping_bin",mapping_bin,0,1);
 
-    // setup for the interpolation to get ride of zeros
-    // get the runinfo.wavelength in double form for interpol function
-    // put the luminosity in log space to make the interpolation better for rapidly changing seds
+    // needed for both mapping methods
     vector<double> run_wave;
-    vector<double> temp_sed_nozero;
-    vector<double> temp_sed_nozero_wave;
     for (i = 0; i < runinfo.wavelength.size(); i++) {
       run_wave.push_back(log10l(double(runinfo.wavelength[i])));
-//      run_wave.push_back(double(runinfo.wavelength[i]));
-      if (temp_sed_npts[i] > 0) {
-	temp_sed_nozero.push_back(log10l(double(temp_sed[i]/temp_sed_npts[i])));
-//	temp_sed_nozero.push_back(temp_sed[i]/temp_sed_npts[i]);
-	temp_sed_nozero_wave.push_back(log10l(runinfo.wavelength[i]));
-// 	temp_sed_nozero_wave.push_back(runinfo.wavelength[i]);
+    }
+
+    // now bin or interpolate
+    if (mapping_bin == 1) {
+      cout << "Binning in put SED" << endl;
 #ifdef DEBUG_GSP
-	cout << i << " ";
-	cout << log10l(double(temp_sed[i]/temp_sed_npts[i])) << " ";
-	cout << runinfo.wavelength[i] << " ";
-	cout << temp_sed_npts[i] << " ";
-	cout << endl;
+      cout << "starting SED binning..." << endl;
 #endif
+      // bin the input SED onto the model wavelength grid
+      // to ensure all the SED energy is used in the model
+      vector<float>::iterator closeIter;
+      vector<double> temp_sed;
+      vector<int> temp_sed_npts;
+      temp_sed.resize(runinfo.wavelength.size(),0.0);
+      temp_sed_npts.resize(runinfo.wavelength.size(),0);
+#ifdef DEBUG_GSP
+      cout << "starting SED binning loop..." << endl;
+#endif
+      for (i = 0; i < luminosity.size(); i++) {
+#ifdef DEBUG_GSP
+	cout << "i = " << i;
+	cout << " " << runinfo.wavelength.size() << endl;
+	cout << wavelength[i] << " ";
+	cout << runinfo.wavelength[0] << " ";
+	cout << runinfo.wavelength[runinfo.wavelength.size()-1] << endl;
+#endif
+	if ((wavelength[i] >= runinfo.wavelength[0]) && (wavelength[i] <= runinfo.wavelength[runinfo.wavelength.size()-1])) {
+	  closeIter = find_if(runinfo.wavelength.begin(),runinfo.wavelength.end(),bind2nd(greater_equal<float>(),static_cast<float>(wavelength[i])));
+#ifdef DEBUG_GSP
+	  cout << "closeIter done" << endl;
+#endif
+	  uint closeIndex = distance(runinfo.wavelength.begin(),closeIter);
+#ifdef DEBUG_GSP
+	  cout << i << " ";
+	  cout << wavelength[i] << " ";
+	  cout << runinfo.wavelength[closeIndex] << " "; 
+	  if (closeIndex > 0) {
+	    cout << (wavelength[i] - runinfo.wavelength[closeIndex-1]) << " ";
+	  } else {
+	    cout << wavelength[i] << " ";
+	  }
+	  cout << (runinfo.wavelength[closeIndex] - wavelength[i]) << " ";
+	  cout << endl;
+#endif
+	  if (closeIndex > 0) {
+	    if ((runinfo.wavelength[closeIndex] - wavelength[i]) > (wavelength[i] - runinfo.wavelength[closeIndex-1])) closeIndex--;
+	  }
+#ifdef DEBUG_GSP
+	  cout << i << " ";
+	  cout << wavelength[i] << " ";
+	  cout << runinfo.wavelength[closeIndex] << " "; 
+	  // 	cout << (wavelength[i] - runinfo.wavelength[closeIndex-1]) << " ";
+	  // 	cout << (runinfo.wavelength[closeIndex] - wavelength[i]) << " ";
+	  cout << endl;
+#endif
+	  temp_sed[closeIndex] += luminosity[i];
+	  temp_sed_npts[closeIndex]++;
+	}
       }
-    }
-
-    // extrapolate to the longest wavelength
-    if (runinfo.wavelength.back() > temp_sed_nozero_wave.back()) {
-      vector<double>::iterator y_iter = temp_sed_nozero.end() - 1;
-      vector<double>::iterator x_iter = temp_sed_nozero_wave.end() - 1;
-      //cout << *y_iter << "\t" << *(y_iter - 1) << endl;
-      //cout << *x_iter << "\t" << *(x_iter - 1) << endl;
-      //double x = runinfo.wavelength.back();
-      //double y = (*y_iter - *(y_iter - 1))/(log10l(*x_iter) - log10l(*(x_iter - 1)))*(log10l(x) - log10l(*x_iter)) + *y_iter;
-      double x = log10l(runinfo.wavelength.back());
-      double y = (*y_iter - *(y_iter - 1))/(*x_iter - *(x_iter - 1))*(x - *x_iter) + *y_iter;
-      //cout << x << "\t" << y << endl;
       
-      temp_sed_nozero.push_back(y);
-      temp_sed_nozero_wave.push_back(x);
+      // setup for the interpolation to get ride of zeros
+      // get the runinfo.wavelength in double form for interpol function
+      // put the luminosity in log space to make the interpolation better for rapidly changing seds
+      vector<double> temp_sed_nozero;
+      vector<double> temp_sed_nozero_wave;
+      for (i = 0; i < runinfo.wavelength.size(); i++) {
+	if (temp_sed_npts[i] > 0) {
+	  temp_sed_nozero.push_back(log10l(double(temp_sed[i]/temp_sed_npts[i])));
+	  temp_sed_nozero_wave.push_back(log10l(runinfo.wavelength[i]));
+#ifdef DEBUG_GSP
+	  cout << i << " ";
+	  cout << log10l(double(temp_sed[i]/temp_sed_npts[i])) << " ";
+	  cout << runinfo.wavelength[i] << " ";
+	  cout << temp_sed_npts[i] << " ";
+	  cout << endl;
+#endif
+	}
+      }
+
+      // extrapolate to the longest wavelength
+      if (runinfo.wavelength.back() > temp_sed_nozero_wave.back()) {
+	vector<double>::iterator y_iter = temp_sed_nozero.end() - 1;
+	vector<double>::iterator x_iter = temp_sed_nozero_wave.end() - 1;
+	//cout << *y_iter << "\t" << *(y_iter - 1) << endl;
+	//cout << *x_iter << "\t" << *(x_iter - 1) << endl;
+	//double x = runinfo.wavelength.back();
+	//double y = (*y_iter - *(y_iter - 1))/(log10l(*x_iter) - log10l(*(x_iter - 1)))*(log10l(x) - log10l(*x_iter)) + *y_iter;
+	double x = log10l(runinfo.wavelength.back());
+	double y = (*y_iter - *(y_iter - 1))/(*x_iter - *(x_iter - 1))*(x - *x_iter) + *y_iter;
+	//cout << x << "\t" << y << endl;
+	
+	temp_sed_nozero.push_back(y);
+	temp_sed_nozero_wave.push_back(x);
+      }
+
+      // interpolate SED onto wavelength grid
+      // numbers are power law coefficents for extrapolation on the left & right sides
+      runinfo.sed_lum = interpol(temp_sed_nozero, temp_sed_nozero_wave, run_wave,0,0);
+      //    runinfo.sed_lum = interpol(luminosity, wavelength, run_wave,2,-2);
+      
+    } else {
+      
+      // code to interpolate instead of rebin
+
+      vector<double> iwave_log;
+      vector<double> ised_log;
+      ised_log.resize(wavelength.size(),0.0);
+      iwave_log.resize(wavelength.size(),0);
+      for (i = 0; i < luminosity.size(); i++) {
+	iwave_log[i] = log10l(wavelength[i]);
+	ised_log[i] = log10l(luminosity[i]);
+      }
+      
+      runinfo.sed_lum = interpol(ised_log, iwave_log, run_wave,0,0);
     }
 
-    // interpolate SED onto wavelength grid
-    // numbers are power law coefficents for extrapolation on the left & right sides
-    runinfo.sed_lum = interpol(temp_sed_nozero, temp_sed_nozero_wave, run_wave,0,0);
-    //    runinfo.sed_lum = interpol(luminosity, wavelength, run_wave,2,-2);
-    
     // now un-log10 the luminosity 
     for (i = 0; i < runinfo.wavelength.size(); i++) {
-//      cout << i << " ";
-//      cout << runinfo.wavelength[i] << " ";
-//      cout << runinfo.sed_lum[i] << " ";
       runinfo.sed_lum[i] = pow(10.0,runinfo.sed_lum[i]);
-//      cout << runinfo.sed_lum[i] << endl;
-    }
+      }
 
-    //    exit(8);
   }    
 
   if (runinfo.do_global_output) {

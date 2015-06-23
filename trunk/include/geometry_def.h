@@ -110,6 +110,9 @@ struct geometry_struct {
   float tau_to_tau_ref;  // ratio of current tau to reference tau
   float wavelength;   // wavelenght of current tau
   float max_tau_per_cell;  // the maximum tau per cell (used in subdividing cells)
+  float max_tau_per_cell_x;  // the maximum tau per cell (used in subdividing cells)
+  float max_tau_per_cell_y;  // the maximum tau per cell (used in subdividing cells)
+  float max_tau_per_cell_z;  // the maximum tau per cell (used in subdividing cells)
   float filling_factor;  // filling factor of high density clumps;
   float density_ratio;   // density ratio of low/high clumps
   float clump_densities[2];  // densities of clumps in tau/pc

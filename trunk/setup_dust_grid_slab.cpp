@@ -6,6 +6,7 @@
 // KDG  8 May 2008 - fixed error in setting up the dust grid physical dimensions
 //                   for the case where the xy and z sizes are unequal
 // KDG 16 Jun 2008 - fixed max_grid_depth calculation
+// KDG 16 Jun 2015 - added reading of different values for x,y,z max cell tau
 // ======================================================================
 #include "setup_dust_grid_slab.h"
 //#define DEBUG_SDG
@@ -60,7 +61,26 @@ void setup_dust_grid_slab (ConfigFile& param_data,
 
   // maximum optical depth per cell (controls when a cell is subdivided)
   geometry.max_tau_per_cell = param_data.FValue("Geometry","max_tau_per_cell");
-  check_input_param("max_tau_per_cell",geometry.max_tau_per_cell,0.0,1e10);
+  // get if the max_tau_per_cell is going to be input for each dimension if it is the same for all 3
+  if (finite(geometry.max_tau_per_cell)) {
+    check_input_param("max_tau_per_cell",geometry.max_tau_per_cell,0.0,1e10);
+    geometry.max_tau_per_cell_x = geometry.max_tau_per_cell;
+    geometry.max_tau_per_cell_y = geometry.max_tau_per_cell;
+    geometry.max_tau_per_cell_z = geometry.max_tau_per_cell;
+  } else {
+    geometry.max_tau_per_cell_x = param_data.FValue("Geometry","max_tau_per_cell_x");
+    check_input_param("max_tau_per_cell_x",geometry.max_tau_per_cell_x,0.0,1e10);
+
+    geometry.max_tau_per_cell_y = param_data.FValue("Geometry","max_tau_per_cell_y");
+    check_input_param("max_tau_per_cell_y",geometry.max_tau_per_cell_y,0.0,1e10);
+
+    geometry.max_tau_per_cell_z = param_data.FValue("Geometry","max_tau_per_cell_z");
+    check_input_param("max_tau_per_cell_z",geometry.max_tau_per_cell_z,0.0,1e10);
+  }
+
+  // cout << geometry.max_tau_per_cell_x << " ";
+  // cout << geometry.max_tau_per_cell_y << " ";
+  // cout << geometry.max_tau_per_cell_z << endl;
 
   // filling factor of high density material
   geometry.filling_factor = param_data.FValue("Geometry","filling_factor");

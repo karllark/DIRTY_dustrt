@@ -7,7 +7,7 @@
 // 2009 May/KDG - added model scattering phase function
 // ======================================================================
 #include "get_dust_parameters.h"
-// #define DEBUG_GDP
+//#define DEBUG_GDP
 
 void get_dust_parameters (ConfigFile& param_data,
 			  GrainModel& CurGrainModel,

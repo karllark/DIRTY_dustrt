@@ -48,7 +48,6 @@ double stellar_weight_towards_observer (photon_data photon,
   int escape = 0;
   double tau_birth_to_obs = 0.0;
 
-
   // check that the direction to the observer will not force an
   // immediate exit from the grid, step back slightly to avoid this
   for (i = 0; i < 3; i++) {

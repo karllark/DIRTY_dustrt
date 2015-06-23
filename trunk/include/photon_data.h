@@ -25,6 +25,8 @@ struct photon_data {
 
   long number;  // photon number (nth photon)
   double first_tau;  // optical depth to the surface along the birth direction of the photon
+  double prev_tau_surface;  // optical depth to the surface along the n-1 scattering direction
+                            // need due to the addition of continuous absorption
   double target_tau; // optical depth to the next scattering
 
   // needed to do continous absorption (m,i,j,k)

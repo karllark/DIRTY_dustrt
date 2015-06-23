@@ -3,9 +3,10 @@
 function blackbody_dirtyv2,wave,temp
 
 ; compute B(nu,T)
-h = 6.6260693d-34  ; J s
+;h = 6.6260693d-34  ; J s
+h = 6.62606957d-34
 c = 2.99792458d8   ; m/s
-k = 1.380650d-23  ; J/K
+k = 1.3806488d-23  ; J/K
 ;h = 6.63d-34  ; J s
 ;c = 2.998d8   ; m/s
 ;k = 1.38d-23  ; J/K
