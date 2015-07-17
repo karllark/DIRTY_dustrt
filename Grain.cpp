@@ -204,8 +204,8 @@ void Grain::MakeGrain(string const & fOpticalConstants,
     if (a_min != -1) { // been set...
       // Stick in the lower limit if it is within defined bounds. 
       // Otherwise, keep lower bound as is. 
-      //if (a_min > size[0])
-      //	size.insert(size.begin(),a_min); 
+      if (a_min > size[0])
+      	size.insert(size.begin(),a_min); 
       //for (int _sz=0;_sz<size.size();++_sz) cout << _sz << " " << size[_sz] << endl; 
       // Remove everything ouside of a_min
       size.erase(remove_if(size.begin(),size.end(), 
@@ -219,8 +219,8 @@ void Grain::MakeGrain(string const & fOpticalConstants,
     if (a_max != -1) { // been set...
       // Stick in the upper limit is it is within defined bounds
       // Otherwise, keep upper bound as is.
-      //if (a_max < size[size.size()-1]) 
-      //	size.push_back(a_max); 
+      if (a_max < size[size.size()-1]) 
+      	size.push_back(a_max); 
       size.erase(remove_if(size.begin(),size.end(), 
 			   bind2nd(greater<float>(),a_max)), 
 		 size.end());
