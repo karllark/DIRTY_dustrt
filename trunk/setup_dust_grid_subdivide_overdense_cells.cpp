@@ -68,24 +68,38 @@ void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
 	      subgrid.index_dim[2] = subgrid.index_dim[0];
 	    } else {
 	      if (x_tau > geometry.max_tau_per_cell_x) 
-		subgrid.index_dim[0] = int(x_tau/geometry.max_tau_per_cell_x) + 1;
+		subgrid.index_dim[0] = int(x_tau/float(geometry.max_tau_per_cell_x)) + 1;
+	      else
+		subgrid.index_dim[0] = 1;
 	      if (y_tau > geometry.max_tau_per_cell_y) 
-		subgrid.index_dim[1] = int(y_tau/geometry.max_tau_per_cell_y) + 1;
+		subgrid.index_dim[1] = int(y_tau/float(geometry.max_tau_per_cell_y)) + 1;
+	      else
+		subgrid.index_dim[1] = 1;
 	      if (z_tau > geometry.max_tau_per_cell_z) 
-		subgrid.index_dim[2] = int(z_tau/geometry.max_tau_per_cell_z) + 1;
+		subgrid.index_dim[2] = int(z_tau/float(geometry.max_tau_per_cell_z)) + 1;
+	      else
+		subgrid.index_dim[2] = 1;
 
-	      // cout << subgrid.index_dim[0] << " ";
-	      // cout << subgrid.index_dim[1] << " ";
-	      // cout << subgrid.index_dim[2] << endl;
+//  	      cout << x_tau/float(geometry.max_tau_per_cell_x) << " ";
+// 	      cout << y_tau/float(geometry.max_tau_per_cell_y) << " ";
+// 	      cout << z_tau/float(geometry.max_tau_per_cell_z) << endl;
 
-	      // cout << x_tau << " ";
-	      // cout << y_tau << " ";
-	      // cout << z_tau << endl;
+//  	      cout << int(x_tau/float(geometry.max_tau_per_cell_x)) << " ";
+// 	      cout << int(y_tau/float(geometry.max_tau_per_cell_y)) << " ";
+// 	      cout << int(z_tau/float(geometry.max_tau_per_cell_z)) << endl;
 
-	      // cout << geometry.max_tau_per_cell_x << " ";
-	      // cout << geometry.max_tau_per_cell_y << " ";
-	      // cout << geometry.max_tau_per_cell_z << endl;
-	      // exit(8);
+// 	      cout << subgrid.index_dim[0] << " ";
+// 	      cout << subgrid.index_dim[1] << " ";
+// 	      cout << subgrid.index_dim[2] << endl;
+
+// 	      cout << x_tau << " ";
+// 	      cout << y_tau << " ";
+// 	      cout << z_tau << endl;
+
+// 	      cout << geometry.max_tau_per_cell_x << " ";
+// 	      cout << geometry.max_tau_per_cell_y << " ";
+// 	      cout << geometry.max_tau_per_cell_z << endl;
+// 	      exit(8);
 	    }
 	    
 	    vector<double> x_subpos(subgrid.index_dim[0]+1);
