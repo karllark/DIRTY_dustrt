@@ -144,8 +144,8 @@ void output_results (output_struct& output,
 
     if (runinfo.do_image_output) {
 
-      NumUtils::Matrix<float> total_weight_xy;
-      NumUtils::Matrix<float> total_weight_xy_x2;
+      NumUtils::Matrix<double> total_weight_xy;
+      NumUtils::Matrix<double> total_weight_xy_x2;
       total_weight_xy.MSize(output.image_size[0],output.image_size[1]);
       total_weight_xy_x2.MSize(output.image_size[0],output.image_size[1]);
 
@@ -351,67 +351,67 @@ void output_results (output_struct& output,
       check_fits_io(status,"fits_write_key : output results (run details 1.0)");
       
       // create and output the total intensity image
-      fits_create_img(out_ptr, -32, 2, output.image_size, &status);
+      fits_create_img(out_ptr, DOUBLE_IMG, 2, output.image_size, &status);
       check_fits_io(status,"fits_create_image : output_results (total intensity/luminosity)");
       output_2d_info(out_ptr, "TOT_SBoI", "Total I/L");
       
-      fits_write_img(out_ptr, TFLOAT, 1, output.image_size[0]*output.image_size[1], 
+      fits_write_img(out_ptr, TDOUBLE, 1, output.image_size[0]*output.image_size[1], 
 		     &total_weight_xy[0], &status);
       
       // create and output the total intensity uncertainty image
-      fits_create_img(out_ptr, -32, 2, output.image_size, &status);
+      fits_create_img(out_ptr, DOUBLE_IMG, 2, output.image_size, &status);
       check_fits_io(status,"fits_create_image : output_results (total intensity unc/luminosity)");
       output_2d_info(out_ptr, "TOT_SBoI_unc", "Total unc I/L");
       
-      fits_write_img(out_ptr, TFLOAT, 1, output.image_size[0]*output.image_size[1], 
+      fits_write_img(out_ptr, TDOUBLE, 1, output.image_size[0]*output.image_size[1], 
 		     &total_weight_xy_x2[0], &status);
       
       // create and output the scattered intensity image
-      fits_create_img(out_ptr, -32, 2, output.image_size, &status);
+      fits_create_img(out_ptr, DOUBLE_IMG, 2, output.image_size, &status);
       check_fits_io(status,"fits_create_image : output_results (scattered intensity/luminosity)");
       output_2d_info(out_ptr, "SCAT_SBoI", "Scattered I/L");
       
-      fits_write_img(out_ptr, TFLOAT, 1, output.image_size[0]*output.image_size[1], 
+      fits_write_img(out_ptr, TDOUBLE, 1, output.image_size[0]*output.image_size[1], 
 		     &output.outputs[i].scattered_weight_xy[0], &status);
       
       // create and output the scattered intensity uncertainty image
-      fits_create_img(out_ptr, -32, 2, output.image_size, &status);
+      fits_create_img(out_ptr, DOUBLE_IMG, 2, output.image_size, &status);
       check_fits_io(status,"fits_create_image : output_results (scattered intensity unc/luminosity)");
       output_2d_info(out_ptr, "SCAT_SBoI_unc", "Scattered unc I/L");
       
-      fits_write_img(out_ptr, TFLOAT, 1, output.image_size[0]*output.image_size[1], 
+      fits_write_img(out_ptr, TDOUBLE, 1, output.image_size[0]*output.image_size[1], 
 		     &output.outputs[i].scattered_weight_xy_x2[0], &status);
       
       // create and output the stellar intensity image
-      fits_create_img(out_ptr, -32, 2, output.image_size, &status);
+      fits_create_img(out_ptr, DOUBLE_IMG, 2, output.image_size, &status);
       check_fits_io(status,"fits_create_image : output_results (stellar intensity/luminosity)");
       output_2d_info(out_ptr, "STEL_SBoI", "Stellar I/L");
       
-      fits_write_img(out_ptr, TFLOAT, 1, output.image_size[0]*output.image_size[1], 
+      fits_write_img(out_ptr, TDOUBLE, 1, output.image_size[0]*output.image_size[1], 
 		     &output.outputs[i].stellar_weight_xy[0], &status);
       
       // create and output the scattered intensity uncertainty image
-      fits_create_img(out_ptr, -32, 2, output.image_size, &status);
+      fits_create_img(out_ptr, DOUBLE_IMG, 2, output.image_size, &status);
       check_fits_io(status,"fits_create_image : output_results (stellar intensity unc/luminosity)");
       output_2d_info(out_ptr, "STEL_SBoI_unc", "Stellar unc I/L");
       
-      fits_write_img(out_ptr, TFLOAT, 1, output.image_size[0]*output.image_size[1], 
+      fits_write_img(out_ptr, TDOUBLE, 1, output.image_size[0]*output.image_size[1], 
 		     &output.outputs[i].stellar_weight_xy_x2[0], &status);
       
       // create and output the number of stellar photons image
-      fits_create_img(out_ptr, -32, 2, output.image_size, &status);
+      fits_create_img(out_ptr, DOUBLE_IMG, 2, output.image_size, &status);
       check_fits_io(status,"fits_create_image : output_results (number of stellar photons)");
       output_2d_info(out_ptr, "N_STEL_PHOT", "# stellar photons");
 
-      fits_write_img(out_ptr, TFLOAT, 1, output.image_size[0]*output.image_size[1], 
+      fits_write_img(out_ptr, TDOUBLE, 1, output.image_size[0]*output.image_size[1], 
 		     &output.outputs[i].num_stellar_photons_xy[0], &status);
 
       // create and output the number of scattered photons image
-      fits_create_img(out_ptr, -32, 2, output.image_size, &status);
+      fits_create_img(out_ptr, DOUBLE_IMG, 2, output.image_size, &status);
       check_fits_io(status,"fits_create_image : output_results (number of scattered photons)");
       output_2d_info(out_ptr, "N_SCAT_PHOT", "# scattered photons");
 
-      fits_write_img(out_ptr, TFLOAT, 1, output.image_size[0]*output.image_size[1], 
+      fits_write_img(out_ptr, TDOUBLE, 1, output.image_size[0]*output.image_size[1], 
 		     &output.outputs[i].num_photons_xy[0], &status);
 
       // close FITS File

@@ -119,6 +119,7 @@ struct geometry_struct {
   float solid_angle;  // solid angle for scattering probabilities
 
   long n_photons;  // number of photons to run
+  long max_num_scat;  // maximum number of scatterings
 };
 
 #endif

@@ -14,8 +14,8 @@
 struct one_output {
   // number of photons
   double total_num_photons; // total
-  NumUtils::Matrix<float> num_stellar_photons_xy; // photons per image pixel
-  NumUtils::Matrix<float> num_photons_xy; // scattered photons per image pixel
+  NumUtils::Matrix<double> num_stellar_photons_xy; // photons per image pixel
+  NumUtils::Matrix<double> num_photons_xy; // scattered photons per image pixel
 
   // number of scattered photons
   double total_num_scattered_photons; // total
@@ -23,14 +23,14 @@ struct one_output {
   // stellar photons
   double total_stellar_weight; // total
   double total_stellar_weight_x2; // total squared sum (for unc calc)
-  NumUtils::Matrix<float> stellar_weight_xy; // weight per image pixel
-  NumUtils::Matrix<float> stellar_weight_xy_x2; // squared sum weight per image pixel
+  NumUtils::Matrix<double> stellar_weight_xy; // weight per image pixel
+  NumUtils::Matrix<double> stellar_weight_xy_x2; // squared sum weight per image pixel
 
   // scattered photons
   double total_scattered_weight; // total
   double total_scattered_weight_x2; // total squared sum (for unc calc)
-  NumUtils::Matrix<float> scattered_weight_xy; // weight per image pixel
-  NumUtils::Matrix<float> scattered_weight_xy_x2; // squared sum weight per image pixel
+  NumUtils::Matrix<double> scattered_weight_xy; // weight per image pixel
+  NumUtils::Matrix<double> scattered_weight_xy_x2; // squared sum weight per image pixel
 
   // other
   double ave_first_tau; // average of tau (starts as a sum)

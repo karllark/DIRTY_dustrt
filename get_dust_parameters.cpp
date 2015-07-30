@@ -192,7 +192,7 @@ void get_dust_parameters (ConfigFile& param_data,
 //     cout << CurGrainModel.getTau(0.1*(Constant::UM_CM))/norm_tau << endl;
 //     exit(8);
 //     cout << runinfo.norm_tau_wave << " ";
-    cout << norm_tau << endl;
+    // cout << norm_tau << endl;
 
     //norm_tau = 4.307e-22;  // according to Karl M. via phone 23 Jun 2015
 
@@ -200,18 +200,18 @@ void get_dust_parameters (ConfigFile& param_data,
 
     int i;
 #ifdef DEBUG_GDP
-      cout << "wavelength" << " ";
-      cout << "tau/tau_norm" << " ";
-      cout << "albedo" << " ";
-      cout << "g" << endl;
+    cout << "wavelength" << " ";
+    cout << "tau/tau_norm" << " ";
+    cout << "albedo" << " ";
+    cout << "g" << endl;
 #endif
     for (i = 0; i < runinfo.n_waves; i++) {
-      cout << runinfo.wavelength[i]*Constant::CM_UM << " ";
-      cout << runinfo.tau_to_tau_ref[i] << " ";
+    //   cout << runinfo.wavelength[i]*Constant::CM_UM << " ";
+    //   cout << runinfo.tau_to_tau_ref[i] << " ";
       runinfo.tau_to_tau_ref[i] /= norm_tau;
-      cout << runinfo.tau_to_tau_ref[i] << " ";
-      cout << runinfo.albedo[i] << " ";
-      cout << runinfo.g[i] << endl;
+    //   cout << runinfo.tau_to_tau_ref[i] << " ";
+    //   cout << runinfo.albedo[i] << " ";
+    //   cout << runinfo.g[i] << endl;
 #ifdef DEBUG_GDP
       cout << runinfo.wavelength[i]*Constant::CM_UM << " ";
       cout << runinfo.tau_to_tau_ref[i] << " ";
