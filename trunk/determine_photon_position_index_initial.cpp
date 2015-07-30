@@ -20,6 +20,8 @@ void determine_photon_position_index_initial (geometry_struct& geometry,
   photon.grid_number[0] = 0;
   int cur_grid_num = 0;
   int tmp_save_pindex = -1;
+
+  int k1,k2,mid_k;
   while (not done) {
     int i = 0;
     for (i = 0; i < 3; i++) {
@@ -30,11 +32,28 @@ void determine_photon_position_index_initial (geometry_struct& geometry,
 	cout << "grid min = " << geometry.grids[cur_grid_num].positions[i][0] << endl;
 	cout << "grid size = " << geometry.grids[cur_grid_num].phys_cube_size[i] << endl;
       }
-#endif      
+#endif  
 
-      photon.position_index[k][i] = int((photon.position[i] - geometry.grids[cur_grid_num].positions[i][0])/
-					geometry.grids[cur_grid_num].phys_cube_size[i]);
+      // binary search for index of position in grid
+      k1 = 0;
+      k2 = geometry.grids[cur_grid_num].index_dim[i];
+      // cout << k1 << " " << k2 << endl;
+      while ((k2 - k1) > 1) {
+	mid_k = int(0.5*(k1 + k2));
+	if (photon.position[i] < geometry.grids[cur_grid_num].positions[i][mid_k]) 
+	  k2 = mid_k;
+	else
+	  k1 = mid_k;
+	// cout << k1 << " " << k2 << endl;
+      }
+      photon.position_index[k][i] = k1;
+      // cout << ">>> " << k1 << endl;
+      
+      // photon.position_index[k][i] = int((photon.position[i] - geometry.grids[cur_grid_num].positions[i][0])/
+      // 					geometry.grids[cur_grid_num].phys_cube_size[i]);
       tmp_save_pindex = photon.position_index[k][i];
+
+
       // make sure that photon is headed into the cell indexed (edges need special treatment)
       if ((photon.position[i] == geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]]) &&
 	  (photon.dir_cosines[i] <= 0.0))
@@ -144,12 +163,13 @@ void determine_photon_position_index_initial (geometry_struct& geometry,
 	}
       }
       
-//       cout << photon.position_index[k][i] << " ";
-//       cout << geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]] << " ";
-//       cout << photon.position[i] << " ";
-//       cout << geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1] << endl;
+      // cout << "*** ";
+      // cout << photon.position_index[k][i] << " ";
+      // cout << geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]] << " ";
+      // cout << photon.position[i] << " ";
+      // cout << geometry.grids[cur_grid_num].positions[i][photon.position_index[k][i]+1] << endl;
     }
-
+    // cout << endl;
 
 
     if (geometry.grids[cur_grid_num].grid(photon.position_index[k][0],photon.position_index[k][1],photon.position_index[k][2]).dust_tau_per_pc <= -1.0) {

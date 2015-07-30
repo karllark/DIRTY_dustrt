@@ -36,7 +36,7 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
 	  if (runinfo.emitted_ere_lum[0][i] < 1e-3*runinfo.out_sed_lum[0][i]*runinfo.sed_lum[i]) do_rt = 0;
 	  break;
 	case DE_RT:
-	  if (runinfo.emitted_lum[0][i] < 1e-10*runinfo.out_sed_lum[0][i]*runinfo.sed_lum[i]) do_rt = 0;
+	  if (runinfo.emitted_lum[0][i] < 1e-20*runinfo.out_sed_lum[0][i]*runinfo.sed_lum[i]) do_rt = 0;
 	  break;
 	}
     }

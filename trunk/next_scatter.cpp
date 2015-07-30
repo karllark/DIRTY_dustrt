@@ -55,7 +55,7 @@ int next_scatter (geometry_struct& geometry,
     escape = 1;
 
   // check if the photon has scattered enough and there is just no significant weight left
-  if (photon.num_scat > MAX_NUM_SCAT)
+  if (photon.num_scat > geometry.max_num_scat)
     escape = 1;
 
 #ifdef DEBUG_NS

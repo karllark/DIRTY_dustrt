@@ -24,6 +24,8 @@ void determine_photon_position_index (geometry_struct& geometry,
   int done = 0;
   int k = photon.current_grid_num;
   int cur_grid_num = photon.grid_number[k];
+
+  int k1,k2,mid_k;
   while (not done) {
     int i = 0;
 #ifdef DEBUG_DPPI
@@ -34,8 +36,22 @@ void determine_photon_position_index (geometry_struct& geometry,
 #endif
     for (i = 0; i < 3; i++) {
       // now find the index
-      photon.position_index[k][i] = int((photon.position[i] - geometry.grids[cur_grid_num].positions[i][0])/
-					geometry.grids[cur_grid_num].phys_cube_size[i]);
+      // binary search for index of position in grid
+      k1 = 0;
+      k2 = geometry.grids[cur_grid_num].index_dim[i];
+      // cout << k1 << " " << k2 << endl;
+      while ((k2 - k1) > 1) {
+	mid_k = int(0.5*(k1 + k2));
+	if (photon.position[i] < geometry.grids[cur_grid_num].positions[i][mid_k]) 
+	  k2 = mid_k;
+	else
+	  k1 = mid_k;
+	// cout << k1 << " " << k2 << endl;
+      }
+      photon.position_index[k][i] = k1;
+      //photon.position_index[k][i] = int((photon.position[i] - geometry.grids[cur_grid_num].positions[i][0])/
+      //                                 geometry.grids[cur_grid_num].phys_cube_size[i]);
+
       // take care of case when we are at the edge of the grid in the maximum sense
       if (photon.position_index[k][i] == geometry.grids[cur_grid_num].index_dim[i]) photon.position_index[k][i]--;
 #ifdef DEBUG_DPPI

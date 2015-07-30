@@ -111,7 +111,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
       for (j = 0; j < geometry.grids[m].index_dim[1]; j++) {
 
-	if (runinfo.verbose >= 1) {
+	if (runinfo.verbose > 1) {
 	  cout << "working on dust emission grid (m,k,j) = " << m << " " << k << " " << j;
 	  cout.flush();
 	}
@@ -328,7 +328,8 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 // 	    cout << "not enough energy (min) = " << tot_abs_energy << " (" << min_enough_energy << ")" << endl;
 	  }
 	}
-	cout << "; " << cur_plane_good << endl;
+	if (runinfo.verbose > 1)
+	  cout << "; " << cur_plane_good << endl;
       }
     
   }

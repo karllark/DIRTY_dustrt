@@ -8,6 +8,8 @@
 #include "check_input_param.h"
 #include "GrainModel.h"   
 
+#define MAX_NUM_SCAT 50
+
 //**********************************************************************
 // external function definitions
 

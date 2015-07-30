@@ -60,11 +60,12 @@ void check_de_energy_conservation (runinfo_struct& runinfo,
 
   cout << "fabs(1.0 - emitted_ratio) = " << fabs(1.0 - emitted_ratio) << endl;
   cout << "target = " << runinfo.energy_conserve_target << endl;
-  if (fabs(1.0 - emitted_ratio) <= runinfo.energy_conserve_target) 
+  if (runinfo.energy_conserve_target >= 0.99) 
     iter_done = 1;
-  else {
+  else if (fabs(1.0 - emitted_ratio) <= runinfo.energy_conserve_target) 
+    iter_done = 1;
+  else
     cout << "Another interation required (ratio = " << emitted_ratio << ")" << endl;
-  }
 
   runinfo.total_emitted_energy = new_total_emit;
 

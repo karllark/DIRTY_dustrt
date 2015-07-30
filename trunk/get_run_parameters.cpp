@@ -27,6 +27,10 @@ void get_run_parameters (ConfigFile& param_data,
   geometry.n_photons = long(param_data.DValue("Run","num_photons"));
   check_input_param("num_photons",geometry.n_photons,1,1e10);
 
+  geometry.max_num_scat = long(param_data.IValue("Run","max_num_scat"));
+  if (geometry.max_num_scat == -99) geometry.max_num_scat = MAX_NUM_SCAT;  // set to default
+  check_input_param("max_num_scat",geometry.max_num_scat,1,1000);
+
   int image_size = param_data.IValue("Run","output_image_size");
   check_input_param("output_image_size",image_size,1,50000);
   output.image_size[0] = image_size;
