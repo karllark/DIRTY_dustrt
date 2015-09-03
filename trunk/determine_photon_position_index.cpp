@@ -93,7 +93,7 @@ void determine_photon_position_index (geometry_struct& geometry,
 	int not_ok = 0;
 	if (photon.position[i] < geometry.grids[cur_grid_num].positions[i][0]) {
 	  float frac_miss = (geometry.grids[cur_grid_num].positions[i][0] - photon.position[i])/
-	    geometry.grids[cur_grid_num].phys_cube_size[k];
+	    (geometry.grids[cur_grid_num].positions[i][1] - geometry.grids[cur_grid_num].positions[i][0]);
 	  cout << "frac_miss-- = " << frac_miss << endl;
 	  if (frac_miss < ROUNDOFF_ERR_INDEX)
 	    photon.position[i] = geometry.grids[cur_grid_num].positions[i][0];
@@ -102,7 +102,8 @@ void determine_photon_position_index (geometry_struct& geometry,
 	    not_ok = 1;
 	} else if (photon.position[i] > geometry.grids[cur_grid_num].positions[i][geometry.grids[cur_grid_num].index_dim[i]]) {
 	  float frac_miss = (photon.position[i] - geometry.grids[cur_grid_num].positions[i][geometry.grids[cur_grid_num].index_dim[i]])/
-	    geometry.grids[cur_grid_num].phys_cube_size[k];
+	    (geometry.grids[cur_grid_num].positions[i][geometry.grids[cur_grid_num].index_dim[i]] -
+	     geometry.grids[cur_grid_num].positions[i][geometry.grids[cur_grid_num].index_dim[i]-1]);
 	  cout << "frac_miss++ = " << frac_miss << endl;
 	  if (frac_miss < ROUNDOFF_ERR_INDEX)
 	    photon.position[i] = geometry.grids[cur_grid_num].positions[i][geometry.grids[cur_grid_num].index_dim[i]];
@@ -123,11 +124,11 @@ void determine_photon_position_index (geometry_struct& geometry,
 	  cout << "cur_grid_num = " << cur_grid_num << endl;
 	  cout << "min/max of grid = " << geometry.grids[cur_grid_num].positions[i][0] << " ";
 	  cout << geometry.grids[cur_grid_num].positions[i][geometry.grids[cur_grid_num].index_dim[i]] << endl;
-	  cout << "size of cube [pc] = " << geometry.grids[cur_grid_num].phys_cube_size[i] << endl;
-	  cout << "proposed index = " << int((photon.position[i] - geometry.grids[cur_grid_num].positions[i][0])/
-					     geometry.grids[cur_grid_num].phys_cube_size[i]) << endl;
-	  cout << "real value of pindex = " << (photon.position[i] - geometry.grids[cur_grid_num].positions[i][0])/
-	    geometry.grids[cur_grid_num].phys_cube_size[i] << endl;
+	  //	  cout << "size of cube [pc] = " << geometry.grids[cur_grid_num].phys_cube_size[i] << endl;
+	  // cout << "proposed index = " << int((photon.position[i] - geometry.grids[cur_grid_num].positions[i][0])/
+	  // 				     geometry.grids[cur_grid_num].phys_cube_size[i]) << endl;
+	  // cout << "real value of pindex = " << (photon.position[i] - geometry.grids[cur_grid_num].positions[i][0])/
+	  //   geometry.grids[cur_grid_num].phys_cube_size[i] << endl;
 	  cout << "out of a possible " << geometry.grids[cur_grid_num].index_dim[i] << endl;
 	  cout << "out of a possible2 " << geometry.grids[cur_grid_num].positions[i].size() << endl;
 	  int parent_grid_num = geometry.grids[cur_grid_num].parent_grid_num;

@@ -11,6 +11,7 @@
  * http://dirty.as.arizona.edu/twiki/bin/view/DIRTY/ContinuousAbsorption
  *
  * 2012 Apr/KHL - written
+ * 2015 Aug/KDG - cube size updated to allow for non-uniform grid spacings
  */
 #include "continuous_absorption.h"
 #define DEBUG_CONT_ABS
@@ -31,6 +32,7 @@ void deposit_energy (const photon_data& dummy_photon,
   double prob_entering = 1.;
 
   for (int i = 0; i < dummy_photon.path_cur_cells; i++) {
+    cout << i << endl;
     // find the absorbed weight
     double tau_leaving = tau_entering + dummy_photon.path_tau[i];
     double prob_leaving = exp(-tau_leaving);
@@ -70,7 +72,8 @@ void move_photon (photon_data& photon,
     bool b2 = photon.position[j] > current_grid.positions[j][dummy_photon.path_pos_index[j+1][0] + 1];
     if (b1 || b2) {
       double correct_pos = current_grid.positions[j][dummy_photon.path_pos_index[j+1][0] + ((b1)?0:1)];
-      double cube_size = current_grid.phys_cube_size[photon.current_grid_num];
+      double cube_size = current_grid.positions[j][dummy_photon.path_pos_index[j+1][0] + ((b1)?0:1) + 1] -
+	current_grid.positions[j][dummy_photon.path_pos_index[j+1][0] + ((b1)?0:1)];
       double frac_miss = (photon.position[j] - correct_pos)/cube_size;
       cout << "move_photon(): photon #" << photon.number << ":" << photon.num_scat << " not in orig cell, frac_miss = " << frac_miss << endl;
       // quit if frac_miss is too big
@@ -174,7 +177,8 @@ void move_photon (photon_data& photon,
           bool b2 = photon.position[j] > current_grid.positions[j][position_index[j] + 1];
           if (b1 || b2) {
             double correct_pos = current_grid.positions[j][position_index[j] + ((b1)?0:1)];
-            double cube_size = current_grid.phys_cube_size[k];
+	    double cube_size = current_grid.positions[j][position_index[j] + ((b1)?0:1) + 1] -
+	      current_grid.positions[j][position_index[j] + ((b1)?0:1)];
             double frac_miss = (photon.position[j] - correct_pos)/cube_size;
             cout << "move_photon(): photon #" << photon.number << ":" << photon.num_scat << " not in dest cell, frac_miss = " << frac_miss << endl;
             // quit if frac_miss is too big

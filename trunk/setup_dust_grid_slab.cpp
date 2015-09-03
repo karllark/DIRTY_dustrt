@@ -153,9 +153,9 @@ void setup_dust_grid_slab (ConfigFile& param_data,
   main_grid.phys_grid_size[2] = size_z;
 
   // give the size of the cubes
-  main_grid.phys_cube_size[0] = main_grid.phys_grid_size[0]/main_grid.index_dim[0];
-  main_grid.phys_cube_size[1] = main_grid.phys_grid_size[1]/main_grid.index_dim[1];
-  main_grid.phys_cube_size[2] = main_grid.phys_grid_size[2]/main_grid.index_dim[2];
+  // main_grid.phys_cube_size[0] = main_grid.phys_grid_size[0]/main_grid.index_dim[0];
+  // main_grid.phys_cube_size[1] = main_grid.phys_grid_size[1]/main_grid.index_dim[1];
+  // main_grid.phys_cube_size[2] = main_grid.phys_grid_size[2]/main_grid.index_dim[2];
 
   // allocate main grid
   main_grid.grid.CSize(main_grid.index_dim[0],main_grid.index_dim[1],main_grid.index_dim[2]);

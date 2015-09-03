@@ -1,6 +1,6 @@
 // ======================================================================
-// set up the general properties of the dust grid and call the right subroutine
-// depending on the type of geometry
+// set up the general properties of the dust grid and call the right
+// subroutine depending on the type of geometry
 //
 // 30 Jun 2006 KDG - modified to put spherical portion in seperate function
 // 21 Nov 2006 KDG - added diffuse source option

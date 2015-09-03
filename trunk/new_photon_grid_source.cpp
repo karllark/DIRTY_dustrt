@@ -16,7 +16,7 @@ struct grid_comparator: public std::binary_function<one_grid, double, bool>
   grid_comparator(int wave_index): x(wave_index) {}
   inline bool operator()(one_grid &grid, double value) const
   {
-    return grid.grid.back().emitted_energy[0][x] < value;
+    return grid.grid.back().emitted_energy_weighted[x] < value;
   }
 };
 
@@ -27,10 +27,33 @@ struct cell_comparator: public std::binary_function<grid_cell, double, bool>
   cell_comparator(int wave_index): x(wave_index) {}
   inline bool operator()(grid_cell &cell, double value) const
   {
-    return cell.emitted_energy[0][x] < value;
+    return cell.emitted_energy_weighted[x] < value;
   }
 };
 
+// function object for searching grid layer according to the emitted_energy
+struct grid_comparator_uniform: public std::binary_function<one_grid, double, bool>
+{
+  int x;
+  grid_comparator_uniform(int wave_index): x(wave_index) {}
+  inline bool operator()(one_grid &grid, double value) const
+  {
+    return grid.grid.back().emitted_energy_uniform[x] < value;
+  }
+};
+
+// function object for searching grid cell according to the emitted_energy
+struct cell_comparator_uniform: public std::binary_function<grid_cell, double, bool>
+{
+  int x;
+  cell_comparator_uniform(int wave_index): x(wave_index) {}
+  inline bool operator()(grid_cell &cell, double value) const
+  {
+    return cell.emitted_energy_uniform[x] < value;
+  }
+};
+
+// full procedure
 void new_photon_grid_source (photon_data& photon,
 			     geometry_struct& geometry,
 			     runinfo_struct& runinfo,
@@ -39,7 +62,6 @@ void new_photon_grid_source (photon_data& photon,
 
 {
   // setup the weights
-  photon.stellar_weight = 1.0;
   photon.scat_weight = 0.0;
 
   // initialize statistics variables
@@ -65,24 +87,56 @@ void new_photon_grid_source (photon_data& photon,
   double ran_val = random_obj.random_num();
   int grid_num = -1;
   int x = geometry.wave_index;
+  int x_val, y_val, z_val;
 
-  // check which grid are we in
-  vector<one_grid>::iterator selected_grid;
-  if (ran_val <= geometry.grids[0].grid.back().emitted_energy[0][x]) {
-    // dedicated test for the main grid because very often we end up here
-    selected_grid = geometry.grids.begin();
-    grid_num = 0;
-  } else {
-    // binary search, O(N) => O(lnN)
-    selected_grid = lower_bound(geometry.grids.begin() + 1, geometry.grids.end(), ran_val, grid_comparator(x));
-    grid_num = selected_grid - geometry.grids.begin();
+  if ((photon.number % 2) == 0) { // even photons sample radiation field
+//     cout << "radfield ";
+    // check which grid are we in
+    vector<one_grid>::iterator selected_grid;
+    if (ran_val <= geometry.grids[0].grid.back().emitted_energy_weighted[x]) {
+      // dedicated test for the main grid because very often we end up here
+      selected_grid = geometry.grids.begin();
+      grid_num = 0;
+    } else {
+      // binary search, O(N) => O(lnN)
+      selected_grid = lower_bound(geometry.grids.begin() + 1, geometry.grids.end(), ran_val, grid_comparator(x));
+      grid_num = selected_grid - geometry.grids.begin();
+    }
+
+    // use binary search to check which cell are we in
+    NumUtils::Cube<grid_cell>::iterator selected_cell = lower_bound(selected_grid->grid.begin(), selected_grid->grid.end(), ran_val, cell_comparator(x));
+    int cell_num = selected_cell - selected_grid->grid.begin();
+    selected_grid->grid.get_xyz(cell_num, x_val, y_val, z_val);
+
+    // rad field sampling gets a weight of 1 as it is sampling the radiation field "correctly"
+    photon.stellar_weight = 1.0;
+  } else { // odd photons uniformly sample the grid    
+//     cout << "uniform ";
+    // check which grid are we in
+    vector<one_grid>::iterator selected_grid;
+    if (ran_val <= geometry.grids[0].grid.back().emitted_energy_uniform[x]) {
+      // dedicated test for the main grid because very often we end up here
+      selected_grid = geometry.grids.begin();
+      grid_num = 0;
+    } else {
+      // binary search, O(N) => O(lnN)
+      selected_grid = lower_bound(geometry.grids.begin() + 1, geometry.grids.end(), ran_val, grid_comparator_uniform(x));
+      grid_num = selected_grid - geometry.grids.begin();
+    }
+
+    // use binary search to check which cell are we in
+    NumUtils::Cube<grid_cell>::iterator selected_cell = lower_bound(selected_grid->grid.begin(), selected_grid->grid.end(), ran_val, cell_comparator_uniform(x));
+    int cell_num = selected_cell - selected_grid->grid.begin();
+    selected_grid->grid.get_xyz(cell_num, x_val, y_val, z_val);
+
+    // uniform sampling gets a weight based on the fraction of the total emitted energy (correcting for uniform sampling)
+    photon.stellar_weight = geometry.n_photons*geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy[0][x]/runinfo.emitted_lum[0][x];
   }
 
-  // use binary search to check which cell are we in
-  NumUtils::Cube<grid_cell>::iterator selected_cell = lower_bound(selected_grid->grid.begin(), selected_grid->grid.end(), ran_val, cell_comparator(x));
-  int cell_num = selected_cell - selected_grid->grid.begin();
-  int x_val, y_val, z_val;
-  selected_grid->grid.get_xyz(cell_num, x_val, y_val, z_val);
+//   cout << geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy[0][x] << " ";
+//   cout << geometry.n_photons*geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy[0][x]/runinfo.emitted_lum[0][x] << " ";
+//   cout << geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy_weighted[x] << " ";
+//   cout << geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy_uniform[x] << endl;
 
 #ifdef DEBUG_NPGS
   cout << "ran val & grid_cell vals = ";
