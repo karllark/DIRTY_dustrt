@@ -47,22 +47,42 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
   // loop through the dust density grid and convert to radiation field density
   int i,j,k,m = 0;
   // loop over all the defined grids
+  double vol = 1.0;
+  double size_x, size_y, size_z;
   for (m = 0; m < int(geometry.grids.size()); m++) {
-    // determine the volume in cm^3
-    //   assumes all cells in a grid have the same size (which is correct)
-    double vol = 1.0;
-    for (i = 0; i < 3; i++)
-      vol *= (Constant::PC_CM)*(geometry.grids[m].positions[i][1] - geometry.grids[m].positions[i][0]);
+
+//     for (i = 0; i < 3; i++) {
+//       vol *= (Constant::PC_CM)*(geometry.grids[m].positions[i][1] - geometry.grids[m].positions[i][0]);
+//       cout << geometry.grids[m].positions[i][0] << " ";
+//       cout << geometry.grids[m].positions[i][1] << " ";
+//       cout << vol << endl;
+//     }
+//     cout << vol << endl;
 
 #ifdef DEBUG_SAEG
     cout << "grid num = " << m << endl;
-    cout << "volume [cm^3] = " << vol << endl;
 #endif
 
     // loop of the cells in this grid
-    for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
-      for (j = 0; j < geometry.grids[m].index_dim[1]; j++)
+    for (k = 0; k < geometry.grids[m].index_dim[2]; k++) {
+      size_z = (Constant::PC_CM)*(geometry.grids[m].positions[2][k+1] - geometry.grids[m].positions[2][k]);
+      // cout << "z " << size_z << " ";
+      // cout << geometry.grids[m].positions[2][k+1] << " ";
+      // cout << geometry.grids[m].positions[2][k] << endl;
+      for (j = 0; j < geometry.grids[m].index_dim[1]; j++) {
+	size_y = (Constant::PC_CM)*(geometry.grids[m].positions[1][j+1] - geometry.grids[m].positions[1][j]);
 	for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
+	  size_x = (Constant::PC_CM)*(geometry.grids[m].positions[0][i+1] - geometry.grids[m].positions[0][i]);
+
+	  // determine the volume in cm^3
+ 	  vol = size_x*size_y*size_z;
+	  // if (vol <= 0.0) {
+	  //   cout << size_x << " ";
+	  //   cout << size_y << " ";
+	  //   cout << size_z << " ";
+	  // cout << "vol ; " << vol;
+	  //   exit(0);
+	  // }
 
 	  // only do the computation the dust optical depth is positive
 	  // *and* when there is a nonzero amount of energy absorbed
@@ -70,7 +90,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	  if (geometry.grids[m].grid(i,j,k).dust_tau_per_pc > 0.0) {
 	    // # of H atoms in cell
 	    geometry.grids[m].grid(i,j,k).num_H = num_H_const*vol*geometry.grids[m].grid(i,j,k).dust_tau_per_pc*geometry.tau_to_tau_ref;
-// 	    cout << "; num_h = " << geometry.grids[m].grid(i,j,k).num_H << "; ";
+	    // cout << "; num_h = " << geometry.grids[m].grid(i,j,k).num_H << "; ";
 	  }
 
 	  if ((geometry.grids[m].grid(i,j,k).dust_tau_per_pc > 0.0) &&
@@ -156,6 +176,8 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 // 	    int ans;
 // 	    cin >> ans;
 	}
+      }
+    }
     
   }
 

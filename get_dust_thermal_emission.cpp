@@ -58,10 +58,13 @@ void get_dust_thermal_emission (geometry_struct& geometry,
     runinfo.emitted_lum.resize(n_emit_components);
     for (z = 0; z < n_emit_components; z++)
       runinfo.emitted_lum[z].resize(runinfo.wavelength.size(),0.0);
+    geometry.emitted_lum_uniform.resize(runinfo.wavelength.size(),0.0);
   } else {
-    for (z = 0; z < n_emit_components; z++)
-      for (x = 0; x < runinfo.wavelength.size(); x++)
+    for (x = 0; x < runinfo.wavelength.size(); x++) {
+      geometry.emitted_lum_uniform[x] = 0.0;
+      for (z = 0; z < n_emit_components; z++)
 	runinfo.emitted_lum[z][x] = 0.0;
+    }
   }
 
   // calculate the total absorbed energy from the previously saved total abosrbed energy by wavelength
@@ -124,14 +127,20 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 	    geometry.grids[m].grid(i,j,k).emitted_energy.resize(n_emit_components);
 	    for (z = 0; z < n_emit_components; z++)
 	      geometry.grids[m].grid(i,j,k).emitted_energy[z].resize(runinfo.wavelength.size(),0.0);
+
+	    geometry.grids[m].grid(i,j,k).emitted_energy_weighted.resize(runinfo.wavelength.size(),0.0);
+	    geometry.grids[m].grid(i,j,k).emitted_energy_uniform.resize(runinfo.wavelength.size(),0.0);
 	  } else
 	    // will need code that does not set the nonequilibrium thermal emission to zero
 	    // when we are doing the next iteration for the case where we donot want to 
 	    // recompute the nonequilibrium case
 	    // also make sure to set the total emission to the sum of the nonequilibrium emission
-	    for (z = 0; z < n_emit_components; z++)
-	      for (x = 0; x < runinfo.wavelength.size(); x++)
+	    for (x = 0; x < runinfo.wavelength.size(); x++) {
+	      for (z = 0; z < n_emit_components; z++)
 		geometry.grids[m].grid(i,j,k).emitted_energy[z][x] = 0.0;
+	      geometry.grids[m].grid(i,j,k).emitted_energy_weighted[x] = 0.0;
+	      geometry.grids[m].grid(i,j,k).emitted_energy_uniform[x] = 0.0;
+	    }
 
 	  // determine if there is any energy absorbed needing to be remitted
 	  tot_abs_energy = 0.0;
@@ -276,14 +285,18 @@ void get_dust_thermal_emission (geometry_struct& geometry,
               }
 	      
 	      // add to the emitted energy sums
+	      for (x = 0; x < runinfo.wavelength.size(); x++) {
+
+		// set the emitted energy for the uniform emission case
+		geometry.grids[m].grid(i,j,k).emitted_energy_uniform[x] = 1.0;
+		geometry.emitted_lum_uniform[x] += 1.0;
+
+	      }
+
 	      for (z = 0; z < n_emit_components; z++)
 		for (x = 0; x < runinfo.wavelength.size(); x++) {
-		  // temp stuff
-		  // 		geometry.grids[m].grid(i,j,k).emitted_energy[z][x] = 1.0;
 		  
-		  // perm stuff
-		  // need to multiply the emitted energy passed back by dust_thermal_emission
-		  // by the number of HI atoms in the cell to get the total emitted energy
+		  // check things are ok
 		  if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
 		    // Add failure status for this? 
 		    cout << endl;
@@ -308,8 +321,12 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 		    cout << " emitted energy is not finite (before num_H calc) " << endl;
 		    exit(8);
 		  }
+
+		  // need to multiply the emitted energy passed back by dust_thermal_emission
+		  // by the number of HI atoms in the cell to get the total emitted energy
 		  geometry.grids[m].grid(i,j,k).emitted_energy[z][x] *= geometry.grids[m].grid(i,j,k).num_H;
-		  // add up the emitted energy to the total emitted (per wavelength & component)
+
+ 		  // add up the emitted energy to the total emitted (per wavelength & component)
 		  if (!finite(geometry.grids[m].grid(i,j,k).emitted_energy[z][x])) {
 		    // Add failure status for this? 
 		    cout << z << " " << x << endl;

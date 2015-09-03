@@ -94,16 +94,23 @@ void setup_dust_grid_slab_trust (ConfigFile& param_data,
   for (i = 0; i <= main_grid.index_dim[1]; i++)
     y_pos[i] = double(i)*(size_xy)/double(main_grid.index_dim[1]) - size_xy/2.;
 
+  // z values (linear)
+//   float deltaz = slab_z2 - slab_z1;
+//   for (i = 0; i <= main_grid.index_dim[2]-1; i++)
+//     z_pos[i] = slab_z1 + double(i)*(deltaz)/double(main_grid.index_dim[2]-1);
+//   z_pos[main_grid.index_dim[2]] = size_z/2.;
+  
   // z values (do as a log10 spacing)
+  // vector<double> z_pos_log(main_grid.index_dim[2]+1);
   float log_slab_z1 = log10(fabs(slab_z1));
   float log_slab_z2 = log10(fabs(slab_z2));
-  float log_deltaz = (log_slab_z2 - log_slab_z1)/double(main_grid.index_dim[2]-2);
+  float log_deltaz = (log_slab_z2 - log_slab_z1)/double(main_grid.index_dim[2]-1);
   for (i = 0; i <= (main_grid.index_dim[2]-1); i++)
     z_pos[i] = -1.0*pow(10.0,log_slab_z1 + double(i)*log_deltaz);
-  z_pos[main_grid.index_dim[2]-1] = size_z/2.;
+  z_pos[main_grid.index_dim[2]] = size_z/2.;
 
-  // for (i = 0; i <= (main_grid.index_dim[2]-1); i++) 
-  //   cout << i << " " << z_pos[i] << endl;
+  // for (i = 0; i <= (main_grid.index_dim[2]); i++) 
+  //   cout << i << " " << z_pos[i]  << endl;
   // exit(0);
 
   // add position arrays to main grid
@@ -117,9 +124,9 @@ void setup_dust_grid_slab_trust (ConfigFile& param_data,
   main_grid.phys_grid_size[2] = size_z;
 
   // give the size of the cubes
-  main_grid.phys_cube_size[0] = main_grid.phys_grid_size[0]/main_grid.index_dim[0];
-  main_grid.phys_cube_size[1] = main_grid.phys_grid_size[1]/main_grid.index_dim[1];
-  main_grid.phys_cube_size[2] = main_grid.phys_grid_size[2]/main_grid.index_dim[2];
+  //main_grid.phys_cube_size[0] = main_grid.phys_grid_size[0]/main_grid.index_dim[0];
+  //main_grid.phys_cube_size[1] = main_grid.phys_grid_size[1]/main_grid.index_dim[1];
+  //main_grid.phys_cube_size[2] = main_grid.phys_grid_size[2]/main_grid.index_dim[2];
 
   // allocate main grid
   main_grid.grid.CSize(main_grid.index_dim[0],main_grid.index_dim[1],main_grid.index_dim[2]);

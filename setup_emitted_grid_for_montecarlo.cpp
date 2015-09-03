@@ -34,6 +34,9 @@ void setup_emitted_grid_for_montecarlo (geometry_struct& geometry,
   vector< double > sum_emitted_lum;
   sum_emitted_lum.resize(runinfo.wavelength.size(),0.0);
 
+  vector< double > sum_emitted_lum_uniform;
+  sum_emitted_lum_uniform.resize(runinfo.wavelength.size(),0.0);
+
 //   for (x = 0; x < runinfo.wavelength.size(); x++) 
 //     cout << x << " " << runinfo.emitted_lum[0][x] << endl;
 //   exit(8);
@@ -52,24 +55,19 @@ void setup_emitted_grid_for_montecarlo (geometry_struct& geometry,
 	      // normalize if there we need the emission by grain/emission type
 	      if (runinfo.do_emission_grain && runinfo.dust_thermal_emission)
 		if (geometry.grids[m].grid(i,j,k).emitted_energy[0][x] > 0) {
-// 		  if (geometry.grids[m].grid(i,j,k).emitted_energy[0][x] > 1.) {
-// 		    cout << i << " ";
-// 		    cout << j << " ";
-// 		    cout << k << " ";
-// 		    cout << geometry.grids[m].grid(i,j,k).emitted_energy[0][x] << " ";
-// 		    cout << endl;
-// 		  }
-// 		  cout << "emitted energy = " << geometry.grids[m].grid(i,j,k).emitted_energy[0][x] << endl;
 		  for (z = 1; z < n_emit_components; z++)
 		    geometry.grids[m].grid(i,j,k).emitted_energy[z][x] /= geometry.grids[m].grid(i,j,k).emitted_energy[0][x];
 		}
 
 	      sum_emitted_lum[x] += geometry.grids[m].grid(i,j,k).emitted_energy[0][x];
-	      if (runinfo.dust_thermal_emission) 
-		geometry.grids[m].grid(i,j,k).emitted_energy[0][x] = sum_emitted_lum[x]/runinfo.emitted_lum[0][x];
-	      else
-		geometry.grids[m].grid(i,j,k).emitted_energy[0][x] = sum_emitted_lum[x]/runinfo.emitted_ere_lum[0][x];
+	      sum_emitted_lum_uniform[x] += geometry.grids[m].grid(i,j,k).emitted_energy_uniform[x];
 
+	      if (runinfo.dust_thermal_emission) 
+		geometry.grids[m].grid(i,j,k).emitted_energy_weighted[x] = sum_emitted_lum[x]/runinfo.emitted_lum[0][x];
+	      else
+		geometry.grids[m].grid(i,j,k).emitted_energy_weighted[x] = sum_emitted_lum[x]/runinfo.emitted_ere_lum[0][x];
+
+	      geometry.grids[m].grid(i,j,k).emitted_energy_uniform[x] = sum_emitted_lum_uniform[x]/geometry.emitted_lum_uniform[x];
 	    }
     
 	}

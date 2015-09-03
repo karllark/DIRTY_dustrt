@@ -135,9 +135,9 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   main_grid.phys_grid_size[2] = main_grid.phys_grid_size[0];
 
   // give the size of the cubes
-  main_grid.phys_cube_size[0] = main_grid.phys_grid_size[0]/main_grid.index_dim[0];
-  main_grid.phys_cube_size[1] = main_grid.phys_grid_size[1]/main_grid.index_dim[1];
-  main_grid.phys_cube_size[2] = main_grid.phys_grid_size[2]/main_grid.index_dim[2];
+  // main_grid.phys_cube_size[0] = main_grid.phys_grid_size[0]/main_grid.index_dim[0];
+  // main_grid.phys_cube_size[1] = main_grid.phys_grid_size[1]/main_grid.index_dim[1];
+  // main_grid.phys_cube_size[2] = main_grid.phys_grid_size[2]/main_grid.index_dim[2];
 
   // allocate main grid
   main_grid.grid.CSize(main_grid.index_dim[0],main_grid.index_dim[1],main_grid.index_dim[2]);
@@ -256,10 +256,13 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   // add main grid to grids vector
   geometry.grids.push_back(main_grid);
 
+  // useful cube size
+  double phys_cube_size = main_grid.phys_grid_size[0]/main_grid.index_dim[0];
+
   // now subdivide the center cubes if the inner radius is inside the cube dimension
   if (subdivide_radius > 0.0) {
     cout << "input subdivide radius = " << subdivide_radius << endl;
-    if (subdivide_radius < pow(3.,0.5)*(main_grid.phys_cube_size[0]/2.)) subdivide_radius = main_grid.phys_cube_size[0];
+    if (subdivide_radius < pow(3.,0.5)*(phys_cube_size/2.)) subdivide_radius = phys_cube_size;
     cout << "subdivide radius used (depends on main grid size) = " << subdivide_radius << endl;
     int subdivide = 0;
     int subdivide_any = 0;
@@ -274,10 +277,10 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	  x_val = (geometry.grids[m].positions[0][i] + geometry.grids[m].positions[0][i+1])/2.0;
 	  radius = sqrt(x_val*x_val + y_val*y_val + z_val*z_val);
 	  if (radius <= subdivide_radius) {
-	    cout << 10.*geometry.grids[0].phys_cube_size[0]/((inner_radius - very_inner_radius)*save_outer_radius) << endl;
-	    cout << geometry.grids[0].phys_cube_size[0] << endl;
+	    cout << 10.*phys_cube_size/((inner_radius - very_inner_radius)*save_outer_radius) << endl;
+	    cout << phys_cube_size << endl;
 	    cout << (inner_radius - very_inner_radius)*save_outer_radius << endl;
-	    poss_index = int(5.*geometry.grids[0].phys_cube_size[0]/((inner_radius - very_inner_radius)*save_outer_radius)) + 1;
+	    poss_index = int(5.*phys_cube_size/((inner_radius - very_inner_radius)*save_outer_radius)) + 1;
 	    if (poss_index > 1) {
 	      subdivide = 1;
 	      subdivide_any = 1;
@@ -295,7 +298,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	    cout << i << " ";
 	    cout << j << " ";
 	    cout << k << endl;
-	    cout << "geometry.grids[0].phys.cube_size[0] = " << geometry.grids[0].phys_cube_size[0] << endl;
+	    // cout << "geometry.grids[0].phys.cube_size[0] = " << geometry.grids[0].phys_cube_size[0] << endl;
 	    cout << "subgird size = " << subgrid.index_dim[0] << endl;
 	    
 	    subgrid.index_dim[1] = subgrid.index_dim[0];
@@ -309,9 +312,9 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 	    subgrid.phys_grid_size[1] = geometry.grids[m].positions[1][j+1] - geometry.grids[m].positions[1][j];
 	    subgrid.phys_grid_size[2] = geometry.grids[m].positions[2][k+1] - geometry.grids[m].positions[2][k];
 	    
-	    subgrid.phys_cube_size[0] = subgrid.phys_grid_size[0]/subgrid.index_dim[0];
-	    subgrid.phys_cube_size[1] = subgrid.phys_grid_size[1]/subgrid.index_dim[1];
-	    subgrid.phys_cube_size[2] = subgrid.phys_grid_size[2]/subgrid.index_dim[2];
+	    // subgrid.phys_cube_size[0] = subgrid.phys_grid_size[0]/subgrid.index_dim[0];
+	    // subgrid.phys_cube_size[1] = subgrid.phys_grid_size[1]/subgrid.index_dim[1];
+	    // subgrid.phys_cube_size[2] = subgrid.phys_grid_size[2]/subgrid.index_dim[2];
 
 // 	    cout << subgrid.phys_cube_size[0] << endl;
 // 	    cout << very_inner_radius << endl;

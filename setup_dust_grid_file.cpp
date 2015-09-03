@@ -160,7 +160,7 @@ void setup_dust_grid_file (ConfigFile& param_data,
 #endif
     for (k = 0; k < 3; k++) {
       subgrid.phys_grid_size[k] = subgrid.positions[k][subgrid.index_dim[k]] - subgrid.positions[k][0];
-      subgrid.phys_cube_size[k] = subgrid.phys_grid_size[k]/subgrid.index_dim[k];
+      // subgrid.phys_cube_size[k] = subgrid.phys_grid_size[k]/subgrid.index_dim[k];
 #ifdef DEBUG_SDGF
       cout << k << " " << subgrid.phys_grid_size[k] << " " << subgrid.phys_cube_size[k] << endl;
 #endif
