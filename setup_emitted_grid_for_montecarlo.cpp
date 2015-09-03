@@ -8,6 +8,8 @@
 // but also should work for ERE.
 //
 // 2007 Nov/KDG - written
+// 2015 Sep/KDG - updated to include uniform emission from grid
+//                1/2 the time w/ weighting by the radiation field
 // ======================================================================
 #include "setup_emitted_grid_for_montecarlo.h"
 #define DEBUG_SEGFMC

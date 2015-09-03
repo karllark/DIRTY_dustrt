@@ -11,6 +11,8 @@
 //                if dust heating code fails for any bin.
 //                If more failure modes (not related to dust emission) need to be added,
 //                it should be straitforward...
+// 2015 Sep/KDG - updated to include uniform emission from grid
+//                1/2 the time w/ weighting by the radiation field
 // ======================================================================
 #include "get_dust_thermal_emission.h"
 //#define DEBUG_GDTE

@@ -5,6 +5,8 @@
 //
 // 2007 Nov/KDG - written
 // 2008 Mar/KDG - added setting of birth position (forgot it)
+// 2015 Sep/KDG - updated to include uniform emission from grid
+//                1/2 the time w/ weighting by the radiation field
 // ======================================================================
 #include "new_photon_grid_source.h"
 //#define DEBUG_NPGS
