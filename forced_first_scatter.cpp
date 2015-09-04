@@ -131,7 +131,7 @@ int forced_first_scatter (geometry_struct& geometry,
       cout << "escape = " << escape << endl;
     }
 #endif
-    if (fabs((target_tau - tau_traveled)/target_tau) > ROUNDOFF_ERR_TRIG) {
+    if (fabs(target_tau - tau_traveled) > ROUNDOFF_ERR_TRIG*10.) {
       cout << "*****error*****forced_first_scatter****" << endl;
       cout << "target_tau = " << target_tau << endl;
       cout << "tau_traveled = " << tau_traveled << endl;
