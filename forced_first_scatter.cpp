@@ -6,6 +6,8 @@
 // 28 Feb 2007/KDG - updated to move calculation of stellar weight to 
 //                   classify stellar photon
 // 22 Oct 2013/KDG - added option to deal with tau_to_surface = 0
+// 03 Sep 2015/KDG - added sampling from uniform distribution in tau
+//                   1/2 of the time to better sample high optical depth scattering
 // ======================================================================
 #include "forced_first_scatter.h"
 #include <unistd.h>
@@ -62,18 +64,37 @@ int forced_first_scatter (geometry_struct& geometry,
     // calculate the stellar weight (part of photon which escapes)
     //    calculation good to very high taus (700+), zero afterwards (KDG 28 Dec 2004)
     double new_stellar_weight = exp(-photon.first_tau);
-    // calculate the weight which is scattered
+
+    // determine optical depth to first scattering
+    // unlike 2nd, 3rd, etc. scatterings, this scattering is forced to be 
+    // in the dust distribution and is why the weights are not unity
+
     photon.scat_weight = photon.stellar_weight*(1. - new_stellar_weight);
+
+    // calculate the weight which is scattered
+    if ((photon.number % 2) == 0) { // even photons are classical forced scattering
+
+      target_tau = -log(1.0 - random_obj.random_num()*(1.0 - new_stellar_weight));
+
+    } else {// odd photons are uniformaly sampled in optical depth
+
+      target_tau = random_obj.random_num()*photon.first_tau;
+      photon.scat_weight *= photon.first_tau*exp(-target_tau)/(1. - new_stellar_weight);
+      
+    }
+    photon.target_tau = target_tau;
+
+    // cout << photon.number << " ";
+    // cout << target_tau << " ";
+    // cout << photon.first_tau << " ";
+    // cout << photon.scat_weight << " ";
+    // cout << endl;
+    
     // update the stellar weight
     // *not done* this is done correctly in the classify_stellar_photon routine
     // KDG - 28 Feb 2007
     // photon.stellar_weight *= new_stellar_weight;
 
-    // determine optical depth to first scattering
-    // unlike 2nd, 3rd, etc. scatterings, this scattering is forced to be 
-    // in the dust distribution and is why the weights are done as above
-    target_tau = -log(1.0 - random_obj.random_num()*(1.0 - new_stellar_weight));
-    photon.target_tau = target_tau;
 
 #ifdef DEBUG_FFS
     if (photon.number == OUTNUM) cout << "target_tau = " << target_tau << endl;

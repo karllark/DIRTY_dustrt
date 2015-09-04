@@ -4,6 +4,8 @@
 // escapes.
 //
 // 2004 Dec/KDG - written
+// 03 Sep 2015/KDG - added sampling from an exp(tau/100) distribution
+//                   1/2 of the time to better sample high optical depth scattering
 // ======================================================================
 #include "next_scatter.h"
 #define DEBUG_NS
@@ -15,9 +17,20 @@ int next_scatter (geometry_struct& geometry,
 {
   // determine the optical depth to the next scattering
   double target_tau = 0.0;
-  target_tau = -log(random_obj.random_num());
+  double odd_photon_tau_factor = 10.0;
+
+  if ((photon.number % 2) == 0) { // even photons are classical scattering
+    target_tau = -log(random_obj.random_num());
+  } else { // odd photons are sampled from exp(-tau/100) to better sample high depths
+    //target_tau = -1.*odd_photon_tau_factor*log(random_obj.random_num()/odd_photon_tau_factor);
+    target_tau = -1.*odd_photon_tau_factor*log(random_obj.random_num());
+
+    // cout << target_tau << " ";
+    // cout << (odd_photon_tau_factor*exp(-target_tau))/exp(-target_tau/odd_photon_tau_factor) << endl;
+  }
+
   photon.target_tau = target_tau;
-  
+
   // check to see if we will start in a subgrid
   if (photon.current_grid_num > 0) {
 #ifdef DEBUG_NS
@@ -27,7 +40,7 @@ int next_scatter (geometry_struct& geometry,
 #endif
     photon.current_grid_num = 0;
   }
-
+  
   // determine the site of the next scattering
   int escape = 0;
   double distance_traveled = 0.0;
@@ -57,6 +70,11 @@ int next_scatter (geometry_struct& geometry,
   // check if the photon has scattered enough and there is just no significant weight left
   if (photon.num_scat > geometry.max_num_scat)
     escape = 1;
+
+  // update the scattered weight for the odd photons
+  if ((photon.number % 2) == 1)
+    photon.scat_weight *= (odd_photon_tau_factor*exp(-target_tau))/exp(-target_tau/odd_photon_tau_factor);
+  //photon.scat_weight *= exp(-target_tau)/exp(-target_tau/odd_photon_tau_factor);
 
 #ifdef DEBUG_NS
   if (photon.number == OUTNUM) {
