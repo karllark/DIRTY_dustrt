@@ -33,7 +33,8 @@ int forced_first_scatter (geometry_struct& geometry,
   double distance_traveled = 0.0;
   double tau_traveled = 0.0;
   double tau_to_surface = 0.0;
-
+  double ran_num = 0.0;
+  
   photon_data dummy_photon; // copy of photon for surface tau calculation
 
   // get the optical depth to the edge of the dust in the current direction
@@ -78,7 +79,8 @@ int forced_first_scatter (geometry_struct& geometry,
 
     } else {// odd photons are uniformaly sampled in optical depth
 
-      target_tau = random_obj.random_num()*photon.first_tau;
+      ran_num = random_obj.random_num();
+      target_tau = ran_num*photon.first_tau;
       photon.scat_weight *= photon.first_tau*exp(-target_tau)/(1. - new_stellar_weight);
       
     }
@@ -129,11 +131,15 @@ int forced_first_scatter (geometry_struct& geometry,
       cout << "escape = " << escape << endl;
     }
 #endif
-    if (fabs(target_tau - tau_traveled) > ROUNDOFF_ERR_TRIG) {
+    if (fabs((target_tau - tau_traveled)/target_tau) > ROUNDOFF_ERR_TRIG) {
       cout << "*****error*****forced_first_scatter****" << endl;
       cout << "target_tau = " << target_tau << endl;
       cout << "tau_traveled = " << tau_traveled << endl;
       cout << "diff = " << target_tau - tau_traveled << endl;
+      cout << ROUNDOFF_ERR_TRIG << endl;
+      cout << "photon # = " << photon.number << endl;
+      cout << "ran_num = " << ran_num << endl;
+      cout << "tau_to_surface = " << photon.first_tau << endl;
       exit(8);
 //   } else {
 //     // This is a special case where the photon has traveled the correct distance
