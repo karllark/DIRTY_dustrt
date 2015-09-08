@@ -17,16 +17,13 @@ int next_scatter (geometry_struct& geometry,
 {
   // determine the optical depth to the next scattering
   double target_tau = 0.0;
-  double odd_photon_tau_factor = 10.0;
+  double biased_tau_factor = 10.0;
 
-  if ((photon.number % 2) == 0) { // even photons are classical scattering
+  double scat_bias_fraction = 0.5;
+  if (random_obj.random_num() >= scat_bias_fraction) { // classical scattering
     target_tau = -log(random_obj.random_num());
-  } else { // odd photons are sampled from exp(-tau/100) to better sample high depths
-    //target_tau = -1.*odd_photon_tau_factor*log(random_obj.random_num()/odd_photon_tau_factor);
-    target_tau = -1.*odd_photon_tau_factor*log(random_obj.random_num());
-
-    // cout << target_tau << " ";
-    // cout << (odd_photon_tau_factor*exp(-target_tau))/exp(-target_tau/odd_photon_tau_factor) << endl;
+  } else { // biased to large optical depths
+    target_tau = -1.*biased_tau_factor*log(random_obj.random_num());
   }
 
   photon.target_tau = target_tau;
@@ -71,10 +68,20 @@ int next_scatter (geometry_struct& geometry,
   if (photon.num_scat > geometry.max_num_scat)
     escape = 1;
 
-  // update the scattered weight for the odd photons
-  if ((photon.number % 2) == 1)
-    photon.scat_weight *= (odd_photon_tau_factor*exp(-target_tau))/exp(-target_tau/odd_photon_tau_factor);
-  //photon.scat_weight *= exp(-target_tau)/exp(-target_tau/odd_photon_tau_factor);
+  if (!escape) {
+    // update the scattered weight for biasing
+    double biased_weight_factor = 0.0;
+    biased_weight_factor = (1.0 - scat_bias_fraction) +
+      (scat_bias_fraction/biased_tau_factor)*exp(target_tau-(target_tau/biased_tau_factor));
+
+    photon.scat_weight /= biased_weight_factor;
+
+//     cout << photon.number << " ";
+//     cout << target_tau << " ";
+//     cout << photon.scat_weight << " ";
+//     cout << 1.0/biased_weight_factor << " ";
+//     cout << endl;
+  }
 
 #ifdef DEBUG_NS
   if (photon.number == OUTNUM) {

@@ -72,25 +72,34 @@ int forced_first_scatter (geometry_struct& geometry,
 
     photon.scat_weight = photon.stellar_weight*(1. - new_stellar_weight);
 
+    double forced_scat_bias_fraction = 0.5;
     // calculate the weight which is scattered
-    if ((photon.number % 2) == 0) { // even photons are classical forced scattering
+    if (random_obj.random_num() >= forced_scat_bias_fraction) { // classical forced scattering
 
       target_tau = -log(1.0 - random_obj.random_num()*(1.0 - new_stellar_weight));
 
-    } else {// odd photons are uniformaly sampled in optical depth
+    } else {// uniformaly sampled in optical depth
 
       ran_num = random_obj.random_num();
       target_tau = ran_num*photon.first_tau;
-      photon.scat_weight *= photon.first_tau*exp(-target_tau)/(1. - new_stellar_weight);
       
     }
+
+    // calculate the biased weight factor
+    double biased_weight_factor = 0.0;
+    biased_weight_factor = (1.0 - forced_scat_bias_fraction) +
+      forced_scat_bias_fraction*(1.0 - exp(-photon.first_tau))*exp(target_tau)/photon.first_tau;
+
+    photon.scat_weight /= biased_weight_factor;
+
     photon.target_tau = target_tau;
 
-    // cout << photon.number << " ";
-    // cout << target_tau << " ";
-    // cout << photon.first_tau << " ";
-    // cout << photon.scat_weight << " ";
-    // cout << endl;
+//     cout << photon.number << " ";
+//     cout << target_tau << " ";
+//     cout << photon.first_tau << " ";
+//     cout << photon.scat_weight << " ";
+//     cout << 1.0/biased_weight_factor << " ";
+//     cout << endl;
     
     // update the stellar weight
     // *not done* this is done correctly in the classify_stellar_photon routine
@@ -138,7 +147,6 @@ int forced_first_scatter (geometry_struct& geometry,
       cout << "diff = " << target_tau - tau_traveled << endl;
       cout << ROUNDOFF_ERR_TRIG << endl;
       cout << "photon # = " << photon.number << endl;
-      cout << "ran_num = " << ran_num << endl;
       cout << "tau_to_surface = " << photon.first_tau << endl;
       exit(8);
 //   } else {

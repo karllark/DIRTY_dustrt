@@ -91,7 +91,10 @@ void new_photon_grid_source (photon_data& photon,
   int x = geometry.wave_index;
   int x_val, y_val, z_val;
 
-  if ((photon.number % 2) == 0) { // even photons sample radiation field
+  double emit_bias_fraction = 0.5;
+
+
+  if (random_obj.random_num() >= emit_bias_fraction) { // sample radiation field
     // check which grid are we in
     vector<one_grid>::iterator selected_grid;
     if (ran_val <= geometry.grids[0].grid.back().emitted_energy_weighted[x]) {
@@ -111,7 +114,7 @@ void new_photon_grid_source (photon_data& photon,
 
     // rad field sampling gets a weight of 1 as it is sampling the radiation field "correctly"
     photon.stellar_weight = 1.0;
-  } else { // odd photons uniformly sample the grid    
+  } else { // uniformly sample the grid  
     // check which grid are we in
     vector<one_grid>::iterator selected_grid;
     if (ran_val <= geometry.grids[0].grid.back().emitted_energy_uniform[x]) {
@@ -129,17 +132,27 @@ void new_photon_grid_source (photon_data& photon,
     int cell_num = selected_cell - selected_grid->grid.begin();
     selected_grid->grid.get_xyz(cell_num, x_val, y_val, z_val);
 
-    // uniform sampling gets a weight based on the fraction of the total emitted energy (correcting for uniform sampling)
-    // this gives the number of photons that will be emitted *total* from this cell
-    photon.stellar_weight = geometry.n_photons*geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy[0][x]/runinfo.emitted_lum[0][x];
-    // divide by the number of photons that will be emitted per cell to get the weight for a single photon
-    photon.stellar_weight /= geometry.n_photons/geometry.emitted_lum_uniform[x];
+//     // uniform sampling gets a weight based on the fraction of the total emitted energy (correcting for uniform sampling)
+//     // this gives the number of photons that will be emitted *total* from this cell
+//     photon.stellar_weight = geometry.n_photons*geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy[0][x]/runinfo.emitted_lum[0][x];
+//     // divide by the number of photons that will be emitted per cell to get the weight for a single photon
+//     photon.stellar_weight /= geometry.n_photons/geometry.emitted_lum_uniform[x];
   }
 
-    // cout << geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy[0][x] << " ";
-    // cout << photon.stellar_weight << " ";
-    // cout << geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy_weighted[x] << " ";
-    // cout << geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy_uniform[x] << endl;
+  double biased_weight_factor = 0.0;
+  biased_weight_factor = (1.0 - emit_bias_fraction) + emit_bias_fraction*runinfo.emitted_lum[0][x]/
+    (geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy[0][x]*geometry.emitted_lum_uniform[x]);
+
+  photon.stellar_weight = 1.0/biased_weight_factor;
+  
+//   biased_weight_factor = (1.0 - emit_bias_fraction) +
+//     emit_bias_fraction*(geometry.n_photons/geometry.emitted_lum_uniform[x])/
+//     (geometry.n_photons*geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy[0][x]/runinfo.emitted_lum[0][x]);
+
+//   cout << geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy[0][x] << " ";
+//   cout << photon.stellar_weight << " ";
+//   cout << geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy_weighted[x] << " ";
+//   cout << geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy_uniform[x] << endl;
 
 #ifdef DEBUG_NPGS
   cout << "ran val & grid_cell vals = ";
