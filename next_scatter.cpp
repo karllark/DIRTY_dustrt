@@ -17,13 +17,14 @@ int next_scatter (geometry_struct& geometry,
 {
   // determine the optical depth to the next scattering
   double target_tau = 0.0;
-  double biased_tau_factor = 10.0;
 
-  double scat_bias_fraction = 0.5;
-  if (random_obj.random_num() >= scat_bias_fraction) { // classical scattering
+  double ran_num = random_obj.random_num();
+  if (ran_num >= (geometry.scat_bias_fraction_10+geometry.scat_bias_fraction_100)) { // classical scattering
     target_tau = -log(random_obj.random_num());
-  } else { // biased to large optical depths
-    target_tau = -1.*biased_tau_factor*log(random_obj.random_num());
+  } else if (ran_num >= geometry.scat_bias_fraction_100) { // biased to large optical depths
+    target_tau = -10.*log(random_obj.random_num());
+  } else { // biased to huge optical depths
+    target_tau = -100.*log(random_obj.random_num());
   }
 
   photon.target_tau = target_tau;
@@ -71,8 +72,9 @@ int next_scatter (geometry_struct& geometry,
   if (!escape) {
     // update the scattered weight for biasing
     double biased_weight_factor = 0.0;
-    biased_weight_factor = (1.0 - scat_bias_fraction) +
-      (scat_bias_fraction/biased_tau_factor)*exp(target_tau-(target_tau/biased_tau_factor));
+    biased_weight_factor = (1.0 - (geometry.scat_bias_fraction_10 + geometry.scat_bias_fraction_100)) +
+      (geometry.scat_bias_fraction_10/10.0)*exp(target_tau-(target_tau/10.0)) + 
+      (geometry.scat_bias_fraction_100/100.0)*exp(target_tau-(target_tau/100.0));
 
     photon.scat_weight /= biased_weight_factor;
 

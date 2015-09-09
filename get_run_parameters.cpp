@@ -11,9 +11,6 @@ void get_run_parameters (ConfigFile& param_data,
 			 geometry_struct& geometry,
 			 runinfo_struct& runinfo)
 {
-  geometry.n_photons = long(param_data.DValue("Run","num_photons"));
-  check_input_param("num_photons",geometry.n_photons,1,1e10);
-
   // get type of energy grid storing (memory/disk) desired
 //   geometry.abs_energy_storage_type = param_data.IValue("Run","abs_energy_storage");
 //   check_input_param("abs_energy_storage_type",geometry.abs_energy_storage_type,0,1);
@@ -30,6 +27,30 @@ void get_run_parameters (ConfigFile& param_data,
   geometry.max_num_scat = long(param_data.IValue("Run","max_num_scat"));
   if (geometry.max_num_scat == -99) geometry.max_num_scat = MAX_NUM_SCAT;  // set to default
   check_input_param("max_num_scat",geometry.max_num_scat,1,1000);
+
+  // fractions for biased scattering (better samples high optical depth scattering)
+  geometry.forced_scat_bias_fraction = param_data.DValue("Run","forced_scat_bias_fraction");
+  if (param_data.isBadFloat(geometry.forced_scat_bias_fraction)) geometry.forced_scat_bias_fraction = 0.5;
+  check_input_param("forced_scat_bias_fraction",geometry.forced_scat_bias_fraction,0.0,1.0);
+
+  geometry.scat_bias_fraction_10 = param_data.DValue("Run","scat_bias_fraction_10");
+  if (param_data.isBadFloat(geometry.scat_bias_fraction_10)) geometry.scat_bias_fraction_10 = 0.33;
+  check_input_param("scat_bias_fraction_10",geometry.scat_bias_fraction_10,0.0,1.0);
+
+  geometry.scat_bias_fraction_100 = param_data.DValue("Run","scat_bias_fraction_100");
+  if (param_data.isBadFloat(geometry.scat_bias_fraction_100)) geometry.scat_bias_fraction_100 = 0.33;
+  check_input_param("scat_bias_fraction_100",geometry.scat_bias_fraction_100,0.0,1.0);
+
+  // fraction for biased dust emission (better samples cells with low radiation fields)
+  geometry.emit_bias_fraction = param_data.DValue("Run","emit_bias_fraction");
+  if (param_data.isBadFloat(geometry.emit_bias_fraction)) geometry.emit_bias_fraction = 0.5;
+  check_input_param("emit_bias_fraction",geometry.emit_bias_fraction,0.0,1.0);
+
+  cout << geometry.forced_scat_bias_fraction << " ";
+  cout << geometry.scat_bias_fraction_10 << " ";
+  cout << geometry.scat_bias_fraction_100 << " ";
+  cout << geometry.emit_bias_fraction << " ";
+  cout << endl;
 
   int image_size = param_data.IValue("Run","output_image_size");
   check_input_param("output_image_size",image_size,1,50000);

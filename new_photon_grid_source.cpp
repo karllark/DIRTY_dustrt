@@ -94,7 +94,7 @@ void new_photon_grid_source (photon_data& photon,
   double emit_bias_fraction = 0.5;
 
 
-  if (random_obj.random_num() >= emit_bias_fraction) { // sample radiation field
+  if (random_obj.random_num() >= geometry.emit_bias_fraction) { // sample radiation field
     // check which grid are we in
     vector<one_grid>::iterator selected_grid;
     if (ran_val <= geometry.grids[0].grid.back().emitted_energy_weighted[x]) {
@@ -140,7 +140,8 @@ void new_photon_grid_source (photon_data& photon,
   }
 
   double biased_weight_factor = 0.0;
-  biased_weight_factor = (1.0 - emit_bias_fraction) + emit_bias_fraction*runinfo.emitted_lum[0][x]/
+  biased_weight_factor = (1.0 - geometry.emit_bias_fraction) + 
+    geometry.emit_bias_fraction*runinfo.emitted_lum[0][x]/
     (geometry.grids[grid_num].grid(x_val, y_val, z_val).emitted_energy[0][x]*geometry.emitted_lum_uniform[x]);
 
   photon.stellar_weight = 1.0/biased_weight_factor;

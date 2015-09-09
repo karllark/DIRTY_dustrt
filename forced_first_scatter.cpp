@@ -72,9 +72,8 @@ int forced_first_scatter (geometry_struct& geometry,
 
     photon.scat_weight = photon.stellar_weight*(1. - new_stellar_weight);
 
-    double forced_scat_bias_fraction = 0.5;
     // calculate the weight which is scattered
-    if (random_obj.random_num() >= forced_scat_bias_fraction) { // classical forced scattering
+    if (random_obj.random_num() >= geometry.forced_scat_bias_fraction) { // classical forced scattering
 
       target_tau = -log(1.0 - random_obj.random_num()*(1.0 - new_stellar_weight));
 
@@ -87,8 +86,8 @@ int forced_first_scatter (geometry_struct& geometry,
 
     // calculate the biased weight factor
     double biased_weight_factor = 0.0;
-    biased_weight_factor = (1.0 - forced_scat_bias_fraction) +
-      forced_scat_bias_fraction*(1.0 - exp(-photon.first_tau))*exp(target_tau)/photon.first_tau;
+    biased_weight_factor = (1.0 - geometry.forced_scat_bias_fraction) +
+      geometry.forced_scat_bias_fraction*(1.0 - exp(-photon.first_tau))*exp(target_tau)/photon.first_tau;
 
     photon.scat_weight /= biased_weight_factor;
 

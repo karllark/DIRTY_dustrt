@@ -121,6 +121,11 @@ struct geometry_struct {
 
   long n_photons;  // number of photons to run
   long max_num_scat;  // maximum number of scatterings
+
+  double forced_scat_bias_fraction;
+  double scat_bias_fraction_10;
+  double scat_bias_fraction_100;
+  double emit_bias_fraction;
 };
 
 #endif
