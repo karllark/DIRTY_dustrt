@@ -46,11 +46,11 @@ void get_run_parameters (ConfigFile& param_data,
   if (param_data.isBadFloat(geometry.emit_bias_fraction)) geometry.emit_bias_fraction = 0.5;
   check_input_param("emit_bias_fraction",geometry.emit_bias_fraction,0.0,1.0);
 
-  cout << geometry.forced_scat_bias_fraction << " ";
-  cout << geometry.scat_bias_fraction_10 << " ";
-  cout << geometry.scat_bias_fraction_100 << " ";
-  cout << geometry.emit_bias_fraction << " ";
-  cout << endl;
+//   cout << geometry.forced_scat_bias_fraction << " ";
+//   cout << geometry.scat_bias_fraction_10 << " ";
+//   cout << geometry.scat_bias_fraction_100 << " ";
+//   cout << geometry.emit_bias_fraction << " ";
+//   cout << endl;
 
   int image_size = param_data.IValue("Run","output_image_size");
   check_input_param("output_image_size",image_size,1,50000);
