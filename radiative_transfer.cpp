@@ -127,8 +127,9 @@ void radiative_transfer (geometry_struct& geometry,
 #ifdef DEBUG_OUTRANGE
     try {
 #endif
+
     escape = forced_first_scatter(geometry, photon, random_obj);
-    //    cout << escape << endl;
+
 #ifdef DEBUG_OUTRANGE
     } catch(std::out_of_range)
       {

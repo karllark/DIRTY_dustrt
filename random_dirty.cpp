@@ -54,13 +54,13 @@ random_dirty::random_dirty (long seed)
 
 /* ====================================================================== */
 
-float random_dirty::random_num ()
+double random_dirty::random_num ()
 
 {
 
     int j;
     long k;
-    float temp;
+    double temp;
 
     k = _idum/IQ1;
     _idum = IA1*(_idum - k*IQ1) - k*IR1;

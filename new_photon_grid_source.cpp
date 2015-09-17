@@ -91,9 +91,6 @@ void new_photon_grid_source (photon_data& photon,
   int x = geometry.wave_index;
   int x_val, y_val, z_val;
 
-  double emit_bias_fraction = 0.5;
-
-
   if (random_obj.random_num() >= geometry.emit_bias_fraction) { // sample radiation field
     // check which grid are we in
     vector<one_grid>::iterator selected_grid;

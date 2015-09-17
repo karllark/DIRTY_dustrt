@@ -10,7 +10,7 @@ class random_dirty {
   random_dirty(long seed);
   
   // get new random value
-  float random_num();
+  double random_num();
 
  private:
   long _idum;
