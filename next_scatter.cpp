@@ -15,17 +15,34 @@ int next_scatter (geometry_struct& geometry,
 		  random_dirty& random_obj)
 
 {
+  // find path_tau[]
+  photon_data dummy_photon = photon;
+  dummy_photon.current_grid_num = 0;  // set to the base grid to start tarjectory correctly
+  dummy_photon.path_cur_cells = 0; // set to 0 to save cells traversed
+  
+  double target_tau = 1e20;
+  int escape = 0;
+  double tau_path = 0.0;
+  calc_photon_trajectory(dummy_photon, geometry, target_tau, escape, tau_path);
+  double bias_norm = 1.0/(1.0 + tau_path);
+
   // determine the optical depth to the next scattering
-  double target_tau = 0.0;
+  target_tau = 0.0;
 
   double ran_num = random_obj.random_num();
-  if (ran_num >= (geometry.scat_bias_fraction_10+geometry.scat_bias_fraction_100)) { // classical scattering
+  if (ran_num >= geometry.forced_scat_bias_fraction) { // classical scattering
     target_tau = -log(random_obj.random_num());
-  } else if (ran_num >= geometry.scat_bias_fraction_100) { // biased to large optical depths
-    target_tau = -10.*log(random_obj.random_num());
-  } else { // biased to huge optical depths
-    target_tau = -100.*log(random_obj.random_num());
+  } else { // biased based on tau_path
+    target_tau = -1.*bias_norm*log(random_obj.random_num());
   }
+
+//   if (ran_num >= (geometry.scat_bias_fraction_10+geometry.scat_bias_fraction_100)) { // classical scattering
+//     target_tau = -log(random_obj.random_num());
+//   } else if (ran_num >= geometry.scat_bias_fraction_100) { // biased to large optical depths
+//     target_tau = -10.*log(random_obj.random_num());
+//   } else { // biased to huge optical depths
+//     target_tau = -100.*log(random_obj.random_num());
+//   }
 
   photon.target_tau = target_tau;
 
@@ -40,7 +57,6 @@ int next_scatter (geometry_struct& geometry,
   }
   
   // determine the site of the next scattering
-  int escape = 0;
   double distance_traveled = 0.0;
   double tau_traveled = 0.0;
   photon.path_cur_cells = 0;  // set to 0 to save cells tranversed
@@ -72,9 +88,8 @@ int next_scatter (geometry_struct& geometry,
   if (!escape) {
     // update the scattered weight for biasing
     double biased_weight_factor = 0.0;
-    biased_weight_factor = (1.0 - (geometry.scat_bias_fraction_10 + geometry.scat_bias_fraction_100)) +
-      (geometry.scat_bias_fraction_10/10.0)*exp(target_tau-(target_tau/10.0)) + 
-      (geometry.scat_bias_fraction_100/100.0)*exp(target_tau-(target_tau/100.0));
+    biased_weight_factor = (1.0 - (geometry.forced_scat_bias_fraction)) +
+			    (geometry.forced_scat_bias_fraction/bias_norm)*exp(target_tau-(target_tau/bias_norm));
 
     photon.scat_weight /= biased_weight_factor;
 

@@ -13,8 +13,8 @@ INCDIR = include
 LIBS = -lcfitsio
 
 # STSCI
-INCDIR_STSCI = /user/kgordon/Dirty_v2/cfitsio
-LIBS = -L/user/kgordon/Dirty_v2/cfitsio -lcfitsio
+INCDIR_STSCI = /astro/dust_kg3/kgordon/Dirty_v2/cfitsio
+LIBS = -L/astro/dust_kg3/kgordon/Dirty_v2/cfitsio -lcfitsio
 
 # Fedora with dist cfitsio
 #INCDIR_FEDORA = /usr/include/cfitsio
