@@ -11,8 +11,8 @@
 // ======================================================================
 #include "forced_first_scatter.h"
 #include <unistd.h>
-//#define DEBUG_FFS
-//#define OUTNUM 0
+// #define DEBUG_FFS
+// #define OUTNUM 88
 
 int forced_first_scatter (geometry_struct& geometry,
 			  photon_data& photon,
@@ -46,8 +46,13 @@ int forced_first_scatter (geometry_struct& geometry,
   photon.first_tau = tau_to_surface;
   photon.prev_tau_surface = tau_to_surface;
 
+  // cout << photon.number << " ";
+  // cout << tau_to_surface << " ";
+  // cout << ffs_escape << " ";
+  // cout << distance_traveled << endl;
+
 #ifdef DEBUG_FFS
-  cout << "ffs2: photon.path_cur_cells = " << photon.path_cur_cells << endl;
+  if (photon.number == OUTNUM) cout << "ffs2: photon.path_cur_cells = " << photon.path_cur_cells << endl;
   if (photon.number == OUTNUM) cout << "surface tau done; "; cout.flush();
 #endif
 
@@ -57,7 +62,7 @@ int forced_first_scatter (geometry_struct& geometry,
   if (tau_to_surface == 0.0) {
     ffs_escape = 1;
 #ifdef DEBUG_FFS
-    cout << "photon escaping w/o interacting" << endl;
+    if (photon.number == OUTNUM) cout << "photon escaping w/o interacting" << endl;
 #endif
   } else {
 
@@ -73,7 +78,7 @@ int forced_first_scatter (geometry_struct& geometry,
     photon.scat_weight = photon.stellar_weight*(1. - new_stellar_weight);
 
     // calculate the weight which is scattered
-    if (random_obj.random_num() >= geometry.forced_scat_bias_fraction) { // classical forced scattering
+    if (random_obj.random_num() >= geometry.scat_bias_fraction) { // classical forced scattering
 
       target_tau = -log(1.0 - random_obj.random_num()*(1.0 - new_stellar_weight));
 
@@ -86,8 +91,8 @@ int forced_first_scatter (geometry_struct& geometry,
 
     // calculate the biased weight factor
     double biased_weight_factor = 0.0;
-    biased_weight_factor = (1.0 - geometry.forced_scat_bias_fraction) +
-      geometry.forced_scat_bias_fraction*(1.0 - exp(-photon.first_tau))*exp(target_tau)/photon.first_tau;
+    biased_weight_factor = (1.0 - geometry.scat_bias_fraction) +
+      geometry.scat_bias_fraction*(1.0 - exp(-photon.first_tau))*exp(target_tau)/photon.first_tau;
 
     photon.scat_weight /= biased_weight_factor;
 
@@ -130,6 +135,11 @@ int forced_first_scatter (geometry_struct& geometry,
 #endif
     distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_traveled);
 
+    // cout << photon.number << " ";
+    // cout << target_tau << " ";
+    // cout << tau_traveled << " ";
+    // cout << distance_traveled << endl;
+    
 #ifdef DEBUG_FFS
     if (photon.number == OUTNUM) {
       cout << "target_tau = " << target_tau << endl;

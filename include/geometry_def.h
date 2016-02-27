@@ -108,7 +108,7 @@ struct geometry_struct {
   double angular_radius; // radius of model in angular units
   float tau;      // radial optical depth of model at reference wavelength
   float tau_wave;  // reference wavelength for tau
-  float tau_to_tau_ref;  // ratio of current tau to reference tau
+  double tau_to_tau_ref;  // ratio of current tau to reference tau
   float wavelength;   // wavelenght of current tau
   float max_tau_per_cell;  // the maximum tau per cell (used in subdividing cells)
   float max_tau_per_cell_x;  // the maximum tau per cell (used in subdividing cells)
@@ -116,15 +116,13 @@ struct geometry_struct {
   float max_tau_per_cell_z;  // the maximum tau per cell (used in subdividing cells)
   float filling_factor;  // filling factor of high density clumps;
   float density_ratio;   // density ratio of low/high clumps
-  float clump_densities[2];  // densities of clumps in tau/pc
+  double clump_densities[2];  // densities of clumps in tau/pc
   float solid_angle;  // solid angle for scattering probabilities
 
   long n_photons;  // number of photons to run
   long max_num_scat;  // maximum number of scatterings
 
-  double forced_scat_bias_fraction;
-  double scat_bias_fraction_10;
-  double scat_bias_fraction_100;
+  double scat_bias_fraction;
   double emit_bias_fraction;
 };
 

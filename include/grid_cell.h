@@ -13,7 +13,7 @@
 
 // defines the contents of a grid cell
 struct grid_cell {
-  float dust_tau_per_pc;      // dust optical depth per parsec tau/pc
+  double dust_tau_per_pc;      // dust optical depth per parsec tau/pc
   double num_H;  // number of HI atoms in this cell
 
   vector<float> absorbed_energy;  // energy absorbed in this cell at this wavelength

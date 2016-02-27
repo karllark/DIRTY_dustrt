@@ -166,13 +166,13 @@ void setup_dust_grid_slab (ConfigFile& param_data,
   geometry.clump_densities[1] = geometry.density_ratio*geometry.clump_densities[0];
 
   // determine the nonslap density (compute here to keep consistant between a homogenous slab and a clumpy slab)
-  float nonslab_density = nonslab_density_ratio*geometry.tau/(slab_z2 - slab_z1);
+  double nonslab_density = nonslab_density_ratio*geometry.tau/(slab_z2 - slab_z1);
 
   int j,k;
   //float radius = 0.0;
-  float x_val = 0.0;
-  float y_val = 0.0;
-  float z_val = 0.0;
+  double x_val = 0.0;
+  double y_val = 0.0;
+  double z_val = 0.0;
   for (k = 0; k < main_grid.index_dim[2]; k++) {
     z_val = (main_grid.positions[2][k] + main_grid.positions[2][k+1])/2.0;
     for (j = 0; j < main_grid.index_dim[1]; j++) {

@@ -7,8 +7,8 @@
 // 2008 Aug/KDG - added saving of trajectory for continous absorption
 // ======================================================================
 #include "calc_delta_dist.h"
-//#define OUTNUM 0
-//#define DEBUG_CDD
+#define OUTNUM 33
+// #define DEBUG_CDD
 
 double calc_delta_dist (photon_data& photon,
 			geometry_struct& geometry,
@@ -27,7 +27,7 @@ double calc_delta_dist (photon_data& photon,
   }
 #endif
   tau_traveled = 0.0;
-  float distance_traveled = 0.0;  // resulting distance traveled
+  double distance_traveled = 0.0;  // resulting distance traveled
   int exit_cell = 1;  // tells if the cell has been exited
   int min_index = 0;
 
@@ -278,7 +278,7 @@ double calc_delta_dist (photon_data& photon,
     // save the current cell dust coeff (tau/pc)
     // and distance traveled
     distance_traveled = delta_distance[min_index];
-    
+
     // determine the optical depth transversed before the photon exits the cell
     tau_traveled = dust_tau_per_pc*distance_traveled;
     
@@ -289,6 +289,17 @@ double calc_delta_dist (photon_data& photon,
       exit_cell = 0;
     }
 
+    // if (photon.number == OUTNUM) {
+    //   cout << "cdd: ";
+    //   cout << photon.number << " ";
+    //   cout << distance_traveled << " ";
+    //   cout << tau_traveled << " ";
+    //   cout << exit_cell << " ";
+    //   cout << min_index << " ";
+    //   for (i = 0; i < 3; i++) cout << photon.dir_cosines[i] << " ";
+    //   cout << endl;
+    // }
+    
 #ifdef DEBUG_CDD
     if (photon.number == OUTNUM) {
       cout << "path info" << endl;
@@ -333,7 +344,8 @@ double calc_delta_dist (photon_data& photon,
       photon.path_cur_cells++;
 
 #ifdef DEBUG_CDD      
-      cout << "photon.path_cur_cells = " << photon.path_cur_cells << endl;
+      if (photon.number == OUTNUM) 
+	cout << "photon.path_cur_cells = " << photon.path_cur_cells << endl;
 #endif
     }
 
