@@ -139,15 +139,16 @@ int forced_first_scatter (geometry_struct& geometry,
       cout << "escape = " << escape << endl;
     }
 #endif
-    if (fabs(target_tau - tau_traveled) > ROUNDOFF_ERR_TRIG*10.) {
-      cout << "*****error*****forced_first_scatter****" << endl;
-      cout << "target_tau = " << target_tau << endl;
-      cout << "tau_traveled = " << tau_traveled << endl;
-      cout << "diff = " << target_tau - tau_traveled << endl;
-      cout << ROUNDOFF_ERR_TRIG << endl;
-      cout << "photon # = " << photon.number << endl;
-      cout << "tau_to_surface = " << photon.first_tau << endl;
-      exit(8);
+//     if (fabs((target_tau - tau_traveled)/target_tau) > ROUNDOFF_ERR_TRIG) {
+//       cout << "*****error*****forced_first_scatter****" << endl;
+//       cout << "target_tau = " << target_tau << endl;
+//       cout << "tau_traveled = " << tau_traveled << endl;
+//       cout << "diff = " << target_tau - tau_traveled << endl;
+//       cout << "diff/target_tau = " << (target_tau - tau_traveled)/target_tau << endl;
+//       cout << ROUNDOFF_ERR_TRIG << endl;
+//       cout << "photon # = " << photon.number << endl;
+//       cout << "tau_to_surface = " << photon.first_tau << endl;
+//       exit(8);
 //   } else {
 //     // This is a special case where the photon has traveled the correct distance
 //     // but has also just exited a subgrid.  This means that the photon index
@@ -165,7 +166,7 @@ int forced_first_scatter (geometry_struct& geometry,
 //     }
 
 //     determine_photon_position_index_initial(geometry, photon);
-    }
+//     }
     
     {
       /*

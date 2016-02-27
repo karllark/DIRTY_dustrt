@@ -81,7 +81,10 @@ void get_dust_thermal_emission (geometry_struct& geometry,
   global_total_absorbed = NumUtils::integrate<double>(tmp_wave,tmp_abs_energy);
 
   cout << "global_total_absorbed = " << global_total_absorbed << endl;
-  if (global_total_absorbed == 0.0) exit(8);
+  if (global_total_absorbed == 0.0) {
+    cout << "exiting as global_total_absorbed is zero." << endl;
+    exit(8);
+  }
 
   double min_enough_energy = min_energy_frac*runinfo.energy_conserve_target*global_total_absorbed/geometry.num_cells;
   long num_cells_enough = 0;
