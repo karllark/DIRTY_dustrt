@@ -36,9 +36,9 @@ void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
 	  // assumes a cubical cell
 	  x_tau = (geometry.grids[m].positions[0][i+1] - geometry.grids[m].positions[0][i])*
 	    geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
-	  y_tau = (geometry.grids[m].positions[1][i+1] - geometry.grids[m].positions[1][i])*
+	  y_tau = (geometry.grids[m].positions[1][j+1] - geometry.grids[m].positions[1][j])*
 	    geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
-	  z_tau = (geometry.grids[m].positions[2][i+1] - geometry.grids[m].positions[2][i])*
+	  z_tau = (geometry.grids[m].positions[2][k+1] - geometry.grids[m].positions[2][k])*
 	    geometry.grids[m].grid(i,j,k).dust_tau_per_pc;
 
 	  subdivide = 0;
