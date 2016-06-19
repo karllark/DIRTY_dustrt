@@ -33,6 +33,11 @@ void get_run_parameters (ConfigFile& param_data,
   if (param_data.isBadFloat(geometry.scat_bias_fraction)) geometry.scat_bias_fraction = 0.5;
   check_input_param("scat_bias_fraction",geometry.scat_bias_fraction,0.0,1.0);
 
+  // fractions for biased angle scattering (better samples back scattered photons for g >> 0)
+  geometry.scat_angle_bias_fraction = param_data.DValue("Run","scat_angle_bias_fraction");
+  if (param_data.isBadFloat(geometry.scat_angle_bias_fraction)) geometry.scat_angle_bias_fraction = 0.0;
+  check_input_param("scat_angle_bias_fraction",geometry.scat_angle_bias_fraction,0.0,1.0);
+
   // fraction for biased dust emission (better samples cells with low radiation fields)
   geometry.emit_bias_fraction = param_data.DValue("Run","emit_bias_fraction");
   if (param_data.isBadFloat(geometry.emit_bias_fraction)) geometry.emit_bias_fraction = 0.5;

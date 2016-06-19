@@ -45,11 +45,42 @@ void scatter_photon (geometry_struct& geometry,
 //     cout << cos_alpha << " ";
 //     cout << geometry.phi_angle[i3] << endl;
 //     cout.flush();
+  } else if ((geometry.g > ROUNDOFF_ERR_TRIG) && (geometry.scat_angle_bias_fraction > 0.0)) {
+    sqr_g = pow(geometry.g,2);
+
+    double ran_num = random_obj.random_num();
+    double ran_num2 = random_obj.random_num();
+    if (ran_num >= geometry.scat_angle_bias_fraction) { // sample from HG function
+      cos_alpha = (1.0 + sqr_g) - 
+	pow((1.0 - sqr_g)/(1.0 - geometry.g + 2.0*geometry.g*ran_num2),2);
+      cos_alpha /= (2.0*geometry.g);
+    } else { // sample from isotropic function
+      cos_alpha = 2.0*ran_num2 - 1.0;
+    }
+    
+    // multiplicative weight needed
+    double biased_weight_factor = 0.0;
+    biased_weight_factor = (1.0 - geometry.scat_angle_bias_fraction) +
+      (geometry.scat_angle_bias_fraction/
+       ((1 - sqr_g)*pow((1.0 + sqr_g - 2.0*geometry.g*cos_alpha),-1.5)));
+
+    // update the scattered weight
+    photon.scat_weight /= biased_weight_factor;
+
+    // cout << geometry.g << " ";
+    // cout << geometry.scat_angle_bias_fraction << " ";
+    // cout << cos_alpha << " ";
+    // cout << biased_weight_factor << " ";
+
+    // cout << endl;
+
   } else if (geometry.g > ROUNDOFF_ERR_TRIG) {
     sqr_g = pow(geometry.g,2);
+
     cos_alpha = (1.0 + sqr_g) - 
       pow((1.0 - sqr_g)/(1.0 - geometry.g + 2.0*geometry.g*random_obj.random_num()),2);
     cos_alpha /= (2.0*geometry.g);
+
   } else
     cos_alpha = 2.0*random_obj.random_num() - 1.0;
 
