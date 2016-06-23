@@ -25,7 +25,7 @@
 //                failure info if instructed by the parameter file. 
 // ======================================================================
 #include "dirty.h"
-// #define DEBUG_DIRTY
+//#define DEBUG_DIRTY
 
 int main(int argc, char* argv[]) 
 

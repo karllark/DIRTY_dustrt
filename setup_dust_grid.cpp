@@ -291,5 +291,8 @@ void setup_dust_grid (ConfigFile& param_data,
   for (i = 0; i < 4; i++)
     photon.path_pos_index.push_back(tmp_index);
   photon.path_tau.resize(photon.path_max_cells);
-
+  photon.path_distance.resize(photon.path_max_cells);
+  photon.path_num_current_grids.resize(photon.path_max_cells);
+  photon.path_current_grid_num.resize(photon.path_max_cells);
+  
 }

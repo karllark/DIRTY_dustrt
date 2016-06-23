@@ -11,8 +11,8 @@
 // ======================================================================
 #include "forced_first_scatter.h"
 #include <unistd.h>
-// #define DEBUG_FFS
-// #define OUTNUM 88
+//#define DEBUG_FFS
+//#define OUTNUM 0
 
 int forced_first_scatter (geometry_struct& geometry,
 			  photon_data& photon,
@@ -98,13 +98,6 @@ int forced_first_scatter (geometry_struct& geometry,
 
     photon.target_tau = target_tau;
 
-//     cout << photon.number << " ";
-//     cout << target_tau << " ";
-//     cout << photon.first_tau << " ";
-//     cout << photon.scat_weight << " ";
-//     cout << 1.0/biased_weight_factor << " ";
-//     cout << endl;
-    
     // update the stellar weight
     // *not done* this is done correctly in the classify_stellar_photon routine
     // KDG - 28 Feb 2007
@@ -133,14 +126,34 @@ int forced_first_scatter (geometry_struct& geometry,
 #ifdef DEBUG_FFS
     if (photon.number == OUTNUM) cout << "tau_traveled in = " << tau_traveled << endl;
 #endif
-    distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_traveled);
+    // old code (23 Jun 2016)
+    //distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_traveled);
 
-    // cout << photon.number << " ";
-    // cout << target_tau << " ";
-    // cout << tau_traveled << " ";
-    // cout << distance_traveled << endl;
-    
+    // use the already computed photon track in dummy_photon instead of recalculating
+    distance_traveled = calc_photon_trajectory_from_track(photon, dummy_photon, target_tau);
+
 #ifdef DEBUG_FFS
+
+    // test if the two routines gave the same answer
+    int i;
+    cout << "ori: ";
+    for (i = 0; i < 3; i++)
+      cout << photon.position[i] << " ";
+    cout << endl;
+    cout << "new: ";
+    for (i = 0; i < 3; i++)
+      cout << save_photon.position[i] << " ";
+    cout << endl;
+
+    cout << "ori: ";
+    for (i = 0; i < 3; i++)
+      cout << photon.position_index[0][i] << " ";
+    cout << endl;
+    cout << "new: ";
+    for (i = 0; i < 3; i++)
+      cout << save_photon.position_index[0][i] << " ";
+    cout << endl;
+    
     if (photon.number == OUTNUM) {
       cout << "target_tau = " << target_tau << endl;
       cout << "tau_traveled = " << tau_traveled << endl;

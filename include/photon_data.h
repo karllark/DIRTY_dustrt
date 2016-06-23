@@ -32,8 +32,14 @@ struct photon_data {
   // needed to do continous absorption (m,i,j,k)
   // vector of indexes for the cells the current photon just passed through
   std::vector< std::vector<int> > path_pos_index;  
+  // vector of the number of current grids for each cell the photon just passed through
+  std::vector< int > path_num_current_grids;
+  // vector of the current grid num for each cell the photon just passed through
+  std::vector< int > path_current_grid_num;
   // vector of taus for each cell the photon just passed through
   std::vector< float > path_tau;
+  // vector of distances for each cell the photon just passed through
+  std::vector< float > path_distance;
   // max number of cells in the path vectors (can be increased if needed)
   int path_max_cells;
   // current number of cells in the current storage of the current path
