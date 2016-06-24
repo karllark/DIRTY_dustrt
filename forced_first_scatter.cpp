@@ -122,7 +122,7 @@ int forced_first_scatter (geometry_struct& geometry,
 
   // move photon to location determined by target_tau and get the distance traveled
     int escape = 0;  // reset escape
-    photon.path_cur_cells = 0;  // set to 0 to save cells tranversed
+    //photon.path_cur_cells = 0;  // set to 0 to save cells tranversed
 #ifdef DEBUG_FFS
     if (photon.number == OUTNUM) cout << "tau_traveled in = " << tau_traveled << endl;
 #endif
@@ -130,7 +130,8 @@ int forced_first_scatter (geometry_struct& geometry,
     //distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_traveled);
 
     // use the already computed photon track in dummy_photon instead of recalculating
-    distance_traveled = calc_photon_trajectory_from_track(photon, dummy_photon, target_tau);
+    distance_traveled = calc_photon_trajectory_from_track(photon, dummy_photon, target_tau,
+							  escape, tau_traveled);
 
 #ifdef DEBUG_FFS
 

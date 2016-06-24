@@ -7,8 +7,8 @@
 // 22 Oct 2013/KDG - added option to deal with forced_first_scatter getting zero optical depth
 // ======================================================================
 #include "radiative_transfer.h"
-//#define DEBUG_RT
-//#define OUTNUM -1
+#define DEBUG_RT
+#define OUTNUM -1
 //#define OUTNUM 453
 #define DEBUG_OUTRANGE
 

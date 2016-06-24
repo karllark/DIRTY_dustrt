@@ -26,6 +26,8 @@ extern double calc_photon_trajectory (photon_data& photon,
 // determines the photon trajectory based on previously calculated photon track
 extern double calc_photon_trajectory_from_track (photon_data& photon,
 						 photon_data& photon_track,
-						 double target_tau);
+						 double target_tau,
+						 int& escape,
+						 double& tau_traveled);
 
 #endif

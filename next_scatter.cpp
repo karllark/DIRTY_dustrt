@@ -9,12 +9,19 @@
 // ======================================================================
 #include "next_scatter.h"
 #define DEBUG_NS
+#define OUTNUM 0
 
 int next_scatter (geometry_struct& geometry,
 		  photon_data& photon,
 		  random_dirty& random_obj)
 
 {
+#ifdef DEBUG_NS
+    if (photon.number >= OUTNUM) {
+      cout << "starting ns" << endl;
+    }
+#endif
+
   // find path_tau[]
   photon_data dummy_photon = photon;
   dummy_photon.current_grid_num = 0;  // set to the base grid to start tarjectory correctly
@@ -28,6 +35,12 @@ int next_scatter (geometry_struct& geometry,
 //   cout << tau_path << " ";
 //   cout << bias_norm << " ";
 
+#ifdef DEBUG_NS
+    if (photon.number >= OUTNUM) {
+      cout << "track to surface calculated" << endl;
+    }
+#endif
+  
   // determine the optical depth to the next scattering
   target_tau = 0.0;
 
@@ -41,10 +54,17 @@ int next_scatter (geometry_struct& geometry,
 
   photon.target_tau = target_tau;
 
+#ifdef DEBUG_NS
+  if (photon.number >= OUTNUM) {
+    cout << "tau_path = " << tau_path << endl;
+    cout << "target_tau = " << target_tau << endl;
+  }
+#endif
+
   // check to see if we will start in a subgrid
   if (photon.current_grid_num > 0) {
 #ifdef DEBUG_NS
-    if (photon.number == OUTNUM) {
+    if (photon.number >= OUTNUM) {
       cout << "starting in a subgrid" << endl;
     }
 #endif
@@ -57,9 +77,34 @@ int next_scatter (geometry_struct& geometry,
   escape = 0;
   photon.path_cur_cells = 0;  // set to 0 to save cells tranversed
 
+  // old code (23 Jun 2016)
+  photon_data photon_save = photon;
   distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_traveled);
+
+  // use the already computed photon track in dummy_photon instead of recalculating
+  distance_traveled = calc_photon_trajectory_from_track(photon_save, dummy_photon, target_tau,
+   							escape, tau_traveled);
+
+  cout << photon.current_grid_num << " ";
+  cout << photon.num_current_grids << " ";
+  cout << photon.path_cur_cells << " ";
+  cout << endl;
+
+  cout << photon_save.current_grid_num << " ";
+  cout << photon_save.num_current_grids << " ";
+  cout << photon_save.path_cur_cells << " ";
+  cout << endl;
+
+  //  if (photon_save.current_grid_num != photon.current_grid_num)
+    // exit(8);
+  
+  // cout << tau_path << " ";
+  // cout << target_tau << " ";
+  // cout << tau_traveled << endl;
+  // exit(8);
+  
 #ifdef DEBUG_NS
-  if (photon.number == OUTNUM) {
+  if (photon.number >= OUTNUM) {
     cout << "ns cpt done; ";
     cout << "distance_traveled = " << distance_traveled << endl;
     cout << "target_tau = " << target_tau << endl;
@@ -72,6 +117,8 @@ int next_scatter (geometry_struct& geometry,
 //     cout << photon.position[j] << " ";
 //   cout << endl;
 
+  // cout << (target_tau - tau_traveled)/geometry.tau << endl;
+  
   escape = 0;
   // check if the photon has left the dust
   if ((target_tau - tau_traveled)/geometry.tau > ROUNDOFF_ERR_TRIG)
@@ -81,6 +128,8 @@ int next_scatter (geometry_struct& geometry,
   if (photon.num_scat > geometry.max_num_scat)
     escape = 1;
 
+  // cout << escape << endl;
+  
   // cout << target_tau - tau_traveled << " ";
   // cout << geometry.max_num_scat << " ";
   // cout << geometry.tau << " ";
@@ -112,12 +161,12 @@ int next_scatter (geometry_struct& geometry,
 //   cout << endl;
 
 #ifdef DEBUG_NS
-  if (photon.number == OUTNUM) {
+  if (photon.number >= OUTNUM) {
     cout << "ns escape = " << escape << endl;
   }
 #endif
 #ifdef DEBUG_NS
-  if (photon.number == OUTNUM) {
+  if (photon.number >= OUTNUM) {
     if ((target_tau - tau_traveled) < -ROUNDOFF_ERR_TRIG) {
       cout << "*****error*****next_scatter*****" << endl;
       cout << "target_tau = " << target_tau << endl;
