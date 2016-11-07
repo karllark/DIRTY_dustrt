@@ -60,10 +60,19 @@ int main(int argc, char* argv[])
 
   runinfo.param_filename = param_filename; // save the filename
 
-  random_dirty random_obj(long(-987654321));  // object for random number generator
-
   GrainModel CurGrainModel;  // object for grain model
 
+  // get the run parameters (basic info)
+  get_run_parameters(param_data, output, geometry, runinfo);
+
+#ifdef DEBUG_DIRTY
+  cout << "grp done; ";
+  cout.flush();
+#endif
+  
+  // initialize the random number generator
+  random_dirty random_obj(long(-987654321));  // object for random number generator
+  
   // setup the dust grid with dust density (tau/pc), positions, etc.
   setup_dust_grid(param_data, geometry, photon, random_obj);
 #ifdef DEBUG_DIRTY
@@ -71,14 +80,6 @@ int main(int argc, char* argv[])
   cout.flush();
 #endif
 
-  // get the run parameters (basic info)
-  get_run_parameters(param_data, output, geometry, runinfo);
-  
-#ifdef DEBUG_DIRTY
-  cout << "grp done; ";
-  cout.flush();
-#endif
-  
   // get the dust grain parameters
   get_dust_parameters(param_data, CurGrainModel, geometry, runinfo);
 
