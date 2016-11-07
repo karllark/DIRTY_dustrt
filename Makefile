@@ -14,10 +14,10 @@ LIBS = -lcfitsio
 
 # STSCI
 INCDIR_STSCI = /astro/dust_kg3/kgordon/Dirty_v2/cfitsio
-LIBS = -L/astro/dust_kg3/kgordon/Dirty_v2/cfitsio -lcfitsio
+#LIBS = -L/astro/dust_kg3/kgordon/Dirty_v2/cfitsio -lcfitsio
 
 # Fedora with dist cfitsio
-#INCDIR_FEDORA = /usr/include/cfitsio
+INCDIR_FEDORA = /usr/include/cfitsio
 
 PROGRAM = dirty
 
@@ -26,8 +26,8 @@ SOURCES = $(wildcard *.cpp)
 OBJECTS = ${SOURCES:.cpp=.o}
 
 #CPPFLAGS = -I${INCDIR} -O2 -Wall -Wextra -g
-#CPPFLAGS = -I${INCDIR} -I${INCDIR_FEDORA} -O2 -Wall -Wextra 
-CPPFLAGS = -I${INCDIR} -I${INCDIR_STSCI} -O2 -Wall -Wextra 
+CPPFLAGS = -I${INCDIR} -I${INCDIR_FEDORA} -O2 -Wall -Wextra 
+#CPPFLAGS = -I${INCDIR} -I${INCDIR_STSCI} -O2 -Wall -Wextra 
 #CPPFLAGS = -I${INCDIR} -Wall -Wextra 
 
 LDFLAGS = ${LIBS}

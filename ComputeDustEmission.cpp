@@ -17,7 +17,7 @@ extern int StochasticHeating(vector <float> & wave,
 int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel, 
 			 vector <vector<double> > & EmmittedEnergy, bool & DoStochastic,
 			 bool & UseEffective_Grain, 
-			 float & _FailureSz, int & _FailureComp)
+			 float & _FailureSz, int & _FailureComp, vector <float> & _transitionSz)
 {
  
   // Stochastic state for each size. 
@@ -103,7 +103,10 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
     } 
     // initilize _t and _dostochastic
     _t.resize(_nsize);
-    _dostochastic.resize(_nsize,DoStochastic);  // Populate local with global default. 
+    // Use assign to make sure we aren't polluted by previous component exit conditions. 
+    // resize only assigns to resized elements, not the whole vector.
+    //_dostochastic.resize(_nsize,DoStochastic);  // Populate local with global default. 
+    _dostochastic.assign(_nsize,DoStochastic);  // Populate local with global default. 
     // and first dimension of Luminosities. 
     EquilibriumLum.resize(_nsize);
     StochasticLum.resize(_nsize); 
@@ -146,9 +149,10 @@ int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
 	Tu = HeatUtils::getTmean(_CalTemp,_Enthalpy,mpe); 
 	tau_rad = HeatUtils::getTauRad(_cabs,_w,mpe,Tu); 
 	
-	if (tau_abs < 10*tau_rad) {   // Turn off stochastic heating for this and all subsequent sizes. 
+	if (tau_abs < tau_rad) {   // Turn off stochastic heating for this and all subsequent sizes. 
 	  transform(_dostochastic.begin()+_sz,_dostochastic.end(),_dostochastic.begin()+_sz,
 		    bind1st(multiplies<bool>(),false));
+          _transitionSz[_cmp] = _size[_sz-1];
 	} else { // Compute StochasticLum, zero out Eq. 
 	  status = StochasticHeating(_w,_cJprod,_cabs,_CalTemp,_Enthalpy,EAbs,TMin,TMax,*_it,_sz,StochasticLum); 
 	  if (status != Flags::FSUCCESS) return status; // There's been a stochastic heating failure. 

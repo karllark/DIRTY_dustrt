@@ -25,6 +25,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 {
   float _FailureSz; 
   int _FailureComp;
+  vector <float> _transitionSz(CurGrainModel.getNComp());
 
   int i,j,k,m,z = 0;
   uint x = 0;
@@ -252,7 +253,7 @@ void get_dust_thermal_emission (geometry_struct& geometry,
 					 CurGrainModel, 
 					 geometry.grids[m].grid(i,j,k).emitted_energy,
 					 DoStochastic,runinfo.effective_grain_heating,
-					 _FailureSz,_FailureComp); 
+					 _FailureSz,_FailureComp,_transitionSz); 
 #ifdef DEBUG_GDTE
 	    cout << "...leaving ComputeDustEmission" << endl;
 #endif
