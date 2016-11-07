@@ -150,6 +150,7 @@ void get_run_parameters (ConfigFile& param_data,
   runinfo.ran_seed = param_data.IValue("Run","random_num_seed");
   if (runinfo.ran_seed == -99) runinfo.ran_seed = long(987654321);  // set to no if not initially set
   check_input_param("random_num_seed",runinfo.ran_seed,0,long(1000000000));
+  runinfo.ran_seed *= -1;
   
   output.arrays_allocated = 0;
   output.num_outputs = geometry.num_observers;
