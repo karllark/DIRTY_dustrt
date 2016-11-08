@@ -62,6 +62,9 @@ int main(int argc, char* argv[])
 
   GrainModel CurGrainModel;  // object for grain model
 
+  // initialize the random number generator
+  random_dirty random_obj(long(-987654321));  // object for random number generator
+
   // get the run parameters (basic info)
   get_run_parameters(param_data, output, geometry, runinfo);
 
@@ -71,7 +74,7 @@ int main(int argc, char* argv[])
 #endif
   
   // initialize the random number generator
-  random_dirty random_obj(long(-987654321));  // object for random number generator
+  //random_dirty random_obj(long(-987654321));  // object for random number generator
   
   // setup the dust grid with dust density (tau/pc), positions, etc.
   setup_dust_grid(param_data, geometry, photon, random_obj);
