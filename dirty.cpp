@@ -62,27 +62,24 @@ int main(int argc, char* argv[])
 
   GrainModel CurGrainModel;  // object for grain model
 
-  // initialize the random number generator
-  random_dirty random_obj(long(-987654321));  // object for random number generator
-
   // get the run parameters (basic info)
   get_run_parameters(param_data, output, geometry, runinfo);
+  cout << runinfo.ran_seed << endl;
+  random_dirty random_obj(runinfo.ran_seed);  // object for random number generator
+
+  // setup the dust grid with dust density (tau/pc), positions, etc.
+  setup_dust_grid(param_data, geometry, photon, random_obj);
+  output.num_outputs = geometry.num_observers;
+#ifdef DEBUG_DIRTY
+  cout << "sdg done; ";
+  cout.flush();
+#endif
 
 #ifdef DEBUG_DIRTY
   cout << "grp done; ";
   cout.flush();
 #endif
   
-  // initialize the random number generator
-  //random_dirty random_obj(long(-987654321));  // object for random number generator
-  
-  // setup the dust grid with dust density (tau/pc), positions, etc.
-  setup_dust_grid(param_data, geometry, photon, random_obj);
-#ifdef DEBUG_DIRTY
-  cout << "sdg done; ";
-  cout.flush();
-#endif
-
   // get the dust grain parameters
   get_dust_parameters(param_data, CurGrainModel, geometry, runinfo);
 
@@ -99,7 +96,7 @@ int main(int argc, char* argv[])
 #endif
 
   // temp to reset the random number generator
-  random_dirty random_obj2(long(-987654321));  // object for random number generator
+  random_dirty random_obj2(runinfo.ran_seed);  // object for random number generator
   
   // do the radiative transfer over all the wavelengths
   radiative_transfer_many_waves(geometry, runinfo, output, photon, random_obj2, REG_RT, 0);
