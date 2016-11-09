@@ -64,12 +64,15 @@ int main(int argc, char* argv[])
 
   // get the run parameters (basic info)
   get_run_parameters(param_data, output, geometry, runinfo);
-  cout << runinfo.ran_seed << endl;
   random_dirty random_obj(runinfo.ran_seed);  // object for random number generator
 
   // setup the dust grid with dust density (tau/pc), positions, etc.
   setup_dust_grid(param_data, geometry, photon, random_obj);
+
+  // moved this line out of get_run_parameters to allow for the random seed to be
+  // a user input - not elegant and there is likely a better solution (KDG - 8 Nov 2016)
   output.num_outputs = geometry.num_observers;
+
 #ifdef DEBUG_DIRTY
   cout << "sdg done; ";
   cout.flush();
