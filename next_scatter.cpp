@@ -15,6 +15,10 @@ int next_scatter (geometry_struct& geometry,
 		  random_dirty& random_obj)
 
 {
+  // **test***
+  // float save_scat_bias_fraction = geometry.scat_bias_fraction;
+  // geometry.scat_bias_fraction = 0.0;
+  
   // find path_tau[]
   photon_data dummy_photon = photon;
   dummy_photon.current_grid_num = 0;  // set to the base grid to start tarjectory correctly
@@ -24,9 +28,9 @@ int next_scatter (geometry_struct& geometry,
   int escape = 0;
   double tau_path = 0.0;
   calc_photon_trajectory(dummy_photon, geometry, target_tau, escape, tau_path);
-  double bias_norm = 1.0/(1.0 + tau_path);
-//   cout << tau_path << " ";
-//   cout << bias_norm << " ";
+  //double bias_norm = 1.0/(1.0 + tau_path);
+  // **testing***
+  double bias_norm = 1.0/10.0;
 
   // determine the optical depth to the next scattering
   target_tau = 0.0;
@@ -127,6 +131,9 @@ int next_scatter (geometry_struct& geometry,
   }
 #endif
 
+  // **test***
+  // geometry.scat_bias_fraction = save_scat_bias_fraction;
+  
   // return escape (1 = yes, 0 = no)
   return(escape);
 }

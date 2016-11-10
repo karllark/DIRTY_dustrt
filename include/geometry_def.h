@@ -123,6 +123,7 @@ struct geometry_struct {
   long max_num_scat;  // maximum number of scatterings
 
   double scat_bias_fraction;
+  double force_scat_bias_fraction;
   double scat_angle_bias_fraction;
   double emit_bias_fraction;
 };

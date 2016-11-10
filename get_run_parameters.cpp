@@ -33,6 +33,12 @@ void get_run_parameters (ConfigFile& param_data,
   if (param_data.isBadFloat(geometry.scat_bias_fraction)) geometry.scat_bias_fraction = 0.5;
   check_input_param("scat_bias_fraction",geometry.scat_bias_fraction,0.0,1.0);
 
+  // fractions for forced biased scattering (better samples high optical depth scattering)
+  geometry.force_scat_bias_fraction = param_data.DValue("Run","force_scat_bias_fraction");
+  if (param_data.isBadFloat(geometry.force_scat_bias_fraction))
+    geometry.force_scat_bias_fraction = geometry.scat_bias_fraction;
+  check_input_param("force_scat_bias_fraction",geometry.force_scat_bias_fraction,0.0,1.0);
+  
   // fractions for biased angle scattering (better samples back scattered photons for g >> 0)
   geometry.scat_angle_bias_fraction = param_data.DValue("Run","scat_angle_bias_fraction");
   if (param_data.isBadFloat(geometry.scat_angle_bias_fraction)) geometry.scat_angle_bias_fraction = 0.0;
