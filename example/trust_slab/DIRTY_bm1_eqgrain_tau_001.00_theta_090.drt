@@ -1,0 +1,73 @@
+# Parameter file for DIRTY_v2
+#  KDG 10 Nov 2016
+#  TRUST slab benchmark test case
+#
+# Model parameters
+[Geometry]
+distance=10000.0
+n_obs_angles=1
+obs_theta=090.
+obs_phi=0.
+source_type=stars
+n_stars=1
+star_pos_x=0.
+star_pos_y=0.
+star_pos_z=4.
+type=slab_trust
+size_xy=10.
+size_z=10.
+slab_z1=-5.
+slab_z2=-2.
+slab_tau=001.00
+tau_wave=1.0
+# nonslab/slab density ratio
+nonslab_density_ratio=0.0
+# filling factor & density control the clumpiness
+filling_factor=0.2
+density_ratio=1.
+# number of bins for eaxh axis
+slab_nbins_x=40
+slab_nbins_y=20
+slab_nbins_z=20
+# spherical or cubical clumps [choices are sphere/cube]
+clump_type=cube
+
+[Dust Grains]
+type=dust_model
+wave_type=file
+wave_file=basic_grid.dat
+
+[Model Book Keeping]
+Path to Dust Properties=../../../Dust/DustModelTRUST/
+Cross Section SubDir=GrainInputs/
+Calorimetry SubDir=GrainInputs/
+Model SubDir=./
+Model Name=BARE-GR-S-RT13
+Effective Grain for Heating=No
+
+[SED]
+type=bb_file
+sed_file=BB_T10000_L100000.dat
+
+[Run]
+num_photons=1e6
+max_num_scat=500
+force_scat_bias_fraction=0.5
+scat_bias_fraction=0.5
+emit_bias_fraction=0.5
+verbose=1
+output_image_size=300
+output_filebase=output/DIRTY_bm1_eqgrain_tau_001.00_theta_090
+Output Failure Log=yes
+# how to store the absorbed energy (speed vs RAM size)
+# 0 to use memory, 1 to use disk
+abs_energy_storage=0
+energy_conserve_target=0.01
+verbose=1
+# do thermal dust emission
+do_dust_emission=1
+# separate emission by grain type (graphite, silicate, PAH, etc.)
+do_emission_grain=1
+do_global_output=1
+do_image_output=1
+do_stochastic_dust_emission=0
