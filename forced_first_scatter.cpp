@@ -75,14 +75,8 @@ int forced_first_scatter (geometry_struct& geometry,
     // unlike 2nd, 3rd, etc. scatterings, this scattering is forced to be 
     // in the dust distribution and is why the weights are not unity
 
-    photon.scat_weight = photon.stellar_weight*(1. - new_stellar_weight);
-
-    // **test***
-    // float save_scat_bias_fraction = geometry.scat_bias_fraction;
-    // geometry.scat_bias_fraction = 0.0;
-    
-    // calculate the weight which is scattered
-    if (random_obj.random_num() >= geometry.force_scat_bias_fraction) { // classical forced scattering
+    // calculate the optical depth of the interaction/scattering
+    if (random_obj.random_num() >= geometry.scat_bias_fraction) { // classical forced scattering
 
       target_tau = -log(1.0 - random_obj.random_num()*(1.0 - new_stellar_weight));
 
@@ -95,15 +89,15 @@ int forced_first_scatter (geometry_struct& geometry,
 
     // calculate the biased weight factor
     double biased_weight_factor = 0.0;
-    biased_weight_factor = (1.0 - geometry.force_scat_bias_fraction) +
-      geometry.force_scat_bias_fraction*(1.0 - exp(-photon.first_tau))*exp(target_tau)/photon.first_tau;
+    biased_weight_factor = (1.0 - geometry.scat_bias_fraction)/(1.0 - exp(-photon.first_tau)) +
+      geometry.scat_bias_fraction*exp(target_tau)/photon.first_tau;
 
-    photon.scat_weight /= biased_weight_factor;
+    photon.scat_weight = photon.stellar_weight/biased_weight_factor;
+
+    // old scattered weight change (no baising)
+    // photon.scat_weight = photon.stellar_weight*(1. - new_stellar_weight);
 
     photon.target_tau = target_tau;
-
-    // **test***
-    // geometry.scat_bias_fraction = save_scat_bias_fraction;
 
 //     cout << photon.number << " ";
 //     cout << target_tau << " ";
