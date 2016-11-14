@@ -74,24 +74,30 @@ int forced_first_scatter (geometry_struct& geometry,
     // determine optical depth to first scattering
     // unlike 2nd, 3rd, etc. scatterings, this scattering is forced to be 
     // in the dust distribution and is why the weights are not unity
+    
+    float bias_norm = 1.0/10.0;
 
     // calculate the optical depth of the interaction/scattering
-    if (random_obj.random_num() >= geometry.scat_bias_fraction) { // classical forced scattering
+    if (random_obj.random_num() >= geometry.force_scat_bias_fraction) { // classical forced scattering
 
       target_tau = -log(1.0 - random_obj.random_num()*(1.0 - new_stellar_weight));
 
     } else {// uniformaly sampled in optical depth
 
       ran_num = random_obj.random_num();
-      target_tau = ran_num*photon.first_tau;
+      //target_tau = ran_num*photon.first_tau;
+      target_tau = (-1./bias_norm)*log(1.0 - ran_num*(1.0 - exp(-1.*bias_norm*photon.first_tau)));
       
     }
 
     // calculate the biased weight factor
     double biased_weight_factor = 0.0;
-    biased_weight_factor = (1.0 - geometry.scat_bias_fraction)/(1.0 - exp(-photon.first_tau)) +
-      geometry.scat_bias_fraction*exp(target_tau)/photon.first_tau;
+    //biased_weight_factor = (1.0 - geometry.force_scat_bias_fraction)/(1.0 - exp(-photon.first_tau)) +
+    //  geometry.force_scat_bias_fraction*exp(target_tau)/photon.first_tau;
 
+    biased_weight_factor = (1.0 - geometry.force_scat_bias_fraction)/(1.0 - exp(-photon.first_tau)) +
+      geometry.force_scat_bias_fraction*bias_norm*exp((1. - bias_norm)*target_tau)/(1.0 - exp(-1.*bias_norm*photon.first_tau));
+    
     photon.scat_weight = photon.stellar_weight/biased_weight_factor;
 
     // old scattered weight change (no baising)
