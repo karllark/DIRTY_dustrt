@@ -27,8 +27,8 @@ template <class T1, class T2, class T3> int EqTemp (vector <T2>& wave,
                                            // in the situations tested (one can get away with 1%),
   T1 _TestConvergence=1.0;                 // Has our algorithm converged?  
   T1 _Delta;                               // Computed difference between LHS and RHS
-  class vector <T2>::iterator _iJ,_iQ;     // Iterators for input vectors
-  class vector <T2>::iterator _ib,_ie,_it; // Generic iterators
+  typename vector <T2>::iterator _iJ,_iQ;     // Iterators for input vectors
+  typename vector <T2>::iterator _ib,_ie,_it; // Generic iterators
   
   T3 lolim=Tlo;
   T3 hilim=Thi;
