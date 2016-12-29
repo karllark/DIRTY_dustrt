@@ -618,8 +618,8 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       // Wave is in CGS (cm), return in CGS: erg/cm^2/s/cm/st
       T c1 = 2.0*Constant::PLANCK*pow(Constant::LIGHT,2);
       T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*Temperature);
-      class vector <T1>::iterator _itbeg,_itend,_it;
-      class vector <T>::iterator _itBB;
+      typename vector <T1>::iterator _itbeg,_itend,_it;
+      typename vector <T>::iterator _itBB;
 
       vector <T> theBB(wave.size());
       _itBB = theBB.begin();
@@ -641,9 +641,9 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       // Wave is in CGS (cm), return in CGS: erg/cm^2/s/cm/st
       T c1 = 2.0*Constant::PLANCK*pow(Constant::LIGHT,2);
       T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*Temperature);
-      class vector <T1>::iterator _itbeg,_itend,_it;
-      class vector <T3>::iterator _itp; 
-      class vector <T>::iterator _itBB;
+      typename vector <T1>::iterator _itbeg,_itend,_it;
+      typename vector <T3>::iterator _itp; 
+      typename vector <T>::iterator _itBB;
 
       vector <T> theBB(wave.size());
       _itBB = theBB.begin();
@@ -664,9 +664,9 @@ namespace NumUtils { // Define a namespace to avoid confusion with other
       // Wave is in CGS (cm), return in CGS: erg/cm^2/s/cm/st
       T c1 = 2.0*Constant::PLANCK*pow(Constant::LIGHT,2);
       T c2 = Constant::PLANCKLIGHT/(Constant::BOLTZMAN*Temperature);
-      class vector <T1>::iterator _itbeg,_itend,_it;
-      class vector <T3>::iterator _ita; 
-      class vector <T>::iterator _itBB;
+      typename vector <T1>::iterator _itbeg,_itend,_it;
+      typename vector <T3>::iterator _ita; 
+      typename vector <T>::iterator _itBB;
 
       vector <T> theBB(wave.size());
       _itBB = theBB.begin();
