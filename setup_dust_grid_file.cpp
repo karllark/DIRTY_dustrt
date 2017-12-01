@@ -15,6 +15,9 @@ void setup_dust_grid_file (ConfigFile& param_data,
   // maximum optical depth per cell (controls when a cell is subdivided)
   geometry.max_tau_per_cell = param_data.FValue("Geometry","max_tau_per_cell");
   check_input_param("max_tau_per_cell",geometry.max_tau_per_cell,0.0,1e10);
+  geometry.max_tau_per_cell_x = geometry.max_tau_per_cell;
+  geometry.max_tau_per_cell_y = geometry.max_tau_per_cell;
+  geometry.max_tau_per_cell_z = geometry.max_tau_per_cell;
 
   // get the filename of the position file
   string pos_filename = param_data.SValue("Geometry","type_file_pos");

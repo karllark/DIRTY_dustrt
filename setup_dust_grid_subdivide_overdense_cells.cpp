@@ -7,6 +7,7 @@
 // KDG 17 Jun 2015 - modified code to all for different subdivision for different axes
 // ======================================================================
 #include "setup_dust_grid_subdivide_overdense_cells.h"
+//#define DEBUG_SDGSOC
 
 void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
 						int spherical_clumps)
@@ -54,7 +55,8 @@ void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
 	    cout << i << ",";
 	    cout << j << ",";
 	    cout << k << " needs a subgrid; ";
-	    cout << "cell tau = " << x_tau << endl;
+            cout << "max_tau_x = " << geometry.max_tau_per_cell_x << endl;
+	    cout << "cell tau_x = " << x_tau << endl;
 #endif
 	    
 	    // note that we've subdivided at least one grid cel

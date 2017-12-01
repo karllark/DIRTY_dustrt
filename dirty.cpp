@@ -25,7 +25,7 @@
 //                failure info if instructed by the parameter file. 
 // ======================================================================
 #include "dirty.h"
-// #define DEBUG_DIRTY
+//#define DEBUG_DIRTY
 
 int main(int argc, char* argv[]) 
 
@@ -60,14 +60,34 @@ int main(int argc, char* argv[])
 
   runinfo.param_filename = param_filename; // save the filename
 
+#ifdef DEBUG_DIRTY
+  cout << "vars; ";
+  cout.flush();
+#endif
+
   GrainModel CurGrainModel;  // object for grain model
+
+#ifdef DEBUG_DIRTY
+  cout << "gmod; ";
+  cout.flush();
+#endif
 
   // get the run parameters (basic info)
   get_run_parameters(param_data, output, geometry, runinfo);
   random_dirty random_obj(runinfo.ran_seed);  // object for random number generator
 
+#ifdef DEBUG_DIRTY
+  cout << "runp; ";
+  cout.flush();
+#endif
+
   // setup the dust grid with dust density (tau/pc), positions, etc.
   setup_dust_grid(param_data, geometry, photon, random_obj);
+
+#ifdef DEBUG_DIRTY
+  cout << "sgrid; ";
+  cout.flush();
+#endif
 
   // moved this line out of get_run_parameters to allow for the random seed to be
   // a user input - not elegant and there is likely a better solution (KDG - 8 Nov 2016)

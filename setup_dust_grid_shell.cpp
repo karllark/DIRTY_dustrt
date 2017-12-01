@@ -8,7 +8,7 @@
 // KDG 16 Jun 2008 - fixed max_grid_depth calculation
 // ======================================================================
 #include "setup_dust_grid_shell.h"
-// #define DEBUG_SDG
+//#define DEBUG_SDG
 
 void setup_dust_grid_shell (ConfigFile& param_data,
 			    geometry_struct& geometry,
@@ -70,6 +70,9 @@ void setup_dust_grid_shell (ConfigFile& param_data,
   // maximum optical depth per cell (controls when a cell is subdivided)
   geometry.max_tau_per_cell = param_data.FValue("Geometry","max_tau_per_cell");
   check_input_param("max_tau_per_cell",geometry.max_tau_per_cell,0.0,1e10);
+  geometry.max_tau_per_cell_x = geometry.max_tau_per_cell;
+  geometry.max_tau_per_cell_y = geometry.max_tau_per_cell;
+  geometry.max_tau_per_cell_z = geometry.max_tau_per_cell;
 
   // filling factor of high density material
   geometry.filling_factor = param_data.FValue("Geometry","filling_factor");
@@ -233,7 +236,7 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 #ifdef DEBUG_SDG
   cout << min_good_radius << " " << inner_radius << endl;
   cout << max_good_radius << " " << outer_radius << endl;
-  cout << tmp_den_constant2 << " " << tmp_den_constant << endl;
+  //  cout << tmp_den_constant2 << " " << tmp_den_constant << endl;
 #endif
 
 //   double tmp_den_constant2 = (geometry.tau*(radial_density_poly+1.))/
@@ -252,6 +255,11 @@ void setup_dust_grid_shell (ConfigFile& param_data,
 
   // identify this grid as main grid
   main_grid.parent_grid_num = -1;
+
+#ifdef DEBUG_SDG
+  cout << "made it past main push" << endl;
+  cout << "subdivide_radious = " << subdivide_radius << endl;
+#endif
 
   // add main grid to grids vector
   geometry.grids.push_back(main_grid);
@@ -386,7 +394,16 @@ void setup_dust_grid_shell (ConfigFile& param_data,
       geometry.max_grid_depth++;
   }
 
+#ifdef DEBUG_SDG
+  cout << "starting setup_dust_grid_shell" << endl;
+#endif
+
   // subdivide all overdense cells
   setup_dust_grid_subdivide_overdense_cells(geometry, spherical_clumps);
+
+#ifdef DEBUG_SDG
+  cout << "finished setup_dust_grid_shell" << endl;
+#endif
+
 
 }

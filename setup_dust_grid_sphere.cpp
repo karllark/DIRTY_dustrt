@@ -31,6 +31,9 @@ void setup_dust_grid_sphere (ConfigFile& param_data,
   // maximum optical depth per cell (controls when a cell is subdivided)
   geometry.max_tau_per_cell = param_data.FValue("Geometry","max_tau_per_cell");
   check_input_param("max_tau_per_cell",geometry.max_tau_per_cell,0.0,1e10);
+  geometry.max_tau_per_cell_x = geometry.max_tau_per_cell;
+  geometry.max_tau_per_cell_y = geometry.max_tau_per_cell;
+  geometry.max_tau_per_cell_z = geometry.max_tau_per_cell;
 
   // filling factor of high density material
   geometry.filling_factor = param_data.FValue("Geometry","filling_factor");
