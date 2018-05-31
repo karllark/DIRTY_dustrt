@@ -3,7 +3,7 @@
 // for any type of astrophysical object.
 // This code is extensivly based on the original version of DIRTY
 // written by Karl Gordon and Karl Misselt.
-// This new version was written to add an active/adaptive mesh to 
+// This new version was written to add an active/adaptive mesh to
 // the code.  In addition, the code will be much cleaner and better
 // documented.  It should be possible to release this version to
 // others.
@@ -20,14 +20,14 @@
 // 2008 Mar/KDG - fixed global output to use a FITS ASCII table
 // 2008 Aug/KDG - added continous absorption
 // 2008 Sep/KDG - added ERE
-// 2009 Jun/KAM - create DirtyFailure instance on each iteration and 
-//                output iteration specific file containing dust emission 
-//                failure info if instructed by the parameter file. 
+// 2009 Jun/KAM - create DirtyFailure instance on each iteration and
+//                output iteration specific file containing dust emission
+//                failure info if instructed by the parameter file.
 // ======================================================================
 #include "dirty.h"
 //#define DEBUG_DIRTY
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 
 {
   // parse the command line
@@ -49,10 +49,10 @@ int main(int argc, char* argv[])
   // read parameter file
   ConfigFile param_data(param_filename);
 
-  // Are we outputing a failure log - do it here so I don't have to mess with KDGs structures. 
-  // Output failure will only be set if we find a 'yes' entry in the param file. 
-  bool OutputFailure=param_data.BValue("Run","Output Failure Log"); 
- 
+  // Are we outputing a failure log - do it here so I don't have to mess with KDGs structures.
+  // Output failure will only be set if we find a 'yes' entry in the param file.
+  bool OutputFailure=param_data.BValue("Run","Output Failure Log");
+
   geometry_struct geometry;  // structure with geometry info (dust grid, etc.)
   output_struct output;  // stucture with the output info (images, etc.)
   photon_data photon;   // structure with the photon info (position, direction, weight, etc.)
@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
   cout << "grp done; ";
   cout.flush();
 #endif
-  
+
   // get the dust grain parameters
   get_dust_parameters(param_data, CurGrainModel, geometry, runinfo);
 
@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
   cout << "gdp done; ";
   cout.flush();
 #endif
-  
+
   // read SED parameters
   get_sed_parameters(param_data, runinfo, CurGrainModel);
 #ifdef DEBUG_DIRTY
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 
   // temp to reset the random number generator
   random_dirty random_obj2(runinfo.ran_seed);  // object for random number generator
-  
+
   // do the radiative transfer over all the wavelengths
   radiative_transfer_many_waves(geometry, runinfo, output, photon, random_obj2, REG_RT, 0);
 
@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
   cout.flush();
 #endif
 
-  // do gas emission (iteration needed as the gas provides 
+  // do gas emission (iteration needed as the gas provides
   //    an additional opacity source)
 
   // set this here to allow the ERE part to do the initialization
@@ -160,14 +160,10 @@ int main(int argc, char* argv[])
   cout.flush();
 #endif
     setup_emitted_grid_for_montecarlo(geometry, runinfo, CurGrainModel);
-      
+
     // do the ERE radiative transfer over all the wavelengths
     radiative_transfer_many_waves(geometry, runinfo, ere_output, photon, random_obj, ERE_RT, 1);
   }
-
-  // output model_grid info
-  if (output.do_output_model_grid)
-    output_model_grid(geometry, output, runinfo);
 
   // start RT+DE iteration (only if DE flag set)
   int iter_num = 1;
@@ -216,15 +212,15 @@ int main(int argc, char* argv[])
     runinfo.dust_thermal_emission = 1;
   }
 
-  // hold output failure file name. 
-  string fFailureFilename; 
+  // hold output failure file name.
+  string fFailureFilename;
 
   while (!iter_done) {
 
     // Create a DirtyFailure Object
-    // Will remain empty if we don't do an output.  Do all the allocations regardless 
-    // if whether OutputFailure is true or not to avoid compile  warnings. 
-    fFailureFilename=output.file_base+"_iter"+StringManip::vtos(iter_num)+"_failure.log"; 
+    // Will remain empty if we don't do an output.  Do all the allocations regardless
+    // if whether OutputFailure is true or not to avoid compile  warnings.
+    fFailureFilename=output.file_base+"_iter"+StringManip::vtos(iter_num)+"_failure.log";
     DirtyFailure * Failure = new DirtyFailure(fFailureFilename,runinfo.n_waves);
 
 #ifdef DEBUG_DIRTY
@@ -243,7 +239,7 @@ int main(int argc, char* argv[])
 
     // setup the grid emission
     setup_emitted_grid_for_montecarlo(geometry, runinfo, CurGrainModel);
-      
+
     // do the DE radiative transfer over all the wavelengths
     radiative_transfer_many_waves(geometry, runinfo, de_output, photon, random_obj, DE_RT, iter_num);
 
@@ -253,15 +249,19 @@ int main(int argc, char* argv[])
 
     // limit the max iterations
     if (iter_num >= runinfo.iter_max) iter_done = 1; else iter_num++;
-    
-    // If output puting failure log, then do it. 
+
+    // If output puting failure log, then do it.
     if (OutputFailure) Failure->WriteFailureLog();
-    // Destroy the Failure Object. 
-    delete Failure; 
+    // Destroy the Failure Object.
+    delete Failure;
   }
 
+  // output model_grid info
+  if (output.do_output_model_grid)
+    output_model_grid(geometry, output, runinfo);
+
   // output global, multiwavelength luminosities
-  if (runinfo.do_global_output) { 
+  if (runinfo.do_global_output) {
     if (runinfo.do_dust_emission)
       output_global_results(runinfo, de_output, geometry);
     else
@@ -270,4 +270,3 @@ int main(int argc, char* argv[])
   return 0;
 
 }
-
