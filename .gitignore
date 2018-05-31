@@ -1,5 +1,6 @@
 dirty
 *.o
 *.d
+*.d.*
 *~
 .DS_Store
