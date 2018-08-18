@@ -8,6 +8,18 @@ the original DIRTY code to be more robust, flexible, and spiffy.
 DIRTY solves the radiative transfer problem in full 3D including a
 dust emission both non-equilibrium and equilibrium.
 
+Attribution
+-----------
+
+Please cite
+`Gordon et al. (2001, ApJ, 551, 269)
+<https://ui.adsabs.harvard.edu/#abs/2001ApJ...551..269G/abstract>`_,
+`Misselt et al. (2001, ApJ, 551, 277)
+<https://ui.adsabs.harvard.edu/#abs/2001ApJ...551..277M/abstract>`_, and
+`Law et al. (2018, ApJS, 236, 32)
+<https://ui.adsabs.harvard.edu/#abs/2018ApJS..236...32L/abstract>`_
+if you find this code useful in your research.
+
 Support
 -------
 
@@ -39,8 +51,8 @@ welcoming community to all of our users and contributors.
 License
 -------
 
-This project is Copyright (c) Karl Gordon, Karl Misselt and licensed under
-the terms of the BSD 3-Clause license.
+This project is Copyright (c) Karl Gordon, Karl Misselt, & Ka-Hei Law
+and licensed under the terms of the BSD 3-Clause license.
 
 .. _AstroPy: http://www.astropy.org/
 .. _contributing: http://docs.astropy.org/en/stable/index.html#contributing
