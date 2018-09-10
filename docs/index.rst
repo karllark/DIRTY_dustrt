@@ -15,11 +15,11 @@ User Documentation
 ==================
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 1
 
   Frequently Asked Questions <faq.rst>
   Parameter File <parameter_file.rst>
-  Dust Grains <dust_extinction/dust_grains.rst>
+  Dust Grains <dust_grains.rst>
 
 Installation
 ============

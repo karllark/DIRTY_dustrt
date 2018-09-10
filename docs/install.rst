@@ -1,8 +1,8 @@
 .. _install:
 
-##########
-Installing
-##########
+#############
+Install DIRTY
+#############
 
 Code
 ====
