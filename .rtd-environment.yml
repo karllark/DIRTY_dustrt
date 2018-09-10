@@ -10,5 +10,6 @@ dependencies:
     - matplotlib
     - numpy
     - sphinx-astropy
+    - sphinx_rtd_theme
 #   - pip:
 #       - dependency_from_pip

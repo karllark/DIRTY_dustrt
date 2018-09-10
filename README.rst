@@ -5,8 +5,8 @@ The DIRTY radiative tranfer/dust emission model for dusty astrophysical sources.
 DIRTY stands for "DustI Radiative Transfer, Yeah!"
 These pages specifically refer to DIRTYv2, the complete rewrite of
 the original DIRTY code to be more robust, flexible, and spiffy.
-DIRTY solves the radiative transfer problem in full 3D including a
-dust emission both non-equilibrium and equilibrium.
+DIRTY solves the radiative transfer problem in full 3D including
+non-equilibrium and equilibrium thermal dust emission.
 
 Attribution
 -----------
