@@ -1,12 +1,21 @@
 DIRTY
 -----
 
+.. image:: https://readthedocs.org/projects/dirty-dustrt/badge/?version=latest
+  :target: https://dirty-dustrt.readthedocs.io/en/latest/?badge=latest
+  :alt: Documentation Status
+
 The DIRTY radiative tranfer/dust emission model for dusty astrophysical sources.
 DIRTY stands for "DustI Radiative Transfer, Yeah!"
 These pages specifically refer to DIRTYv2, the complete rewrite of
 the original DIRTY code to be more robust, flexible, and spiffy.
 DIRTY solves the radiative transfer problem in full 3D including
 non-equilibrium and equilibrium thermal dust emission.
+
+Documentation
+-------------
+
+See `<https://dirty-dustrt.readthedocs.io`_.
 
 Attribution
 -----------
