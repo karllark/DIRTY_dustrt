@@ -1,15 +1,6 @@
 name: DIRTY
 
-channels:
-    - astropy
-
 dependencies:
-    - python>=3.6
-    - astropy
-    - Cython
-    - matplotlib
-    - numpy
-    - sphinx-astropy
     - sphinx_rtd_theme
 #   - pip:
 #       - dependency_from_pip
