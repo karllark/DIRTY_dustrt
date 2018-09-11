@@ -15,7 +15,7 @@ non-equilibrium and equilibrium thermal dust emission.
 Documentation
 -------------
 
-See `<https://dirty-dustrt.readthedocs.io`_.
+See `<https://dirty-dustrt.readthedocs.io>`_.
 
 Attribution
 -----------
