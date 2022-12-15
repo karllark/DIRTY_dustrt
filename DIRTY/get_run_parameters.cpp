@@ -50,7 +50,7 @@ void get_run_parameters (ConfigFile& param_data,
 
   output.file_base = param_data.SValue("Run","output_filebase");
   check_input_param("output_filebase",output.file_base,"dirty_test");
-  
+
   output.do_output_model_grid = param_data.IValue("Run","output_model_grid");
   if (output.do_output_model_grid == -99) output.do_output_model_grid = 0;  // set to no output if not initially set
   check_input_param("output_model_grid",output.do_output_model_grid,0,1);
@@ -151,10 +151,10 @@ void get_run_parameters (ConfigFile& param_data,
   if (runinfo.ran_seed == -99) runinfo.ran_seed = long(987654321);  // default
   check_input_param("random_num_seed",runinfo.ran_seed,0,long(1000000000));
   runinfo.ran_seed *= -1;
-  
+
   output.arrays_allocated = 0;
   runinfo.dust_thermal_emission = 0;
 
-  // Get failure record preferences. 
+  // Get failure record preferences.
 
 }

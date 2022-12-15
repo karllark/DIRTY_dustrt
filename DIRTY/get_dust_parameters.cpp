@@ -18,7 +18,7 @@ void get_dust_parameters (ConfigFile& param_data,
   // TBD: interpolate the dust scattering parameters to the SED grid
   runinfo.empir_dust = 0;
   runinfo.model_dust = 0;
-  
+
   string dust_type = param_data.SValue("Dust Grains","type");
   if (strcmp(dust_type.c_str(),"single_wavelength") == 0) {
     runinfo.empir_dust = 1;
@@ -42,6 +42,18 @@ void get_dust_parameters (ConfigFile& param_data,
     // set the grain info we won't have or really use
     runinfo.tau_to_h.push_back(1.0);
     runinfo.ave_C_abs.push_back(1.);
+
+		// check that if a single wavlength run is picked, then do_global_output is not
+		if (runinfo.do_global_output) {
+			cout << "Cannot do_global_output when only for a single wavelength run" << endl;
+			exit(8);
+		}
+
+		// check that if a single wavlength run is picked, then do_dust_emission is not
+		if (runinfo.do_dust_emission) {
+			cout << "Cannot do_dust_emission when only for a single wavelength run" << endl;
+			exit(8);
+		}
 
   } else if (strcmp(dust_type.c_str(),"single_wavelength_modelg") == 0) {
     runinfo.empir_dust = 1;
@@ -72,7 +84,7 @@ void get_dust_parameters (ConfigFile& param_data,
     double weight = 0.;
 
     check_input_param("model scattering phase function (phi)",phi[0],0.,1e10);
-    angle[0] = cos(angle[0]*Constant::PI/180.0);    
+    angle[0] = cos(angle[0]*Constant::PI/180.0);
     geometry.phi.push_back(phi[0]);
     geometry.phi_sum.push_back(0.0);
     geometry.phi_angle.push_back(angle[0]);
@@ -150,34 +162,34 @@ void get_dust_parameters (ConfigFile& param_data,
     get_wave_grid(param_data,runinfo);
     // save the dust grain filename (full path)
     string grainpath = param_data.SValue("Model Book Keeping","Path to Dust Properties");
-    string grainsubdir = param_data.SValue("Model Book Keeping","Model SubDir"); 
+    string grainsubdir = param_data.SValue("Model Book Keeping","Model SubDir");
     runinfo.dust_grain_filename = grainpath+grainsubdir+param_data.SValue("Model Book Keeping","Model Name");
     // get dust grain info
     CurGrainModel.MakeGrainModel(param_data,runinfo.wavelength);
     // now get the tau, albedo, and g values
-    runinfo.effective_grain_heating = param_data.BValue("Model Book Keeping","Effective Grain for Heating"); 
+    runinfo.effective_grain_heating = param_data.BValue("Model Book Keeping","Effective Grain for Heating");
 #ifdef DEBUG_GDP
-    cout << "Effective heating is " << runinfo.effective_grain_heating << endl; 
+    cout << "Effective heating is " << runinfo.effective_grain_heating << endl;
 #endif
     runinfo.albedo = CurGrainModel.getAlbedo();
     runinfo.g = CurGrainModel.getphFuncEff();
     runinfo.tau_to_h = CurGrainModel.getTau(); // getTau returns tau/H I atom
     runinfo.tau_to_tau_ref = runinfo.tau_to_h;
     runinfo.ave_C_abs = CurGrainModel.getCAbsEffNorm();  // getCAbsEffNorm returns cm^2/H I atom
-    if (runinfo.effective_grain_heating) 
+    if (runinfo.effective_grain_heating)
       runinfo.n_emission_grain_types = 3;
     else
       runinfo.n_emission_grain_types = 1 + 2*CurGrainModel.getNComp();
 
 #ifdef DEBUG_GDP
-    cout << "getting tau_wave next..." << endl; 
+    cout << "getting tau_wave next..." << endl;
 #endif
 
     runinfo.norm_tau_wave = param_data.FValue("Geometry","tau_wave");
     if (isnan(runinfo.norm_tau_wave)) runinfo.norm_tau_wave = 0.55;
 
 #ifdef DEBUG_GDP
-    cout << "tau_wave = " << runinfo.norm_tau_wave << endl; 
+    cout << "tau_wave = " << runinfo.norm_tau_wave << endl;
 #endif
 
     check_input_param("wavelength to normalize tau",runinfo.norm_tau_wave*(Constant::UM_CM),
@@ -185,7 +197,7 @@ void get_dust_parameters (ConfigFile& param_data,
 		      *max_element(runinfo.wavelength.begin(),runinfo.wavelength.end()));
 
 #ifdef DEBUG_GDP
-    cout << "just checked in the input parameter" << endl; 
+    cout << "just checked in the input parameter" << endl;
 #endif
 
     float norm_tau = CurGrainModel.getTau(runinfo.norm_tau_wave*(Constant::UM_CM));
@@ -229,18 +241,3 @@ void get_dust_parameters (ConfigFile& param_data,
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

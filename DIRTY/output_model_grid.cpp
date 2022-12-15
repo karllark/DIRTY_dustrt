@@ -4,7 +4,7 @@
 // 2008 Aug/KDG - written
 // ======================================================================
 #include "output_model_grid.h"
-#define DEBUG_OMG
+//#define DEBUG_OMG
 
 void output_model_grid (geometry_struct& geometry,
 			output_struct& output,
@@ -282,5 +282,8 @@ void output_model_grid (geometry_struct& geometry,
   // close FITS File
   fits_close_file(out_pos_ptr, &status);
   check_fits_io(status,"fits_close_file : output_model_grid (pos)");
+
+	if (runinfo.verbose >= 1)
+		cout << "radiation field and model group output" << endl;
 
 }
