@@ -38,7 +38,7 @@ wave_type=file
 wave_file=basic_grid.dat
 
 [Model Book Keeping]
-Path to Dust Properties=../../../Dust/DustModelTRUST/
+Path to Dust Properties=../../Dust/DustModelTRUST/
 Cross Section SubDir=GrainInputs/
 Calorimetry SubDir=GrainInputs/
 Model SubDir=./

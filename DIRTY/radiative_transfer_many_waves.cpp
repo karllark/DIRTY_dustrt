@@ -23,7 +23,7 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
 #endif
   // setup/(re)initialize absorbed energy grid
   setup_absorbed_energy_grid(geometry, runinfo, iter_num);
-      
+
   // loop over all wavelengths
   int i;
   for (i = 0; i < runinfo.n_waves; i++) {
@@ -59,10 +59,10 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
       //     // check the absorbed energy grid (temp needed as energy not conserved)
       //     // KDG - 23 Mar 2008
 //       check_absorbed_energy_grid(geometry, runinfo);
-      
+
       // setup dust grains for this wavelength
       get_dust_scat_parameters(i, runinfo, geometry);
-      
+
       // do RT part
 #ifdef DEBUG_MRT
       cout << "rt: rt begin; ";
@@ -73,16 +73,16 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
       cout << "rt: rt end; ";
       cout.flush();
 #endif
-      
+
       // output RT results
       output_results(output, geometry, runinfo, i);
-      
+
     }
       //     // check the absorbed energy grid (temp needed as energy not conserved)
       //     // KDG - 23 Mar 2008
       //     cout << "**test2**" << endl;
     //    check_absorbed_energy_grid(geometry, runinfo);
-      
+
       // store the result (either in memory or on disk)
       // remember to zero out the absorbed energy grid
 //     if ((runinfo.do_dust_emission) || (runinfo.do_ere_emission)) {
@@ -92,19 +92,21 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
       cout << "te: saeg start; ";
       cout.flush();
 #endif
-      store_absorbed_energy_grid(geometry, runinfo, output, i, iter_num);
+			if (runinfo.do_dust_emission == 1) {
+        store_absorbed_energy_grid(geometry, runinfo, output, i, iter_num);
+			}
 #ifdef DEBUG_MRT
       cout << "te: saeg end; ";
       cout.flush();
 #endif
-      
+
       //     // check the absorbed energy grid (temp needed as energy not conserved)
       //     // KDG - 23 Mar 2008
       //check_absorbed_energy_grid(geometry, runinfo);
       //     if (i == 1) exit(8);
       //  	exit(8);
 //     }
-    
+
     // check the absorbed energy grid (temp needed as energy not conserved)
     // KDG - 23 Mar 2008
 //     check_absorbed_energy_grid(geometry, runinfo);
