@@ -6,6 +6,7 @@
 //                in ergs s^-1 cm^-3
 // ======================================================================
 #include "output_results.h"
+#include "compat.h"
 //#define DEBUG_OUTR
 
 // helper routine

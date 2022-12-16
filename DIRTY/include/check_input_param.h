@@ -1,5 +1,6 @@
 #ifndef _DIRTY_CHECK_INPUT_PARAM_
 #define _DIRTY_CHECK_INPUT_PARAM_
+#include "compat.h"
 
 //**********************************************************************
 // template function definitions

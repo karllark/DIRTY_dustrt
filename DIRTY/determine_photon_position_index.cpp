@@ -13,7 +13,7 @@
 // ======================================================================
 #include "determine_photon_position_index.h"
 //#define OUTNUM 2567
-#define DEBUG_DPPI
+//#define DEBUG_DPPI
 
 void determine_photon_position_index (geometry_struct& geometry,
 				      photon_data& photon)

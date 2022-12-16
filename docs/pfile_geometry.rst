@@ -219,7 +219,7 @@ with a scale length (xy) and a scale height (z). In the z direction
 
 **dust_scalelength=3000. [0,radius]**
 
-**dust_scaleheight=150. [0,radius]
+**dust_scaleheight=150. [0,radius]**
 
 **dust_vertical_trunc=1800. [0,radius]**
 

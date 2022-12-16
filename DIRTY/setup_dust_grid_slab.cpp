@@ -9,6 +9,7 @@
 // KDG 16 Jun 2015 - added reading of different values for x,y,z max cell tau
 // ======================================================================
 #include "setup_dust_grid_slab.h"
+#include "compat.h"
 //#define DEBUG_SDG
 
 void setup_dust_grid_slab (ConfigFile& param_data,

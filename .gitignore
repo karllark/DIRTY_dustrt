@@ -4,3 +4,23 @@ dirty
 *.d.*
 *~
 .DS_Store
+docs/_build
+
+# autotools
+.version
+.tarball-version
+config.h.in*
+.deps
+config.h
+stamp-h1
+Makefile
+Makefile.in
+aclocal.m4
+config.log
+config.status
+configure
+depcomp
+dirty-*-g*.tar.gz
+install-sh
+missing
+autom4te.cache

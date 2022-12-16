@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+aclocal
+autoconf
+autoheader
+automake -a -c
+rm -rf autom4te.cache

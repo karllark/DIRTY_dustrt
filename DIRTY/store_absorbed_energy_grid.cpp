@@ -24,6 +24,7 @@
 //   this avoids round off error (hopefully)
 // ======================================================================
 #include "store_absorbed_energy_grid.h"
+#include "compat.h"
 //#define DEBUG_SAEG
 
 void store_absorbed_energy_grid (geometry_struct& geometry,
@@ -149,7 +150,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	    cout << "J_temp = " << j_temp << endl;
 	    cout << "float(J_temp) = " << float(j_temp) << endl;
 	    cout << "J(lambda) = " << geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] << endl;
-	    cout << "prev_J(lambda) = " << geometry.grids[m].grid(i,j,k).save_radiation_field_density << endl;
+	    //cout << "prev_J(lambda) = " << geometry.grids[m].grid(i,j,k).save_radiation_field_density << endl;
 #endif
 
 	  }
