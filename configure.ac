@@ -31,7 +31,7 @@ cfitsio_usage="unable to find cfitsio library.
 AS_IF([test "x$with_cfitsio" != "x"],
     [test "$with_cfitsio" == "yes" && AC_SUBST(with_cfitsio, /usr/local)
         cfitsio_CFLAGS="-I${with_cfitsio}/include -I${with_cfitsio}/include/fitsio"
-        cfitsio_LIBS="-L${with_cfitsio}/lib -Wl,-rpath=${with_cfitsio}/lib -lcfitsio"],
+        cfitsio_LIBS="-L${with_cfitsio}/lib -Wl,-rpath,${with_cfitsio}/lib -lcfitsio"],
     [PKG_CHECK_MODULES([cfitsio], [cfitsio >= 3], [],
         [AC_MSG_ERROR($cfitsio_usage)])])
 AC_MSG_NOTICE([cfitsio CFLAGS... $cfitsio_CFLAGS])
