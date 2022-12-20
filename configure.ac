@@ -17,6 +17,7 @@ AM_INIT_AUTOMAKE([foreign])
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CXXCPP
+PKG_PROG_PKG_CONFIG
 
 # Checks for libraries.
 AC_ARG_WITH([cfitsio],
@@ -46,7 +47,7 @@ AC_SUBST(LDFLAGS,$cfitsio_LIBS)
 
 # Verify cfitsio works
 AC_CHECK_HEADERS([fitsio.h], [], [AC_MSG_ERROR(cfitsio headers not found! $cfitsio_usage)])
-AC_CHECK_LIB(ffopen, [cfitsio], [AC_MSG_ERROR(cfitsio library not found! $cfitsio_usage)])
+AC_CHECK_LIB(cfitsio, [ffopen], [], [AC_MSG_ERROR(cfitsio library not found! $cfitsio_usage)])
 AC_CHECK_FUNC(ffopen, [], [AC_MSG_ERROR(cfitsio is not usable! $cfitsio_usage)])
 
 # Pop global flags
