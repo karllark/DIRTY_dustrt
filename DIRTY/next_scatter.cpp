@@ -8,7 +8,7 @@
 //                   1/2 of the time to better sample high optical depth scattering
 // ======================================================================
 #include "next_scatter.h"
-#define DEBUG_NS
+//#define DEBUG_NS
 
 int next_scatter (geometry_struct& geometry,
 		  photon_data& photon,

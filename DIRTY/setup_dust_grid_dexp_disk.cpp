@@ -276,7 +276,7 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
 	    if (poss_index > int(start_min_frac)) poss_index = int(start_min_frac);
 	    subgrid.index_dim[0] = poss_index;
 #ifdef DEBUG_SDGDD
-	    cout << "subgrid x cube size = " << geometry.grids[m].phys_cube_size[0]/float(poss_index) << endl;
+	    cout << "subgrid x cube size = " << geometry.grids[m].phys_grid_size[0]/float(poss_index) << endl;
 	    cout << "subgird x cubes (1 dim) = " << subgrid.index_dim[0] << endl;
 #endif
 	    
@@ -301,7 +301,7 @@ void setup_dust_grid_dexp_disk (ConfigFile& param_data,
 #ifdef DEBUG_SDGDD
 	    cout << cur_subgrid_num << " ";
 	    for (l = 0; l < 3; l++)
-	      cout << subgrid.phys_cube_size[l] << " ";
+	      cout << subgrid.phys_grid_size[l] << " ";
 	    cout << endl;
 #endif
 		

@@ -8,6 +8,7 @@
 //                          absorbed energy, not J units)
 // ======================================================================
 #include "get_dust_ere_emission.h"
+#include "compat.h"
 //#define DEBUG_GDEE
 
 void get_dust_ere_emission (geometry_struct& geometry,

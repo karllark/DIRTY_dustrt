@@ -21,21 +21,21 @@ void rotate_zaxis_for_observer (float transform[3][3],
     }
 
 #ifdef DEBUG_RZFO
-    cout << "photon # = " << photon.number << endl;
-    cout << "old photon positions = ";
+    std::cout << "photon # = " << photon.number << std::endl;
+    std::cout << "old photon positions = ";
     double radius = 0.0;
     for (i = 0; i < 3; i++) {
-      cout << photon.position[i] << " ";
+      std::cout << photon.position[i] << " ";
       radius += pow(photon.position[i],2.0);
     }
-    cout << "; radius = " << sqrt(radius) << endl;
+    std::cout << "; radius = " << sqrt(radius) << std::endl;
     radius = 0.0;
-    cout << "new photon positions = ";
+    std::cout << "new photon positions = ";
     for (i = 0; i < 3; i++) {
-      cout << new_position[i] << " ";
+      std::cout << new_position[i] << " ";
       radius += pow(photon.position[i],2.0);
     }
-    cout << "; radius = " << sqrt(radius) << endl;
+    std::cout << "; radius = " << sqrt(radius) << std::endl;
       
 #endif
 

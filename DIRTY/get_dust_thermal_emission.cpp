@@ -15,6 +15,7 @@
 //                1/2 the time w/ weighting by the radiation field
 // ======================================================================
 #include "get_dust_thermal_emission.h"
+#include "compat.h"
 //#define DEBUG_GDTE
 
 void get_dust_thermal_emission (geometry_struct& geometry,
