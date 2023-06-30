@@ -200,7 +200,7 @@ void output_model_grid (geometry_struct& geometry,
 //     check_fits_io(status,"fits_write_key : output_model_grid (pos)");
 
     if (m != 0) {
-      fits_write_key(out_tau_ptr, TINT, "PAR_GRID", &geometry.grids[m].parent_grid_num, "grid number of partent", &status);
+      fits_write_key(out_tau_ptr, TINT, "PAR_GRID", &geometry.grids[m].parent_grid_num, "grid number of parent", &status);
     } else {
       // populate the primary header with the details of the run
 
