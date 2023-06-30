@@ -43,7 +43,7 @@ double stellar_weight_towards_observer(photon_data photon,
   for (i = 0; i < 3; i++) photon.dir_cosines[i] = dir_cosines_birth_to_obs[i];
   double target_tau = 1e20;
   double target_dist = 1e10 * geometry.radius;
-  if (geometry.internal_observer == 1) target_tau = dist_birth_to_obs;
+  if (geometry.internal_observer == 1) target_dist = dist_birth_to_obs;
   int escape = 0;
   double tau_birth_to_obs = 0.0;
 

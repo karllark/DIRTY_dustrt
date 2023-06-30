@@ -124,8 +124,6 @@ void classify_stellar_photon(output_struct& output, photon_data& photon,
         }
       } else {
         // internal observer case
-        // can use the photon direction cosines as they give the reverse
-        // direction of what is needed
         double obs_to_birth[3];
         double dist_obs_to_birth = 0.0;
         double dir_obs_to_birth[3];
@@ -141,8 +139,9 @@ void classify_stellar_photon(output_struct& output, photon_data& photon,
 
         double theta = acos(dir_obs_to_birth[2]);
         double phi = acos(dir_obs_to_birth[0] / sin(theta));
+        if ((dir_obs_to_birth[1] / sin(theta)) < 0.) phi *= -1.0;
 
-        image_indxs[0] = int(output.image_size[0] * (phi / (2.0 * M_PI)));
+        image_indxs[0] = int(output.image_size[0] * ((phi + M_PI) / (2.0 * M_PI)));
         image_indxs[1] =
             int(output.image_size[1] * ((dir_obs_to_birth[2] + 1.) / 2.0));
       }
