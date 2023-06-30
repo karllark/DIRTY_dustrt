@@ -18,6 +18,7 @@ extern void determine_grid_position_index (geometry_struct& geometry,
 extern double calc_delta_dist (photon_data& photon,
 			       geometry_struct& geometry,
 			       double target_tau,
+			       double target_dist,
 			       int& escape,
 			       double& tau_traveled);
 

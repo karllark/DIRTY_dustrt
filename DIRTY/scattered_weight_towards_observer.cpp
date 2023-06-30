@@ -1,5 +1,5 @@
 // ======================================================================
-//   Function to calculate the scattered weight in the direction of the 
+//   Function to calculate the scattered weight in the direction of the
 // observer.
 //
 // 2006 Apr/KDG - written
@@ -11,7 +11,7 @@
 double scattered_weight_towards_observer (photon_data photon,
 					  geometry_struct& geometry,
 					  float observer_position[3])
-  
+
 {
   // determine the vector, distance, and direction cosines from the scattering
   // site to the observer
@@ -30,23 +30,23 @@ double scattered_weight_towards_observer (photon_data photon,
 #ifdef DEBUG_SWTO
   if (photon.number == OUTNUM) {
     cout << "pos vector = ";
-    for (i = 0; i < 3; i++) 
+    for (i = 0; i < 3; i++)
       cout << photon.position[i] << " ";
     cout << endl;
     cout << "dir cosines vector = ";
-    for (i = 0; i < 3; i++) 
+    for (i = 0; i < 3; i++)
       cout << photon.dir_cosines[i] << " ";
     cout << endl;
     cout << "scat_to_obs vector = ";
-    for (i = 0; i < 3; i++) 
+    for (i = 0; i < 3; i++)
       cout << scat_to_obs[i] << " ";
     cout << endl;
      cout << "scat_to_obs dir_cosines = ";
-    for (i = 0; i < 3; i++) 
+    for (i = 0; i < 3; i++)
       cout << dir_cosines_scat_to_obs[i] << " ";
     cout << endl;
     cout << "cos_alpha contributions = ";
-    for (i = 0; i < 3; i++) 
+    for (i = 0; i < 3; i++)
       cout << dir_cosines_scat_to_obs[i]*photon.dir_cosines[i] << " ";
     cout << endl;
   }
@@ -74,6 +74,7 @@ double scattered_weight_towards_observer (photon_data photon,
   for (i = 0; i < 3; i++)
     photon.dir_cosines[i] = dir_cosines_scat_to_obs[i];
   double target_tau = 1e20;
+  double target_dist = 1e10*geometry.radius;
   int escape = 0;
   double tau_scat_to_obs = 0.0;
   double distance_traveled = 0.0;
@@ -84,7 +85,7 @@ double scattered_weight_towards_observer (photon_data photon,
   }
 #endif
   try {
-    distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_scat_to_obs);
+    distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, target_dist, escape, tau_scat_to_obs);
   } catch(std::out_of_range)
     {
       cout << "photon # = " << photon.number << endl;
@@ -116,9 +117,9 @@ double scattered_weight_towards_observer (photon_data photon,
 //       cout << i1 << " " << i3 << endl;
       i2 = (i1 + i3)/2;
     }
-    scat_weight_angle = geometry.phi[i1] + 
+    scat_weight_angle = geometry.phi[i1] +
       ((cos_alpha - geometry.phi_angle[i3])/(geometry.phi_angle[i1] - geometry.phi_angle[i3]))*
-      (geometry.phi[i1] - geometry.phi[i3]); 
+      (geometry.phi[i1] - geometry.phi[i3]);
 //     cout << ((cos_alpha - geometry.phi_angle[i3])/(geometry.phi_angle[i1] - geometry.phi_angle[i3])) <<  endl;
 //     cout << cos_alpha << endl;
 //     cout << geometry.phi_angle[i1] << endl;
@@ -126,12 +127,12 @@ double scattered_weight_towards_observer (photon_data photon,
 //     cout << scat_weight_angle << endl;
 //     double tmp_g = 0.384;
 //     cout << ((1.0 - pow(tmp_g,2))/
-// 	     (4.0*M_PI*pow(1.0 + pow(tmp_g,2) - 
+// 	     (4.0*M_PI*pow(1.0 + pow(tmp_g,2) -
 // 			   2.0*tmp_g*cos_alpha,1.5))) << endl;
 //     exit(8);
   } else {
     scat_weight_angle = ((1.0 - pow(geometry.g,2))/
-			 (4.0*M_PI*pow(1.0 + pow(geometry.g,2) - 
+			 (4.0*M_PI*pow(1.0 + pow(geometry.g,2) -
 				       2.0*geometry.g*cos_alpha,1.5)));
   }
   scat_weight_angle *= geometry.solid_angle;

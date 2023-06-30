@@ -1,9 +1,9 @@
 // ======================================================================
-//   Procedure to compute the first scattering of a photon, using the 
+//   Procedure to compute the first scattering of a photon, using the
 // technique of forcing the scattering to happen inside the dust.
 //
 // 2004 Dec/KDG - written
-// 28 Feb 2007/KDG - updated to move calculation of stellar weight to 
+// 28 Feb 2007/KDG - updated to move calculation of stellar weight to
 //                   classify stellar photon
 // 22 Oct 2013/KDG - added option to deal with tau_to_surface = 0
 // 03 Sep 2015/KDG - added sampling from uniform distribution in tau
@@ -29,12 +29,13 @@ int forced_first_scatter (geometry_struct& geometry,
 
   // variables
   double target_tau = 1e20;
+  double target_dist = 1e10*geometry.radius;
   int ffs_escape = 0;
   double distance_traveled = 0.0;
   double tau_traveled = 0.0;
   double tau_to_surface = 0.0;
   double ran_num = 0.0;
-  
+
   photon_data dummy_photon; // copy of photon for surface tau calculation
 
   // get the optical depth to the edge of the dust in the current direction
@@ -42,7 +43,7 @@ int forced_first_scatter (geometry_struct& geometry,
   //dummy_photon.path_cur_cells = -1;  // set to -1 *not* to save cells tranversed
   dummy_photon.path_cur_cells = 0;  // set to 0 to save cells transversed
 
-  distance_traveled = calc_photon_trajectory(dummy_photon, geometry, target_tau, ffs_escape, tau_to_surface);
+  distance_traveled = calc_photon_trajectory(dummy_photon, geometry, target_tau, target_dist, ffs_escape, tau_to_surface);
   photon.first_tau = tau_to_surface;
   photon.prev_tau_surface = tau_to_surface;
 
@@ -72,7 +73,7 @@ int forced_first_scatter (geometry_struct& geometry,
     double new_stellar_weight = exp(-photon.first_tau);
 
     // determine optical depth to first scattering
-    // unlike 2nd, 3rd, etc. scatterings, this scattering is forced to be 
+    // unlike 2nd, 3rd, etc. scatterings, this scattering is forced to be
     // in the dust distribution and is why the weights are not unity
 
     photon.scat_weight = photon.stellar_weight*(1. - new_stellar_weight);
@@ -86,7 +87,7 @@ int forced_first_scatter (geometry_struct& geometry,
 
       ran_num = random_obj.random_num();
       target_tau = ran_num*photon.first_tau;
-      
+
     }
 
     // calculate the biased weight factor
@@ -104,7 +105,7 @@ int forced_first_scatter (geometry_struct& geometry,
 //     cout << photon.scat_weight << " ";
 //     cout << 1.0/biased_weight_factor << " ";
 //     cout << endl;
-    
+
     // update the stellar weight
     // *not done* this is done correctly in the classify_stellar_photon routine
     // KDG - 28 Feb 2007
@@ -133,13 +134,13 @@ int forced_first_scatter (geometry_struct& geometry,
 #ifdef DEBUG_FFS
     if (photon.number == OUTNUM) cout << "tau_traveled in = " << tau_traveled << endl;
 #endif
-    distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_traveled);
+    distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, target_dist, escape, tau_traveled);
 
     // cout << photon.number << " ";
     // cout << target_tau << " ";
     // cout << tau_traveled << " ";
     // cout << distance_traveled << endl;
-    
+
 #ifdef DEBUG_FFS
     if (photon.number == OUTNUM) {
       cout << "target_tau = " << target_tau << endl;
@@ -163,7 +164,7 @@ int forced_first_scatter (geometry_struct& geometry,
 //     // This is a special case where the photon has traveled the correct distance
 //     // but has also just exited a subgrid.  This means that the photon index
 //     // for the subgrid is below or above the actual subgrid size for one dimension.
-//     // Easy to fix here by just redetermining the photon indexes [and does not 
+//     // Easy to fix here by just redetermining the photon indexes [and does not
 //     // happen often at all (very rare)].
 //     int m = 0;
 //     int k = photon.current_grid_num;
@@ -177,7 +178,7 @@ int forced_first_scatter (geometry_struct& geometry,
 
 //     determine_photon_position_index_initial(geometry, photon);
 //     }
-    
+
     {
       /*
        * Continuous absorption
@@ -189,27 +190,27 @@ int forced_first_scatter (geometry_struct& geometry,
       const double abs_weight_init = (1. - geometry.albedo)*dummy_photon.stellar_weight; // not the reduced scat_weight
       double tau_entering = 0.;
       double prob_entering = 1.;
-      
+
       for (int i = 0; i < dummy_photon.path_cur_cells; i++) {
 	// find the absorbed weight
 	double tau_leaving = tau_entering + dummy_photon.path_tau[i];
 	double prob_leaving = exp(-tau_leaving);
 	double abs_weight = abs_weight_init*(prob_entering - prob_leaving);
-	
+
 	// deposit the energy
 	grid_cell& this_cell = geometry.grids[dummy_photon.path_pos_index[0][i]].grid(dummy_photon.path_pos_index[1][i],dummy_photon.path_pos_index[2][i],dummy_photon.path_pos_index[3][i]);
 	this_cell.absorbed_energy[geometry.abs_energy_wave_index] += abs_weight;
 	this_cell.absorbed_energy_x2[geometry.abs_energy_wave_index] += abs_weight*abs_weight;
 	this_cell.absorbed_energy_num_photons[geometry.abs_energy_wave_index]++;
-	
+
 	// move to the next grid cell
 	tau_entering = tau_leaving;
 	prob_entering = prob_leaving;
       }
-      
+
     }
-    
+
   }
-  
+
   return(ffs_escape);
 }

@@ -1,6 +1,6 @@
 // ======================================================================
-//   Procedure to generate a photon and set up the stats on it.          
-// This procedure is used for a single star located somewhere in the 
+//   Procedure to generate a photon and set up the stats on it.
+// This procedure is used for a single star located somewhere in the
 // dust distribution
 //
 // 2006 Nov/KDG - written
@@ -19,13 +19,13 @@ void new_photon_diffuse_source (photon_data& photon,
   // setup the weights
   photon.stellar_weight = 1.0;
   photon.scat_weight = 0.0;
-  
+
   // initialize statistics variables
   photon.num_scat = 0;
-  
+
   // save the photon info for later
   //   photon_data save_photon = photon;
-  
+
   double phi = 0.0;
   int i = 0;
   if (geometry.new_photon_source_type == NEW_PHOTON_DIFFUSE_ISOTROPIC) {
@@ -42,7 +42,7 @@ void new_photon_diffuse_source (photon_data& photon,
   } else {
     // determine which bin the photon emerges from
     double ran_num = random_obj.random_num();
-    while ((i < int(geometry.diffuse_source_sum_intensity.size())) && (ran_num > geometry.diffuse_source_sum_intensity[i])) i++; 
+    while ((i < int(geometry.diffuse_source_sum_intensity.size())) && (ran_num > geometry.diffuse_source_sum_intensity[i])) i++;
     int pos_index = i;
 //     cout << geometry.diffuse_source_theta[pos_index] << " ";
 //     cout << geometry.diffuse_source_phi[pos_index] << endl;
@@ -50,16 +50,16 @@ void new_photon_diffuse_source (photon_data& photon,
     cout << "theta = " << geometry.diffuse_source_theta[pos_index] << endl;
     cout << "phi = " << geometry.diffuse_source_phi[pos_index] << endl;
 #endif
-    
-    // direction of photon 
+
+    // direction of photon
     // from diffuse source location
     phi = geometry.diffuse_source_phi[pos_index];
     photon.dir_cosines[2] = cos(geometry.diffuse_source_theta[pos_index]+(M_PI/2.));
     double temp = sqrt(1.0 - pow(photon.dir_cosines[2],2));
     photon.dir_cosines[0] = cos(phi)*temp;
-    photon.dir_cosines[1] = sin(phi)*temp; 
+    photon.dir_cosines[1] = sin(phi)*temp;
   }
-  
+
 #ifdef DEBUG_NPDS
   cout << "photon.dir_cosines[0..2] = ";
   cout << photon.dir_cosines[0] << " ";
@@ -117,6 +117,7 @@ void new_photon_diffuse_source (photon_data& photon,
 
   // now move the photon to the edge
   double target_tau = 1e20;
+  double target_dist = 1e10*geometry.radius;
   int escape = 0;
   double distance_traveled = 0.0;
   double tau_to_surface = 0.0;
@@ -125,7 +126,7 @@ void new_photon_diffuse_source (photon_data& photon,
   cout << "np; start distance traveled" << " ";
   cout.flush();
 #endif
-  distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_to_surface);
+  distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, target_dist, escape, tau_to_surface);
 #ifdef DEBUG_NPDS
   cout << "np; done distance traveled" << " ";
   cout.flush();

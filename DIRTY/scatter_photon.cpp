@@ -1,5 +1,5 @@
 // ======================================================================
-//   Procedure to scatter a photon into a new direction.  
+//   Procedure to scatter a photon into a new direction.
 //
 // 2004 Dec/KDG - written
 // 2008 Aug/KDG - added continous absorption
@@ -34,7 +34,7 @@ void scatter_photon (geometry_struct& geometry,
 //       cout << i1 << " " << i3 << endl;
       i2 = (i1 + i3)/2;
     }
-    cos_alpha = geometry.phi_angle[i1] - 
+    cos_alpha = geometry.phi_angle[i1] -
       ((rannum - geometry.phi_sum[i3])/(geometry.phi_sum[i1] - geometry.phi_sum[i3]))*
       (geometry.phi_angle[i1] - geometry.phi_angle[i3]);
 //     cout << float(i1)/float(geometry.phi.size()) << " ";
@@ -51,13 +51,13 @@ void scatter_photon (geometry_struct& geometry,
     double ran_num = random_obj.random_num();
     double ran_num2 = random_obj.random_num();
     if (ran_num >= geometry.scat_angle_bias_fraction) { // sample from HG function
-      cos_alpha = (1.0 + sqr_g) - 
+      cos_alpha = (1.0 + sqr_g) -
 	pow((1.0 - sqr_g)/(1.0 - geometry.g + 2.0*geometry.g*ran_num2),2);
       cos_alpha /= (2.0*geometry.g);
     } else { // sample from isotropic function
       cos_alpha = 2.0*ran_num2 - 1.0;
     }
-    
+
     // multiplicative weight needed
     double biased_weight_factor = 0.0;
     biased_weight_factor = (1.0 - geometry.scat_angle_bias_fraction) +
@@ -77,7 +77,7 @@ void scatter_photon (geometry_struct& geometry,
   } else if (geometry.g > ROUNDOFF_ERR_TRIG) {
     sqr_g = pow(geometry.g,2);
 
-    cos_alpha = (1.0 + sqr_g) - 
+    cos_alpha = (1.0 + sqr_g) -
       pow((1.0 - sqr_g)/(1.0 - geometry.g + 2.0*geometry.g*random_obj.random_num()),2);
     cos_alpha /= (2.0*geometry.g);
 
@@ -116,13 +116,13 @@ void scatter_photon (geometry_struct& geometry,
 
   // update the direction cosines of the photon
   int i;
-  for (i = 0; i < 3; i++) 
+  for (i = 0; i < 3; i++)
     photon.dir_cosines[i] = new_dir_cosines[i];
 
 #ifdef DEBUG_SP
   cout << "# scat = " << photon.num_scat << endl;
   cout << "total tau = " << photon.target_tau << endl;
-#endif  
+#endif
 
   // update the scattered weight
   photon.scat_weight *= geometry.albedo;
@@ -144,9 +144,10 @@ void scatter_photon (geometry_struct& geometry,
     dummy_photon.path_cur_cells = 0; // set to 0 to save cells traversed
 
     double target_tau = 1e20;
+    double target_dist = 1e10*geometry.radius;
     int escape = 0;
     double tau_to_surface = 0.0;
-    calc_photon_trajectory(dummy_photon, geometry, target_tau, escape, tau_to_surface);
+    calc_photon_trajectory(dummy_photon, geometry, target_tau, target_dist, escape, tau_to_surface);
 
     photon.prev_tau_surface = tau_to_surface;
 
@@ -161,7 +162,7 @@ void scatter_photon (geometry_struct& geometry,
 
     double tau_entering = 0.;
     double prob_entering = 1.;
-    
+
 #ifdef DEBUG_SP
     double tot_abs_temp = 0.;
 #endif
@@ -183,9 +184,9 @@ void scatter_photon (geometry_struct& geometry,
       cout << prob_entering << " ";
       cout << prob_leaving << " ";
       cout << abs_weight << endl;
-      
+
       tot_abs_temp += abs_weight;
-#endif  
+#endif
 
       // deposit the energy
       grid_cell& this_cell = geometry.grids[dummy_photon.path_pos_index[0][i]].grid(dummy_photon.path_pos_index[1][i],dummy_photon.path_pos_index[2][i],dummy_photon.path_pos_index[3][i]);

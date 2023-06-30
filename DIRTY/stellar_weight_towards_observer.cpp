@@ -1,5 +1,5 @@
 // ======================================================================
-//   Function to calculate the stellar weight in the direction of the 
+//   Function to calculate the stellar weight in the direction of the
 // observer.
 //
 // 2007 Feb/KDG - written (adapted from scattered_weight_towards_observer)
@@ -11,7 +11,7 @@
 double stellar_weight_towards_observer (photon_data photon,
 					geometry_struct& geometry,
 					float observer_position[3])
-  
+
 {
   // determine the vector, distance, and direction cosines from the photon
   // birth site to the observer
@@ -30,11 +30,11 @@ double stellar_weight_towards_observer (photon_data photon,
 #ifdef DEBUG_STWTO
   if (photon.number == OUTNUM) {
     cout << "birth_to_obs vector = ";
-    for (i = 0; i < 3; i++) 
+    for (i = 0; i < 3; i++)
       cout << birth_to_obs[i] << " ";
     cout << endl;
     cout << "birth_to_obs dir_cosines = ";
-    for (i = 0; i < 3; i++) 
+    for (i = 0; i < 3; i++)
       cout << dir_cosines_birth_to_obs[i] << " ";
     cout << endl;
   }
@@ -45,6 +45,7 @@ double stellar_weight_towards_observer (photon_data photon,
   for (i = 0; i < 3; i++)
     photon.dir_cosines[i] = dir_cosines_birth_to_obs[i];
   double target_tau = 1e20;
+  double target_dist = 1e10*geometry.radius;
   int escape = 0;
   double tau_birth_to_obs = 0.0;
 
@@ -52,7 +53,7 @@ double stellar_weight_towards_observer (photon_data photon,
   // immediate exit from the grid, step back slightly to avoid this
   for (i = 0; i < 3; i++) {
     if ((photon.dir_cosines[i] < 0.) && (photon.position[i] == geometry.grids[photon.current_grid_num].positions[i][0]))
-      photon.position[i] += 0.01*(geometry.grids[photon.current_grid_num].positions[i][1] - 
+      photon.position[i] += 0.01*(geometry.grids[photon.current_grid_num].positions[i][1] -
 				  geometry.grids[photon.current_grid_num].positions[i][0]);
     else if ((photon.dir_cosines[i] > 0.) && (photon.position[i] == geometry.grids[photon.current_grid_num].positions[i][geometry.grids[photon.current_grid_num].index_dim[i]]))
       photon.position[i] -= 0.01*(geometry.grids[photon.current_grid_num].positions[i][geometry.grids[photon.current_grid_num].index_dim[i]] -
@@ -82,7 +83,7 @@ double stellar_weight_towards_observer (photon_data photon,
 #endif
 
   double distance_traveled = 0.0;
-  distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_birth_to_obs);
+  distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, target_dist, escape, tau_birth_to_obs);
 #ifdef DEBUG_STWTO
   if (photon.number == OUTNUM) {
     cout << "tau/distance traveled = " << tau_birth_to_obs << " ";
