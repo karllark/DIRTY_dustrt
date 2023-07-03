@@ -14,22 +14,33 @@ In general, length units are in pc.
 Global Details
 ==============
 
-**distance=100.0  [0,1e38]**
-
-The distance to the model is specified in parsecs. It is important that the distance is large
-enough to make sure that the entire model grid is beyond the observer.
-
 **n_obs_angles=1 [1,100]**
 
-The number of observer angles is usually 1, but could be up to 100.
-If the number of observer angles is 1, then the single observer (theta,phi) position is input using:
+The number of observers.  This is usually 1, but could be up to 100 for the case of external observers.
+If the number of observer angles is 1, then the single observer position is input using:
+
+**internal_obs=1 [0, 1]**
+
+Type of observer, 0 = external, 1 = internal.
+
+The position of the observer is specified differently depending on the type of observer.
+
+Internal observer (units are pc):
+
+**obs_x=0. [-radius, +radius]**
+
+**obs_y=0. [-radius, +radius]**
+
+**obs_y=0. [-radius, +radius]**
+
+External obsever (units are degrees):
 
 **obs_theta=0. [0.,180.]**
 
 **obs_phi=0. [0.,360.]**
 
-where the angles are input in degrees.
-If the number of observer angles is larger than 1, then a file is used.
+If the number of observer angles is larger than 1 and external observers are specified, then a file is used.  Multiple 
+internal observers is not supported at this time.
 
 **obs_file=obs_pos.dat [any string]**
 
@@ -39,7 +50,14 @@ If the properties of an average line-of-sight are desired, then set:
 
 **randomize_observer=1**
 
-This has the effect of picking a new random observer theta/phi for each photon, averaging over all lines-of-sight.
+This has the effect of picking a new random observer theta/phi for each photon, averaging over all lines-of-sight.  Only
+applicable for external observers.
+
+**distance=100.0  [0,1e38]**
+
+The distance to the model is specified in parsecs. For external observers, it is important that the distance is large
+enough to make sure that the entire model grid is beyond the observer.  This parameter is not used in the case of an internal
+observer, but still must be present.
 
 Source Properties
 =================
