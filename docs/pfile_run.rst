@@ -70,7 +70,7 @@ For rectangular images.  This option may be particularly useful for internal obs
 For internal observers, the image is given in (phi, theta) angles.  Specifically the 
 x-axis=phi and y-axis=cos(theta).
 
-**output_filebase=redsg_lmc_T2800_R3200_test_time4 [any string]**
+**output_filebase=standard_sphere [any string]**
 
 The size base filename of the images.
 
