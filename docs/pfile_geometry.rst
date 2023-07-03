@@ -17,7 +17,6 @@ Global Details
 **n_obs_angles=1 [1,100]**
 
 The number of observers.  This is usually 1, but could be up to 100 for the case of external observers.
-If the number of observer angles is 1, then the single observer position is input using:
 
 **internal_obs=1 [0, 1]**
 
