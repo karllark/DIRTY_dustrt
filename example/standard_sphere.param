@@ -42,3 +42,4 @@ output_filebase=standard_sphere_tau1
 abs_energy_storage=0
 do_image_output=1
 verbose=1
+output_model_grid=1
