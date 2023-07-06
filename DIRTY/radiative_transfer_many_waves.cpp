@@ -92,7 +92,7 @@ void radiative_transfer_many_waves (geometry_struct& geometry,
       cout << "te: saeg start; ";
       cout.flush();
 #endif
-			if (runinfo.do_dust_emission == 1) {
+			if ((runinfo.do_dust_emission) || (output.do_output_model_grid == 1)) {
         store_absorbed_energy_grid(geometry, runinfo, output, i, iter_num);
 			}
 #ifdef DEBUG_MRT

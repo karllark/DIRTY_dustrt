@@ -96,7 +96,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 
 	  if ((geometry.grids[m].grid(i,j,k).dust_tau_per_pc > 0.0) &&
 	      (geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] > 0.0)) {
-    
+
 #ifdef DEBUG_SAEG
 	    cout << "dust tau/pc = " << geometry.grids[m].grid(i,j,k).dust_tau_per_pc << endl;
 	    cout << "# H [total] = " << geometry.grids[m].grid(i,j,k).num_H << endl;
@@ -112,7 +112,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	    double j_temp_x2 = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[geometry.abs_energy_wave_index];
 	    total_energy_absorbed_photons += j_temp;
 	    double flux_mult_factor = 0.0;
-	    if (doing_emission) 
+	    if (doing_emission)
 	      if (runinfo.dust_thermal_emission)
 		flux_mult_factor = (runinfo.emitted_lum[0][index]/output.outputs[0].total_num_photons);
 	      else
@@ -168,7 +168,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	  if (geometry.grids[m].grid(i,j,k).num_H < 0.0) exit(8);
 
 	  // sum the absorbed energy for this wavelength
-	  runinfo.absorbed_energy[geometry.abs_energy_wave_index] += 
+	  runinfo.absorbed_energy[geometry.abs_energy_wave_index] +=
 	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index]*geometry.grids[m].grid(i,j,k).num_H;
 
 #ifdef DEBUG_SAEG
@@ -179,7 +179,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	}
       }
     }
-    
+
   }
 
 //   cout << endl << "index = " << geometry.abs_energy_wave_index << " ";
@@ -192,7 +192,7 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 
   geometry.total_h_mass = total_H_mass;
 //   cout << "total H mass [g] = " << total_H_mass << endl;
-  
+
   if (geometry.abs_energy_storage_type == 1) {
     cout << "no code written for storage_absorbed_energy_grid for disk storage" << endl;
     exit(8);
