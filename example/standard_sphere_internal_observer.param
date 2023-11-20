@@ -6,8 +6,10 @@
 [Geometry]
 distance=100.0
 n_obs_angles=1
+#obs_theta=0.
+#obs_phi=0.
 internal_obs=1
-obs_x=0.0
+obs_x=0.5
 obs_y=0.0
 obs_z=0.0
 source_type=stars
@@ -21,9 +23,11 @@ radius=1.0
 tau=1.0
 # filling factor & density control the clumpiness
 filling_factor=0.05
-density_ratio=0.01
+#density_ratio=0.01
+density_ratio=1.0
 # this controls how to subdivide cells
-max_tau_per_cell=0.1
+max_tau_per_cell=10.0
+#max_tau_per_cell=0.1
 # spherical or cubical clumps [choices are sphere/cube]
 clump_type=cube
 # size of grid (all dimensions equal)
@@ -36,10 +40,13 @@ albedo=0.6
 g=0.6
 
 [Run]
-num_photons=10000
+num_photons=1000000
+#output_image_size=201
 output_image_x_size=201
 output_image_y_size=101
-output_filebase=standard_sphere_tau1_test_target_dist
+#output_filebase=standard_sphere_tau1_test_output_grid
+output_filebase=standard_sphere_tau1_test_internal_obs
+#output_filebase=standard_sphere_tau1_test_external_obs
 # how to store the absorbed energy (speed vs RAM size)
 # 0 to use memory, 1 to use disk
 abs_energy_storage=0

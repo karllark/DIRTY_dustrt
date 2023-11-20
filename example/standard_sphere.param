@@ -34,7 +34,7 @@ albedo=0.6
 g=0.6
 
 [Run]
-num_photons=100000
+num_photons=10000
 output_image_size=201
 output_filebase=standard_sphere_tau1_test_target_dist
 # how to store the absorbed energy (speed vs RAM size)
