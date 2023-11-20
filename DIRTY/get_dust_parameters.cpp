@@ -41,7 +41,10 @@ void get_dust_parameters (ConfigFile& param_data,
 
     // set the grain info we won't have or really use
     runinfo.tau_to_h.push_back(1.0);
-    runinfo.ave_C_abs.push_back(1.);
+
+		// so that the scaling may be correct as Cabs (not Cext) in the radiation
+		// field calculation (see store_absorbed_energy_grid)
+    runinfo.ave_C_abs.push_back(albedo);
 
 		// check that if a single wavlength run is picked, then do_global_output is not
 		if (runinfo.do_global_output) {

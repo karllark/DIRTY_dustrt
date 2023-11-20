@@ -29,9 +29,9 @@ grid_size=50
 
 [Dust Grains]
 type=single_wavelength
-wavelength=0.55
-albedo=0.6
-g=0.6
+wavelength=0.15
+albedo=0.360469
+g=0.631869
 
 [Run]
 num_photons=100000
