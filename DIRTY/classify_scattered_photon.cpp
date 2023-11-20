@@ -132,8 +132,7 @@ void classify_scattered_photon(output_struct& output, photon_data& photon,
         if ((dir_obs_to_scat[1] / sin(theta)) < 0.) phi *= -1.0;
 
         image_indxs[0] = int(output.image_size[0] * ((phi + M_PI) / (2.0 * M_PI)));
-        image_indxs[1] =
-            int(output.image_size[1] * ((dir_obs_to_scat[2] + 1.) / 2.0));
+        image_indxs[1] = int(output.image_size[1] * (1. - dir_obs_to_scat[2]) / 2.0);
       }
 
 #ifdef DEBUG_CSCP

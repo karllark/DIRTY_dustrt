@@ -190,6 +190,12 @@ void setup_dust_grid_file (ConfigFile& param_data,
       }
       check_input_param("arbitrary file: radial optical depth",geometry.tau,0.0,1000.);
 
+      // variables that are not used, but are written to an output FITS file
+      // need to be set to avoid bad float to string conversions in creating the FITS file
+      geometry.density_ratio = 1.0;
+      geometry.clump_densities[0] = 0.0;
+      geometry.clump_densities[1] = 0.0;
+
       // max grid depth
       fits_read_key(tau_pc_file_ptr, TLONG, "GRDDEPTH", &geometry.max_grid_depth, comment, &status);
       if (status != 0) {
