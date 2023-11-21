@@ -55,11 +55,22 @@ and emission (equilibrium/non-equilibrium).
 
 These are the images from the stellar radiative transfer before the dust emission.
 
+The size of the output images (at each wavelength) can be given two ways.
+
 **output_image_size=201 [1,5e4]**
 
-The size of the output images (at each wavelength).
+For square images.  Usually used for external observers where the output image is 
+a tangent projection.
 
-**output_filebase=redsg_lmc_T2800_R3200_test_time4 [any string]**
+**output_image_x_size=201 [1,5e4]**
+
+**output_image_y_size=201 [1,5e4]**
+
+For rectangular images.  This option may be particularly useful for internal observers.
+For internal observers, the image is given in (phi, theta) angles.  Specifically the 
+x-axis=phi and y-axis=cos(theta).
+
+**output_filebase=standard_sphere [any string]**
 
 The size base filename of the images.
 

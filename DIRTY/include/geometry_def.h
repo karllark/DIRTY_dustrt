@@ -1,5 +1,5 @@
 // ======================================================================
-//   Header file for classify stellar photon procedure.  
+//   Header file for classify stellar photon procedure.
 // Include files and function definitions.
 //
 // 2003 Jun/KDG - written
@@ -70,6 +70,9 @@ struct geometry_struct {
   int num_observers;  // number of different observer directions
   float observer_angles[2][MAX_OBSERVERS]; // theta,phi for each observer
 
+  int internal_observer; // 1=yes, 0=no
+  double observer_position[3]; // location of observer in grid
+
   string source_type;   // type of source (stars, diffuse, etc.)
   double total_source_luminosity;  // in ergs s^-1 A^-1
   int new_photon_source_type; // integer to control how to emit photons
@@ -86,7 +89,7 @@ struct geometry_struct {
   int stellar_emit_n_xy;
   vector<double> stellar_emit_xy_vals;
   //  double stellar_emit_constant_xy;
-  
+
   // power sphere variables
   double pow_sphere_exponent;
   double pow_sphere_inner_radius;

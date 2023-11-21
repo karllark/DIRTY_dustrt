@@ -13,9 +13,10 @@
 double calc_delta_dist (photon_data& photon,
 			geometry_struct& geometry,
 			double target_tau,
+			double target_dist,
 			int& escape,
 			double& tau_traveled)
-  
+
 {
 #ifdef DEBUG_CDD
   if (photon.number == OUTNUM) {
@@ -101,7 +102,7 @@ double calc_delta_dist (photon_data& photon,
       if (photon.number == OUTNUM) {
 	cout << "new "; cout.flush();
       }
-      
+
       // add in handling of subgrids
       // check if photon has already been in this grid
       // basically, are we restarting the photon tracking in a subgrid?
@@ -138,9 +139,9 @@ double calc_delta_dist (photon_data& photon,
       cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
     }
 #endif
-    
-    distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, escape, tau_traveled);
-    
+
+    distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, target_dist, escape, tau_traveled);
+
 #ifdef DEBUG_CDD
     if (photon.number == OUTNUM) {
       cout << "emerging from subgrid" << endl;
@@ -161,9 +162,9 @@ double calc_delta_dist (photon_data& photon,
       escape_grid = 1;
       exit_cell = 1;
       for (i = 0; i < 3; i++) {
-	if (((photon.dir_cosines[i] > 0.0) && 
+	if (((photon.dir_cosines[i] > 0.0) &&
 	     (photon.position[i] == geometry.grids[photon.grid_number[photon.current_grid_num]].positions[i][photon.position_index[k][i]+1])) ||
-	    ((photon.dir_cosines[i] < 0.0) && 
+	    ((photon.dir_cosines[i] < 0.0) &&
 	     (photon.position[i] == geometry.grids[photon.grid_number[photon.current_grid_num]].positions[i][photon.position_index[k][i]])))
 	  min_index = i;
 #ifdef DEBUG_CDD
@@ -178,6 +179,9 @@ double calc_delta_dist (photon_data& photon,
     }
     // now determine if the photon has traveled far enough
     if (fabs(target_tau - tau_traveled) < ROUNDOFF_ERR_TRIG) {
+      if (!escape_grid) exit_cell = 0;
+      escape = 1;
+    } else if (fabs(target_dist - distance_traveled) < ROUNDOFF_ERR_TRIG) {
       if (!escape_grid) exit_cell = 0;
       escape = 1;
     }
@@ -203,7 +207,7 @@ double calc_delta_dist (photon_data& photon,
     double delta_position[3];  // x,y,z distance to the edge of the cell (parallel to the x,y,z axes)
     double delta_distance[3];  // distance the photon would need to travelel to exit the cell in the x,y,z directions
 
-  // determine the x,y,z distances to the edge of the cell 
+  // determine the x,y,z distances to the edge of the cell
   //   this is parallel to the x,y,z axes
     int i = 0;
 #ifdef DEBUG_CDD
@@ -214,17 +218,17 @@ double calc_delta_dist (photon_data& photon,
     for (i = 0; i < 3; i++) {
       if (photon.dir_cosines[i] > 0.0) {
 	delta_position[i] = geometry.grids[photon.grid_number[photon.current_grid_num]].positions[i][photon.position_index[k][i]+1] -
-	  photon.position[i];					 
+	  photon.position[i];
       } else if (photon.dir_cosines[i] < 0.0) {
-	delta_position[i] = photon.position[i] - 
+	delta_position[i] = photon.position[i] -
 	  geometry.grids[photon.grid_number[photon.current_grid_num]].positions[i][photon.position_index[k][i]];
       } else {  // photon.dir_cosines[i] == 0.0
 	delta_position[i] = 0.0;
       }
-      
+
       // calculate the distance the photon would  have to travel in each x,y,z direction
       // to exit the cell
-      if (photon.dir_cosines[i] != 0.0) 
+      if (photon.dir_cosines[i] != 0.0)
         delta_distance[i] = fabs(delta_position[i]/photon.dir_cosines[i]);
       else
         delta_distance[i] = 0.0;
@@ -244,12 +248,12 @@ double calc_delta_dist (photon_data& photon,
       }
 #endif
     }
-  
+
     // determine the first axis the photon exits along
     //   minumum distance traveled
     double min_dist = 1e20;
     min_index = -1;
-    for (i = 0; i < 3; i++) 
+    for (i = 0; i < 3; i++)
       if ((delta_distance[i] < min_dist) && (delta_distance[i] >= 0.) &&
 	  (!((photon.dir_cosines[i] == 0.0) && (delta_distance[i] == 0.0)))) {
 	min_dist = delta_distance[i];
@@ -274,18 +278,23 @@ double calc_delta_dist (photon_data& photon,
       cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
       cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
     }
-#endif    
+#endif
     // save the current cell dust coeff (tau/pc)
     // and distance traveled
     distance_traveled = delta_distance[min_index];
 
     // determine the optical depth transversed before the photon exits the cell
     tau_traveled = dust_tau_per_pc*distance_traveled;
-    
-    // if this tau_traveled is larger than the amount of tau_left, then decrease the distance traveled
+
+    // if this tau_traveled is larger than the amount of tau_left, then decrease the distance/tau traveled
+    // 2nd if statement is the same for distance
     if (tau_traveled > target_tau) {
       distance_traveled *= target_tau/tau_traveled;
       tau_traveled = target_tau;
+      exit_cell = 0;
+    } if (distance_traveled > target_dist) {
+      tau_traveled *= target_dist/distance_traveled;
+      distance_traveled = target_dist;
       exit_cell = 0;
     }
 
@@ -299,7 +308,7 @@ double calc_delta_dist (photon_data& photon,
     //   for (i = 0; i < 3; i++) cout << photon.dir_cosines[i] << " ";
     //   cout << endl;
     // }
-    
+
 #ifdef DEBUG_CDD
     if (photon.number == OUTNUM) {
       cout << "path info" << endl;
@@ -309,7 +318,7 @@ double calc_delta_dist (photon_data& photon,
       cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
       cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
     }
-#endif    
+#endif
 
     if (photon.path_cur_cells >= 0) { // if -1, don't save
       if (photon.path_cur_cells >= photon.path_max_cells) {
@@ -320,7 +329,7 @@ double calc_delta_dist (photon_data& photon,
 	photon.path_pos_index[2].push_back(0);
 	photon.path_pos_index[3].push_back(0);
 	photon.path_max_cells++;
-      } 
+      }
       if (photon.path_max_cells < photon.path_cur_cells) {
 	cout << "photon path # cells is smaller than the current cell number" << endl;
 	exit(8);
@@ -331,7 +340,7 @@ double calc_delta_dist (photon_data& photon,
       photon.path_pos_index[2][photon.path_cur_cells] = photon.position_index[k][1];
       photon.path_pos_index[3][photon.path_cur_cells] = photon.position_index[k][2];
 
-#ifdef DEBUG_CDD      
+#ifdef DEBUG_CDD
       if (photon.number == OUTNUM) {
 	cout << "path: ";
 	cout << photon.path_pos_index[0][photon.path_cur_cells] << " ";
@@ -343,8 +352,8 @@ double calc_delta_dist (photon_data& photon,
 #endif
       photon.path_cur_cells++;
 
-#ifdef DEBUG_CDD      
-      if (photon.number == OUTNUM) 
+#ifdef DEBUG_CDD
+      if (photon.number == OUTNUM)
 	cout << "photon.path_cur_cells = " << photon.path_cur_cells << endl;
 #endif
     }
@@ -412,7 +421,7 @@ double calc_delta_dist (photon_data& photon,
       cout << "escape (post check1) = " << escape << endl;
     }
 #endif
-    
+
     // determine if the photon has left the model while still inside the grid (-1 > dust_tau_per_pc > 0)
     if (!escape) {
 //       if ((photon.position_index[k][min_index] < geometry.grids[photon.grid_number[photon.current_grid_num]].index_dim[min_index]) &&

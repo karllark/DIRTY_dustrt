@@ -1,6 +1,0 @@
-name: DIRTY
-
-dependencies:
-    - sphinx_rtd_theme
-#   - pip:
-#       - dependency_from_pip

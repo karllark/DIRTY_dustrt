@@ -200,7 +200,7 @@ void output_model_grid (geometry_struct& geometry,
 //     check_fits_io(status,"fits_write_key : output_model_grid (pos)");
 
     if (m != 0) {
-      fits_write_key(out_tau_ptr, TINT, "PAR_GRID", &geometry.grids[m].parent_grid_num, "grid number of partent", &status);
+      fits_write_key(out_tau_ptr, TINT, "PAR_GRID", &geometry.grids[m].parent_grid_num, "grid number of parent", &status);
     } else {
       // populate the primary header with the details of the run
 
@@ -222,7 +222,7 @@ void output_model_grid (geometry_struct& geometry,
 
       // extra information needed for setting up the geometry
       fits_write_key(out_tau_ptr, TFLOAT, "RAD_TAU", &geometry.tau, "radial optical depth", &status);
-      fits_write_key(out_tau_ptr, TLONG, "GRDDEPTH", &geometry.max_grid_depth, "maximum depth of the grid", &status);
+      fits_write_key(out_tau_ptr, TINT, "GRDDEPTH", &geometry.max_grid_depth, "maximum depth of the grid", &status);
 
       // final stuff for primary header
       fits_write_comment(out_tau_ptr, "**---------------------------------**",&status);

@@ -10,9 +10,9 @@ obs_theta=0.
 obs_phi=0.
 source_type=stars
 n_stars=1
-star_pos_x=0.
-star_pos_y=0.
-star_pos_z=0.
+star_pos_x=-0.5
+star_pos_y=-0.5
+star_pos_z=-0.5
 type=sphere
 radius=1.0
 # radial optical depth
@@ -34,12 +34,11 @@ albedo=0.6
 g=0.6
 
 [Run]
-num_photons=10000
+num_photons=1000000
 output_image_size=201
-output_filebase=standard_sphere_tau1_test_target_dist
+output_filebase=standard_sphere_offset_star_tau1
 # how to store the absorbed energy (speed vs RAM size)
 # 0 to use memory, 1 to use disk
 abs_energy_storage=0
 do_image_output=1
 verbose=1
-output_model_grid=1

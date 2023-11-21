@@ -18,6 +18,7 @@ extern void determine_photon_position_index_initial (geometry_struct& geometry,
 extern double calc_photon_trajectory (photon_data& photon,
 				      geometry_struct& geometry,
 				      double target_tau,
+				      double target_dist,
 				      int& escape,
 				      double& tau_traveled);
 
