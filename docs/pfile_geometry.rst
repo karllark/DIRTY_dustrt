@@ -265,12 +265,12 @@ cells would be "GRDDEPTH" = 3, etc.).
 
 For subgrids, the cell in the main grid that the subgrid is subdividing
 should be filled with the negative of the subgrid number (e.g., the 1st
-subgrid is numbered 2 and the cell in the main grid should have a value
-of -2, the 2nd subgrid is numbered 3 and the cell in the main grid has
-a value of -3, etc.). In addition, the header of each subgrid should
+subgrid is numbered 1 and the cell in the main grid should have a value
+of -1, the 2nd subgrid is numbered 2 and the cell in the main grid has
+a value of -2, etc.). In addition, the header of each subgrid should
 include the INT (datatype) keyword "PAR_GRID" with the index of the of
 the grid where of the cell it subdivides (e.g., subgrids of cells in
-the main grid will have "PAR_GRID" = 1).
+the main grid will have "PAR_GRID" = 0).
 
 A grid tau_ref_per_pc value of -0.5 designates that grid cells outside
 of this one are also filled with -0.5 and the model effectively stops
