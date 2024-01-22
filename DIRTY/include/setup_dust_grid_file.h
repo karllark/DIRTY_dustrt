@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include <cmath>
+#include <vector>
 
 #include "ConfigFile.h"
 #include "check_input_param.h"
@@ -22,7 +23,8 @@ extern int check_fits_io(int status,
 
 extern void setup_dust_grid_check_grid (geometry_struct& geometry,
 					int cur_grid,
-					int par_grid);
+					int par_grid,
+					vector<int>& par_idim);
 
 extern void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
 						       int spherical_clumps);
