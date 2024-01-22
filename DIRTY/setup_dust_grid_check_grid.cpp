@@ -14,6 +14,8 @@ void setup_dust_grid_check_grid(geometry_struct& geometry, int cur_grid,
   int i, j, k = 0;
   float dust_tau_per_pc = 0.0;
   bool errors_found = false;
+  float min_tau = 0.0;
+  float max_tau = 0.0;
 
   //   cout << "checking grid # = " << cur_grid << " ";
   //   cout << "out of " << geometry.grids.size() << " grids" << endl;
@@ -80,9 +82,21 @@ void setup_dust_grid_check_grid(geometry_struct& geometry, int cur_grid,
             cout << "in grid # = " << cur_grid << endl;
             errors_found = true;
           }
+        } else {
+          if (dust_tau_per_pc < min_tau)
+            min_tau = dust_tau_per_pc;
+          if (dust_tau_per_pc > max_tau)
+            max_tau = dust_tau_per_pc;
         }
         // 	cout << endl;
       }
+    }
+
+  // check that the grid is not all filled with -0.5 values
+  // -0.5 and subgrids allowed
+    if ((max_tau == -0.5) && (min_tau == -0.5)) {
+      cout << "grid # = " << cur_grid << " is filled with only -0.5 values, not allowed" << endl;
+      errors_found = true;
     }
 
   // stop if any errors found
