@@ -63,8 +63,11 @@ void setup_dust_grid_check_grid(geometry_struct& geometry, int cur_grid,
       for (i = 0; i < geometry.grids[cur_grid].index_dim[0]; i++) {
         dust_tau_per_pc =
             geometry.grids[cur_grid].grid(i, j, k).dust_tau_per_pc;
-        // 	cout << dust_tau_per_pc << " ";
-        if (dust_tau_per_pc < -0.5) {
+        if (isnan(dust_tau_per_pc)) {
+          cout << "NaN detected in grid # = " << cur_grid;
+          cout << " at cell = (" << i << "," << j << "," << k << ")" << endl;
+          errors_found = true;
+        } else if (dust_tau_per_pc < -0.5) {
           if (abs(dust_tau_per_pc) <= geometry.grids.size()) {
             par_idim[0] = i;
             par_idim[1] = j;
