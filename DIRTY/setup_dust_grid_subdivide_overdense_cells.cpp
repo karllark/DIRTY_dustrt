@@ -65,7 +65,7 @@ void setup_dust_grid_subdivide_overdense_cells(geometry_struct& geometry,
             cout << "cell tau_x = " << x_tau << endl;
 #endif
 
-            // note that we've subdivided at least one grid cel
+            // note that we've subdivided at least one grid cell
             subdivide_any = 1;
 
             one_grid subgrid;

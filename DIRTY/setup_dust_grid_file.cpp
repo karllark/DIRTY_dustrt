@@ -290,7 +290,13 @@ void setup_dust_grid_file(ConfigFile& param_data, geometry_struct& geometry)
   check_fits_io(status, "fits_close_file : tau_pc_file");
 
   // check to make sure that all subgrids designated exist
-  if (num_grids > 1) setup_dust_grid_check_grid(geometry, 0, -1);
+  if (num_grids > 1) {
+    vector<int> par_idim;
+    par_idim.reserve(3);
+    for (i = 0; i < 3; i++)
+      par_idim[i] = 0;
+    setup_dust_grid_check_grid(geometry, 0, -1, par_idim);
+  }
 
   int spherical_clumps = 0;
   // subdivide all overdense cells

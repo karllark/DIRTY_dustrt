@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <vector>
 
 #include "geometry_def.h"
 #include "debug.h"
@@ -12,6 +13,6 @@
 // external function definitions
 
 extern void setup_dust_grid_check_grid (geometry_struct& geometry,
-					int cur_grid);
+					int cur_grid, vector<int>& par_idim);
 
 #endif

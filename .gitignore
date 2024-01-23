@@ -5,6 +5,7 @@ dirty
 *~
 .DS_Store
 docs/_build
+*.fits
 
 # autotools
 .version
