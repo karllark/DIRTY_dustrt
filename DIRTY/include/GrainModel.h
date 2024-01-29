@@ -37,7 +37,7 @@
 #include <cctype>
 #include <iostream>
 
-//#include "Constants.h"
+#include "Constants.h"
 #include "ConfigFile.h"
 #include "Grain.h" 
 #include "StringManip.h"
@@ -83,12 +83,14 @@ public:
   float getTau( float a_wave );  
   inline vector <float> getTau( void ) { return Tau; }
   inline float getMDust( int cmp ) { return DustMass[cmp]; }
+  inline float getVDust( int cmp ) { return DustVolume[cmp]; }
   inline float getMDust( void ) { return TotalDustMass; }
 
   inline float getNumber( int cmp ) { return number[cmp]; }
   inline float getNumber( void ) { return totalnumber; }
   
   inline int getNComp( void ) { return nComp; }
+  inline int getNWave( void ) { return nWave; }
   inline float getNormalization( void ) { return TotalNormalization; }
   inline float getNormalization( int cmp ) { return Normalization[cmp]; }
   //void ComputeEmission ( vector <float> rField );
@@ -138,6 +140,7 @@ private:
   float TotalNormalization;
   float TotalDustMass; 
   vector <float> DustMass; 
+  vector <float> DustVolume;
   float totalnumber; 
   vector <float> number; 
 
@@ -153,6 +156,7 @@ private:
 
   vector <float> getZDA_sdist(vector <float> coeff, int cmp); 
   vector <float> getWD_sdist(vector <float> coeff, int cmp); 
+  vector <float> getHD_sdist(vector <float> coeff, int cmp);
   vector <float> getGauss_sdist(vector <float> coeff, int cmp); 
 
   // for cases we need to specify an input Dust to gas mass ratio: 
@@ -168,19 +172,21 @@ private:
   map<string,int> ModelID; 
   void ModelMapping() { 
     if ( !ModelID.empty()) return; 
-    ModelID["MRN"]=0;              // Standard MRN
-    ModelID["BARE-GR-S"]=1;        // Zubko et al. bare graphite+silicate
-    ModelID["SMCBAR-WD01"]=7;      // Wiengartner+Draine SMC
-    ModelID["RV31_BC6-WD01"]=8;    // Wiengartner+Draine MW R_V=3.1
+    ModelID["MRN"]           = 0;  // Standard MRN
+    ModelID["BARE-GR-S"]     = 1;  // Zubko et al. bare graphite+silicate
+    ModelID["BARE-GR-S-MIN"] = 11; // Zubko et al. bare graphite+silicate
+    ModelID["SMCBAR-WD01"]   = 7;  // Wiengartner+Draine SMC
+    ModelID["RV31_BC6-WD01"] = 8;  // Wiengartner+Draine MW R_V=3.1
   }
   map<string,int> SizeDistID; 
   void SizeDistMapping() { 
     if (!SizeDistID.empty()) return; 
-    SizeDistID["ZDA"] = 0;         // Zubko et al. Size distribution function
-    SizeDistID["WD01"] = 1;        // Wiengartner+Draine Size distribution function
-    SizeDistID["POWERLAW"] = 2;    // Power law size distribution. 
-    SizeDistID["GAUSS"] = 3;      // Appox. single size grain distribution - Guassian 
-    SizeDistID["NULL"] = 99;
+    SizeDistID["ZDA"]      = 0;  // Zubko et al. Size distribution function
+    SizeDistID["WD01"]     = 1;  // Wiengartner+Draine Size distribution function
+    SizeDistID["POWERLAW"] = 2;  // Power law size distribution. 
+    SizeDistID["GAUSS"]    = 3;  // Appox. single size grain distribution - Guassian 
+    SizeDistID["HD23"]     = 4;  // Hensley+Draine 2023 Size distribution function
+    SizeDistID["NULL"]     = 99;
   }
   map<string,int> SizeTypeID; 
   void SizeTypeMapping() { 
