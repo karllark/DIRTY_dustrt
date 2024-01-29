@@ -26,7 +26,8 @@ void get_sed_parameters (ConfigFile& param_data,
         
     unsigned int i = 0;
     for (i = 0; i < runinfo.wavelength.size(); i++) 
-      runinfo.sed_lum.push_back(1.);
+       // reasonable for a star, needed to get radiation field correct for single wavelength case
+      runinfo.sed_lum.push_back(1.e45); 
 
   } else {
 #ifdef DEBUG_GSP

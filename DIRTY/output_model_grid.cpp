@@ -18,6 +18,9 @@ void output_model_grid (geometry_struct& geometry,
   string filename_unc = "!" + output.file_base;
   filename_unc += "_rad_field_unc.fits";
 
+  string filename_npts = "!" + output.file_base;
+  filename_npts += "_rad_field_nphotons.fits";
+
   // filename of the wavelength grid output file
   string filename_wave = "!" + output.file_base;
   filename_wave += "_wave_grid.fits";
@@ -45,6 +48,10 @@ void output_model_grid (geometry_struct& geometry,
   fitsfile *out_unc_ptr;   // pointer to the output fits file
   fits_create_file(&out_unc_ptr,filename_unc.c_str(), &status);
   check_fits_io(status, "fits_create_file : output_model_grid (rad_field unc)");
+
+  fitsfile *out_npts_ptr;   // pointer to the output fits file
+  fits_create_file(&out_npts_ptr,filename_npts.c_str(), &status);
+  check_fits_io(status, "fits_create_file : output_model_grid (rad_field npts)");
 
   fitsfile *out_tau_ptr;   // pointer to the output fits file
   fits_create_file(&out_tau_ptr,filename_tau.c_str(), &status);
@@ -79,6 +86,10 @@ void output_model_grid (geometry_struct& geometry,
     // create a 4d matrix to copy the grid info into for output
     NumUtils::FourVector<float> tmp_rad_field_unc;
     tmp_rad_field_unc.FVSize(geometry.grids[m].index_dim[0],geometry.grids[m].index_dim[1],geometry.grids[m].index_dim[2],n_waves);
+
+    // create a 4d matrix to copy the grid info into for output
+    NumUtils::FourVector<int> tmp_rad_field_npts;
+    tmp_rad_field_npts.FVSize(geometry.grids[m].index_dim[0],geometry.grids[m].index_dim[1],geometry.grids[m].index_dim[2],n_waves);
 
     // create a 3d matrix to copy the grid info into for output
     NumUtils::Cube<float> tmp_tau;
@@ -119,7 +130,8 @@ void output_model_grid (geometry_struct& geometry,
 					tmp_num_H(i,j,k) = geometry.grids[m].grid(i,j,k).num_H;
 	  			for (n = 0; n < n_waves; n++) {
 	    			tmp_rad_field(i,j,k,n) = geometry.grids[m].grid(i,j,k).absorbed_energy[n];
-	    			if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] >= 5) {
+            tmp_rad_field_npts(i,j,k,n) = geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n];
+	    			if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] >= 1) {
 	      			rad_unc = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] -
 								pow(double(geometry.grids[m].grid(i,j,k).absorbed_energy[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n]),double(2.0));
 	      			if (rad_unc > 0.0)
@@ -165,6 +177,17 @@ void output_model_grid (geometry_struct& geometry,
     cout << "done writing rad field unc" << endl;
 #endif
 
+    // create and output each grid (rad_field npts)
+    fits_create_img(out_npts_ptr, 16, 4, four_vector_size, &status);
+    check_fits_io(status,"fits_create_image : output_model_grid (rad_field npts)");
+
+    fits_write_img(out_npts_ptr, TSHORT, 1, geometry.grids[m].index_dim[0]*geometry.grids[m].index_dim[1]*geometry.grids[m].index_dim[2]*n_waves,
+		   &tmp_rad_field_npts[0], &status);
+
+#ifdef DEBUG_OMG
+    cout << "done writing rad field npts" << endl;
+#endif
+
     // create and output each grid (tau)
     fits_create_img(out_tau_ptr, -32, 3, geometry.grids[m].index_dim, &status);
     check_fits_io(status,"fits_create_image : output_model_grid (tau)");
@@ -208,7 +231,7 @@ void output_model_grid (geometry_struct& geometry,
       fits_write_comment(out_ptr, "**---------------------------------**",&status);
       fits_write_comment(out_ptr, "Output of the DIRTY model",&status);
       fits_write_comment(out_ptr, "Karl D. Gordon & Karl A. Misselt", &status);
-      fits_write_comment(out_ptr, "version v2.0prealpha (Oct 2009)", &status);
+      fits_write_comment(out_ptr, "version v2.2dev (Jan 2024)", &status);
       fits_write_comment(out_ptr, "**---------------------------------**",&status);
       check_fits_io(status,"fits_write_comment : output_model_grid");
 
@@ -216,7 +239,7 @@ void output_model_grid (geometry_struct& geometry,
       fits_write_comment(out_unc_ptr, "**---------------------------------**",&status);
       fits_write_comment(out_unc_ptr, "Output of the DIRTY model",&status);
       fits_write_comment(out_unc_ptr, "Karl D. Gordon & Karl A. Misselt", &status);
-      fits_write_comment(out_unc_ptr, "version v2.0prealpha (Oct 2009)", &status);
+      fits_write_comment(out_unc_ptr, "vversion v2.2dev (Jan 2024)", &status);
       fits_write_comment(out_unc_ptr, "**---------------------------------**",&status);
       check_fits_io(status,"fits_write_comment : output_model_grid (unc)");
 
@@ -228,7 +251,7 @@ void output_model_grid (geometry_struct& geometry,
       fits_write_comment(out_tau_ptr, "**---------------------------------**",&status);
       fits_write_comment(out_tau_ptr, "Output of the DIRTY model",&status);
       fits_write_comment(out_tau_ptr, "Karl D. Gordon & Karl A. Misselt", &status);
-      fits_write_comment(out_tau_ptr, "version v2.0prealpha (Oct 2009)", &status);
+      fits_write_comment(out_tau_ptr, "version v2.2dev (Jan 2024)", &status);
       fits_write_comment(out_tau_ptr, "**---------------------------------**",&status);
       check_fits_io(status,"fits_write_comment : output_model_grid (tau)");
 
@@ -236,7 +259,7 @@ void output_model_grid (geometry_struct& geometry,
       fits_write_comment(out_num_H_ptr, "**---------------------------------**",&status);
       fits_write_comment(out_num_H_ptr, "Output of the DIRTY model",&status);
       fits_write_comment(out_num_H_ptr, "Karl D. Gordon & Karl A. Misselt", &status);
-      fits_write_comment(out_num_H_ptr, "version v2.0prealpha (Oct 2009)", &status);
+      fits_write_comment(out_num_H_ptr, "version v2.2dev (Jan 2024)", &status);
       fits_write_comment(out_num_H_ptr, "**---------------------------------**",&status);
       check_fits_io(status,"fits_write_comment : output_model_grid (num_H)");
 
@@ -244,7 +267,7 @@ void output_model_grid (geometry_struct& geometry,
       fits_write_comment(out_pos_ptr, "**---------------------------------**",&status);
       fits_write_comment(out_pos_ptr, "Output of the DIRTY model",&status);
       fits_write_comment(out_pos_ptr, "Karl D. Gordon & Karl A. Misselt", &status);
-      fits_write_comment(out_pos_ptr, "version v2.0prealpha (Oct 2009)", &status);
+      fits_write_comment(out_pos_ptr, "version v2.2dev (Jan 2024)", &status);
       fits_write_comment(out_pos_ptr, "**---------------------------------**",&status);
       check_fits_io(status,"fits_write_comment : output_model_grid (pos)");
     }
@@ -266,6 +289,10 @@ void output_model_grid (geometry_struct& geometry,
   // close FITS File
   fits_close_file(out_unc_ptr, &status);
   check_fits_io(status,"fits_close_file : output_model_grid (unc)");
+
+  // close FITS File
+  fits_close_file(out_npts_ptr, &status);
+  check_fits_io(status,"fits_close_file : output_model_grid (npts)");
 
   // close FITS File
   fits_close_file(out_wave_ptr, &status);
