@@ -127,6 +127,15 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	    j_temp /= flux_mult_factor;
 	    j_temp_x2 /= (flux_mult_factor*flux_mult_factor);
 
+      //if (j_temp > 0) {
+      //  cout << "emitted_lum = " << runinfo.sed_lum[index] << "; ";
+      //  cout << "num_H = " << geometry.grids[m].grid(i,j,k).num_H << "; ";
+      //  cout << "C_abs = " << runinfo.ave_C_abs[index] << "; ";
+      //  cout << "j_temp" << " ";
+      //  cout << j_temp << " ";
+      //  cout << j_temp_x2 << endl;
+      //}
+
 	    // check for roundoff error before converting to double
 	    if (j_temp < 1e-38) {
 #ifdef DEBUG_SAEG

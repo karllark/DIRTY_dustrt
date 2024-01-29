@@ -119,7 +119,7 @@ void output_model_grid (geometry_struct& geometry,
 					tmp_num_H(i,j,k) = geometry.grids[m].grid(i,j,k).num_H;
 	  			for (n = 0; n < n_waves; n++) {
 	    			tmp_rad_field(i,j,k,n) = geometry.grids[m].grid(i,j,k).absorbed_energy[n];
-	    			if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] >= 5) {
+	    			if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] >= 1) {
 	      			rad_unc = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] -
 								pow(double(geometry.grids[m].grid(i,j,k).absorbed_energy[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n]),double(2.0));
 	      			if (rad_unc > 0.0)
