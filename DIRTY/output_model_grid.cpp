@@ -88,7 +88,7 @@ void output_model_grid (geometry_struct& geometry,
     tmp_rad_field_unc.FVSize(geometry.grids[m].index_dim[0],geometry.grids[m].index_dim[1],geometry.grids[m].index_dim[2],n_waves);
 
     // create a 4d matrix to copy the grid info into for output
-    NumUtils::FourVector<int> tmp_rad_field_npts;
+    NumUtils::FourVector<short int> tmp_rad_field_npts;
     tmp_rad_field_npts.FVSize(geometry.grids[m].index_dim[0],geometry.grids[m].index_dim[1],geometry.grids[m].index_dim[2],n_waves);
 
     // create a 3d matrix to copy the grid info into for output

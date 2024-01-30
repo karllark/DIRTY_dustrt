@@ -5,7 +5,7 @@
 // 2007 Mar/KDG - changed absorbed energy from float to double
 // 2008 Mar/KDG - added num_H to save the number of H atoms per cell
 // 2008 Jun/KDG - made save_radiation_field_density into a vector to
-//                to properly handle the interations needed for dust self-absorption.
+//                to properly handle the interactions needed for dust self-absorption.
 // 2009 Dec/KDG - added sum of squared quantities to allow for uncertainties
 // ======================================================================
 #ifndef _DIRTY_GRID_CELL_
