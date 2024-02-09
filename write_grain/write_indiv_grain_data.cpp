@@ -213,7 +213,7 @@ int main(int argc, char* argv[])
       for (int k = 0; k < nISRFs; k++)
         myfile << " " << RadiationFieldScale[k];
       myfile << endl;
-      myfile << "StochasticallyHeated:";
+      myfile << "# StochasticallyHeated:";
       for (int k = 0; k < nISRFs; k++)
         myfile << " " << StochHeat[k];
       myfile << endl;
