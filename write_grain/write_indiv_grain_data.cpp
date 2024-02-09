@@ -20,6 +20,7 @@ int main(int argc, char* argv[])
   ofstream myfile;
   string myfilename;
   bool StochasticallyHeated;
+  vector<bool> StochHeat {false, false, false, false, false};
 
   vector<float> RadiationFieldScale {0.5, 1.0, 2.0, 5.0, 10.0};
   int nISRFs;
@@ -187,6 +188,7 @@ int main(int argc, char* argv[])
         if (status != Flags::FSUCCESS) cout << "FUCK" << endl;
 
         // save the radiation field for output
+        StochHeat[jj] = StochasticallyHeated;
         for (int k = 0; k < n_waves; k++) {
           EquilEmiss_All[k][jj] = EquilibriumEmission[k];
           StochEmiss_All[k][jj] = StochasticEmission[k];
@@ -198,10 +200,6 @@ int main(int argc, char* argv[])
       myfile.open(myfilename.c_str());
       myfile << "# " << sizevals[j] << " " << i << " " << j
              << " : grain size, compostion index, size index" << endl;
-      if (StochasticallyHeated)
-        myfile << "# This grain was stochastically heated: Yes" << endl;
-      else
-        myfile << "# This grain was stochastically heated: No" << endl;
       myfile << "# Heating and cooling timescale: " << TauHeating << " "
              << TauCooling << endl;
       myfile << "# Ratio of heating to cooling to determine stochastic cutoff: "
@@ -211,9 +209,13 @@ int main(int argc, char* argv[])
              << endl;
       myfile << "# Emission spectrum was computed for: " << endl;
       myfile << "# Type: " << RadiationFieldType << endl;
-      myfile << "# Scales: ";
+      myfile << "# Scales:";
       for (int k = 0; k < nISRFs; k++)
         myfile << " " << RadiationFieldScale[k];
+      myfile << endl;
+      myfile << "StochasticallyHeated:";
+      for (int k = 0; k < nISRFs; k++)
+        myfile << " " << StochHeat[k];
       myfile << endl;
       myfile << "# Temperature: " << RadiationFieldTemperature << endl;
       myfile << "# Wavelength  CExt  CAbs  CSca  Albedo G";
