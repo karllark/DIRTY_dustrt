@@ -1,0 +1,19 @@
+# Test parameter file for write_indiv_grain_data
+#  created KDG 2 Oct 2014
+#
+# Model parameters
+[Dust Grains]
+type=dust_model
+wave_type=res
+wave_min=0.05
+wave_max=5000.
+wave_resolution=20.
+
+[Model Book Keeping]
+Path to Dust Properties=/home/kgordon/Python/DIRTY_dustrt/Dust/
+Cross Section SubDir=OpticalProperties/CrossSections/
+Calorimetry SubDir=OpticalProperties/Calorimetry/
+Model SubDir=Models/
+#Model Name=BARE-GR-S
+Model Name=INDIV-GRAINS-FAKE
+Effective Grain for Heating=no

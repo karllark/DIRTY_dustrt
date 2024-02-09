@@ -1,0 +1,107 @@
+# Fake grain distribution file to allow
+# the write_grain code to extract the parameters
+# for all the possible grain materials
+[Model]
+Number of Components=4
+
+[Component 1]
+# Polycylic Aromatic Hydrocarbons.
+Component Name=astro-PAH
+Cross Sections=PAH_28_1201_neu
+Calorimetry=Graphitic_Calorimetry_1000.dat
+Size Distribution=ZDA
+Size Definition Type=NSIZE
+Size Definition Number=28
+Size Definition Scale=log
+A=2.227433e-7
+a_min=0.00035
+a_max=0.005
+c0=-8.02895
+b0=-3.45764
+b1=1183.96
+a1=1.0
+m1=-8.20551
+#b2=NULL
+#a2=NULL
+#m2=NULL 
+b3=1.0e24
+a3=-5.29496e-3
+m3=12.0146
+#b4=NULL
+#a4=NULL
+#m4=NULL
+
+[Component 2] 
+# Graphite
+Component Name=astro-graphite
+Cross Sections=Gra_121_1201
+Calorimetry=Graphitic_Calorimetry_1000.dat
+Size Distribution=ZDA
+Size Definition Type=NSIZE
+Size Definition Number=121
+Size Definition Scale=log
+A=1.905816e-7
+a_min=0.00035
+a_max=1.0
+c0=-9.86
+b0=-5.02082
+b1=5.81215e-3
+a1=0.415861
+m1=4.63229
+#b2=NULL
+#a2=NULL
+#m2=NULL
+b3=1125.02
+a3=0.160344
+m3=3.69897
+b4=1126.02
+a4=0.160501
+m4=3.69967
+
+[Component 3]
+# Carbonaceous
+Component Name=astro-carbonaceous
+Cross Sections=Carb_121_1201
+Calorimetry=Graphitic_Calorimetry_1000.dat
+Size Distribution=WD01
+a_min=0.00035
+a_max=1.0
+Size Definition Type=NSIZE
+Size Definition Number=121
+Size Definition Scale=log
+BC=6.0e-5
+B1=2.039e-2
+B2=9.553e-6
+C=9.99e-12
+at=0.0107
+ac=0.428
+alpha=-1.54
+beta=-0.165
+
+[Component 4]
+# Astronomical Silicates
+Component Name=astro-silicates
+Cross Sections=suvSil_121_1201
+Calorimetry=Silicate_Calorimetry_1000.dat
+Size Distribution=ZDA
+Size Definition Type=NSIZE
+Size Definition Number=121
+Size Definition Scale=log
+A=1.471288e-7
+a_min=0.00035
+a_max=1.0
+c0=-8.47091
+b0=-3.68708
+b1=2.37316e-5
+a1=7.64943e-3
+m1=22.5489
+#b2=NULL
+#a2=NULL
+#m2=NULL
+b3=2961.28
+a3=0.480229
+m3=12.1717
+#b4=NULL
+#a4=NULL
+#m4=NULL
+
