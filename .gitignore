@@ -6,6 +6,7 @@ dirty
 .DS_Store
 docs/_build
 *.fits
+write_grain/*/*.dat
 
 # autotools
 .version
