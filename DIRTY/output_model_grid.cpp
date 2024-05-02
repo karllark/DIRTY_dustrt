@@ -139,7 +139,9 @@ void output_model_grid (geometry_struct& geometry,
 	      			else
 								rad_unc = 0.0;
 	      			tmp_rad_field_unc(i,j,k,n) = rad_unc;
-	    			}
+	    			} else
+              if (tmp_tau(i,j,k) < 0.0)
+                tmp_rad_field(i,j,k,n) = tmp_tau(i,j,k);
 	  			}
 				}
 
