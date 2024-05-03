@@ -136,7 +136,7 @@ void output_model_grid (geometry_struct& geometry,
 	      			rad_unc = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] -
 								pow(double(geometry.grids[m].grid(i,j,k).absorbed_energy[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n]),double(2.0));
 	      			if (rad_unc > 0.0)
-								rad_unc = sqrt(rad_unc/tmp_rad_field_npts(i,j,k,n));
+								rad_unc = sqrt(rad_unc/(tmp_rad_field_npts(i,j,k,n)-1.));
 	      			else
 								rad_unc = 0.0;
               // compute the fractional uncertainty on the average for an individual photon's contribution
@@ -145,6 +145,10 @@ void output_model_grid (geometry_struct& geometry,
               rad_unc *= tmp_rad_field(i,j,k,n);
               // store the result
 	      			tmp_rad_field_unc(i,j,k,n) = rad_unc;
+              // convert from radiation field mean intensity J (needed for dust emission calculations)
+              // to radiation field density U
+              tmp_rad_field(i,j,k,n) *= Constant::U_J;
+              tmp_rad_field_unc(i,j,k,n) *= Constant::U_J;
 	    			} else
               // store the indexes of the subgrids for cells that are subdivided
               if (tmp_tau(i,j,k) < 0.0) {
