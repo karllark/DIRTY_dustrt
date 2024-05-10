@@ -189,10 +189,40 @@ void scatter_photon (geometry_struct& geometry,
 #endif
 
       // deposit the energy
+      // grid_cell& this_cell = geometry.grids[dummy_photon.path_pos_index[0][i]].grid(dummy_photon.path_pos_index[1][i],dummy_photon.path_pos_index[2][i],dummy_photon.path_pos_index[3][i]);
+      // this_cell.absorbed_energy[geometry.abs_energy_wave_index] += abs_weight;
+      // this_cell.absorbed_energy_x2[geometry.abs_energy_wave_index] += abs_weight*abs_weight;
+      // if (this_cell.last_photon_number != photon.number) {
+      //   this_cell.absorbed_energy_num_photons[geometry.abs_energy_wave_index]++;
+      //   this_cell.last_photon_number = photon.number;
+      // }
+      // if (this_cell.last_photon_number == photon.number) {
+      //   cout << "same photon # = " << photon.number << " ";
+      //   cout << abs_weight << " ";
+      //   cout << i << " ";
+      //   cout << dummy_photon.path_pos_index[0][i] << " ";
+      //   cout << dummy_photon.path_pos_index[1][i] << " ";
+      //   cout << dummy_photon.path_pos_index[2][i] << " ";
+      //   cout << endl;
+      //   cout.flush();
+      // }
+
+      // deposit the energy
       grid_cell& this_cell = geometry.grids[dummy_photon.path_pos_index[0][i]].grid(dummy_photon.path_pos_index[1][i],dummy_photon.path_pos_index[2][i],dummy_photon.path_pos_index[3][i]);
       this_cell.absorbed_energy[geometry.abs_energy_wave_index] += abs_weight;
-      this_cell.absorbed_energy_x2[geometry.abs_energy_wave_index] += abs_weight*abs_weight;
-      this_cell.absorbed_energy_num_photons[geometry.abs_energy_wave_index]++;
+      if (this_cell.last_photon_number != photon.number) {
+        this_cell.absorbed_energy_num_photons[geometry.abs_energy_wave_index]++;
+        this_cell.absorbed_energy_x2[geometry.abs_energy_wave_index] += abs_weight*abs_weight;
+        this_cell.last_photon_number = photon.number;
+        this_cell.last_photon_absorbed_energy_x2 = abs_weight*abs_weight;
+      } else {
+        // compute the difference in x2 values previously added to what should be added
+        // avoids having to save this information separately and then have a special step at the end to add the total photon's contribution
+        float prev_x2 = this_cell.last_photon_absorbed_energy_x2;
+        this_cell.last_photon_absorbed_energy_x2 = pow(sqrt(prev_x2) + abs_weight, 2.0);
+        // add the difference = just like adding the correct x2
+        this_cell.absorbed_energy_x2[geometry.abs_energy_wave_index] += this_cell.last_photon_absorbed_energy_x2 - prev_x2;
+      }
 
       // move to the next grid cell
       tau_entering = tau_leaving;

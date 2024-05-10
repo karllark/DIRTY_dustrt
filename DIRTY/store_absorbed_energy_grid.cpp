@@ -154,6 +154,9 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 // 	    exit(8);
 	    geometry.grids[m].grid(i,j,k).absorbed_energy[geometry.abs_energy_wave_index] = float(j_temp);
 	    geometry.grids[m].grid(i,j,k).absorbed_energy_x2[geometry.abs_energy_wave_index] = float(j_temp_x2);
+		// reset the number of photon to last contribute to this cell
+		geometry.grids[m].grid(i,j,k).last_photon_number = -1;
+		geometry.grids[m].grid(i,j,k).last_photon_absorbed_energy_x2 = 0.0;
 
 #ifdef DEBUG_SAEG
 	    cout << "J_temp = " << j_temp << endl;

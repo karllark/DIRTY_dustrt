@@ -88,7 +88,7 @@ void output_model_grid (geometry_struct& geometry,
     tmp_rad_field_unc.FVSize(geometry.grids[m].index_dim[0],geometry.grids[m].index_dim[1],geometry.grids[m].index_dim[2],n_waves);
 
     // create a 4d matrix to copy the grid info into for output
-    NumUtils::FourVector<short int> tmp_rad_field_npts;
+    NumUtils::FourVector<int> tmp_rad_field_npts;
     tmp_rad_field_npts.FVSize(geometry.grids[m].index_dim[0],geometry.grids[m].index_dim[1],geometry.grids[m].index_dim[2],n_waves);
 
     // create a 3d matrix to copy the grid info into for output
@@ -133,14 +133,23 @@ void output_model_grid (geometry_struct& geometry,
             tmp_rad_field_npts(i,j,k,n) = geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n];
             // compute the uncertainty on the average contribution from an individual photon
 	    			if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] >= 1) {
-	      			rad_unc = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] -
-								pow(double(geometry.grids[m].grid(i,j,k).absorbed_energy[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n]),double(2.0));
-	      			if (rad_unc > 0.0)
-								rad_unc = sqrt(rad_unc/(tmp_rad_field_npts(i,j,k,n)-1.));
-	      			else
-								rad_unc = 0.0;
-              // compute the fractional uncertainty on the average for an individual photon's contribution
-              rad_unc /= geometry.grids[m].grid(i,j,k).absorbed_energy[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n];
+              // uncs based on Gordon et al. (2001)  **factor 2 too low in trust slab tests
+	      			// rad_unc = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n]/tmp_rad_field_npts(i,j,k,n) -
+							// 	pow(double(geometry.grids[m].grid(i,j,k).absorbed_energy[n]/tmp_rad_field_npts(i,j,k,n)),double(2.0));
+	      			// if (rad_unc > 0.0)
+							// 	rad_unc = sqrt(rad_unc/(tmp_rad_field_npts(i,j,k,n)-1.));
+	      			// else
+							// 	rad_unc = 0.0;
+              // // compute the fractional uncertainty on the average for an individual photon's contribution
+              // rad_unc /= (geometry.grids[m].grid(i,j,k).absorbed_energy[n]/tmp_rad_field_npts(i,j,k,n));
+
+              // using eq. 14 of Camps & Baes (2018)
+              if (geometry.grids[m].grid(i,j,k).absorbed_energy[n] > 0.0) {
+                rad_unc = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n]/pow(double(geometry.grids[m].grid(i,j,k).absorbed_energy[n]),double(2.0));
+                rad_unc = sqrt(rad_unc - 1./tmp_rad_field_npts(i,j,k,n));
+              } else
+                rad_unc = 0.0;
+
               // scale to the uncertainty on the radiation field
               rad_unc *= tmp_rad_field(i,j,k,n);
               // store the result
@@ -193,10 +202,10 @@ void output_model_grid (geometry_struct& geometry,
 #endif
 
     // create and output each grid (rad_field npts)
-    fits_create_img(out_npts_ptr, 16, 4, four_vector_size, &status);
+    fits_create_img(out_npts_ptr, 32, 4, four_vector_size, &status);
     check_fits_io(status,"fits_create_image : output_model_grid (rad_field npts)");
 
-    fits_write_img(out_npts_ptr, TSHORT, 1, geometry.grids[m].index_dim[0]*geometry.grids[m].index_dim[1]*geometry.grids[m].index_dim[2]*n_waves,
+    fits_write_img(out_npts_ptr, TINT, 1, geometry.grids[m].index_dim[0]*geometry.grids[m].index_dim[1]*geometry.grids[m].index_dim[2]*n_waves,
 		   &tmp_rad_field_npts[0], &status);
 
 #ifdef DEBUG_OMG
