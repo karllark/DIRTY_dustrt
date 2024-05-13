@@ -133,22 +133,12 @@ void output_model_grid (geometry_struct& geometry,
             tmp_rad_field_npts(i,j,k,n) = geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n];
             // compute the uncertainty on the average contribution from an individual photon
 	    			if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] >= 1) {
-              // uncs based on Gordon et al. (2001)
-	      			rad_unc = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n]/tmp_rad_field_npts(i,j,k,n) -
-								pow(double(geometry.grids[m].grid(i,j,k).absorbed_energy[n]/tmp_rad_field_npts(i,j,k,n)),double(2.0));
-	      			if (rad_unc > 0.0)
-								rad_unc = sqrt(rad_unc/(tmp_rad_field_npts(i,j,k,n)-1.));
-	      			else
-								rad_unc = 0.0;
-              // compute the fractional uncertainty on the average for an individual photon's contribution
-              rad_unc /= (geometry.grids[m].grid(i,j,k).absorbed_energy[n]/tmp_rad_field_npts(i,j,k,n));
-
-              // using eq. 14 of Camps & Baes (2018)
-              // if (geometry.grids[m].grid(i,j,k).absorbed_energy[n] > 0.0) {
-              //   rad_unc = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n]/pow(double(geometry.grids[m].grid(i,j,k).absorbed_energy[n]),double(2.0));
-              //   rad_unc = sqrt(rad_unc - 1./tmp_rad_field_npts(i,j,k,n));
-              // } else
-              //   rad_unc = 0.0;
+              // using eq. 14 of Camps & Baes (2018), equivalent to eqns in Gordon et al. (2001) with fewer computations
+              if (geometry.grids[m].grid(i,j,k).absorbed_energy[n] > 0.0) {
+                rad_unc = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n]/pow(double(geometry.grids[m].grid(i,j,k).absorbed_energy[n]),double(2.0));
+                rad_unc = sqrt(rad_unc - (1./tmp_rad_field_npts(i,j,k,n)));
+              } else
+                rad_unc = 0.0;
 
               // scale to the uncertainty on the radiation field
               rad_unc *= tmp_rad_field(i,j,k,n);
