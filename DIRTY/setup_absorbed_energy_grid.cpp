@@ -83,7 +83,7 @@ void setup_absorbed_energy_grid(geometry_struct& geometry,
                   .grid(i, j, k)
                   .absorbed_energy_num_photons.resize(runinfo.n_waves, 0);
               geometry.grids[m].grid(i, j, k).last_photon_number = -1;
-              geometry.grids[m].grid(i, j, k).last_photon_absorbed_energy_x2 = 0.0;
+              geometry.grids[m].grid(i, j, k).last_photon_absorbed_energy = 0.0;
 
               if (doing_emission == 1) {
                 geometry.grids[m]

@@ -21,7 +21,7 @@ struct grid_cell {
   vector<float> absorbed_energy_x2;  // sum of the squared absorbed energy - allows uncertainties
   vector<int> absorbed_energy_num_photons;  // number of photons contributing to the absorbed energy in this cell
   int last_photon_number;  // number of last photon to deposit energy in this cell
-  float last_photon_absorbed_energy_x2;   // squared energy of last photon, needed to appropriately sum energy once for same photon
+  float last_photon_absorbed_energy;   // energy of last photon, needed to appropriately sum energy once for same photon
   vector<float> save_radiation_field_density;    // save the existing radiation field density (needed for the self-absorption calculation)
   vector<float> save_radiation_field_density_x2;    // ditto
   vector<int> save_radiation_field_density_num_photons;  // number of photons contributing to the absorbed energy in this cell

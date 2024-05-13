@@ -204,14 +204,14 @@ int forced_first_scatter (geometry_struct& geometry,
     this_cell.absorbed_energy_num_photons[geometry.abs_energy_wave_index]++;
 	  this_cell.absorbed_energy_x2[geometry.abs_energy_wave_index] += abs_weight*abs_weight;
     this_cell.last_photon_number = photon.number;
-    this_cell.last_photon_absorbed_energy_x2 = abs_weight*abs_weight;
+    this_cell.last_photon_absorbed_energy += abs_weight;
   } else {
     // compute the difference in x2 values previously added to what should be added
     // avoids having to save this information separately and then have a special step at the end to add the total photon's contribution
-    float prev_x2 = this_cell.last_photon_absorbed_energy_x2;
-    this_cell.last_photon_absorbed_energy_x2 = pow(sqrt(prev_x2) + abs_weight, 2.0);
+    float prev_x2 = pow(this_cell.last_photon_absorbed_energy, 2.0);
+    this_cell.last_photon_absorbed_energy += abs_weight;
     // add the difference = just like adding the correct x2
-    this_cell.absorbed_energy_x2[geometry.abs_energy_wave_index] += this_cell.last_photon_absorbed_energy_x2 - prev_x2;
+    this_cell.absorbed_energy_x2[geometry.abs_energy_wave_index] += pow(this_cell.last_photon_absorbed_energy, 2.0) - prev_x2;
   }
 
 	// move to the next grid cell

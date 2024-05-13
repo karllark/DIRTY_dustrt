@@ -134,9 +134,12 @@ void output_model_grid (geometry_struct& geometry,
             // compute the uncertainty on the average contribution from an individual photon
 	    			if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] >= 1) {
               // using eq. 14 of Camps & Baes (2018), equivalent to eqns in Gordon et al. (2001) with fewer computations
+              // *except* that the number of photons to use is the total, not the number in the cell
+              // do not understand why this is the case, but empirical tests with many independent runs confirm this (KDG 13 May 2024)
               if (geometry.grids[m].grid(i,j,k).absorbed_energy[n] > 0.0) {
                 rad_unc = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n]/pow(double(geometry.grids[m].grid(i,j,k).absorbed_energy[n]),double(2.0));
-                rad_unc = sqrt(rad_unc - (1./tmp_rad_field_npts(i,j,k,n)));
+                // rad_unc = sqrt(rad_unc - (1./tmp_rad_field_npts(i,j,k,n)));
+                rad_unc = sqrt(rad_unc - (1./output.outputs[0].total_num_photons));
               } else
                 rad_unc = 0.0;
 
