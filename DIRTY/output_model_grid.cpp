@@ -88,7 +88,7 @@ void output_model_grid (geometry_struct& geometry,
     tmp_rad_field_unc.FVSize(geometry.grids[m].index_dim[0],geometry.grids[m].index_dim[1],geometry.grids[m].index_dim[2],n_waves);
 
     // create a 4d matrix to copy the grid info into for output
-    NumUtils::FourVector<short int> tmp_rad_field_npts;
+    NumUtils::FourVector<int> tmp_rad_field_npts;
     tmp_rad_field_npts.FVSize(geometry.grids[m].index_dim[0],geometry.grids[m].index_dim[1],geometry.grids[m].index_dim[2],n_waves);
 
     // create a 3d matrix to copy the grid info into for output
@@ -131,15 +131,31 @@ void output_model_grid (geometry_struct& geometry,
 	  			for (n = 0; n < n_waves; n++) {
 	    			tmp_rad_field(i,j,k,n) = geometry.grids[m].grid(i,j,k).absorbed_energy[n];
             tmp_rad_field_npts(i,j,k,n) = geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n];
+            // compute the uncertainty on the average contribution from an individual photon
 	    			if (geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] >= 1) {
-	      			rad_unc = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n] -
-								pow(double(geometry.grids[m].grid(i,j,k).absorbed_energy[n]/geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[n]),double(2.0));
-	      			if (rad_unc > 0.0)
-								rad_unc = sqrt(rad_unc);
-	      			else
-								rad_unc = 0.0;
+              // using eq. 14 of Camps & Baes (2018), equivalent to eqns in Gordon et al. (2001) with fewer computations
+              // *except* that the number of photons to use is the total, not the number in the cell
+              // do not understand why this is the case, but empirical tests with many independent runs confirm this (KDG 13 May 2024)
+              if (geometry.grids[m].grid(i,j,k).absorbed_energy[n] > 0.0) {
+                rad_unc = geometry.grids[m].grid(i,j,k).absorbed_energy_x2[n]/pow(double(geometry.grids[m].grid(i,j,k).absorbed_energy[n]),double(2.0));
+                rad_unc = sqrt(rad_unc - (1./output.outputs[0].total_num_photons));
+              } else
+                rad_unc = 0.0;
+
+              // scale to the uncertainty on the radiation field
+              rad_unc *= tmp_rad_field(i,j,k,n);
+              // store the result
 	      			tmp_rad_field_unc(i,j,k,n) = rad_unc;
-	    			}
+              // convert from radiation field mean intensity J (needed for dust emission calculations)
+              // to radiation field density U
+              tmp_rad_field(i,j,k,n) *= Constant::U_J;
+              tmp_rad_field_unc(i,j,k,n) *= Constant::U_J;
+	    			} else
+              // store the indexes of the subgrids for cells that are subdivided
+              if (tmp_tau(i,j,k) < 0.0) {
+                tmp_rad_field(i,j,k,n) = tmp_tau(i,j,k);
+                tmp_rad_field_unc(i,j,k,n) = tmp_tau(i,j,k);
+              }
 	  			}
 				}
 
@@ -178,10 +194,10 @@ void output_model_grid (geometry_struct& geometry,
 #endif
 
     // create and output each grid (rad_field npts)
-    fits_create_img(out_npts_ptr, 16, 4, four_vector_size, &status);
+    fits_create_img(out_npts_ptr, 32, 4, four_vector_size, &status);
     check_fits_io(status,"fits_create_image : output_model_grid (rad_field npts)");
 
-    fits_write_img(out_npts_ptr, TSHORT, 1, geometry.grids[m].index_dim[0]*geometry.grids[m].index_dim[1]*geometry.grids[m].index_dim[2]*n_waves,
+    fits_write_img(out_npts_ptr, TINT, 1, geometry.grids[m].index_dim[0]*geometry.grids[m].index_dim[1]*geometry.grids[m].index_dim[2]*n_waves,
 		   &tmp_rad_field_npts[0], &status);
 
 #ifdef DEBUG_OMG
