@@ -31,33 +31,16 @@ Conda
     conda create -n dirty -c conda-forge autoconf automake cfitsio compilers pkgconfig sphinx
     conda activate dirty
 
-Debian/Ubuntu
--------------
+Installation from Source
+==========================
 
 .. code::
 
-    apt install build-essential libcfitsio-dev pkg-config python-sphinx
-
-RHEL/CentOS 7
--------------
-
-.. code::
-
-    yum install epel-release
-    yum install autoconf automake cfitsio-devel gcc-g++ pkg-config python3-sphinx
-
-RHEL/CentOS 8+/Fedora
----------------------
-
-Appstream and EPEL lack the `python3-sphinx` package (broken?). Use a virtualenv to supplement the missing compile-time dependency.
-
-.. code::
-
-    dnf install epel-release
-    dnf install autoconf automake cfitsio-devel gcc-g++ pkg-config python3
-    python3 -mvenv venv
-    source venv/bin/activate
-    pip install sphinx
+    git clone https://github.com/karllark/DIRTY_dustrt
+    cd DIRTY_dustrt
+    ./bootstrap
+    ./configure
+    make
 
 Installation (Release)
 ======================
@@ -74,21 +57,10 @@ Installation (Release)
     make install
     export PATH=$HOME/programs/dirty/bin:$PATH
 
-Installation (Development)
-==========================
-
-.. code::
-
-    git clone https://github.com/karllark/DIRTY_dustrt
-    cd DIRTY_dustrt
-    ./bootstrap
-    ./configure --enable-debug
-    make
-
 
 Dust Grain Info
 ===============
 
-The associated dust grain files can be found at XXXXX.
+The associated dust grain files can be obtained by contacting the DIRTY authors.
 
 
