@@ -29,6 +29,14 @@ The conservation target for the dust emission where 1 is no conservation and
 account of dust self-absorption. There is a maximum number of iterations
 that is currently hard coded to 10.
 
+**random_num_seed=987654321**
+
+The random number seed determines the initial conditions of the run. Changing 
+this will produce different results (outputs), as the pseudo-random number 
+generator will use the seed to produce random numbers that are used in various 
+parts of Monte Carlo simulation. The independence of runs with different random 
+number seeds is not guaranteed.
+
 Output Details
 ==============
 
