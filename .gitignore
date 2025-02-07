@@ -15,7 +15,6 @@ config.h.in*
 .deps
 config.h
 stamp-h1
-Makefile
 Makefile.in
 aclocal.m4
 config.log
