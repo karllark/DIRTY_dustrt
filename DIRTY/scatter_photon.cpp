@@ -52,7 +52,7 @@ void scatter_photon (geometry_struct& geometry,
     double ran_num2 = random_obj.random_num();
     if (ran_num >= geometry.scat_angle_bias_fraction) { // sample from HG function
       cos_alpha = (1.0 + sqr_g) -
-	pow((1.0 - sqr_g)/(1.0 - geometry.g + 2.0*geometry.g*ran_num2),2);
+        pow((1.0 - sqr_g)/(1.0 - geometry.g + 2.0*geometry.g*ran_num2),2);
       cos_alpha /= (2.0*geometry.g);
     } else { // sample from isotropic function
       cos_alpha = 2.0*ran_num2 - 1.0;
