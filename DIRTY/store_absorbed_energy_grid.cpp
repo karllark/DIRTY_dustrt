@@ -114,9 +114,9 @@ void store_absorbed_energy_grid (geometry_struct& geometry,
 	    double flux_mult_factor = 0.0;
 	    if (doing_emission)
 	      if (runinfo.dust_thermal_emission)
-		flux_mult_factor = (runinfo.emitted_lum[0][index]/output.outputs[0].total_num_photons);
+			flux_mult_factor = (runinfo.emitted_lum[0][index]/output.outputs[0].total_num_photons);
 	      else
-		flux_mult_factor = (runinfo.emitted_ere_lum[0][index]/output.outputs[0].total_num_photons);
+			flux_mult_factor = (runinfo.emitted_ere_lum[0][index]/output.outputs[0].total_num_photons);
 	    else
 	      flux_mult_factor = (runinfo.sed_lum[index]/output.outputs[0].total_num_photons);
 

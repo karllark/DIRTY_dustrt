@@ -39,9 +39,11 @@ void get_dust_parameters (ConfigFile& param_data,
     // set the tau_to_tau_ref value to 1.
     runinfo.tau_to_tau_ref.push_back(1.);
 
-    // set the grain info we won't have or really use
+    // set the grain info to have have the correction scaling
+    // here we have effectively set Cext = 1.0, 
+    //    hence Cabs = (1-albedo)Cext = (1-albedo)
     runinfo.tau_to_h.push_back(1.0);
-    runinfo.ave_C_abs.push_back(1.);
+    runinfo.ave_C_abs.push_back(1. - albedo);
 
 		// check that if a single wavlength run is picked, then do_global_output is not
 		if (runinfo.do_global_output) {
