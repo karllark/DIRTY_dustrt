@@ -6,5 +6,4 @@
 #define ERE_RT 1
 #define DE_RT 2
 
-
 #endif

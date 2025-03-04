@@ -5,7 +5,7 @@
 #define ROUNDOFF_ERR_TRIG 5e-14
 
 // roundoff error threshold for different in taus
-//#define ROUNDOFF_ERR_TAU 1e-13
+// #define ROUNDOFF_ERR_TAU 1e-13
 
 // roundoff error threshold for determine_index_positions functions
 // 5e-6 is good up to 100pc radius for shell geometry
