@@ -16,56 +16,73 @@
 
 using namespace std;
 
-namespace StringManip {
+namespace StringManip
+{
 
 vector<string> strsplit(const string &str, const string &delims = " ");
 
 bool FileExists(const string FileName);
-inline void coutStart(const string message) {
-  cout << endl << "---> Start: " << message << endl;
+inline void coutStart(const string message)
+{
+    cout << endl << "---> Start: " << message << endl;
 }
-inline void coutStart1(const string message) {
-  cout << endl << "   ---> Start: " << message << endl;
+inline void coutStart1(const string message)
+{
+    cout << endl << "   ---> Start: " << message << endl;
 }
-inline void coutEnd(const string message) {
-  cout << "<--- Done: " << message << endl << endl;
+inline void coutEnd(const string message)
+{
+    cout << "<--- Done: " << message << endl << endl;
 }
-inline void coutEnd1(const string message) {
-  cout << "   <--- Done: " << message << endl << endl;
+inline void coutEnd1(const string message)
+{
+    cout << "   <--- Done: " << message << endl << endl;
 }
-inline void coutM1(const string message) { cout << " * " << message << endl; }
-inline void coutE1(const string message) {
-  cout << " * Err: " << message << endl;
+inline void coutM1(const string message)
+{
+    cout << " * " << message << endl;
 }
-inline void coutM2(const string message) { cout << "   - " << message << endl; }
-inline void coutE2(const string message) {
-  cout << "   - Err: " << message << endl;
+inline void coutE1(const string message)
+{
+    cout << " * Err: " << message << endl;
 }
-inline void coutM3(const string message) {
-  cout << "      " << message << endl;
+inline void coutM2(const string message)
+{
+    cout << "   - " << message << endl;
 }
-inline void coutE3(const string message) {
-  cout << "       Err: " << message << endl;
+inline void coutE2(const string message)
+{
+    cout << "   - Err: " << message << endl;
+}
+inline void coutM3(const string message)
+{
+    cout << "      " << message << endl;
+}
+inline void coutE3(const string message)
+{
+    cout << "       Err: " << message << endl;
 }
 
-inline string BoolVal(const bool _abool) {
-  if (_abool)
-    return "true";
-  else
-    return "false";
+inline string BoolVal(const bool _abool)
+{
+    if (_abool)
+        return "true";
+    else
+        return "false";
 }
-inline string ToLower(string _s) {
-  transform(_s.begin(), _s.end(), _s.begin(), (int (*)(int))tolower);
-  return _s;
+inline string ToLower(string _s)
+{
+    transform(_s.begin(), _s.end(), _s.begin(), (int (*)(int))tolower);
+    return _s;
 }
 
-template <typename T>
-string vtos(const T &value) {
-  stringstream ss;
-  ss << value;
-  return ss.str();
+template <typename T> string vtos(const T &value)
+{
+    stringstream ss;
+    ss << value;
+    return ss.str();
 }
 // Dep check
 
-}  // namespace StringManip
+} // namespace StringManip
 #endif

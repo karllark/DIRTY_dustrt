@@ -62,105 +62,123 @@
 
 using namespace std;
 
-ConfigFile::ConfigFile(string const &configFile) {
-  _BadString = "NULL";
-  _BadFloat = strtof("NaN", NULL);
-  _BadDouble = strtod("NaN", NULL);
-  _BadInt = -99;
-  _BadLong = -99;
+ConfigFile::ConfigFile(string const &configFile)
+{
+    _BadString = "NULL";
+    _BadFloat = strtof("NaN", NULL);
+    _BadDouble = strtod("NaN", NULL);
+    _BadInt = -99;
+    _BadLong = -99;
 
-  ifstream file(configFile.c_str());
+    ifstream file(configFile.c_str());
 
-  string line;
-  string name;
-  string value;
-  string inSection;
-  int posEqual;
+    string line;
+    string name;
+    string value;
+    string inSection;
+    int posEqual;
 
-  while (getline(file, line)) {
-    if (!line.length()) continue;
+    while (getline(file, line))
+    {
+        if (!line.length())
+            continue;
 
-    if (line[0] == '#') continue;
-    if (line[0] == ';') continue;
+        if (line[0] == '#')
+            continue;
+        if (line[0] == ';')
+            continue;
 
-    if (line[0] == '[') {
-      inSection = line.substr(1, line.find(']') - 1);
+        if (line[0] == '[')
+        {
+            inSection = line.substr(1, line.find(']') - 1);
 
-      continue;
+            continue;
+        }
+
+        posEqual = line.find('=');
+        name = line.substr(0, posEqual);
+
+        value = line.substr(posEqual + 1);
+
+        content_[inSection + '/' + name] = value;
     }
-
-    posEqual = line.find('=');
-    name = line.substr(0, posEqual);
-
-    value = line.substr(posEqual + 1);
-
-    content_[inSection + '/' + name] = value;
-  }
 }
 
-bool ConfigFile::BValue(string const &section, string const &entry) const {
-  map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
+bool ConfigFile::BValue(string const &section, string const &entry) const
+{
+    map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
 
-  if (ci == content_.end()) {
+    if (ci == content_.end())
+    {
+        return false;
+    }
+    string tmp_str = ci->second;
+    transform(tmp_str.begin(), tmp_str.end(), tmp_str.begin(), (int (*)(int))tolower);
+
+    if (tmp_str == "yes")
+        return true;
+
     return false;
-  }
-  string tmp_str = ci->second;
-  transform(tmp_str.begin(), tmp_str.end(), tmp_str.begin(),
-            (int (*)(int))tolower);
-
-  if (tmp_str == "yes") return true;
-
-  return false;
 }
 
-string ConfigFile::SValue(string const &section, string const &entry) const {
-  map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
+string ConfigFile::SValue(string const &section, string const &entry) const
+{
+    map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
 
-  if (ci == content_.end()) {
-    // return "NULL";
-    return _BadString;
-  }
-  return ci->second;
+    if (ci == content_.end())
+    {
+        // return "NULL";
+        return _BadString;
+    }
+    return ci->second;
 }
 
-float ConfigFile::FValue(string const &section, string const &entry) const {
-  map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
+float ConfigFile::FValue(string const &section, string const &entry) const
+{
+    map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
 
-  if (ci == content_.end()) {
-    return _BadFloat;
-    // return strtof("NaN",NULL);  // default value
-  }
-  return atof(ci->second.c_str());
+    if (ci == content_.end())
+    {
+        return _BadFloat;
+        // return strtof("NaN",NULL);  // default value
+    }
+    return atof(ci->second.c_str());
 }
 
-double ConfigFile::DValue(string const &section, string const &entry) const {
-  map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
+double ConfigFile::DValue(string const &section, string const &entry) const
+{
+    map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
 
-  if (ci == content_.end()) {
-    return _BadDouble;
-    // return strtod("NaN",NULL);  // default value
-  }
-  return atof(ci->second.c_str());
+    if (ci == content_.end())
+    {
+        return _BadDouble;
+        // return strtod("NaN",NULL);  // default value
+    }
+    return atof(ci->second.c_str());
 }
 
-int ConfigFile::IValue(string const &section, string const &entry) const {
-  map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
+int ConfigFile::IValue(string const &section, string const &entry) const
+{
+    map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
 
-  if (ci == content_.end()) {
-    return _BadInt;
-    // return -99;
-    // return int(strtof("NaN",NULL));  // default value ... have to check
-    // this...
-  }
-  return atoi(ci->second.c_str());
+    if (ci == content_.end())
+    {
+        return _BadInt;
+        // return -99;
+        // return int(strtof("NaN",NULL));  // default value ... have to check
+        // this...
+    }
+    return atoi(ci->second.c_str());
 }
 
-long ConfigFile::LValue(string const &section, string const &entry) const {
-  map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
+long ConfigFile::LValue(string const &section, string const &entry) const
+{
+    map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
 
-  if (ci == content_.end()) {
-    return _BadLong;
-    // return -99;  // default value
-  }
-  return atol(ci->second.c_str());
+    if (ci == content_.end())
+    {
+        return _BadLong;
+        // return -99;  // default value
+    }
+    return atol(ci->second.c_str());
 }
