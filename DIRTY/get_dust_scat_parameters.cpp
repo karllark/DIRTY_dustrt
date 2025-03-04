@@ -6,10 +6,8 @@
 // ======================================================================
 #include "get_dust_scat_parameters.h"
 
-void get_dust_scat_parameters (int i,
-			       runinfo_struct& runinfo,
-			       geometry_struct& geometry)
-{
+void get_dust_scat_parameters(int i, runinfo_struct &runinfo,
+                              geometry_struct &geometry) {
   if ((runinfo.empir_dust == 1) || (runinfo.model_dust == 1)) {
     geometry.albedo = runinfo.albedo[i];
     geometry.g = runinfo.g[i];
@@ -17,8 +15,9 @@ void get_dust_scat_parameters (int i,
     geometry.wavelength = runinfo.wavelength[i];
     geometry.wave_index = i;
   } else {
-    cout << "Code not written get_dust_scat_parameters for non-empir_dust and non-model_dust" << endl;
+    cout << "Code not written get_dust_scat_parameters for non-empir_dust and "
+            "non-model_dust"
+         << endl;
     exit(8);
   }
-  
 }

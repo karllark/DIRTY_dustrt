@@ -7,7 +7,7 @@
 #include "setup_dust_grid_file.h"
 // #define DEBUG_SDGF
 
-void setup_dust_grid_file(ConfigFile& param_data, geometry_struct& geometry)
+void setup_dust_grid_file(ConfigFile &param_data, geometry_struct &geometry)
 
 {
   // maximum optical depth per cell (controls when a cell is subdivided)
@@ -41,16 +41,16 @@ void setup_dust_grid_file(ConfigFile& param_data, geometry_struct& geometry)
 
   // open the position and tau/pc files for reading
   int status = 0;
-  int hdutype = 0;            // type of header
-  fitsfile* pos_file_ptr;     // pointer to pos FITS file
-  fitsfile* tau_pc_file_ptr;  // pointer to tau/pc FITS file
+  int hdutype = 0;           // type of header
+  fitsfile *pos_file_ptr;    // pointer to pos FITS file
+  fitsfile *tau_pc_file_ptr; // pointer to tau/pc FITS file
 
   fits_open_file(&pos_file_ptr, pos_filename.c_str(), READONLY,
-                 &status);  // open the file
+                 &status); // open the file
   check_fits_io(status, "fits_open_file : pos_file");
 
   fits_open_file(&tau_pc_file_ptr, tau_pc_filename.c_str(), READONLY,
-                 &status);  // open the file
+                 &status); // open the file
   check_fits_io(status, "fits_open_file : tau_pc_file");
 
   // determine the number of grids in the files (1 = main_grid, rest are
@@ -140,7 +140,8 @@ void setup_dust_grid_file(ConfigFile& param_data, geometry_struct& geometry)
                   &nulval, &x_pos[0], &anynul, &status);
     check_fits_io(status, "setup_dust_grid_file, fits_read_pix: pos[0]");
 #ifdef DEBUG_SDGF
-    for (k = 0; k < (subgrid.index_dim[1] + 1); k++) cout << x_pos[k] << " ";
+    for (k = 0; k < (subgrid.index_dim[1] + 1); k++)
+      cout << x_pos[k] << " ";
     cout << endl;
 #endif
 
@@ -150,7 +151,8 @@ void setup_dust_grid_file(ConfigFile& param_data, geometry_struct& geometry)
                   &nulval, &y_pos[0], &anynul, &status);
     check_fits_io(status, "setup_dust_grid_file, fits_read_pix: pos[1]");
 #ifdef DEBUG_SDGF
-    for (k = 0; k < (subgrid.index_dim[1] + 1); k++) cout << y_pos[k] << " ";
+    for (k = 0; k < (subgrid.index_dim[1] + 1); k++)
+      cout << y_pos[k] << " ";
     cout << endl;
 #endif
 
@@ -160,7 +162,8 @@ void setup_dust_grid_file(ConfigFile& param_data, geometry_struct& geometry)
                   &nulval, &z_pos[0], &anynul, &status);
     check_fits_io(status, "setup_dust_grid_file, fits_read_pix: pos[3]");
 #ifdef DEBUG_SDGF
-    for (k = 0; k < (subgrid.index_dim[2] + 1); k++) cout << z_pos[k] << " ";
+    for (k = 0; k < (subgrid.index_dim[2] + 1); k++)
+      cout << z_pos[k] << " ";
     cout << endl;
 #endif
 
@@ -238,10 +241,10 @@ void setup_dust_grid_file(ConfigFile& param_data, geometry_struct& geometry)
     cfpixel[0] = 1;
     cfpixel[1] = 1;
     cfpixel[2] = 1;
-    fits_read_pix(
-        tau_pc_file_ptr, TFLOAT, &cfpixel[0],
-        subgrid.index_dim[0] * subgrid.index_dim[1] * subgrid.index_dim[2],
-        &nulval, &tmp_tau[0], &anynul, &status);
+    fits_read_pix(tau_pc_file_ptr, TFLOAT, &cfpixel[0],
+                  subgrid.index_dim[0] * subgrid.index_dim[1] *
+                      subgrid.index_dim[2],
+                  &nulval, &tmp_tau[0], &anynul, &status);
     check_fits_io(status, "setup_dust_grid_file, fits_read_pix: tau");
 #ifdef DEBUG_SDGF
     cout << "tau/pc along z-axis" << endl;

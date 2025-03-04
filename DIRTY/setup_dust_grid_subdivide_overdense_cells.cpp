@@ -10,7 +10,7 @@
 #include "setup_dust_grid_subdivide_overdense_cells.h"
 // #define DEBUG_SDGSOC
 
-void setup_dust_grid_subdivide_overdense_cells(geometry_struct& geometry,
+void setup_dust_grid_subdivide_overdense_cells(geometry_struct &geometry,
                                                int spherical_clumps)
 
 {
@@ -45,9 +45,12 @@ void setup_dust_grid_subdivide_overdense_cells(geometry_struct& geometry,
                   geometry.grids[m].grid(i, j, k).dust_tau_per_pc;
 
           subdivide = 0;
-          if (x_tau > geometry.max_tau_per_cell_x) subdivide = 1;
-          if (y_tau > geometry.max_tau_per_cell_y) subdivide = 1;
-          if (z_tau > geometry.max_tau_per_cell_z) subdivide = 1;
+          if (x_tau > geometry.max_tau_per_cell_x)
+            subdivide = 1;
+          if (y_tau > geometry.max_tau_per_cell_y)
+            subdivide = 1;
+          if (z_tau > geometry.max_tau_per_cell_z)
+            subdivide = 1;
           if ((spherical_clumps) &&
               (geometry.grids[0].grid(i, j, k).dust_tau_per_pc ==
                geometry.clump_densities[0]))
@@ -70,7 +73,7 @@ void setup_dust_grid_subdivide_overdense_cells(geometry_struct& geometry,
 
             one_grid subgrid;
             if (spherical_clumps) {
-              subgrid.index_dim[0] = 10;  // make a sphere
+              subgrid.index_dim[0] = 10; // make a sphere
               subgrid.index_dim[1] = subgrid.index_dim[0];
               subgrid.index_dim[2] = subgrid.index_dim[0];
             } else {
@@ -93,13 +96,13 @@ void setup_dust_grid_subdivide_overdense_cells(geometry_struct& geometry,
               //  	      cout << x_tau/float(geometry.max_tau_per_cell_x)
               //  << " ";
               // 	      cout << y_tau/float(geometry.max_tau_per_cell_y)
-              // << " "; 	      cout << z_tau/float(geometry.max_tau_per_cell_z) <<
-              // endl;
+              // << " "; 	      cout <<
+              // z_tau/float(geometry.max_tau_per_cell_z) << endl;
 
               //  	      cout <<
               //  int(x_tau/float(geometry.max_tau_per_cell_x)) << " ";
               // 	      cout <<
-              // int(y_tau/float(geometry.max_tau_per_cell_y)) << " "; 	      cout <<
+              // int(y_tau/float(geometry.max_tau_per_cell_y)) << " "; cout <<
               // int(z_tau/float(geometry.max_tau_per_cell_z)) << endl;
 
               // 	      cout << subgrid.index_dim[0] << " ";
@@ -176,7 +179,7 @@ void setup_dust_grid_subdivide_overdense_cells(geometry_struct& geometry,
 
             float dust_tau_per_pc =
                 geometry.grids[m].grid(i, j, k).dust_tau_per_pc;
-            float index_radius;  // radius of subgrid position in index values
+            float index_radius; // radius of subgrid position in index values
             int n, o;
             for (o = 0; o < subgrid.index_dim[2]; o++)
               for (n = 0; n < subgrid.index_dim[1]; n++)
@@ -215,7 +218,8 @@ void setup_dust_grid_subdivide_overdense_cells(geometry_struct& geometry,
         }
   }
 
-  if (subdivide_any) geometry.max_grid_depth++;
+  if (subdivide_any)
+    geometry.max_grid_depth++;
 
   cout << "Result of optional subdivide overdense cells" << endl;
   cout << "total number of cells = " << geometry.num_cells << endl;

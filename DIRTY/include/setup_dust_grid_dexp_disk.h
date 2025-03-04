@@ -1,26 +1,26 @@
 #ifndef _DIRTY_SETUP_DUST_GRID_DEXP_DISK_
 #define _DIRTY_SETUP_DUST_GRID_DEXP_DISK_
 
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
 #include "ConfigFile.h"
 #include "check_input_param.h"
+#include "debug.h"
 #include "geometry_def.h"
 #include "photon_data.h"
 #include "random_dirty.h"
-#include "debug.h"
 
 //**********************************************************************
 // external function definitions
 
-extern void setup_dust_grid_subdivide_overdense_cells (geometry_struct& geometry,
-						       int spherical_clumps);
+extern void setup_dust_grid_subdivide_overdense_cells(geometry_struct &geometry,
+                                                      int spherical_clumps);
 
 // determines the vector of positions and grid numbers given the photon
 // position and direction
-extern void determine_photon_position_index_initial (geometry_struct& geometry,
-						     photon_data& photon);
+extern void determine_photon_position_index_initial(geometry_struct &geometry,
+                                                    photon_data &photon);
 
 // determines the photon trajectory (returns the distance and tau traveled)
 // extern double calc_photon_trajectory (photon_data& photon,

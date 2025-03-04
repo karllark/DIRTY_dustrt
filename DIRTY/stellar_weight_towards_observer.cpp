@@ -9,7 +9,7 @@
 // #define OUTNUM 1
 
 double stellar_weight_towards_observer(photon_data photon,
-                                       geometry_struct& geometry,
+                                       geometry_struct &geometry,
                                        float observer_position[3])
 
 {
@@ -30,20 +30,24 @@ double stellar_weight_towards_observer(photon_data photon,
 #ifdef DEBUG_STWTO
   if (photon.number == OUTNUM) {
     cout << "birth_to_obs vector = ";
-    for (i = 0; i < 3; i++) cout << birth_to_obs[i] << " ";
+    for (i = 0; i < 3; i++)
+      cout << birth_to_obs[i] << " ";
     cout << endl;
     cout << "birth_to_obs dir_cosines = ";
-    for (i = 0; i < 3; i++) cout << dir_cosines_birth_to_obs[i] << " ";
+    for (i = 0; i < 3; i++)
+      cout << dir_cosines_birth_to_obs[i] << " ";
     cout << endl;
   }
 #endif
 
   // determine the optical depth to the surface from the birth site
   // towards the observer
-  for (i = 0; i < 3; i++) photon.dir_cosines[i] = dir_cosines_birth_to_obs[i];
+  for (i = 0; i < 3; i++)
+    photon.dir_cosines[i] = dir_cosines_birth_to_obs[i];
   double target_tau = 1e20;
   double target_dist = 1e10 * geometry.radius;
-  if (geometry.internal_observer == 1) target_dist = dist_birth_to_obs;
+  if (geometry.internal_observer == 1)
+    target_dist = dist_birth_to_obs;
   int escape = 0;
   double tau_birth_to_obs = 0.0;
 

@@ -12,7 +12,7 @@
 // ======================================================================
 #include "write_indiv_grain_data.h"
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 
 {
   vector<float> RadiationField;
@@ -20,9 +20,9 @@ int main(int argc, char* argv[])
   ofstream myfile;
   string myfilename;
   bool StochasticallyHeated;
-  vector<bool> StochHeat {false, false, false, false, false};
+  vector<bool> StochHeat{false, false, false, false, false};
 
-  vector<float> RadiationFieldScale {0.5, 1.0, 2.0, 5.0, 10.0};
+  vector<float> RadiationFieldScale{0.5, 1.0, 2.0, 5.0, 10.0};
   int nISRFs;
   nISRFs = RadiationFieldScale.size();
   string RadiationFieldType;
@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
   // Define a radiation field.
   // The local ISRF.
   RadiationFieldType = "IRSF";
-  RadiationFieldTemperature = -1.0;  // for e.g. Black body field
+  RadiationFieldTemperature = -1.0; // for e.g. Black body field
   TauScaling = 100.0;
 
   // now get the individual grain information
@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
 
     for (int j = 0; j < nSize; ++j) {
       // for (int j=40;j<41;++j) {
-      cout << "Size: " << j+1 << " " << sizevals[j] << endl;
+      cout << "Size: " << j + 1 << " " << sizevals[j] << endl;
       stringstream ss;
       ss << FitGrainDefines.getModelName() << "_c_" << (i + 1) << "_"
          << FitGrainDefines.ComponentName(i);
@@ -174,7 +174,7 @@ int main(int argc, char* argv[])
       // loop over the desired radiation fields
       for (int jj = 0; jj < nISRFs; jj++) {
         cout << "RadField = " << RadiationFieldScale[jj] << endl;
-        ISRF* myISRF = new ISRF(wavelength, RadiationFieldScale[jj]);
+        ISRF *myISRF = new ISRF(wavelength, RadiationFieldScale[jj]);
         RadiationField = myISRF->getISRF();
 
         // pass in size index, component index, component name, so I can write
@@ -184,8 +184,10 @@ int main(int argc, char* argv[])
             EquilibriumEmission, StochasticEmission, TauHeating, TauCooling,
             TauScaling, StochasticallyHeated, FitGrainDefines.getModelName(),
             FitGrainDefines.ComponentName(i), i, sizevals[j], j,
-            RadiationFieldType, RadiationFieldScale[jj], RadiationFieldTemperature);
-        if (status != Flags::FSUCCESS) cout << "FUCK" << endl;
+            RadiationFieldType, RadiationFieldScale[jj],
+            RadiationFieldTemperature);
+        if (status != Flags::FSUCCESS)
+          cout << "FUCK" << endl;
 
         // save the radiation field for output
         StochHeat[jj] = StochasticallyHeated;
@@ -193,7 +195,6 @@ int main(int argc, char* argv[])
           EquilEmiss_All[k][jj] = EquilibriumEmission[k];
           StochEmiss_All[k][jj] = StochasticEmission[k];
         }
-
       }
 
       // exit(8);
@@ -220,7 +221,7 @@ int main(int argc, char* argv[])
       myfile << "# Temperature: " << RadiationFieldTemperature << endl;
       myfile << "# Wavelength  CExt  CAbs  CSca  Albedo G";
       for (int k = 0; k < nISRFs; k++)
-        myfile << " EqEm" << (k+1) << " StEm" << (k+1);
+        myfile << " EqEm" << (k + 1) << " StEm" << (k + 1);
       myfile << endl;
 
       for (int k = 0; k < n_waves; k++) {

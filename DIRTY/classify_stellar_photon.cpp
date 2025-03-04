@@ -14,9 +14,9 @@
 // #define DEBUG_CSP
 // #define OUTNUM 0
 
-void classify_stellar_photon(output_struct& output, photon_data& photon,
-                             geometry_struct& geometry, runinfo_struct& runinfo,
-                             random_dirty& random_obj)
+void classify_stellar_photon(output_struct &output, photon_data &photon,
+                             geometry_struct &geometry, runinfo_struct &runinfo,
+                             random_dirty &random_obj)
 
 {
   int i;
@@ -72,7 +72,7 @@ void classify_stellar_photon(output_struct& output, photon_data& photon,
 
           compute_observer_trans_matrix(output, geometry, i);
         }
-      } else {  // internal observer
+      } else { // internal observer
         for (int k = 0; k < 3; k++)
           output.outputs[i].observer_position[k] =
               geometry.observer_position[k];
@@ -139,10 +139,13 @@ void classify_stellar_photon(output_struct& output, photon_data& photon,
 
         double theta = acos(dir_obs_to_birth[2]);
         double phi = acos(dir_obs_to_birth[0] / sin(theta));
-        if ((dir_obs_to_birth[1] / sin(theta)) < 0.) phi *= -1.0;
+        if ((dir_obs_to_birth[1] / sin(theta)) < 0.)
+          phi *= -1.0;
 
-        image_indxs[0] = int(output.image_size[0] * ((phi + M_PI) / (2.0 * M_PI)));
-        image_indxs[1] = int(output.image_size[1] * (1. - dir_obs_to_birth[2]) / 2.0);
+        image_indxs[0] =
+            int(output.image_size[0] * ((phi + M_PI) / (2.0 * M_PI)));
+        image_indxs[1] =
+            int(output.image_size[1] * (1. - dir_obs_to_birth[2]) / 2.0);
       }
 #ifdef DEBUG_CSP
       if (photon.number == OUTNUM) {

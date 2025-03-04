@@ -7,8 +7,7 @@
 // ======================================================================
 #include "initialize_output.h"
 
-void initialize_output (output_struct& output,
-			geometry_struct& geometry)
+void initialize_output(output_struct &output, geometry_struct &geometry)
 
 {
   int i;
@@ -16,12 +15,18 @@ void initialize_output (output_struct& output,
   // allocate outputs if not already allocated
   if (!output.arrays_allocated) {
     one_output single_output;
-    single_output.num_stellar_photons_xy.MSize(output.image_size[0],output.image_size[1]);
-    single_output.num_photons_xy.MSize(output.image_size[0],output.image_size[1]);
-    single_output.stellar_weight_xy.MSize(output.image_size[0],output.image_size[1]);
-    single_output.stellar_weight_xy_x2.MSize(output.image_size[0],output.image_size[1]);
-    single_output.scattered_weight_xy.MSize(output.image_size[0],output.image_size[1]);
-    single_output.scattered_weight_xy_x2.MSize(output.image_size[0],output.image_size[1]);
+    single_output.num_stellar_photons_xy.MSize(output.image_size[0],
+                                               output.image_size[1]);
+    single_output.num_photons_xy.MSize(output.image_size[0],
+                                       output.image_size[1]);
+    single_output.stellar_weight_xy.MSize(output.image_size[0],
+                                          output.image_size[1]);
+    single_output.stellar_weight_xy_x2.MSize(output.image_size[0],
+                                             output.image_size[1]);
+    single_output.scattered_weight_xy.MSize(output.image_size[0],
+                                            output.image_size[1]);
+    single_output.scattered_weight_xy_x2.MSize(output.image_size[0],
+                                               output.image_size[1]);
     for (i = 0; i < output.num_outputs; i++) {
       output.outputs.push_back(single_output);
     }
@@ -43,17 +48,15 @@ void initialize_output (output_struct& output,
     output.outputs[i].ave_first_tau = 0.0;
     output.outputs[i].ave_first_tau_x2 = 0.0;
 
-    int j,k;
+    int j, k;
     for (j = 0; j < output.image_size[0]; j++)
       for (k = 0; k < output.image_size[1]; k++) {
-	output.outputs[i].num_stellar_photons_xy(j,k) = 0.0;
-	output.outputs[i].num_photons_xy(j,k) = 0.0;
-	output.outputs[i].stellar_weight_xy(j,k) = 0.0;
-	output.outputs[i].stellar_weight_xy_x2(j,k) = 0.0;
-	output.outputs[i].scattered_weight_xy(j,k) = 0.0;
-	output.outputs[i].scattered_weight_xy_x2(j,k) = 0.0;
+        output.outputs[i].num_stellar_photons_xy(j, k) = 0.0;
+        output.outputs[i].num_photons_xy(j, k) = 0.0;
+        output.outputs[i].stellar_weight_xy(j, k) = 0.0;
+        output.outputs[i].stellar_weight_xy_x2(j, k) = 0.0;
+        output.outputs[i].scattered_weight_xy(j, k) = 0.0;
+        output.outputs[i].scattered_weight_xy_x2(j, k) = 0.0;
       }
-    
   }
-
 }

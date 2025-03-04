@@ -14,9 +14,9 @@
 // #define OUTNUM 25994
 // #define DEBUG_CSCP
 
-void classify_scattered_photon(output_struct& output, photon_data& photon,
-                               geometry_struct& geometry,
-                               runinfo_struct& runinfo)
+void classify_scattered_photon(output_struct &output, photon_data &photon,
+                               geometry_struct &geometry,
+                               runinfo_struct &runinfo)
 
 {
 #ifdef DEBUG_CSCP
@@ -103,7 +103,8 @@ void classify_scattered_photon(output_struct& output, photon_data& photon,
             cout << "photon # = " << photon.number << endl;
             int m = 0;
             cout << "tmp_photon.position[] = ";
-            for (m = 0; m < 3; m++) cout << tmp_photon.position[m] << " ";
+            for (m = 0; m < 3; m++)
+              cout << tmp_photon.position[m] << " ";
             cout << endl;
             cout << "geometry.distance = " << geometry.distance << endl;
             // cout << "updated model angular radius = " <<
@@ -112,7 +113,7 @@ void classify_scattered_photon(output_struct& output, photon_data& photon,
             exit(8);
           }
         }
-     } else {
+      } else {
         // internal observer case
         double obs_to_scat[3];
         double dist_obs_to_scat = 0.0;
@@ -129,10 +130,13 @@ void classify_scattered_photon(output_struct& output, photon_data& photon,
 
         double theta = acos(dir_obs_to_scat[2]);
         double phi = acos(dir_obs_to_scat[0] / sin(theta));
-        if ((dir_obs_to_scat[1] / sin(theta)) < 0.) phi *= -1.0;
+        if ((dir_obs_to_scat[1] / sin(theta)) < 0.)
+          phi *= -1.0;
 
-        image_indxs[0] = int(output.image_size[0] * ((phi + M_PI) / (2.0 * M_PI)));
-        image_indxs[1] = int(output.image_size[1] * (1. - dir_obs_to_scat[2]) / 2.0);
+        image_indxs[0] =
+            int(output.image_size[0] * ((phi + M_PI) / (2.0 * M_PI)));
+        image_indxs[1] =
+            int(output.image_size[1] * (1. - dir_obs_to_scat[2]) / 2.0);
       }
 
 #ifdef DEBUG_CSCP

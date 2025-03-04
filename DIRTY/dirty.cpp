@@ -25,9 +25,9 @@
 //                failure info if instructed by the parameter file.
 // ======================================================================
 #include "dirty.h"
-//#define DEBUG_DIRTY
+// #define DEBUG_DIRTY
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 
 {
   // parse the command line
@@ -37,7 +37,8 @@ int main(int argc, char* argv[])
     // check that the file exists
     ifstream test_file(param_filename.c_str());
     if (test_file.fail()) {
-      cout << "Parameter file (" << param_filename << ") does not exist." << endl;
+      cout << "Parameter file (" << param_filename << ") does not exist."
+           << endl;
       exit(8);
     }
     test_file.close();
@@ -49,13 +50,15 @@ int main(int argc, char* argv[])
   // read parameter file
   ConfigFile param_data(param_filename);
 
-  // Are we outputing a failure log - do it here so I don't have to mess with KDGs structures.
-  // Output failure will only be set if we find a 'yes' entry in the param file.
-  bool OutputFailure=param_data.BValue("Run","Output Failure Log");
+  // Are we outputing a failure log - do it here so I don't have to mess with
+  // KDGs structures. Output failure will only be set if we find a 'yes' entry
+  // in the param file.
+  bool OutputFailure = param_data.BValue("Run", "Output Failure Log");
 
-  geometry_struct geometry;  // structure with geometry info (dust grid, etc.)
-  output_struct output;  // stucture with the output info (images, etc.)
-  photon_data photon;   // structure with the photon info (position, direction, weight, etc.)
+  geometry_struct geometry; // structure with geometry info (dust grid, etc.)
+  output_struct output;     // stucture with the output info (images, etc.)
+  photon_data photon; // structure with the photon info (position, direction,
+                      // weight, etc.)
   runinfo_struct runinfo; // structure with information about the run
 
   runinfo.param_filename = param_filename; // save the filename
@@ -65,7 +68,7 @@ int main(int argc, char* argv[])
   cout.flush();
 #endif
 
-  GrainModel CurGrainModel;  // object for grain model
+  GrainModel CurGrainModel; // object for grain model
 
 #ifdef DEBUG_DIRTY
   cout << "gmod; ";
@@ -74,7 +77,8 @@ int main(int argc, char* argv[])
 
   // get the run parameters (basic info)
   get_run_parameters(param_data, output, geometry, runinfo);
-  random_dirty random_obj(runinfo.ran_seed);  // object for random number generator
+  random_dirty random_obj(
+      runinfo.ran_seed); // object for random number generator
 
 #ifdef DEBUG_DIRTY
   cout << "runp; ";
@@ -89,8 +93,9 @@ int main(int argc, char* argv[])
   cout.flush();
 #endif
 
-  // moved this line out of get_run_parameters to allow for the random seed to be
-  // a user input - not elegant and there is likely a better solution (KDG - 8 Nov 2016)
+  // moved this line out of get_run_parameters to allow for the random seed to
+  // be a user input - not elegant and there is likely a better solution (KDG -
+  // 8 Nov 2016)
   output.num_outputs = geometry.num_observers;
 
 #ifdef DEBUG_DIRTY
@@ -119,10 +124,12 @@ int main(int argc, char* argv[])
 #endif
 
   // temp to reset the random number generator
-  random_dirty random_obj2(runinfo.ran_seed);  // object for random number generator
+  random_dirty random_obj2(
+      runinfo.ran_seed); // object for random number generator
 
   // do the radiative transfer over all the wavelengths
-  radiative_transfer_many_waves(geometry, runinfo, output, photon, random_obj2, REG_RT, 0);
+  radiative_transfer_many_waves(geometry, runinfo, output, photon, random_obj2,
+                                REG_RT, 0);
 
 #ifdef DEBUG_DIRTY
   cout << "RT done; ";
@@ -139,35 +146,37 @@ int main(int argc, char* argv[])
   if (runinfo.do_ere_emission) {
     runinfo.emitted_ere_energy_grid_initialized = 0;
     // setup a new output stucture to handle the ere
-    output_struct ere_output;  // stucture with the output info (images, etc.)
+    output_struct ere_output; // stucture with the output info (images, etc.)
 #ifdef DEBUG_DIRTY
-  cout << "setup ere output ";
-  cout.flush();
+    cout << "setup ere output ";
+    cout.flush();
 #endif
     setup_ere_dust_emission_output(ere_output, output);
-    runinfo.out_sed_lum_offset += 2;  // increment to save ERE direct/scattered luminosity
+    runinfo.out_sed_lum_offset +=
+        2; // increment to save ERE direct/scattered luminosity
 
     // get ERE emission
 #ifdef DEBUG_DIRTY
-  cout << "get ere ";
-  cout.flush();
+    cout << "get ere ";
+    cout.flush();
 #endif
     get_dust_ere_emission(geometry, runinfo);
 
     // get ready for RT
 #ifdef DEBUG_DIRTY
-  cout << "setup grid for MC ";
-  cout.flush();
+    cout << "setup grid for MC ";
+    cout.flush();
 #endif
     setup_emitted_grid_for_montecarlo(geometry, runinfo, CurGrainModel);
 
     // do the ERE radiative transfer over all the wavelengths
-    radiative_transfer_many_waves(geometry, runinfo, ere_output, photon, random_obj, ERE_RT, 1);
+    radiative_transfer_many_waves(geometry, runinfo, ere_output, photon,
+                                  random_obj, ERE_RT, 1);
   }
 
   // start RT+DE iteration (only if DE flag set)
   int iter_num = 1;
-//   int iter_max = 5;
+  //   int iter_max = 5;
   int iter_done = 0;
 
 #ifdef DEBUG_DIRTY
@@ -176,7 +185,7 @@ int main(int argc, char* argv[])
 #endif
 
   // setup a new output stucture to handle the different grain types
-  output_struct de_output;  // stucture with the output info (images, etc.)
+  output_struct de_output; // stucture with the output info (images, etc.)
 
 #ifdef DEBUG_DIRTY
   cout << "RT done3; ";
@@ -187,13 +196,18 @@ int main(int argc, char* argv[])
     iter_done = 1;
   } else {
     if (runinfo.do_emission_grain && (geometry.num_observers > 1)) {
-      cout << "not possible to do dust emission output of emission by grain type and" << endl;
+      cout << "not possible to do dust emission output of emission by grain "
+              "type and"
+           << endl;
       cout << "multiple-lines-of-sight without new code." << endl;
-      cout << "Set do_emission_type=0 to get multiple-lines-of-sight and total IR emission." << endl;
+      cout << "Set do_emission_type=0 to get multiple-lines-of-sight and total "
+              "IR emission."
+           << endl;
       exit(8);
     } else if (runinfo.do_emission_grain) {
 
-      // set this here to allow the DE part to do the initialization (or reinitialize)
+      // set this here to allow the DE part to do the initialization (or
+      // reinitialize)
       geometry.emitted_energy_grid_initialized = 0;
 
 #ifdef DEBUG_DIRTY
@@ -218,10 +232,12 @@ int main(int argc, char* argv[])
   while (!iter_done) {
 
     // Create a DirtyFailure Object
-    // Will remain empty if we don't do an output.  Do all the allocations regardless
-    // if whether OutputFailure is true or not to avoid compile  warnings.
-    fFailureFilename=output.file_base+"_iter"+StringManip::vtos(iter_num)+"_failure.log";
-    DirtyFailure * Failure = new DirtyFailure(fFailureFilename,runinfo.n_waves);
+    // Will remain empty if we don't do an output.  Do all the allocations
+    // regardless if whether OutputFailure is true or not to avoid compile
+    // warnings.
+    fFailureFilename = output.file_base + "_iter" +
+                       StringManip::vtos(iter_num) + "_failure.log";
+    DirtyFailure *Failure = new DirtyFailure(fFailureFilename, runinfo.n_waves);
 
 #ifdef DEBUG_DIRTY
     cout << "te: gdt start; ";
@@ -230,8 +246,10 @@ int main(int argc, char* argv[])
     // get the dust emission at each point in the model
     get_dust_thermal_emission(geometry, runinfo, CurGrainModel, Failure);
 
-    // save the total absorbed energy from the initial (stellar) radiative transfer
-    if (iter_num == 1) runinfo.total_absorbed_stellar_energy = runinfo.total_absorbed_energy;
+    // save the total absorbed energy from the initial (stellar) radiative
+    // transfer
+    if (iter_num == 1)
+      runinfo.total_absorbed_stellar_energy = runinfo.total_absorbed_energy;
 #ifdef DEBUG_DIRTY
     cout << "te: gdt done; ";
     cout.flush();
@@ -241,17 +259,22 @@ int main(int argc, char* argv[])
     setup_emitted_grid_for_montecarlo(geometry, runinfo, CurGrainModel);
 
     // do the DE radiative transfer over all the wavelengths
-    radiative_transfer_many_waves(geometry, runinfo, de_output, photon, random_obj, DE_RT, iter_num);
+    radiative_transfer_many_waves(geometry, runinfo, de_output, photon,
+                                  random_obj, DE_RT, iter_num);
 
     // determine if energy is conserved well enough or if another
     // iteration is needed due to dust self-absorption
     check_de_energy_conservation(runinfo, iter_done);
 
     // limit the max iterations
-    if (iter_num >= runinfo.iter_max) iter_done = 1; else iter_num++;
+    if (iter_num >= runinfo.iter_max)
+      iter_done = 1;
+    else
+      iter_num++;
 
     // If output puting failure log, then do it.
-    if (OutputFailure) Failure->WriteFailureLog();
+    if (OutputFailure)
+      Failure->WriteFailureLog();
     // Destroy the Failure Object.
     delete Failure;
   }
@@ -268,5 +291,4 @@ int main(int argc, char* argv[])
       output_global_results(runinfo, output, geometry);
   }
   return 0;
-
 }

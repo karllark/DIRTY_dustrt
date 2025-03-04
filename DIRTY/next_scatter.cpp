@@ -5,29 +5,31 @@
 //
 // 2004 Dec/KDG - written
 // 03 Sep 2015/KDG - added sampling from an exp(tau/100) distribution
-//                   1/2 of the time to better sample high optical depth scattering
+//                   1/2 of the time to better sample high optical depth
+//                   scattering
 // ======================================================================
 #include "next_scatter.h"
-//#define DEBUG_NS
+// #define DEBUG_NS
 
-int next_scatter (geometry_struct& geometry,
-		  photon_data& photon,
-		  random_dirty& random_obj)
+int next_scatter(geometry_struct &geometry, photon_data &photon,
+                 random_dirty &random_obj)
 
 {
   // find path_tau[]
   photon_data dummy_photon = photon;
-  dummy_photon.current_grid_num = 0;  // set to the base grid to start trajectory correctly
+  dummy_photon.current_grid_num =
+      0; // set to the base grid to start trajectory correctly
   dummy_photon.path_cur_cells = 0; // set to 0 to save cells traversed
 
   double target_tau = 1e20;
-  double target_dist = 1e10*geometry.radius;
+  double target_dist = 1e10 * geometry.radius;
   int escape = 0;
   double tau_path = 0.0;
-  calc_photon_trajectory(dummy_photon, geometry, target_tau, target_dist, escape, tau_path, 0);
-  double bias_norm = 1.0/(1.0 + tau_path);
-//   cout << tau_path << " ";
-//   cout << bias_norm << " ";
+  calc_photon_trajectory(dummy_photon, geometry, target_tau, target_dist,
+                         escape, tau_path, 0);
+  double bias_norm = 1.0 / (1.0 + tau_path);
+  //   cout << tau_path << " ";
+  //   cout << bias_norm << " ";
 
   // determine the optical depth to the next scattering
   target_tau = 0.0;
@@ -37,7 +39,7 @@ int next_scatter (geometry_struct& geometry,
   if (ran_num >= geometry.scat_bias_fraction) { // classical scattering
     target_tau = -log(ran_num2);
   } else { // biased based on tau_path
-    target_tau = (-1./bias_norm)*log(ran_num2);
+    target_tau = (-1. / bias_norm) * log(ran_num2);
   }
 
   photon.target_tau = target_tau;
@@ -56,9 +58,10 @@ int next_scatter (geometry_struct& geometry,
   double distance_traveled = 0.0;
   double tau_traveled = 0.0;
   escape = 0;
-  photon.path_cur_cells = 0;  // set to 0 to save cells tranversed
+  photon.path_cur_cells = 0; // set to 0 to save cells tranversed
 
-  distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, target_dist, escape, tau_traveled, 1);
+  distance_traveled = calc_photon_trajectory(
+      photon, geometry, target_tau, target_dist, escape, tau_traveled, 1);
 #ifdef DEBUG_NS
   if (photon.number == OUTNUM) {
     cout << "ns cpt done; ";
@@ -68,17 +71,18 @@ int next_scatter (geometry_struct& geometry,
   }
 #endif
 
-//   int j = 0;
-//   for (j = 0; j < 3; j++)
-//     cout << photon.position[j] << " ";
-//   cout << endl;
+  //   int j = 0;
+  //   for (j = 0; j < 3; j++)
+  //     cout << photon.position[j] << " ";
+  //   cout << endl;
 
   escape = 0;
   // check if the photon has left the dust
-  if ((target_tau - tau_traveled)/geometry.tau > ROUNDOFF_ERR_TRIG)
+  if ((target_tau - tau_traveled) / geometry.tau > ROUNDOFF_ERR_TRIG)
     escape = 1;
 
-  // check if the photon has scattered enough and there is just no significant weight left
+  // check if the photon has scattered enough and there is just no significant
+  // weight left
   if (photon.num_scat > geometry.max_num_scat)
     escape = 1;
 
@@ -97,20 +101,21 @@ int next_scatter (geometry_struct& geometry,
     // update the scattered weight for biasing
     double biased_weight_factor = 0.0;
     biased_weight_factor = (1.0 - (geometry.scat_bias_fraction)) +
-      (geometry.scat_bias_fraction*bias_norm*exp((1.-bias_norm)*target_tau));
+                           (geometry.scat_bias_fraction * bias_norm *
+                            exp((1. - bias_norm) * target_tau));
 
-//     cout << 1.0/biased_weight_factor << " ";
+    //     cout << 1.0/biased_weight_factor << " ";
 
     photon.scat_weight /= biased_weight_factor;
 
-//     cout << photon.number << " ";
-//     cout << target_tau << " ";
-//     cout << photon.scat_weight << " ";
-//     cout << 1.0/biased_weight_factor << " ";
-//     cout << endl;
+    //     cout << photon.number << " ";
+    //     cout << target_tau << " ";
+    //     cout << photon.scat_weight << " ";
+    //     cout << 1.0/biased_weight_factor << " ";
+    //     cout << endl;
   }
 
-//   cout << endl;
+  //   cout << endl;
 
 #ifdef DEBUG_NS
   if (photon.number == OUTNUM) {
@@ -129,5 +134,5 @@ int next_scatter (geometry_struct& geometry,
 #endif
 
   // return escape (1 = yes, 0 = no)
-  return(escape);
+  return (escape);
 }

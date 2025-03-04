@@ -7,8 +7,8 @@
 #include "setup_dust_grid_check_grid.h"
 // #define DEBUG_SDGCG
 
-void setup_dust_grid_check_grid(geometry_struct& geometry, int cur_grid,
-                                int par_grid, vector<int>& par_idim)
+void setup_dust_grid_check_grid(geometry_struct &geometry, int cur_grid,
+                                int par_grid, vector<int> &par_idim)
 
 {
   int i, j, k = 0;
@@ -37,24 +37,27 @@ void setup_dust_grid_check_grid(geometry_struct& geometry, int cur_grid,
       if (geometry.grids[cur_grid].positions[i][0] !=
           geometry.grids[par_grid].positions[i][par_idim[i]]) {
         cout << "min subgrid i = " << i
-            << " position does not match parent cell position" << endl;
+             << " position does not match parent cell position" << endl;
         cout << "subgrid min = " << geometry.grids[cur_grid].positions[i][0];
         cout << "; parent cell min = "
-            << geometry.grids[par_grid].positions[i][par_idim[i]] << endl;
+             << geometry.grids[par_grid].positions[i][par_idim[i]] << endl;
         cout << "subgrid number = " << cur_grid
-            << "; parent number = " << par_grid << endl;
+             << "; parent number = " << par_grid << endl;
         errors_found = true;
       }
       // check the max values
-      if (geometry.grids[cur_grid].positions[i][geometry.grids[cur_grid].index_dim[i]] !=
-          geometry.grids[par_grid].positions[i][par_idim[i]+1]) {
+      if (geometry.grids[cur_grid]
+              .positions[i][geometry.grids[cur_grid].index_dim[i]] !=
+          geometry.grids[par_grid].positions[i][par_idim[i] + 1]) {
         cout << "max subgrid i = " << i
-            << " position does not match parent cell position" << endl;
-        cout << "subgrid max = " << geometry.grids[cur_grid].positions[i][geometry.grids[cur_grid].index_dim[i]];
+             << " position does not match parent cell position" << endl;
+        cout << "subgrid max = "
+             << geometry.grids[cur_grid]
+                    .positions[i][geometry.grids[cur_grid].index_dim[i]];
         cout << "; parent cell max = "
-            << geometry.grids[par_grid].positions[i][par_idim[i]+1] << endl;
+             << geometry.grids[par_grid].positions[i][par_idim[i] + 1] << endl;
         cout << "subgrid number = " << cur_grid
-            << "; parent number = " << par_grid << endl;
+             << "; parent number = " << par_grid << endl;
         errors_found = true;
       }
     }
@@ -66,7 +69,8 @@ void setup_dust_grid_check_grid(geometry_struct& geometry, int cur_grid,
         dust_tau_per_pc =
             geometry.grids[cur_grid].grid(i, j, k).dust_tau_per_pc;
         if (!isfinite(dust_tau_per_pc)) {
-          cout << "Non-finite value of " << dust_tau_per_pc << " detected in grid # = " << cur_grid;
+          cout << "Non-finite value of " << dust_tau_per_pc
+               << " detected in grid # = " << cur_grid;
           cout << " at cell = (" << i << "," << j << "," << k << ")" << endl;
           errors_found = true;
         } else if (dust_tau_per_pc < -0.6) {
@@ -94,10 +98,11 @@ void setup_dust_grid_check_grid(geometry_struct& geometry, int cur_grid,
 
   // check that the grid is not all filled with -0.5 values
   // -0.5 and subgrids allowed
-    if ((max_tau == -0.5) && (min_tau == -0.5)) {
-      cout << "grid # = " << cur_grid << " is filled with only -0.5 values, not allowed" << endl;
-      errors_found = true;
-    }
+  if ((max_tau == -0.5) && (min_tau == -0.5)) {
+    cout << "grid # = " << cur_grid
+         << " is filled with only -0.5 values, not allowed" << endl;
+    errors_found = true;
+  }
 
   // stop if any errors found
   if (errors_found == true)

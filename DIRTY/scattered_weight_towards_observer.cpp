@@ -9,7 +9,7 @@
 // #define DEBUG_SWTO
 
 double scattered_weight_towards_observer(photon_data photon,
-                                         geometry_struct& geometry,
+                                         geometry_struct &geometry,
                                          float observer_position[3])
 
 {
@@ -30,16 +30,20 @@ double scattered_weight_towards_observer(photon_data photon,
 #ifdef DEBUG_SWTO
   if (photon.number == OUTNUM) {
     cout << "pos vector = ";
-    for (i = 0; i < 3; i++) cout << photon.position[i] << " ";
+    for (i = 0; i < 3; i++)
+      cout << photon.position[i] << " ";
     cout << endl;
     cout << "dir cosines vector = ";
-    for (i = 0; i < 3; i++) cout << photon.dir_cosines[i] << " ";
+    for (i = 0; i < 3; i++)
+      cout << photon.dir_cosines[i] << " ";
     cout << endl;
     cout << "scat_to_obs vector = ";
-    for (i = 0; i < 3; i++) cout << scat_to_obs[i] << " ";
+    for (i = 0; i < 3; i++)
+      cout << scat_to_obs[i] << " ";
     cout << endl;
     cout << "scat_to_obs dir_cosines = ";
-    for (i = 0; i < 3; i++) cout << dir_cosines_scat_to_obs[i] << " ";
+    for (i = 0; i < 3; i++)
+      cout << dir_cosines_scat_to_obs[i] << " ";
     cout << endl;
     cout << "cos_alpha contributions = ";
     for (i = 0; i < 3; i++)
@@ -67,15 +71,17 @@ double scattered_weight_towards_observer(photon_data photon,
 
   // determine the optical depth to the surface from the scattering site
   // towards the observer
-  for (i = 0; i < 3; i++) photon.dir_cosines[i] = dir_cosines_scat_to_obs[i];
+  for (i = 0; i < 3; i++)
+    photon.dir_cosines[i] = dir_cosines_scat_to_obs[i];
   double target_tau = 1e20;
   double target_dist = 1e10 * geometry.radius;
-  if (geometry.internal_observer == 1) target_dist = dist_scat_to_obs;
+  if (geometry.internal_observer == 1)
+    target_dist = dist_scat_to_obs;
   int escape = 0;
   double tau_scat_to_obs = 0.0;
   double distance_traveled = 0.0;
   photon.current_grid_num =
-      0;  // set to the base grid to start tarjectory correctly
+      0; // set to the base grid to start tarjectory correctly
 #ifdef DEBUG_SWTO
   if (photon.number == OUTNUM) {
     cout << "starting calc_photon_traj..." << endl;
@@ -103,7 +109,7 @@ double scattered_weight_towards_observer(photon_data photon,
 
   double scat_weight_angle = 0.0;
   // calculate the portion of the probability from the angle
-  if (geometry.g == -2) {  // model phase function
+  if (geometry.g == -2) { // model phase function
     uint i1, i2, i3;
     i1 = 0;
     i3 = geometry.phi.size();

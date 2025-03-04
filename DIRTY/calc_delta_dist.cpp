@@ -10,9 +10,9 @@
 #define OUTNUM 33
 // #define DEBUG_CDD
 
-double calc_delta_dist(photon_data& photon, geometry_struct& geometry,
-                       double target_tau, double target_dist, int& escape,
-                       double& tau_traveled)
+double calc_delta_dist(photon_data &photon, geometry_struct &geometry,
+                       double target_tau, double target_dist, int &escape,
+                       double &tau_traveled)
 
 {
 #ifdef DEBUG_CDD
@@ -31,8 +31,8 @@ double calc_delta_dist(photon_data& photon, geometry_struct& geometry,
   }
 #endif
   tau_traveled = 0.0;
-  double distance_traveled = 0.0;  // resulting distance traveled
-  int exit_cell = 1;               // tells if the cell has been exited
+  double distance_traveled = 0.0; // resulting distance traveled
+  int exit_cell = 1;              // tells if the cell has been exited
   int min_index = 0;
 
   // save the current grid number, the grid number, and the dust_tau_per_pc
@@ -75,13 +75,16 @@ double calc_delta_dist(photon_data& photon, geometry_struct& geometry,
     cout << "cdd photon in" << endl;
     cout << "number = " << photon.number << endl;
     cout << "pos = ";
-    for (di = 0; di < 3; di++) cout << photon.position[di] << " ";
+    for (di = 0; di < 3; di++)
+      cout << photon.position[di] << " ";
     cout << endl;
     cout << "dir_cos = ";
-    for (di = 0; di < 3; di++) cout << photon.dir_cosines[di] << " ";
+    for (di = 0; di < 3; di++)
+      cout << photon.dir_cosines[di] << " ";
     cout << endl;
     cout << "pos idx = ";
-    for (di = 0; di < 3; di++) cout << photon.position_index[k][di] << " ";
+    for (di = 0; di < 3; di++)
+      cout << photon.position_index[k][di] << " ";
     cout << endl;
     cout << "k = " << k << " < " << photon.num_current_grids - 1 << endl;
     cout << "dust_tau_per_pc = " << dust_tau_per_pc << endl;
@@ -196,7 +199,7 @@ double calc_delta_dist(photon_data& photon, geometry_struct& geometry,
 #endif
 
     int escape_grid = 0;
-    if (escape) {  // determine which of x,y,z exited first
+    if (escape) { // determine which of x,y,z exited first
       photon.current_grid_num--;
       photon.num_current_grids--;
       int i = 0;
@@ -229,10 +232,12 @@ double calc_delta_dist(photon_data& photon, geometry_struct& geometry,
     }
     // now determine if the photon has traveled far enough
     if (fabs(target_tau - tau_traveled) < ROUNDOFF_ERR_TRIG) {
-      if (!escape_grid) exit_cell = 0;
+      if (!escape_grid)
+        exit_cell = 0;
       escape = 1;
     } else if (fabs(target_dist - distance_traveled) < ROUNDOFF_ERR_TRIG) {
-      if (!escape_grid) exit_cell = 0;
+      if (!escape_grid)
+        exit_cell = 0;
       escape = 1;
     }
 
@@ -258,12 +263,12 @@ double calc_delta_dist(photon_data& photon, geometry_struct& geometry,
     }
 #endif
 
-  } else {  // otherwise determine the distance in this cell
+  } else { // otherwise determine the distance in this cell
 
-    double delta_position[3];  // x,y,z distance to the edge of the cell
-                               // (parallel to the x,y,z axes)
-    double delta_distance[3];  // distance the photon would need to travelel to
-                               // exit the cell in the x,y,z directions
+    double delta_position[3]; // x,y,z distance to the edge of the cell
+                              // (parallel to the x,y,z axes)
+    double delta_distance[3]; // distance the photon would need to travelel to
+                              // exit the cell in the x,y,z directions
 
     // determine the x,y,z distances to the edge of the cell
     //   this is parallel to the x,y,z axes
@@ -284,7 +289,7 @@ double calc_delta_dist(photon_data& photon, geometry_struct& geometry,
             photon.position[i] -
             geometry.grids[photon.grid_number[photon.current_grid_num]]
                 .positions[i][photon.position_index[k][i]];
-      } else {  // photon.dir_cosines[i] == 0.0
+      } else { // photon.dir_cosines[i] == 0.0
         delta_position[i] = 0.0;
       }
 
@@ -333,7 +338,8 @@ double calc_delta_dist(photon_data& photon, geometry_struct& geometry,
     if (min_index == -1) {
       // find the first non-zero dir cosine to send the photon along
       min_index = 0;
-      while (photon.dir_cosines[min_index] == 0.0) min_index++;
+      while (photon.dir_cosines[min_index] == 0.0)
+        min_index++;
       if ((min_index == 2) && (photon.dir_cosines[min_index] == 0.0)) {
         cout << "no nonzero distances traveled in this cell." << endl;
         exit(8);
@@ -402,7 +408,7 @@ double calc_delta_dist(photon_data& photon, geometry_struct& geometry,
     }
 #endif
 
-    if (photon.path_cur_cells >= 0) {  // if -1, don't save
+    if (photon.path_cur_cells >= 0) { // if -1, don't save
       if (photon.path_cur_cells >= photon.path_max_cells) {
         // lengthen the photon.path variables
         photon.path_tau.push_back(0.0);
@@ -510,7 +516,7 @@ double calc_delta_dist(photon_data& photon, geometry_struct& geometry,
                .index_dim[min_index]) ||
           (photon.position_index[k][min_index] < 0))
         escape = 1;
-        
+
 #ifdef DEBUG_CDD
     if (photon.number == OUTNUM) {
       cout << photon.position_index[k][min_index] << " ";
@@ -560,10 +566,12 @@ double calc_delta_dist(photon_data& photon, geometry_struct& geometry,
     cout << tau_traveled << endl;
     cout << "tau target = " << target_tau << endl;
     cout << "pos = ";
-    for (di = 0; di < 3; di++) cout << photon.position[di] << " ";
+    for (di = 0; di < 3; di++)
+      cout << photon.position[di] << " ";
     cout << endl;
     cout << "pos idx = ";
-    for (di = 0; di < 3; di++) cout << photon.position_index[k][di] << " ";
+    for (di = 0; di < 3; di++)
+      cout << photon.position_index[k][di] << " ";
     cout << endl;
     cout << "exit_cell = " << exit_cell << endl;
     cout << "escape = " << escape << endl;
