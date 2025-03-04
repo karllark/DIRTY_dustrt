@@ -11,8 +11,9 @@
 
 //**********************************************************************
 // external function definitions
-extern int ComputeDustEmission (vector<float> &J, GrainModel &GrainModel, vector<vector<double> > &EmmittedEnergy,
-                                bool &DoStochastic, bool &effective_grain_heating, float &_FailureSz, int &_FailureComp,
+extern int ComputeDustEmission (vector<float> &J, GrainModel &GrainModel,
+                                vector<vector<double> > &EmmittedEnergy, bool &DoStochastic,
+                                bool &effective_grain_heating, float &_FailureSz, int &_FailureComp,
                                 vector<float> &_transitionSz);
 
 #endif

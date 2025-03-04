@@ -14,7 +14,7 @@
 // external function definitions
 
 // function to calculate the distance traveled inside a cell
-extern double calc_delta_dist (photon_data &photon, geometry_struct &geometry, double target_tau, int &escape,
-                               double &tau_traveled);
+extern double calc_delta_dist (photon_data &photon, geometry_struct &geometry, double target_tau,
+                               int &escape, double &tau_traveled);
 
 #endif

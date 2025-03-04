@@ -12,6 +12,7 @@
 
 // determines the vector of positions and grid numbers given the photon
 // position and direction
-extern void determine_photon_position_index_initial (geometry_struct &geometry, photon_data &photon);
+extern void determine_photon_position_index_initial (geometry_struct &geometry,
+                                                     photon_data &photon);
 
 #endif
