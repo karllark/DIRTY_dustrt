@@ -17,14 +17,14 @@ int next_scatter (geometry_struct& geometry,
 {
   // find path_tau[]
   photon_data dummy_photon = photon;
-  dummy_photon.current_grid_num = 0;  // set to the base grid to start tarjectory correctly
+  dummy_photon.current_grid_num = 0;  // set to the base grid to start trajectory correctly
   dummy_photon.path_cur_cells = 0; // set to 0 to save cells traversed
 
   double target_tau = 1e20;
   double target_dist = 1e10*geometry.radius;
   int escape = 0;
   double tau_path = 0.0;
-  calc_photon_trajectory(dummy_photon, geometry, target_tau, target_dist, escape, tau_path);
+  calc_photon_trajectory(dummy_photon, geometry, target_tau, target_dist, escape, tau_path, 0);
   double bias_norm = 1.0/(1.0 + tau_path);
 //   cout << tau_path << " ";
 //   cout << bias_norm << " ";
@@ -58,7 +58,7 @@ int next_scatter (geometry_struct& geometry,
   escape = 0;
   photon.path_cur_cells = 0;  // set to 0 to save cells tranversed
 
-  distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, target_dist, escape, tau_traveled);
+  distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, target_dist, escape, tau_traveled, 1);
 #ifdef DEBUG_NS
   if (photon.number == OUTNUM) {
     cout << "ns cpt done; ";

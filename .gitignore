@@ -7,6 +7,11 @@ dirty
 docs/_build
 *.fits
 write_grain/*/*.dat
+stock_dirty
+.vscode
+Dust
+*.png
+*.drt
 
 # autotools
 .version

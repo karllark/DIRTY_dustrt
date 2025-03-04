@@ -126,7 +126,7 @@ void new_photon_diffuse_source (photon_data& photon,
   cout << "np; start distance traveled" << " ";
   cout.flush();
 #endif
-  distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, target_dist, escape, tau_to_surface);
+  distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, target_dist, escape, tau_to_surface, 0);
 #ifdef DEBUG_NPDS
   cout << "np; done distance traveled" << " ";
   cout.flush();

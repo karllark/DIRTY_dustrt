@@ -53,6 +53,14 @@ void get_run_parameters(ConfigFile& param_data, output_struct& output,
   check_input_param("emit_bias_fraction", geometry.emit_bias_fraction, 0.0,
                     1.0);
 
+  // repeat xy boundary - only works for models that fully fill the main grid with dust
+  geometry.repeat_boundary_xy =
+      param_data.IValue("Run", "repeat_boundary_xy");
+  if (geometry.repeat_boundary_xy == -99)
+    geometry.repeat_boundary_xy = 0;  // set to no if not initially set
+  check_input_param("repeat_boundary_xy",
+                    geometry.repeat_boundary_xy, 0, 1);
+
   int image_size = param_data.IValue("Run", "output_image_size");
   if (image_size > 0) {
     check_input_param("output_image_size", image_size, 1, 50000);
@@ -72,7 +80,8 @@ void get_run_parameters(ConfigFile& param_data, output_struct& output,
   }
 
   if ((image_size < 0) && (image_x_size < 0) && (image_y_size < 0)) {
-    cout << "either image_size or (image_x_size, image_y_size) need to be set." << endl;
+    cout << "either image_size or (image_x_size, image_y_size) need to be set."
+         << endl;
     exit(8);
   }
 
