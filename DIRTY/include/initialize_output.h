@@ -18,6 +18,6 @@
 //**********************************************************************
 // external function definitions
 
-extern void compute_observer_trans_matrix(output_struct &output, geometry_struct &geometry, int i);
+extern void compute_observer_trans_matrix (output_struct &output, geometry_struct &geometry, int i);
 
 #endif

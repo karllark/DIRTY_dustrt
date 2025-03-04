@@ -41,17 +41,17 @@ const std::string ST_SMALL_PROBABILITY_HI = "StochasticHeating(): Transition pro
                                             "setting upper bound.";
 const std::string ST_SMALL_PROBABILITY_LO = "StochasticHeating(): Transition probablity less than cutoff everywhere, "
                                             "setting lower bound.";
-const std::string ST_EXCEED_CONVERGENCE_LOOP_COUNT =
-    "StochasticHeating(): Exceeded maximum loop count in convergence loop.";
+const std::string ST_EXCEED_CONVERGENCE_LOOP_COUNT
+    = "StochasticHeating(): Exceeded maximum loop count in convergence loop.";
 // --> ComputeTransitionMatrix
 const int FST_CTM_ZERO_ENTH_DEN = 11;
 const int FST_CTM_TRANSITIONID_EXCEEDS_WAVEID = 12;
 const int FST_CTM_WAVE_ZERO = 13;
 const std::string ST_CTM_ZERO_ENTH_DEN = "StochasticHeating()->ComputeTransitionMatrix(): Enthalpy denominator is "
                                          "zero.";
-const std::string ST_CTM_TRANSITIONID_EXCEEDS_WAVEID =
-    "StochasticHeating()->ComputeTransitionMatrix(): Found index of transition "
-    "wavelength that exceeds maximum wave size.";
+const std::string ST_CTM_TRANSITIONID_EXCEEDS_WAVEID
+    = "StochasticHeating()->ComputeTransitionMatrix(): Found index of transition "
+      "wavelength that exceeds maximum wave size.";
 const std::string ST_CTM_WAVE_ZERO = "StochasticHeating()->ComputeTransitionMatrix(): wave[id]-wave[id-1] == 0 "
                                      "WTF?";
 // --> SolveTransitionMatrix
@@ -65,14 +65,14 @@ const int FGDTE_POOR_ENERGY_CONSERVATION = 16;
 const int FGDTE_NONFINITE_EMITTED_ENERGY_PRE = 17;
 const int FGDTE_NONFINITE_EMITTED_ENERGY_PST = 18;
 const std::string GDTE_ZERO_ABSORBED_ENERGY = "get_dust_thermal_emission(): No energy absorbed.";
-const std::string GDTE_POOR_ENERGY_CONSERVATION =
-    "get_dust_thermal_emission(): Energy conservation doesn't meet tolerance.";
-const std::string GDTE_NONFINITE_EMITTED_ENERGY_PRE =
-    "get_dust_thermal_emission(): Computed emitted energy is not finite, pre "
-    "n_H.";
-const std::string GDTE_NONFINITE_EMITTED_ENERGY_PST =
-    "get_dust_thermal_emission(): Computed emitted energy is not finite, post "
-    "n_H.";
+const std::string GDTE_POOR_ENERGY_CONSERVATION
+    = "get_dust_thermal_emission(): Energy conservation doesn't meet tolerance.";
+const std::string GDTE_NONFINITE_EMITTED_ENERGY_PRE
+    = "get_dust_thermal_emission(): Computed emitted energy is not finite, pre "
+      "n_H.";
+const std::string GDTE_NONFINITE_EMITTED_ENERGY_PST
+    = "get_dust_thermal_emission(): Computed emitted energy is not finite, post "
+      "n_H.";
 
 } // namespace Flags
 

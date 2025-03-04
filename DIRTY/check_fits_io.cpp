@@ -5,20 +5,21 @@
 // ======================================================================
 #include "check_fits_io.h"
 
-int check_fits_io(int status, const char text[100])
+int
+check_fits_io (int status, const char text[100])
 
 {
-    char errtxt[FLEN_ERRMSG];
+  char errtxt[FLEN_ERRMSG];
 
-    if (status != 0)
+  if (status != 0)
     {
-        fits_get_errstatus(status, errtxt);
-        cout << text;
-        cout << " status = " << status;
-        cout << " : " << errtxt << endl;
-        cout.flush();
-        exit(8);
+      fits_get_errstatus (status, errtxt);
+      cout << text;
+      cout << " status = " << status;
+      cout << " : " << errtxt << endl;
+      cout.flush ();
+      exit (8);
     }
 
-    return 0;
+  return 0;
 }

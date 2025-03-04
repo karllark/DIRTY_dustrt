@@ -14,69 +14,71 @@
 #include "setup_emitted_grid_for_montecarlo.h"
 #define DEBUG_SEGFMC
 
-void setup_emitted_grid_for_montecarlo(geometry_struct &geometry, runinfo_struct &runinfo, GrainModel &CurGrainModel)
+void
+setup_emitted_grid_for_montecarlo (geometry_struct &geometry, runinfo_struct &runinfo, GrainModel &CurGrainModel)
 
 {
-    int i, j, k, m, z = 0;
-    uint x = 0;
+  int i, j, k, m, z = 0;
+  uint x = 0;
 
-    int n_emit_components = runinfo.n_emission_grain_types;
+  int n_emit_components = runinfo.n_emission_grain_types;
 //   int n_emit_components = 1;
 //   if (runinfo.do_emission_grain && runinfo.dust_thermal_emission)
 //     n_emit_components += 2*CurGrainModel.getNComp();
 #ifdef DEBUG_SEGFMC
-    cout << "n_emit_components = " << n_emit_components << endl;
+  cout << "n_emit_components = " << n_emit_components << endl;
 #endif
 
-    // set for grid emission
-    geometry.new_photon_source_type = NEW_PHOTON_GRID;
+  // set for grid emission
+  geometry.new_photon_source_type = NEW_PHOTON_GRID;
 
-    vector<double> sum_emitted_lum;
-    sum_emitted_lum.resize(runinfo.wavelength.size(), 0.0);
+  vector<double> sum_emitted_lum;
+  sum_emitted_lum.resize (runinfo.wavelength.size (), 0.0);
 
-    vector<double> sum_emitted_lum_uniform;
-    sum_emitted_lum_uniform.resize(runinfo.wavelength.size(), 0.0);
+  vector<double> sum_emitted_lum_uniform;
+  sum_emitted_lum_uniform.resize (runinfo.wavelength.size (), 0.0);
 
-    //   for (x = 0; x < runinfo.wavelength.size(); x++)
-    //     cout << x << " " << runinfo.emitted_lum[0][x] << endl;
-    //   exit(8);
+  //   for (x = 0; x < runinfo.wavelength.size(); x++)
+  //     cout << x << " " << runinfo.emitted_lum[0][x] << endl;
+  //   exit(8);
 
-    //   runinfo.emitted_lum[0][x];
+  //   runinfo.emitted_lum[0][x];
 
-    // loop over all the defined grids
-    for (m = 0; m < int(geometry.grids.size()); m++)
+  // loop over all the defined grids
+  for (m = 0; m < int (geometry.grids.size ()); m++)
     {
-        // loop of the cells in this grid
-        for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
-            for (j = 0; j < geometry.grids[m].index_dim[1]; j++)
-                for (i = 0; i < geometry.grids[m].index_dim[0]; i++)
+      // loop of the cells in this grid
+      for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
+        for (j = 0; j < geometry.grids[m].index_dim[1]; j++)
+          for (i = 0; i < geometry.grids[m].index_dim[0]; i++)
+            {
+              for (x = 0; x < runinfo.wavelength.size (); x++)
                 {
-                    for (x = 0; x < runinfo.wavelength.size(); x++)
-                    {
-                        // normalize if there we need the emission by grain/emission type
-                        if (runinfo.do_emission_grain && runinfo.dust_thermal_emission)
-                            if (geometry.grids[m].grid(i, j, k).emitted_energy[0][x] > 0)
-                            {
-                                for (z = 1; z < n_emit_components; z++)
-                                    geometry.grids[m].grid(i, j, k).emitted_energy[z][x] /=
-                                        geometry.grids[m].grid(i, j, k).emitted_energy[0][x];
-                            }
+                  // normalize if there we need the emission by grain/emission
+                  // type
+                  if (runinfo.do_emission_grain && runinfo.dust_thermal_emission)
+                    if (geometry.grids[m].grid (i, j, k).emitted_energy[0][x] > 0)
+                      {
+                        for (z = 1; z < n_emit_components; z++)
+                          geometry.grids[m].grid (i, j, k).emitted_energy[z][x]
+                              /= geometry.grids[m].grid (i, j, k).emitted_energy[0][x];
+                      }
 
-                        sum_emitted_lum[x] += geometry.grids[m].grid(i, j, k).emitted_energy[0][x];
-                        sum_emitted_lum_uniform[x] += geometry.grids[m].grid(i, j, k).emitted_energy_uniform[x];
+                  sum_emitted_lum[x] += geometry.grids[m].grid (i, j, k).emitted_energy[0][x];
+                  sum_emitted_lum_uniform[x] += geometry.grids[m].grid (i, j, k).emitted_energy_uniform[x];
 
-                        if (runinfo.dust_thermal_emission)
-                            geometry.grids[m].grid(i, j, k).emitted_energy_weighted[x] =
-                                sum_emitted_lum[x] / runinfo.emitted_lum[0][x];
-                        else
-                            geometry.grids[m].grid(i, j, k).emitted_energy_weighted[x] =
-                                sum_emitted_lum[x] / runinfo.emitted_ere_lum[0][x];
+                  if (runinfo.dust_thermal_emission)
+                    geometry.grids[m].grid (i, j, k).emitted_energy_weighted[x]
+                        = sum_emitted_lum[x] / runinfo.emitted_lum[0][x];
+                  else
+                    geometry.grids[m].grid (i, j, k).emitted_energy_weighted[x]
+                        = sum_emitted_lum[x] / runinfo.emitted_ere_lum[0][x];
 
-                        geometry.grids[m].grid(i, j, k).emitted_energy_uniform[x] =
-                            sum_emitted_lum_uniform[x] / geometry.emitted_lum_uniform[x];
-                    }
+                  geometry.grids[m].grid (i, j, k).emitted_energy_uniform[x]
+                      = sum_emitted_lum_uniform[x] / geometry.emitted_lum_uniform[x];
                 }
+            }
     }
 
-    //   exit(8);
+  //   exit(8);
 }

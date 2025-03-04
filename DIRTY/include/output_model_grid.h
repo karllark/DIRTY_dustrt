@@ -18,6 +18,6 @@
 //**********************************************************************
 // external function definitions
 
-extern int check_fits_io(int status, const char text[100]);
+extern int check_fits_io (int status, const char text[100]);
 
 #endif

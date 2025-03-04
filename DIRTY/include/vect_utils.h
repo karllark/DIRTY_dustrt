@@ -104,58 +104,54 @@ template <typename T> class Matrix;
 
 template <typename T> class Matrix : public std::vector<T>
 {
-  public:
-    // Constructors/destructors.
-    Matrix() : std::vector<T>()
-    {
-    }
-    Matrix(int n1, int n2, const T &ival) : std::vector<T>(n1 * n2, ival), _n1(n1), _n2(n2)
-    {
-    }
-    explicit Matrix(int n1, int n2) : std::vector<T>(n1 * n2), _n1(n1), _n2(n2)
-    {
-    }
+public:
+  // Constructors/destructors.
+  Matrix () : std::vector<T> () {}
+  Matrix (int n1, int n2, const T &ival) : std::vector<T> (n1 * n2, ival), _n1 (n1), _n2 (n2) {}
+  explicit Matrix (int n1, int n2) : std::vector<T> (n1 * n2), _n1 (n1), _n2 (n2) {}
 
-    ~Matrix()
-    {
-    }
+  ~Matrix () {}
 
-    // Return reference to correct element in vector; All vector type assignments
-    // should work.
-    T &operator()(int n1_id, int n2_id);
-    void MSize(int n1_id, int n2_id);
+  // Return reference to correct element in vector; All vector type assignments
+  // should work.
+  T &operator() (int n1_id, int n2_id);
+  void MSize (int n1_id, int n2_id);
 
-  private:
-    // Keep track of how many elements we're allowed to have in each dimension..
-    int _n1, _n2;
+private:
+  // Keep track of how many elements we're allowed to have in each dimension..
+  int _n1, _n2;
 };
 
 // Overload of operator()
-template <typename T> inline T &Matrix<T>::operator()(int n1_id, int n2_id)
+template <typename T>
+inline T &
+Matrix<T>::operator() (int n1_id, int n2_id)
 {
-    if (n1_id < 0 || n1_id >= _n1)
+  if (n1_id < 0 || n1_id >= _n1)
     {
-        cout << "out_of_range Matrix::operator(), element 1" << endl;
-        std::string ExceptionObject = "out_of_range Matrix::operator(), element 1";
-        throw std::out_of_range(ExceptionObject);
+      cout << "out_of_range Matrix::operator(), element 1" << endl;
+      std::string ExceptionObject = "out_of_range Matrix::operator(), element 1";
+      throw std::out_of_range (ExceptionObject);
     }
-    if (n2_id < 0 || n2_id >= _n2)
+  if (n2_id < 0 || n2_id >= _n2)
     {
-        cout << "out_of_range Matrix::operator(), element 2" << endl;
-        std::string ExceptionObject = "out_of_range Matrix::operator(), element 2";
-        throw std::out_of_range(ExceptionObject);
+      cout << "out_of_range Matrix::operator(), element 2" << endl;
+      std::string ExceptionObject = "out_of_range Matrix::operator(), element 2";
+      throw std::out_of_range (ExceptionObject);
     }
-    return *(this->begin() + n2_id * _n1 + n1_id);
+  return *(this->begin () + n2_id * _n1 + n1_id);
 }
 
 // Size the Matrix after instatiation.
-template <typename T> void Matrix<T>::MSize(int n1_id, int n2_id)
+template <typename T>
+void
+Matrix<T>::MSize (int n1_id, int n2_id)
 {
-    _n1 = n1_id;
-    _n2 = n2_id;
-    Matrix::clear();
-    Matrix::resize(n1_id * n2_id);
-    // Matrix::clear();
+  _n1 = n1_id;
+  _n2 = n2_id;
+  Matrix::clear ();
+  Matrix::resize (n1_id * n2_id);
+  // Matrix::clear();
 }
 
 /******************************************************************************/
@@ -167,65 +163,61 @@ template <typename T> class Tensor;
 
 template <typename T> class Tensor : public std::vector<T>
 {
-  public:
-    // Constructors/destructors.
-    Tensor() : std::vector<T>()
-    {
-    }
-    Tensor(int n1, int n2, int n3, const T &ival) : std::vector<T>(n1 * n2 * n3, ival), _n1(n1), _n2(n2), _n3(n3)
-    {
-    }
-    explicit Tensor(int n1, int n2, int n3) : std::vector<T>(n1 * n2 * n3), _n1(n1), _n2(n2), _n3(n3)
-    {
-    }
+public:
+  // Constructors/destructors.
+  Tensor () : std::vector<T> () {}
+  Tensor (int n1, int n2, int n3, const T &ival) : std::vector<T> (n1 * n2 * n3, ival), _n1 (n1), _n2 (n2), _n3 (n3) {}
+  explicit Tensor (int n1, int n2, int n3) : std::vector<T> (n1 * n2 * n3), _n1 (n1), _n2 (n2), _n3 (n3) {}
 
-    ~Tensor()
-    {
-    }
+  ~Tensor () {}
 
-    // Return reference to correct element in vector; All vector type assignments
-    // should work.
-    T &operator()(int n1_id, int n2_id, int n3_id);
-    void TSize(int n1_id, int n2_id, int n3_id);
+  // Return reference to correct element in vector; All vector type assignments
+  // should work.
+  T &operator() (int n1_id, int n2_id, int n3_id);
+  void TSize (int n1_id, int n2_id, int n3_id);
 
-  private:
-    // Keep track of how many elements we're allowed to have in each dimension.
-    int _n1, _n2, _n3;
+private:
+  // Keep track of how many elements we're allowed to have in each dimension.
+  int _n1, _n2, _n3;
 };
 
 // Overload of operator()
-template <typename T> inline T &Tensor<T>::operator()(int n1_id, int n2_id, int n3_id)
+template <typename T>
+inline T &
+Tensor<T>::operator() (int n1_id, int n2_id, int n3_id)
 {
-    if (n1_id < 0 || n1_id >= _n1)
+  if (n1_id < 0 || n1_id >= _n1)
     {
-        cout << "out_of_range Tensor::operator(), element 1" << endl;
-        std::string ExceptionObject = "out_of_range Tensor::operator(), element 1";
-        throw std::out_of_range(ExceptionObject);
+      cout << "out_of_range Tensor::operator(), element 1" << endl;
+      std::string ExceptionObject = "out_of_range Tensor::operator(), element 1";
+      throw std::out_of_range (ExceptionObject);
     }
-    if (n2_id < 0 || n2_id >= _n2)
+  if (n2_id < 0 || n2_id >= _n2)
     {
-        cout << "out_of_range Tensor::operator(), element 2" << endl;
-        std::string ExceptionObject = "out_of_range Tensor::operator(), element 2";
-        throw std::out_of_range(ExceptionObject);
+      cout << "out_of_range Tensor::operator(), element 2" << endl;
+      std::string ExceptionObject = "out_of_range Tensor::operator(), element 2";
+      throw std::out_of_range (ExceptionObject);
     }
-    if (n3_id < 0 || n3_id >= _n3)
+  if (n3_id < 0 || n3_id >= _n3)
     {
-        cout << "out_of_range Tensor::operator(), element 3" << endl;
-        std::string ExceptionObject = "out_of_range Tensor::operator(), element 3";
-        throw std::out_of_range(ExceptionObject);
+      cout << "out_of_range Tensor::operator(), element 3" << endl;
+      std::string ExceptionObject = "out_of_range Tensor::operator(), element 3";
+      throw std::out_of_range (ExceptionObject);
     }
-    return *(this->begin() + n3_id * _n1 * _n2 + n2_id * _n1 + n1_id);
+  return *(this->begin () + n3_id * _n1 * _n2 + n2_id * _n1 + n1_id);
 }
 
 // Size the Tensor after instatiation.
-template <typename T> void Tensor<T>::TSize(int n1_id, int n2_id, int n3_id)
+template <typename T>
+void
+Tensor<T>::TSize (int n1_id, int n2_id, int n3_id)
 {
-    _n1 = n1_id;
-    _n2 = n2_id;
-    _n3 = n3_id;
-    // Tensor::clear();
-    Tensor::resize(n1_id * n2_id * n3_id);
-    // Tensor::clear();
+  _n1 = n1_id;
+  _n2 = n2_id;
+  _n3 = n3_id;
+  // Tensor::clear();
+  Tensor::resize (n1_id * n2_id * n3_id);
+  // Tensor::clear();
 }
 /******************************************************************************/
 
@@ -236,76 +228,76 @@ template <typename T> class FourVector;
 
 template <typename T> class FourVector : public std::vector<T>
 {
-  public:
-    // Constructors/destructors.
-    FourVector() : std::vector<T>()
-    {
-    }
-    FourVector(int n1, int n2, int n3, int n4, const T &ival)
-        : std::vector<T>(n1 * n2 * n3 * n4, ival), _n1(n1), _n2(n2), _n3(n3), _n4(n4)
-    {
-    }
-    explicit FourVector(int n1, int n2, int n3, int n4)
-        : std::vector<T>(n1 * n2 * n3 * n4), _n1(n1), _n2(n2), _n3(n3), _n4(n4)
-    {
-    }
+public:
+  // Constructors/destructors.
+  FourVector () : std::vector<T> () {}
+  FourVector (int n1, int n2, int n3, int n4, const T &ival)
+      : std::vector<T> (n1 * n2 * n3 * n4, ival), _n1 (n1), _n2 (n2), _n3 (n3), _n4 (n4)
+  {
+  }
+  explicit FourVector (int n1, int n2, int n3, int n4)
+      : std::vector<T> (n1 * n2 * n3 * n4), _n1 (n1), _n2 (n2), _n3 (n3), _n4 (n4)
+  {
+  }
 
-    ~FourVector()
-    {
-    }
+  ~FourVector () {}
 
-    // Return reference to correct element in vector; All vector type assignments
-    // should work.
-    T &operator()(int n1_id, int n2_id, int n3_id, int n4_id);
-    void FVSize(int n1_id, int n2_id, int n3_id, int n4_id);
+  // Return reference to correct element in vector; All vector type assignments
+  // should work.
+  T &operator() (int n1_id, int n2_id, int n3_id, int n4_id);
+  void FVSize (int n1_id, int n2_id, int n3_id, int n4_id);
 
-  private:
-    // Keep track of how many elements we're allowed to have in each dimension.
-    int _n1, _n2, _n3, _n4;
+private:
+  // Keep track of how many elements we're allowed to have in each dimension.
+  int _n1, _n2, _n3, _n4;
 };
 
 // Overload of operator()
-template <typename T> inline T &FourVector<T>::operator()(int n1_id, int n2_id, int n3_id, int n4_id)
+template <typename T>
+inline T &
+FourVector<T>::operator() (int n1_id, int n2_id, int n3_id, int n4_id)
 {
-    // thows not working... do it the "clutz way".
-    if (n1_id < 0 || n1_id >= _n1)
+  // thows not working... do it the "clutz way".
+  if (n1_id < 0 || n1_id >= _n1)
     {
-        cout << "out_of_range FourVector::operator(), element 1" << endl;
-        std::string ExceptionObject = "out_of_range FourVector::operator(), element 1";
-        throw std::out_of_range(ExceptionObject);
+      cout << "out_of_range FourVector::operator(), element 1" << endl;
+      std::string ExceptionObject = "out_of_range FourVector::operator(), element 1";
+      throw std::out_of_range (ExceptionObject);
     }
-    if (n2_id < 0 || n2_id >= _n2)
+  if (n2_id < 0 || n2_id >= _n2)
     {
-        cout << "out_of_range FourVector::operator(), element 2" << endl;
-        std::string ExceptionObject = "out_of_range FourVector::operator(), element 2";
-        throw std::out_of_range(ExceptionObject);
+      cout << "out_of_range FourVector::operator(), element 2" << endl;
+      std::string ExceptionObject = "out_of_range FourVector::operator(), element 2";
+      throw std::out_of_range (ExceptionObject);
     }
-    if (n3_id < 0 || n3_id >= _n3)
+  if (n3_id < 0 || n3_id >= _n3)
     {
-        cout << "out_of_range FourVector::operator(), element 3" << endl;
-        std::string ExceptionObject = "out_of_range FourVector::operator(), element 3";
-        throw std::out_of_range(ExceptionObject);
+      cout << "out_of_range FourVector::operator(), element 3" << endl;
+      std::string ExceptionObject = "out_of_range FourVector::operator(), element 3";
+      throw std::out_of_range (ExceptionObject);
     }
-    if (n4_id < 0 || n4_id >= _n4)
+  if (n4_id < 0 || n4_id >= _n4)
     {
-        cout << "out_of_range FourVector::operator(), element 4" << endl;
-        std::string ExceptionObject = "out_of_range FourVector::operator(), element 4";
-        throw std::out_of_range(ExceptionObject);
+      cout << "out_of_range FourVector::operator(), element 4" << endl;
+      std::string ExceptionObject = "out_of_range FourVector::operator(), element 4";
+      throw std::out_of_range (ExceptionObject);
     }
-    return *(this->begin() + n4_id * _n1 * _n2 * _n3 + n3_id * _n1 * _n2 + n2_id * _n1 + n1_id);
+  return *(this->begin () + n4_id * _n1 * _n2 * _n3 + n3_id * _n1 * _n2 + n2_id * _n1 + n1_id);
 }
 
 // Size the FourVector after instatiation.
-template <typename T> void FourVector<T>::FVSize(int n1_id, int n2_id, int n3_id, int n4_id)
+template <typename T>
+void
+FourVector<T>::FVSize (int n1_id, int n2_id, int n3_id, int n4_id)
 {
-    _n1 = n1_id;
-    _n2 = n2_id;
-    _n3 = n3_id;
-    _n4 = n4_id;
-    // zero size, resize, zero size!
-    FourVector::clear();
-    FourVector::resize(n1_id * n2_id * n3_id * n4_id);
-    // FourVector::clear();
+  _n1 = n1_id;
+  _n2 = n2_id;
+  _n3 = n3_id;
+  _n4 = n4_id;
+  // zero size, resize, zero size!
+  FourVector::clear ();
+  FourVector::resize (n1_id * n2_id * n3_id * n4_id);
+  // FourVector::clear();
 }
 
 /******************************************************************************/
@@ -317,83 +309,83 @@ template <typename T> class FiveVector;
 
 template <typename T> class FiveVector : public std::vector<T>
 {
-  public:
-    // Constructors/destructors.
-    FiveVector() : std::vector<T>()
-    {
-    }
-    FiveVector(int n1, int n2, int n3, int n4, int n5, const T &ival)
-        : std::vector<T>(n1 * n2 * n3 * n4 * n5, ival), _n1(n1), _n2(n2), _n3(n3), _n4(n4), _n5(n5)
-    {
-    }
-    explicit FiveVector(int n1, int n2, int n3, int n4, int n5)
-        : std::vector<T>(n1 * n2 * n3 * n4 * n5), _n1(n1), _n2(n2), _n3(n3), _n4(n4), _n5(n5)
-    {
-    }
+public:
+  // Constructors/destructors.
+  FiveVector () : std::vector<T> () {}
+  FiveVector (int n1, int n2, int n3, int n4, int n5, const T &ival)
+      : std::vector<T> (n1 * n2 * n3 * n4 * n5, ival), _n1 (n1), _n2 (n2), _n3 (n3), _n4 (n4), _n5 (n5)
+  {
+  }
+  explicit FiveVector (int n1, int n2, int n3, int n4, int n5)
+      : std::vector<T> (n1 * n2 * n3 * n4 * n5), _n1 (n1), _n2 (n2), _n3 (n3), _n4 (n4), _n5 (n5)
+  {
+  }
 
-    ~FiveVector()
-    {
-    }
+  ~FiveVector () {}
 
-    // Return reference to correct element in vector; All vector type assignments
-    // should work.
-    T &operator()(int n1_id, int n2_id, int n3_id, int n4_id, int n5_id);
-    void FiVSize(int n1_id, int n2_id, int n3_id, int n4_id, int n5_id);
+  // Return reference to correct element in vector; All vector type assignments
+  // should work.
+  T &operator() (int n1_id, int n2_id, int n3_id, int n4_id, int n5_id);
+  void FiVSize (int n1_id, int n2_id, int n3_id, int n4_id, int n5_id);
 
-  private:
-    // Keep track of how many elements we're allowed to have in each dimension.
-    int _n1, _n2, _n3, _n4, _n5;
+private:
+  // Keep track of how many elements we're allowed to have in each dimension.
+  int _n1, _n2, _n3, _n4, _n5;
 };
 
 // Overload of operator()
-template <typename T> inline T &FiveVector<T>::operator()(int n1_id, int n2_id, int n3_id, int n4_id, int n5_id)
+template <typename T>
+inline T &
+FiveVector<T>::operator() (int n1_id, int n2_id, int n3_id, int n4_id, int n5_id)
 {
-    // thows not working... do it the "clutz way".
-    if (n1_id < 0 || n1_id >= _n1)
+  // thows not working... do it the "clutz way".
+  if (n1_id < 0 || n1_id >= _n1)
     {
-        cout << "out_of_range FiveVector::operator(), element 1" << endl;
-        std::string ExceptionObject = "out_of_range FiveVector::operator(), element 1";
-        throw std::out_of_range(ExceptionObject);
+      cout << "out_of_range FiveVector::operator(), element 1" << endl;
+      std::string ExceptionObject = "out_of_range FiveVector::operator(), element 1";
+      throw std::out_of_range (ExceptionObject);
     }
-    if (n2_id < 0 || n2_id >= _n2)
+  if (n2_id < 0 || n2_id >= _n2)
     {
-        cout << "out_of_range FiveVector::operator(), element 2" << endl;
-        std::string ExceptionObject = "out_of_range FiveVector::operator(), element 2";
-        throw std::out_of_range(ExceptionObject);
+      cout << "out_of_range FiveVector::operator(), element 2" << endl;
+      std::string ExceptionObject = "out_of_range FiveVector::operator(), element 2";
+      throw std::out_of_range (ExceptionObject);
     }
-    if (n3_id < 0 || n3_id >= _n3)
+  if (n3_id < 0 || n3_id >= _n3)
     {
-        cout << "out_of_range FiveVector::operator(), element 3" << endl;
-        std::string ExceptionObject = "out_of_range FiveVector::operator(), element 3";
-        throw std::out_of_range(ExceptionObject);
+      cout << "out_of_range FiveVector::operator(), element 3" << endl;
+      std::string ExceptionObject = "out_of_range FiveVector::operator(), element 3";
+      throw std::out_of_range (ExceptionObject);
     }
-    if (n4_id < 0 || n4_id >= _n4)
+  if (n4_id < 0 || n4_id >= _n4)
     {
-        cout << "out_of_range FiveVector::operator(), element 4" << endl;
-        std::string ExceptionObject = "out_of_range FiveVector::operator(), element 4";
-        throw std::out_of_range(ExceptionObject);
+      cout << "out_of_range FiveVector::operator(), element 4" << endl;
+      std::string ExceptionObject = "out_of_range FiveVector::operator(), element 4";
+      throw std::out_of_range (ExceptionObject);
     }
-    if (n5_id < 0 || n5_id >= _n5)
+  if (n5_id < 0 || n5_id >= _n5)
     {
-        cout << "out_of_range FiveVector::operator(), element 5" << endl;
-        std::string ExceptionObject = "out_of_range FiveVector::operator(), element 5";
-        throw std::out_of_range(ExceptionObject);
+      cout << "out_of_range FiveVector::operator(), element 5" << endl;
+      std::string ExceptionObject = "out_of_range FiveVector::operator(), element 5";
+      throw std::out_of_range (ExceptionObject);
     }
-    return *(this->begin() + n5_id * _n1 * _n2 * _n3 * _n4 + n4_id * _n1 * _n2 * _n3 + n3_id * _n1 * _n2 + n2_id * _n1 +
-             n1_id);
+  return *(this->begin () + n5_id * _n1 * _n2 * _n3 * _n4 + n4_id * _n1 * _n2 * _n3 + n3_id * _n1 * _n2 + n2_id * _n1
+           + n1_id);
 }
 
 // Size the FiveVector after instatiation, make zero size.
-template <typename T> void FiveVector<T>::FiVSize(int n1_id, int n2_id, int n3_id, int n4_id, int n5_id)
+template <typename T>
+void
+FiveVector<T>::FiVSize (int n1_id, int n2_id, int n3_id, int n4_id, int n5_id)
 {
-    _n1 = n1_id;
-    _n2 = n2_id;
-    _n3 = n3_id;
-    _n4 = n4_id;
-    _n5 = n5_id;
-    FiveVector::clear();
-    FiveVector::resize(n1_id * n2_id * n3_id * n4_id * n5_id);
-    // FiveVector::clear();
+  _n1 = n1_id;
+  _n2 = n2_id;
+  _n3 = n3_id;
+  _n4 = n4_id;
+  _n5 = n5_id;
+  FiveVector::clear ();
+  FiveVector::resize (n1_id * n2_id * n3_id * n4_id * n5_id);
+  // FiveVector::clear();
 }
 
 /******************************************************************************/

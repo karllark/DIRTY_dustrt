@@ -5,18 +5,18 @@
 
 class random_dirty
 {
-  public:
-    // Constructors/destructors.
-    // need some
-    random_dirty(long seed);
+public:
+  // Constructors/destructors.
+  // need some
+  random_dirty (long seed);
 
-    // get new random value
-    double random_num();
+  // get new random value
+  double random_num ();
 
-  private:
-    long _idum;
-    long _iv[NTAB];
+private:
+  long _idum;
+  long _iv[NTAB];
 
-    long idum2;
-    long iy;
+  long idum2;
+  long iy;
 };
