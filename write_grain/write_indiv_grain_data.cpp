@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
   // Define a radiation field.
   // The local ISRF.
   RadiationFieldType = "IRSF";
-  RadiationFieldTemperature = -1.0; // for e.g. Black body field
+  RadiationFieldTemperature = -1.0;  // for e.g. Black body field
   TauScaling = 100.0;
 
   // now get the individual grain information
@@ -186,8 +186,7 @@ int main(int argc, char *argv[])
             FitGrainDefines.ComponentName(i), i, sizevals[j], j,
             RadiationFieldType, RadiationFieldScale[jj],
             RadiationFieldTemperature);
-        if (status != Flags::FSUCCESS)
-          cout << "FUCK" << endl;
+        if (status != Flags::FSUCCESS) cout << "FUCK" << endl;
 
         // save the radiation field for output
         StochHeat[jj] = StochasticallyHeated;
@@ -211,12 +210,10 @@ int main(int argc, char *argv[])
       myfile << "# Emission spectrum was computed for: " << endl;
       myfile << "# Type: " << RadiationFieldType << endl;
       myfile << "# Scales:";
-      for (int k = 0; k < nISRFs; k++)
-        myfile << " " << RadiationFieldScale[k];
+      for (int k = 0; k < nISRFs; k++) myfile << " " << RadiationFieldScale[k];
       myfile << endl;
       myfile << "# StochasticallyHeated:";
-      for (int k = 0; k < nISRFs; k++)
-        myfile << " " << StochHeat[k];
+      for (int k = 0; k < nISRFs; k++) myfile << " " << StochHeat[k];
       myfile << endl;
       myfile << "# Temperature: " << RadiationFieldTemperature << endl;
       myfile << "# Wavelength  CExt  CAbs  CSca  Albedo G";

@@ -15,7 +15,6 @@
 FitGrains::FitGrains() {}
 
 void FitGrains::MakeFitGrains(ConfigFile &_mbkcf, vector<float> &MasterWave) {
-
   string _thisSection;
   string _thisComponentName;
   string _thisCrossSectionFile;
@@ -66,7 +65,7 @@ void FitGrains::MakeFitGrains(ConfigFile &_mbkcf, vector<float> &MasterWave) {
 
   // YES! Check and make sure model definition file exists.
   _FullModelDefinitionFile = _TopLevelPath + _ModelDefinitionPath + ModelName;
-  if (!StringManip::FileExists(_FullModelDefinitionFile)) { // NO!
+  if (!StringManip::FileExists(_FullModelDefinitionFile)) {  // NO!
     cout << "****************************************************" << endl;
     cout << "Fit Grains Definition File " << _FullModelDefinitionFile
          << " not found." << endl;
@@ -87,7 +86,7 @@ void FitGrains::MakeFitGrains(ConfigFile &_mbkcf, vector<float> &MasterWave) {
   //  - Size grid will be set by the Cross Section file for each component.
 
   // Construct the Size distribution for each component.
-  for (int cmp = 0; cmp < nComp; cmp++) { // Loop over all components
+  for (int cmp = 0; cmp < nComp; cmp++) {  // Loop over all components
 
     _thisA_min = -1;
     _thisA_max = -1;
@@ -109,7 +108,7 @@ void FitGrains::MakeFitGrains(ConfigFile &_mbkcf, vector<float> &MasterWave) {
         _CalorimetryPath + _thisCalorimetryFile, MasterWave, _MasterSize,
         _TopLevelPath, _thisA_min, _thisA_max);
 
-  } // End Component loop.
+  }  // End Component loop.
 }
 
 vector<float> FitGrains::Wave(int cmp) { return Component[cmp].getWave(); }

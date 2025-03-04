@@ -40,34 +40,34 @@ void output_model_grid(geometry_struct &geometry, output_struct &output,
 
   // create a FITS file with extensions to fill with the output of the model
   int status = 0;
-  fitsfile *out_ptr; // pointer to the output fits file
+  fitsfile *out_ptr;  // pointer to the output fits file
   fits_create_file(&out_ptr, filename.c_str(), &status);
   check_fits_io(status, "fits_create_file : output_model_grid (rad_field)");
 
-  fitsfile *out_unc_ptr; // pointer to the output fits file
+  fitsfile *out_unc_ptr;  // pointer to the output fits file
   fits_create_file(&out_unc_ptr, filename_unc.c_str(), &status);
   check_fits_io(status, "fits_create_file : output_model_grid (rad_field unc)");
 
-  fitsfile *out_npts_ptr; // pointer to the output fits file
+  fitsfile *out_npts_ptr;  // pointer to the output fits file
   fits_create_file(&out_npts_ptr, filename_npts.c_str(), &status);
   check_fits_io(status,
                 "fits_create_file : output_model_grid (rad_field npts)");
 
-  fitsfile *out_tau_ptr; // pointer to the output fits file
+  fitsfile *out_tau_ptr;  // pointer to the output fits file
   fits_create_file(&out_tau_ptr, filename_tau.c_str(), &status);
   check_fits_io(status, "fits_create_file : output_model_grid (tau)");
 
-  fitsfile *out_num_H_ptr; // pointer to the output fits file
+  fitsfile *out_num_H_ptr;  // pointer to the output fits file
   fits_create_file(&out_num_H_ptr, filename_num_H.c_str(), &status);
   check_fits_io(status, "fits_create_file : output_model_grid (num_H)");
 
   // create a FITS file with extensions to fill with the wavelength grid
-  fitsfile *out_wave_ptr; // pointer to the output fits file
+  fitsfile *out_wave_ptr;  // pointer to the output fits file
   fits_create_file(&out_wave_ptr, filename_wave.c_str(), &status);
   check_fits_io(status, "fits_create_file : output_model_grid (wave)");
 
   // create a FITS file with extensions to fill with the output of the model
-  fitsfile *out_pos_ptr; // pointer to the output fits file
+  fitsfile *out_pos_ptr;  // pointer to the output fits file
   fits_create_file(&out_pos_ptr, filename_pos.c_str(), &status);
   check_fits_io(status, "fits_create_file : output_model_grid (pos)");
 

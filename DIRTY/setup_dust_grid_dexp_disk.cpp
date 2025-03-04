@@ -146,8 +146,7 @@ void setup_dust_grid_dexp_disk(ConfigFile &param_data,
   //   }
   // arbitrarily make the z a finer grid
   float subdiv_z = param_data.FValue("Geometry", "subdivide_z_factor");
-  if (isnan(subdiv_z))
-    subdiv_z = 1;
+  if (isnan(subdiv_z)) subdiv_z = 1;
   check_input_param("subdivide_z_factor", subdiv_z, 1, 10);
   z_grid_size *= subdiv_z;
   //   cout << subdiv_z << endl;
@@ -188,8 +187,7 @@ void setup_dust_grid_dexp_disk(ConfigFile &param_data,
     cout << "xyz grid position = ";
     cout << x_pos[i] << " ";
     cout << y_pos[i] << " ";
-    if (i <= main_grid.index_dim[2])
-      cout << z_pos[i] << " ";
+    if (i <= main_grid.index_dim[2]) cout << z_pos[i] << " ";
     cout << "; i = " << i << endl;
 #endif
   }
@@ -253,9 +251,10 @@ void setup_dust_grid_dexp_disk(ConfigFile &param_data,
           main_grid.grid(i, j, k).dust_tau_per_pc =
               tmp_density * geometry.clump_densities[1];
         // 	if ((i == main_grid.index_dim[0]/2) && (k ==
-        // main_grid.index_dim[2]/2)) { 	  cout << i << " " << j << " " << k << " :
-        // "; 	  cout << main_grid.grid(i,j,k).dust_tau_per_pc << " "; 	  cout <<
-        // x_val << " " << y_val << " " << xy_val << endl;
+        // main_grid.index_dim[2]/2)) { 	  cout << i << " " << j << " "
+        // << k << " :
+        // "; 	  cout << main_grid.grid(i,j,k).dust_tau_per_pc << " ";
+        // cout << x_val << " " << y_val << " " << xy_val << endl;
         // 	}
       }
     }
@@ -269,10 +268,9 @@ void setup_dust_grid_dexp_disk(ConfigFile &param_data,
 
   // subdivide if the min_grid_size < start_grid_size
   if (min_grid_size < start_grid_size) {
-
     int subdivide = 0;
     int subdivide_any = 0;
-    int m = 0; // only main_grid for now
+    int m = 0;  // only main_grid for now
     int cur_subgrid_num = int(geometry.grids.size());
     float start_min_frac = start_grid_size / min_grid_size;
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++) {
@@ -296,8 +294,7 @@ void setup_dust_grid_dexp_disk(ConfigFile &param_data,
           float frac_sub = z_frac;
           if ((z_frac < start_min_frac) && (xy_frac < start_min_frac) &&
               (geometry.grids[m].grid(i, j, k).dust_tau_per_pc > 0.0)) {
-            if (xy_frac < z_frac)
-              frac_sub = xy_frac;
+            if (xy_frac < z_frac) frac_sub = xy_frac;
             poss_index = int(start_min_frac / frac_sub);
 
             if (poss_index > 1) {
@@ -352,8 +349,7 @@ void setup_dust_grid_dexp_disk(ConfigFile &param_data,
             int l;
 #ifdef DEBUG_SDGDD
             cout << cur_subgrid_num << " ";
-            for (l = 0; l < 3; l++)
-              cout << subgrid.phys_grid_size[l] << " ";
+            for (l = 0; l < 3; l++) cout << subgrid.phys_grid_size[l] << " ";
             cout << endl;
 #endif
 
@@ -438,8 +434,7 @@ void setup_dust_grid_dexp_disk(ConfigFile &param_data,
         }
       }
     }
-    if (subdivide_any)
-      geometry.max_grid_depth++;
+    if (subdivide_any) geometry.max_grid_depth++;
   }
 
   // subdivide all overdense cells

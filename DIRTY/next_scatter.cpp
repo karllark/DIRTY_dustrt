@@ -18,8 +18,8 @@ int next_scatter(geometry_struct &geometry, photon_data &photon,
   // find path_tau[]
   photon_data dummy_photon = photon;
   dummy_photon.current_grid_num =
-      0; // set to the base grid to start trajectory correctly
-  dummy_photon.path_cur_cells = 0; // set to 0 to save cells traversed
+      0;  // set to the base grid to start trajectory correctly
+  dummy_photon.path_cur_cells = 0;  // set to 0 to save cells traversed
 
   double target_tau = 1e20;
   double target_dist = 1e10 * geometry.radius;
@@ -36,9 +36,9 @@ int next_scatter(geometry_struct &geometry, photon_data &photon,
 
   double ran_num = random_obj.random_num();
   double ran_num2 = random_obj.random_num();
-  if (ran_num >= geometry.scat_bias_fraction) { // classical scattering
+  if (ran_num >= geometry.scat_bias_fraction) {  // classical scattering
     target_tau = -log(ran_num2);
-  } else { // biased based on tau_path
+  } else {  // biased based on tau_path
     target_tau = (-1. / bias_norm) * log(ran_num2);
   }
 
@@ -58,7 +58,7 @@ int next_scatter(geometry_struct &geometry, photon_data &photon,
   double distance_traveled = 0.0;
   double tau_traveled = 0.0;
   escape = 0;
-  photon.path_cur_cells = 0; // set to 0 to save cells tranversed
+  photon.path_cur_cells = 0;  // set to 0 to save cells tranversed
 
   distance_traveled = calc_photon_trajectory(
       photon, geometry, target_tau, target_dist, escape, tau_traveled, 1);
@@ -83,8 +83,7 @@ int next_scatter(geometry_struct &geometry, photon_data &photon,
 
   // check if the photon has scattered enough and there is just no significant
   // weight left
-  if (photon.num_scat > geometry.max_num_scat)
-    escape = 1;
+  if (photon.num_scat > geometry.max_num_scat) escape = 1;
 
   // cout << target_tau - tau_traveled << " ";
   // cout << geometry.max_num_scat << " ";

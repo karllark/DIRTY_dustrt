@@ -22,14 +22,13 @@
 using namespace std;
 
 class ISRF {
-
-private:
+ private:
   int nWave;
   float XMMP;
   vector<float> theISRF;
   vector<float> wave;
 
-public:
+ public:
   ISRF(vector<float> in_wave, float in_XMMP);
   ~ISRF() {};
 

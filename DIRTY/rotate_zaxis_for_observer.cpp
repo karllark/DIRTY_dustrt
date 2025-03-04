@@ -11,7 +11,8 @@ void rotate_zaxis_for_observer(float transform[3][3], photon_data &photon)
 {
   int i;
   int j;
-  double new_position[3]; // place to store new position as it is being computed
+  double
+      new_position[3];  // place to store new position as it is being computed
 
   for (i = 0; i < 3; i++) {
     new_position[i] = 0.0;
@@ -38,6 +39,5 @@ void rotate_zaxis_for_observer(float transform[3][3], photon_data &photon)
 
 #endif
 
-  for (i = 0; i < 3; i++)
-    photon.position[i] = new_position[i];
+  for (i = 0; i < 3; i++) photon.position[i] = new_position[i];
 }

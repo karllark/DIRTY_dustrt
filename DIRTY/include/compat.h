@@ -6,4 +6,4 @@
 #define finite isfinite
 #endif
 
-#endif // DIRTY_COMPAT_H
+#endif  // DIRTY_COMPAT_H

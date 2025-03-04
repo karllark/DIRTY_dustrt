@@ -24,6 +24,7 @@
 //   this avoids round off error (hopefully)
 // ======================================================================
 #include "store_absorbed_energy_grid.h"
+
 #include "compat.h"
 // #define DEBUG_SAEG
 
@@ -49,7 +50,6 @@ void store_absorbed_energy_grid(geometry_struct &geometry,
   double vol = 1.0;
   double size_x, size_y, size_z;
   for (m = 0; m < int(geometry.grids.size()); m++) {
-
     //     for (i = 0; i < 3; i++) {
     //       vol *= (Constant::PC_CM)*(geometry.grids[m].positions[i][1] -
     //       geometry.grids[m].positions[i][0]); cout <<
@@ -103,7 +103,6 @@ void store_absorbed_energy_grid(geometry_struct &geometry,
               (geometry.grids[m]
                    .grid(i, j, k)
                    .absorbed_energy[geometry.abs_energy_wave_index] > 0.0)) {
-
 #ifdef DEBUG_SAEG
             cout << "dust tau/pc = "
                  << geometry.grids[m].grid(i, j, k).dust_tau_per_pc << endl;
@@ -224,8 +223,7 @@ void store_absorbed_energy_grid(geometry_struct &geometry,
                         [geometry.abs_energy_wave_index];
           }
 
-          if (geometry.grids[m].grid(i, j, k).num_H < 0.0)
-            exit(8);
+          if (geometry.grids[m].grid(i, j, k).num_H < 0.0) exit(8);
 
           // sum the absorbed energy for this wavelength
           runinfo.absorbed_energy[geometry.abs_energy_wave_index] +=

@@ -91,21 +91,21 @@
  *          Written.                                      12/01 KAM            *
  ******************************************************************************/
 
+#include <iostream>
 #include <stdexcept>
 #include <vector>
-
-#include <iostream>
 
 using namespace std;
 
 /*******************************************************************************
  * Matrix class.                                                               *
  ******************************************************************************/
-template <typename T> class Matrix;
+template <typename T>
+class Matrix;
 
-template <typename T> class Matrix : public std::vector<T> {
-
-public:
+template <typename T>
+class Matrix : public std::vector<T> {
+ public:
   // Constructors/destructors.
   Matrix() : std::vector<T>() {}
   Matrix(int n1, int n2, const T &ival)
@@ -119,13 +119,14 @@ public:
   T &operator()(int n1_id, int n2_id);
   void MSize(int n1_id, int n2_id);
 
-private:
+ private:
   // Keep track of how many elements we're allowed to have in each dimension..
   int _n1, _n2;
 };
 
 // Overload of operator()
-template <typename T> inline T &Matrix<T>::operator()(int n1_id, int n2_id) {
+template <typename T>
+inline T &Matrix<T>::operator()(int n1_id, int n2_id) {
   if (n1_id < 0 || n1_id >= _n1) {
     cout << "out_of_range Matrix::operator(), element 1" << endl;
     std::string ExceptionObject = "out_of_range Matrix::operator(), element 1";
@@ -140,7 +141,8 @@ template <typename T> inline T &Matrix<T>::operator()(int n1_id, int n2_id) {
 }
 
 // Size the Matrix after instatiation.
-template <typename T> void Matrix<T>::MSize(int n1_id, int n2_id) {
+template <typename T>
+void Matrix<T>::MSize(int n1_id, int n2_id) {
   _n1 = n1_id;
   _n2 = n2_id;
   Matrix::clear();
@@ -153,11 +155,12 @@ template <typename T> void Matrix<T>::MSize(int n1_id, int n2_id) {
 /*******************************************************************************
  * Tensor class.                                                               *
  ******************************************************************************/
-template <typename T> class Tensor;
+template <typename T>
+class Tensor;
 
-template <typename T> class Tensor : public std::vector<T> {
-
-public:
+template <typename T>
+class Tensor : public std::vector<T> {
+ public:
   // Constructors/destructors.
   Tensor() : std::vector<T>() {}
   Tensor(int n1, int n2, int n3, const T &ival)
@@ -172,7 +175,7 @@ public:
   T &operator()(int n1_id, int n2_id, int n3_id);
   void TSize(int n1_id, int n2_id, int n3_id);
 
-private:
+ private:
   // Keep track of how many elements we're allowed to have in each dimension.
   int _n1, _n2, _n3;
 };
@@ -199,7 +202,8 @@ inline T &Tensor<T>::operator()(int n1_id, int n2_id, int n3_id) {
 }
 
 // Size the Tensor after instatiation.
-template <typename T> void Tensor<T>::TSize(int n1_id, int n2_id, int n3_id) {
+template <typename T>
+void Tensor<T>::TSize(int n1_id, int n2_id, int n3_id) {
   _n1 = n1_id;
   _n2 = n2_id;
   _n3 = n3_id;
@@ -212,15 +216,19 @@ template <typename T> void Tensor<T>::TSize(int n1_id, int n2_id, int n3_id) {
 /*******************************************************************************
  * FourVector class.                                                           *
  ******************************************************************************/
-template <typename T> class FourVector;
+template <typename T>
+class FourVector;
 
-template <typename T> class FourVector : public std::vector<T> {
-
-public:
+template <typename T>
+class FourVector : public std::vector<T> {
+ public:
   // Constructors/destructors.
   FourVector() : std::vector<T>() {}
   FourVector(int n1, int n2, int n3, int n4, const T &ival)
-      : std::vector<T>(n1 * n2 * n3 * n4, ival), _n1(n1), _n2(n2), _n3(n3),
+      : std::vector<T>(n1 * n2 * n3 * n4, ival),
+        _n1(n1),
+        _n2(n2),
+        _n3(n3),
         _n4(n4) {}
   explicit FourVector(int n1, int n2, int n3, int n4)
       : std::vector<T>(n1 * n2 * n3 * n4), _n1(n1), _n2(n2), _n3(n3), _n4(n4) {}
@@ -232,7 +240,7 @@ public:
   T &operator()(int n1_id, int n2_id, int n3_id, int n4_id);
   void FVSize(int n1_id, int n2_id, int n3_id, int n4_id);
 
-private:
+ private:
   // Keep track of how many elements we're allowed to have in each dimension.
   int _n1, _n2, _n3, _n4;
 };
@@ -288,19 +296,28 @@ void FourVector<T>::FVSize(int n1_id, int n2_id, int n3_id, int n4_id) {
 /*******************************************************************************
  * Ah, FiveVector class?                                                       *
  ******************************************************************************/
-template <typename T> class FiveVector;
+template <typename T>
+class FiveVector;
 
-template <typename T> class FiveVector : public std::vector<T> {
-
-public:
+template <typename T>
+class FiveVector : public std::vector<T> {
+ public:
   // Constructors/destructors.
   FiveVector() : std::vector<T>() {}
   FiveVector(int n1, int n2, int n3, int n4, int n5, const T &ival)
-      : std::vector<T>(n1 * n2 * n3 * n4 * n5, ival), _n1(n1), _n2(n2), _n3(n3),
-        _n4(n4), _n5(n5) {}
+      : std::vector<T>(n1 * n2 * n3 * n4 * n5, ival),
+        _n1(n1),
+        _n2(n2),
+        _n3(n3),
+        _n4(n4),
+        _n5(n5) {}
   explicit FiveVector(int n1, int n2, int n3, int n4, int n5)
-      : std::vector<T>(n1 * n2 * n3 * n4 * n5), _n1(n1), _n2(n2), _n3(n3),
-        _n4(n4), _n5(n5) {}
+      : std::vector<T>(n1 * n2 * n3 * n4 * n5),
+        _n1(n1),
+        _n2(n2),
+        _n3(n3),
+        _n4(n4),
+        _n5(n5) {}
 
   ~FiveVector() {}
 
@@ -309,7 +326,7 @@ public:
   T &operator()(int n1_id, int n2_id, int n3_id, int n4_id, int n5_id);
   void FiVSize(int n1_id, int n2_id, int n3_id, int n4_id, int n5_id);
 
-private:
+ private:
   // Keep track of how many elements we're allowed to have in each dimension.
   int _n1, _n2, _n3, _n4, _n5;
 };
@@ -369,4 +386,4 @@ void FiveVector<T>::FiVSize(int n1_id, int n2_id, int n3_id, int n4_id,
 
 /******************************************************************************/
 
-#endif // already included conditional closed.
+#endif  // already included conditional closed.

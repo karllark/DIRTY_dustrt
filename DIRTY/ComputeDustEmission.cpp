@@ -1,11 +1,10 @@
 // Jun 3-4 2009: Modified to be DirtyFailure aware.  Dust emission failures will
 // pass failure information
 //               back up the call stack.
+#include "DirtyFailure.h"
 #include "GrainModel.h"
 #include "HeatUtils.h"
 #include "NumUtils.h"
-
-#include "DirtyFailure.h"
 
 // #include "DirtyFlags.h"
 
@@ -20,7 +19,6 @@ int ComputeDustEmission(vector<float> &J, GrainModel &GrainModel,
                         bool &DoStochastic, bool &UseEffective_Grain,
                         float &_FailureSz, int &_FailureComp,
                         vector<float> &_transitionSz) {
-
   // Stochastic state for each size.
   vector<bool> _dostochastic;
   // cout << "UseEffective_Grain is " << UseEffective_Grain << endl;
@@ -90,7 +88,7 @@ int ComputeDustEmission(vector<float> &J, GrainModel &GrainModel,
   //   _param=NumUtils::poly_fit(_LogW,_LogJ,1,_localJ,_sigma);
   //   transform(_localJ.begin(),_localJ.end(),_localJ.begin(),NumUtils::pow10<float>());
   // for (uint i=0;i<_nw;++i) cout << i << " "<< _w[i] << " " << J[i] << endl;
-  for (int _cmp = 0; _cmp < _ncmp; ++_cmp) { // Component loop
+  for (int _cmp = 0; _cmp < _ncmp; ++_cmp) {  // Component loop
 
     _FailureComp = _cmp;
     // Default starting values.  Works well for size distributions that start
@@ -114,9 +112,9 @@ int ComputeDustEmission(vector<float> &J, GrainModel &GrainModel,
     // conditions. resize only assigns to resized elements, not the whole
     // vector.
     //_dostochastic.resize(_nsize,DoStochastic);  // Populate local with global
-    //default.
+    // default.
     _dostochastic.assign(_nsize,
-                         DoStochastic); // Populate local with global default.
+                         DoStochastic);  // Populate local with global default.
     // and first dimension of Luminosities.
     EquilibriumLum.resize(_nsize);
     StochasticLum.resize(_nsize);
@@ -128,7 +126,7 @@ int ComputeDustEmission(vector<float> &J, GrainModel &GrainModel,
 
     _size = GrainModel.Size(_cmp);
     // Loop over all sizes.
-    for (uint _sz = 0; _sz < _nsize; ++_sz, ++_it) { // Size loop
+    for (uint _sz = 0; _sz < _nsize; ++_sz, ++_it) {  // Size loop
 
       if (!UseEffective_Grain) {
         _cabs = GrainModel.CAbs(_cmp, int(_sz));
@@ -136,15 +134,14 @@ int ComputeDustEmission(vector<float> &J, GrainModel &GrainModel,
       } else
         _FailureSz = -1;
 
-      for (uint _wv = 0; _wv < _nw; ++_wv)
-        _cJprod[_wv] = _cabs[_wv] * J[_wv];
+      for (uint _wv = 0; _wv < _nw; ++_wv) _cJprod[_wv] = _cabs[_wv] * J[_wv];
 
       // Get equilibrium temperature.  Return emitted energy as well since it's
       // used in stochastic calculation.
       status = EqTemp(_w, J, _cabs, EAbs, *_it, ((_tlo < 0) ? 1.0 : _tlo),
                       ((_thi > 2500.0) ? 2500.0 : _thi));
       if (status != Flags::FSUCCESS)
-        return status; // we've had an equilibrium heating failure.
+        return status;  // we've had an equilibrium heating failure.
 
       // Equlibrium luminosity = C_abs*B
       EquilibriumLum[_sz] = NumUtils::prod_bbodyCGS<double>(_w, *_it, _cabs);
@@ -153,7 +150,6 @@ int ComputeDustEmission(vector<float> &J, GrainModel &GrainModel,
       _thi = 3.0 * (*_it);
 
       if (_dostochastic[_sz]) {
-
         // Since Enthalpy and CalTemp will change as we generate transition
         // matrix, regenerate at each size/cmp pair.
         _Enthalpy = GrainModel.Enthalpy(_sz, _cmp);
@@ -164,23 +160,24 @@ int ComputeDustEmission(vector<float> &J, GrainModel &GrainModel,
         Tu = HeatUtils::getTmean(_CalTemp, _Enthalpy, mpe);
         tau_rad = HeatUtils::getTauRad(_cabs, _w, mpe, Tu);
 
-        if (tau_abs < tau_rad) { // Turn off stochastic heating for this and all
-                                 // subsequent sizes.
+        if (tau_abs < tau_rad) {  // Turn off stochastic heating for this and
+                                  // all subsequent sizes.
           transform(_dostochastic.begin() + _sz, _dostochastic.end(),
                     _dostochastic.begin() + _sz,
                     bind1st(multiplies<bool>(), false));
           _transitionSz[_cmp] = _size[_sz - 1];
-        } else { // Compute StochasticLum, zero out Eq.
+        } else {  // Compute StochasticLum, zero out Eq.
           status =
               StochasticHeating(_w, _cJprod, _cabs, _CalTemp, _Enthalpy, EAbs,
                                 TMin, TMax, *_it, _sz, StochasticLum);
           if (status != Flags::FSUCCESS)
-            return status; // There's been a stochastic heating failure.
+            return status;  // There's been a stochastic heating failure.
           EquilibriumLum[_sz].resize(_nw, 0.0);
         }
       } else
         StochasticLum[_sz].resize(
-            _nw, 0.0); // Zero stochastic so we have zero's when we don't do it.
+            _nw,
+            0.0);  // Zero stochastic so we have zero's when we don't do it.
     }
 
     if (!UseEffective_Grain) {
@@ -193,21 +190,21 @@ int ComputeDustEmission(vector<float> &J, GrainModel &GrainModel,
 
       _size = GrainModel.Size(_cmp);
       _sizeDist = GrainModel.getSizeDistributionNorm(_cmp);
-      _iteec = EmmittedEnergy[2 * _cmp + 1].begin(); // component equilibrium
-      _itees = EmmittedEnergy[2 * _cmp + 2].begin(); // component stochastic
+      _iteec = EmmittedEnergy[2 * _cmp + 1].begin();  // component equilibrium
+      _itees = EmmittedEnergy[2 * _cmp + 2].begin();  // component stochastic
       _itet = EmmittedEnergy[0].begin();
 
       for (uint _wv = 0; _wv < _nw;
-           ++_wv, ++_iteec, ++_itees, ++_itet) { // wavelength loop
+           ++_wv, ++_iteec, ++_itees, ++_itet) {  // wavelength loop
 
         // _integrand contains the equilibrium contribution to luminosity
         // _integrand1 contains the stochastic contribution to luminosity
-        for (uint _sz = 0; _sz < _nsize; ++_sz) { // size loop
+        for (uint _sz = 0; _sz < _nsize; ++_sz) {  // size loop
 
-          if (!_dostochastic[_sz]) { // compute the equilibrium contribution
+          if (!_dostochastic[_sz]) {  // compute the equilibrium contribution
             _integrand[_sz] = _sizeDist[_sz] * EquilibriumLum[_sz][_wv];
             _integrand1[_sz] = 0.0;
-          } else { // compute the stochastic contribution
+          } else {  // compute the stochastic contribution
             _integrand[_sz] = 0.0;
             _integrand1[_sz] = _sizeDist[_sz] * StochasticLum[_sz][_wv];
           }

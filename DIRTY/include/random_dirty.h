@@ -4,7 +4,7 @@
 #include <iostream>
 
 class random_dirty {
-public:
+ public:
   // Constructors/destructors.
   // need some
   random_dirty(long seed);
@@ -12,7 +12,7 @@ public:
   // get new random value
   double random_num();
 
-private:
+ private:
   long _idum;
   long _iv[NTAB];
 

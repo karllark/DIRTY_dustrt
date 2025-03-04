@@ -28,8 +28,7 @@ void setup_dust_grid_slab_trust(ConfigFile &param_data,
 
   // radius of geometry (needed for output)
   geometry.radius = size_xy / 2.;
-  if (size_z / 2. > geometry.radius)
-    geometry.radius = size_z / 2.;
+  if (size_z / 2. > geometry.radius) geometry.radius = size_z / 2.;
 
   // angular radius needs to be large enough to allow for any rotation and still
   // have all the photons encompassed in the final image
@@ -83,7 +82,7 @@ void setup_dust_grid_slab_trust(ConfigFile &param_data,
   // setup size of main grid
   main_grid.index_dim[0] = nbins_x;
   main_grid.index_dim[1] = nbins_y;
-  main_grid.index_dim[2] = nbins_z + 1; // add one for the non-slab region
+  main_grid.index_dim[2] = nbins_z + 1;  // add one for the non-slab region
 
   // fill position arrays with the physical dimensions
   vector<double> x_pos(main_grid.index_dim[0] + 1);

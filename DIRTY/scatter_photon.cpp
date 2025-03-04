@@ -19,7 +19,7 @@ void scatter_photon(geometry_struct &geometry, photon_data &photon,
   // determine the cosine of the scattering angle
   //   if g is to near zero (isotropic), just randomly determine angle
   //   equations tested to work as long as g > 1e-15  (KDG 28 Dec 2004)
-  if (geometry.g == -2) { // model phase function
+  if (geometry.g == -2) {  // model phase function
     double rannum = random_obj.random_num();
     uint i1, i2, i3;
     i1 = 0;
@@ -52,13 +52,13 @@ void scatter_photon(geometry_struct &geometry, photon_data &photon,
     double ran_num = random_obj.random_num();
     double ran_num2 = random_obj.random_num();
     if (ran_num >=
-        geometry.scat_angle_bias_fraction) { // sample from HG function
+        geometry.scat_angle_bias_fraction) {  // sample from HG function
       cos_alpha =
           (1.0 + sqr_g) -
           pow((1.0 - sqr_g) / (1.0 - geometry.g + 2.0 * geometry.g * ran_num2),
               2);
       cos_alpha /= (2.0 * geometry.g);
-    } else { // sample from isotropic function
+    } else {  // sample from isotropic function
       cos_alpha = 2.0 * ran_num2 - 1.0;
     }
 
@@ -95,8 +95,7 @@ void scatter_photon(geometry_struct &geometry, photon_data &photon,
 
   // calculate sine of scattering angle
   double sin_alpha = 1.0 - pow(cos_alpha, 2);
-  if (sin_alpha != 0.0)
-    sin_alpha = sqrt(sin_alpha);
+  if (sin_alpha != 0.0) sin_alpha = sqrt(sin_alpha);
 
   // determine the angle perpendicular to the photon direction
   //   assuming unaligned grains -> random
@@ -131,8 +130,7 @@ void scatter_photon(geometry_struct &geometry, photon_data &photon,
 
   // update the direction cosines of the photon
   int i;
-  for (i = 0; i < 3; i++)
-    photon.dir_cosines[i] = new_dir_cosines[i];
+  for (i = 0; i < 3; i++) photon.dir_cosines[i] = new_dir_cosines[i];
 
 #ifdef DEBUG_SP
   cout << "# scat = " << photon.num_scat << endl;
@@ -157,8 +155,8 @@ void scatter_photon(geometry_struct &geometry, photon_data &photon,
     // find path_tau[]
     photon_data dummy_photon = photon;
     dummy_photon.current_grid_num =
-        0; // set to the base grid to start trajectory correctly
-    dummy_photon.path_cur_cells = 0; // set to 0 to save cells traversed
+        0;  // set to the base grid to start trajectory correctly
+    dummy_photon.path_cur_cells = 0;  // set to 0 to save cells traversed
 
     double target_tau = 1e20;
     double target_dist = 1e10 * geometry.radius;
@@ -239,8 +237,7 @@ void scatter_photon(geometry_struct &geometry, photon_data &photon,
 #ifdef DEBUG_SP
     cout << abs_weight_init << " ";
     cout << tot_abs_temp << endl;
-    if (photon.target_tau > 0.5)
-      exit(8);
+    if (photon.target_tau > 0.5) exit(8);
 #endif
   }
 }

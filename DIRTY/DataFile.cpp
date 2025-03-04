@@ -15,13 +15,13 @@
  *
  **************************************************************/
 #include "DataFile.h"
+
 #include <iostream>
 
 using namespace std;
 
 // One column
 DataFile::DataFile(string const &dataFile, vector<double> &v1) {
-
   ifstream file(dataFile.c_str());
 
   //  int linecount=0;
@@ -29,11 +29,8 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1) {
   string line;
 
   while (getline(file, line)) {
-
-    if (!line.length())
-      continue;
-    if (line[0] == '#')
-      continue;
+    if (!line.length()) continue;
+    if (line[0] == '#') continue;
 
     stringstream ss(line);
     while (ss >> buf) {
@@ -45,7 +42,6 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1) {
 // Two column
 DataFile::DataFile(string const &dataFile, vector<double> &v1,
                    vector<double> &v2) {
-
   ifstream file(dataFile.c_str());
 
   //  int linecount=0;
@@ -53,10 +49,8 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1,
   string line;
 
   while (getline(file, line)) {
-    if (!line.length())
-      continue;
-    if (line[0] == '#')
-      continue;
+    if (!line.length()) continue;
+    if (line[0] == '#') continue;
 
     stringstream ss(line);
     while (ss >> buf1 >> buf2) {
@@ -69,7 +63,6 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1,
 // Three column
 DataFile::DataFile(string const &dataFile, vector<double> &v1,
                    vector<double> &v2, vector<double> &v3) {
-
   ifstream file(dataFile.c_str());
 
   //  int linecount=0;
@@ -77,11 +70,8 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1,
   string line;
 
   while (getline(file, line)) {
-
-    if (!line.length())
-      continue;
-    if (line[0] == '#')
-      continue;
+    if (!line.length()) continue;
+    if (line[0] == '#') continue;
 
     stringstream ss(line);
     while (ss >> buf1 >> buf2 >> buf3) {
@@ -95,7 +85,6 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1,
 // Four column
 DataFile::DataFile(string const &dataFile, vector<double> &v1,
                    vector<double> &v2, vector<double> &v3, vector<double> &v4) {
-
   ifstream file(dataFile.c_str());
 
   //  int linecount=0;
@@ -103,11 +92,8 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1,
   string line;
 
   while (getline(file, line)) {
-
-    if (!line.length())
-      continue;
-    if (line[0] == '#')
-      continue;
+    if (!line.length()) continue;
+    if (line[0] == '#') continue;
 
     stringstream ss(line);
     while (ss >> buf1 >> buf2 >> buf3 >> buf4) {
@@ -122,7 +108,6 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1,
 // Four column, last a string
 DataFile::DataFile(string const &dataFile, vector<double> &v1,
                    vector<double> &v2, vector<double> &v3, vector<string> &v4) {
-
   ifstream file(dataFile.c_str());
 
   //  int linecount=0;
@@ -131,11 +116,8 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1,
   string line, ThePath;
 
   while (getline(file, line)) {
-
-    if (!line.length())
-      continue;
-    if (line[0] == '#')
-      continue;
+    if (!line.length()) continue;
+    if (line[0] == '#') continue;
 
     // First non-zero, non-comment line expected to be a filter trace path.
     ThePath = line.c_str();
@@ -144,11 +126,8 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1,
   }
 
   while (getline(file, line)) {
-
-    if (!line.length())
-      continue;
-    if (line[0] == '#')
-      continue;
+    if (!line.length()) continue;
+    if (line[0] == '#') continue;
 
     stringstream ss(line);
     while (ss >> buf1 >> buf2 >> buf3 >> buf4) {
@@ -169,7 +148,6 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1,
 DataFile::DataFile(string const &dataFile, vector<double> &v1,
                    vector<double> &v2, vector<double> &v3, vector<double> &v4,
                    vector<double> &v5) {
-
   ifstream file(dataFile.c_str());
 
   //  int linecount=0;
@@ -177,11 +155,8 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1,
   string line;
 
   while (getline(file, line)) {
-
-    if (!line.length())
-      continue;
-    if (line[0] == '#')
-      continue;
+    if (!line.length()) continue;
+    if (line[0] == '#') continue;
 
     stringstream ss(line);
     while (ss >> buf1 >> buf2 >> buf3 >> buf4 >> buf5) {
@@ -198,7 +173,6 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1,
 DataFile::DataFile(string const &dataFile, vector<double> &v1,
                    vector<double> &v2, vector<double> &v3, vector<double> &v4,
                    vector<string> &v5) {
-
   ifstream file(dataFile.c_str());
 
   //  int linecount=0;
@@ -206,11 +180,8 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1,
   string line, ThePath;
 
   while (getline(file, line)) {
-
-    if (!line.length())
-      continue;
-    if (line[0] == '#')
-      continue;
+    if (!line.length()) continue;
+    if (line[0] == '#') continue;
 
     // First non-zero, non-comment line expected to be a filter trace path.
     ThePath = line.c_str();
@@ -219,11 +190,8 @@ DataFile::DataFile(string const &dataFile, vector<double> &v1,
   }
 
   while (getline(file, line)) {
-
-    if (!line.length())
-      continue;
-    if (line[0] == '#')
-      continue;
+    if (!line.length()) continue;
+    if (line[0] == '#') continue;
 
     stringstream ss(line);
     while (ss >> buf1 >> buf2 >> buf3 >> buf4 >> buf5) {

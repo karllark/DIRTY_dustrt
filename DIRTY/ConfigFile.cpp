@@ -63,7 +63,6 @@
 using namespace std;
 
 ConfigFile::ConfigFile(string const &configFile) {
-
   _BadString = "NULL";
   _BadFloat = strtof("NaN", NULL);
   _BadDouble = strtod("NaN", NULL);
@@ -79,14 +78,10 @@ ConfigFile::ConfigFile(string const &configFile) {
   int posEqual;
 
   while (getline(file, line)) {
+    if (!line.length()) continue;
 
-    if (!line.length())
-      continue;
-
-    if (line[0] == '#')
-      continue;
-    if (line[0] == ';')
-      continue;
+    if (line[0] == '#') continue;
+    if (line[0] == ';') continue;
 
     if (line[0] == '[') {
       inSection = line.substr(1, line.find(']') - 1);
@@ -104,7 +99,6 @@ ConfigFile::ConfigFile(string const &configFile) {
 }
 
 bool ConfigFile::BValue(string const &section, string const &entry) const {
-
   map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
 
   if (ci == content_.end()) {
@@ -114,14 +108,12 @@ bool ConfigFile::BValue(string const &section, string const &entry) const {
   transform(tmp_str.begin(), tmp_str.end(), tmp_str.begin(),
             (int (*)(int))tolower);
 
-  if (tmp_str == "yes")
-    return true;
+  if (tmp_str == "yes") return true;
 
   return false;
 }
 
 string ConfigFile::SValue(string const &section, string const &entry) const {
-
   map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
 
   if (ci == content_.end()) {
@@ -132,7 +124,6 @@ string ConfigFile::SValue(string const &section, string const &entry) const {
 }
 
 float ConfigFile::FValue(string const &section, string const &entry) const {
-
   map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
 
   if (ci == content_.end()) {
@@ -143,7 +134,6 @@ float ConfigFile::FValue(string const &section, string const &entry) const {
 }
 
 double ConfigFile::DValue(string const &section, string const &entry) const {
-
   map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
 
   if (ci == content_.end()) {
@@ -154,7 +144,6 @@ double ConfigFile::DValue(string const &section, string const &entry) const {
 }
 
 int ConfigFile::IValue(string const &section, string const &entry) const {
-
   map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
 
   if (ci == content_.end()) {
@@ -167,7 +156,6 @@ int ConfigFile::IValue(string const &section, string const &entry) const {
 }
 
 long ConfigFile::LValue(string const &section, string const &entry) const {
-
   map<string, string>::const_iterator ci = content_.find(section + '/' + entry);
 
   if (ci == content_.end()) {

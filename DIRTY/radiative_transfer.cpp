@@ -128,10 +128,8 @@ void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo,
     cout.flush();
 #endif
 #ifdef DEBUG_RT
-    if (photon.number > OUTNUM)
-      cout << photon.number << " ";
-    if (photon.number > OUTNUM)
-      cout << "np1* done; ";
+    if (photon.number > OUTNUM) cout << photon.number << " ";
+    if (photon.number > OUTNUM) cout << "np1* done; ";
     cout.flush();
 #endif
 
@@ -139,8 +137,7 @@ void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo,
     cout << photon.number << " ";
     cout << photon.num_scat << " ";
     int k;
-    for (k = 0; k < 3; k++)
-      cout << photon.position[k] << " ";
+    for (k = 0; k < 3; k++) cout << photon.position[k] << " ";
     cout << " save_traj begin [pnum, nscat, pos(1-3)]";
     cout << endl;
 #endif
@@ -160,27 +157,23 @@ void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo,
     }
 #endif
 #ifdef DEBUG_RT
-    if (photon.number >= OUTNUM)
-      cout << "esc=" << escape << "; ";
+    if (photon.number >= OUTNUM) cout << "esc=" << escape << "; ";
     cout.flush();
-    if (photon.number >= OUTNUM)
-      cout << "ffs done; ";
+    if (photon.number >= OUTNUM) cout << "ffs done; ";
     cout.flush();
 #endif
 
 #ifdef SAVE_TRAJ
     cout << photon.number << " ";
     cout << photon.num_scat << " ";
-    for (k = 0; k < 3; k++)
-      cout << photon.position[k] << " ";
+    for (k = 0; k < 3; k++) cout << photon.position[k] << " ";
     cout << " save_traj [pnum, nscat, pos(1-3)]";
     cout << endl;
 #endif
 
     // classify stellar photon(s)
 #ifdef DEBUG_RT
-    if (photon.number >= OUTNUM)
-      cout << "cstp start; ";
+    if (photon.number >= OUTNUM) cout << "cstp start; ";
     cout.flush();
 #endif
 #ifdef DEBUG_OUTRANGE
@@ -195,18 +188,15 @@ void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo,
     }
 #endif
 #ifdef DEBUG_RT
-    if (photon.number >= OUTNUM)
-      cout << "cstp done; ";
+    if (photon.number >= OUTNUM) cout << "cstp done; ";
     cout.flush();
 #endif
 
     // loop until photon escapes
     while (!escape) {
-
       // classify the scattered photon
 #ifdef DEBUG_RT
-      if (photon.number > OUTNUM)
-        cout << "cscp begin; ";
+      if (photon.number > OUTNUM) cout << "cscp begin; ";
       cout.flush();
 #endif
 #ifdef DEBUG_OUTRANGE
@@ -222,8 +212,7 @@ void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo,
       }
 #endif
 #ifdef DEBUG_RT
-      if (photon.number > OUTNUM)
-        cout << "cscp done; ";
+      if (photon.number > OUTNUM) cout << "cscp done; ";
       cout.flush();
 #endif
 
@@ -241,8 +230,7 @@ void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo,
       }
 #endif
 #ifdef DEBUG_RT
-      if (photon.number > OUTNUM)
-        cout << "sp done; ";
+      if (photon.number > OUTNUM) cout << "sp done; ";
       cout.flush();
 #endif
 
@@ -261,8 +249,7 @@ void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo,
       }
 #endif
 #ifdef DEBUG_RT
-      if (photon.number > OUTNUM)
-        cout << "ns done; ";
+      if (photon.number > OUTNUM) cout << "ns done; ";
       cout.flush();
 #endif
 
@@ -281,8 +268,7 @@ void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo,
 #endif
 
 #ifdef DEBUG_RT
-      if (photon.number > OUTNUM)
-        cout << endl;
+      if (photon.number > OUTNUM) cout << endl;
 #endif
     }
 

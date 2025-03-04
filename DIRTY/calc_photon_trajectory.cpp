@@ -20,8 +20,8 @@ double calc_photon_trajectory(photon_data &photon, geometry_struct &geometry,
                               int repeat_boundary)
 
 {
-  double tau_left = target_tau;   // reduce till zero = done
-  double dist_left = target_dist; // reduce till zero = done
+  double tau_left = target_tau;    // reduce till zero = done
+  double dist_left = target_dist;  // reduce till zero = done
 #ifdef DEBUG_CPT
   if (photon.number == OUTNUM) {
     cout << "oooooooooooooooooooooooooooooooooo" << endl;
@@ -55,8 +55,7 @@ double calc_photon_trajectory(photon_data &photon, geometry_struct &geometry,
                                  delta_tau);
 #ifdef PHOTON_POS
     int i = 0;
-    for (i = 0; i < 3; i++)
-      cout << photon.position[i] << " ";
+    for (i = 0; i < 3; i++) cout << photon.position[i] << " ";
     cout << endl;
 #endif
     tau_traveled += delta_tau;

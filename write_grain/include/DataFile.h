@@ -19,8 +19,7 @@
 using namespace std;
 
 class DataFile {
-
-public:
+ public:
   DataFile(string const &dataFile, vector<double> &v1);
   DataFile(string const &dataFile, vector<double> &v1, vector<double> &v2);
   DataFile(string const &dataFile, vector<double> &v1, vector<double> &v2,

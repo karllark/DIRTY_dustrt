@@ -11,8 +11,7 @@
 using namespace std;
 
 class FitGrains : protected Grain {
-
-public:
+ public:
   // Empty constructor for vectorization
   FitGrains();
   ~FitGrains() {};
@@ -48,7 +47,7 @@ public:
   // float getTau( float a_wave );
   // vector <float> getTau( void ) { return Tau; }
 
-private:
+ private:
   // Don't define/store a top level wavelength tabulation. Each component
   // can potentially store it's own wavelength scale.
   int nComp;

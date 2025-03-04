@@ -14,11 +14,10 @@ void setup_thermal_dust_emission_output(runinfo_struct &runinfo,
 
 {
   int i = 0;
-  for (i = 0; i < 2; i++)
-    de_output.image_size[i] = output.image_size[i];
+  for (i = 0; i < 2; i++) de_output.image_size[i] = output.image_size[i];
   de_output.file_base = output.file_base;
   de_output.emission_type =
-      "_de"; // setup the emission_type string for dust emission
+      "_de";  // setup the emission_type string for dust emission
   de_output.type = output.type;
   de_output.num_outputs = runinfo.n_emission_grain_types;
   de_output.arrays_allocated = 0;

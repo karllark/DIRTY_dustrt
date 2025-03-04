@@ -56,7 +56,7 @@ void setup_absorbed_energy_grid(geometry_struct &geometry,
             // if this is the first time or if memory storage requested
             // then push zero into the absorbed_energy variable in each grid
             // cell
-            if (geometry.abs_energy_storage_type == 1) { // disk memory
+            if (geometry.abs_energy_storage_type == 1) {  // disk memory
               cout << "need new code for disk storage of absorbed energy grid"
                    << endl;
               cout << "ever since limited polychromaticism was implemented (27 "

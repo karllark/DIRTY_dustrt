@@ -6,6 +6,7 @@
 //                in ergs s^-1 cm^-3
 // ======================================================================
 #include "output_results.h"
+
 #include "compat.h"
 // #define DEBUG_OUTR
 
@@ -13,7 +14,6 @@
 void output_2d_info(fitsfile *out_ptr, char extname[100], char itype[100])
 
 {
-
   int status = 0;
 
   fits_write_key(out_ptr, TSTRING, "EXTNAME", extname, "Name of Extension",
@@ -35,7 +35,6 @@ void output_results(output_struct &output, geometry_struct &geometry,
 #endif
 
   for (i = 0; i < output.num_outputs; i++) {
-
     if (runinfo.verbose >= 2) {
       cout << "Output for observer = " << (i + 1) << endl;
       cout << "# photons = " << output.outputs[i].total_num_photons << endl;
@@ -167,7 +166,6 @@ void output_results(output_struct &output, geometry_struct &geometry,
     }
 
     if (runinfo.do_image_output) {
-
       NumUtils::Matrix<double> total_weight_xy;
       NumUtils::Matrix<double> total_weight_xy_x2;
       total_weight_xy.MSize(output.image_size[0], output.image_size[1]);
@@ -321,7 +319,7 @@ void output_results(output_struct &output, geometry_struct &geometry,
 #endif
 
       // create a FITS file with extensions to fill with the output of the model
-      fitsfile *out_ptr; // pointer to the output fits file
+      fitsfile *out_ptr;  // pointer to the output fits file
       int status = 0;
       fits_create_file(&out_ptr, filename.c_str(), &status);
       check_fits_io(status, "fits_create_file : output_results");
@@ -406,25 +404,21 @@ void output_results(output_struct &output, geometry_struct &geometry,
       check_fits_io(status,
                     "fits_write_key : output results (run details 0.9)");
 
-      if (!finite(stellar_sl))
-        stellar_sl = 0.0;
+      if (!finite(stellar_sl)) stellar_sl = 0.0;
       fits_write_key(out_ptr, TDOUBLE, "STEL_SL", &stellar_sl,
                      "stellar/emitted luminosity", &status);
       double stel_sle = stellar_sl * total_stellar_weight_err;
-      if (!finite(stel_sle))
-        stel_sle = 0.0;
+      if (!finite(stel_sle)) stel_sle = 0.0;
       fits_write_key(out_ptr, TDOUBLE, "STEL_SLE", &stel_sle,
                      "STEL_SL uncertainty", &status);
 
-      if (!finite(scattered_sl))
-        scattered_sl = 0.0;
+      if (!finite(scattered_sl)) scattered_sl = 0.0;
       fits_write_key(out_ptr, TDOUBLE, "SCAT_SL", &scattered_sl,
                      "scattered/emitted luminosity", &status);
       check_fits_io(status,
                     "fits_write_key : output results (run details: 0.95)");
       double scat_sle = scattered_sl * total_scattered_weight_err;
-      if (!finite(scat_sle))
-        scat_sle = 0.0;
+      if (!finite(scat_sle)) scat_sle = 0.0;
       fits_write_key(out_ptr, TDOUBLE, "SCAT_SLE", &scat_sle,
                      "SCAT_SL uncertainty", &status);
 
@@ -444,8 +438,9 @@ void output_results(output_struct &output, geometry_struct &geometry,
 
       // create and output the total intensity uncertainty image
       fits_create_img(out_ptr, DOUBLE_IMG, 2, output.image_size, &status);
-      check_fits_io(status, "fits_create_image : output_results (total "
-                            "intensity unc/luminosity)");
+      check_fits_io(status,
+                    "fits_create_image : output_results (total "
+                    "intensity unc/luminosity)");
       output_2d_info(out_ptr, "TOT_SBoI_unc", "Total unc I/L");
 
       fits_write_img(out_ptr, TDOUBLE, 1,
@@ -454,8 +449,9 @@ void output_results(output_struct &output, geometry_struct &geometry,
 
       // create and output the scattered intensity image
       fits_create_img(out_ptr, DOUBLE_IMG, 2, output.image_size, &status);
-      check_fits_io(status, "fits_create_image : output_results (scattered "
-                            "intensity/luminosity)");
+      check_fits_io(status,
+                    "fits_create_image : output_results (scattered "
+                    "intensity/luminosity)");
       output_2d_info(out_ptr, "SCAT_SBoI", "Scattered I/L");
 
       fits_write_img(out_ptr, TDOUBLE, 1,
@@ -464,8 +460,9 @@ void output_results(output_struct &output, geometry_struct &geometry,
 
       // create and output the scattered intensity uncertainty image
       fits_create_img(out_ptr, DOUBLE_IMG, 2, output.image_size, &status);
-      check_fits_io(status, "fits_create_image : output_results (scattered "
-                            "intensity unc/luminosity)");
+      check_fits_io(status,
+                    "fits_create_image : output_results (scattered "
+                    "intensity unc/luminosity)");
       output_2d_info(out_ptr, "SCAT_SBoI_unc", "Scattered unc I/L");
 
       fits_write_img(out_ptr, TDOUBLE, 1,
@@ -485,8 +482,9 @@ void output_results(output_struct &output, geometry_struct &geometry,
 
       // create and output the scattered intensity uncertainty image
       fits_create_img(out_ptr, DOUBLE_IMG, 2, output.image_size, &status);
-      check_fits_io(status, "fits_create_image : output_results (stellar "
-                            "intensity unc/luminosity)");
+      check_fits_io(status,
+                    "fits_create_image : output_results (stellar "
+                    "intensity unc/luminosity)");
       output_2d_info(out_ptr, "STEL_SBoI_unc", "Stellar unc I/L");
 
       fits_write_img(out_ptr, TDOUBLE, 1,

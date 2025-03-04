@@ -141,7 +141,7 @@ void setup_dust_grid_sphere(ConfigFile &param_data, geometry_struct &geometry,
                 geometry.clump_densities[1];
         else
           main_grid.grid(i, j, k).dust_tau_per_pc =
-              -0.5; // this means the edge of the dust
+              -0.5;  // this means the edge of the dust
 
         // temp
         // 	if (k == 3) main_grid.grid(i,j,k).dust_tau_per_pc = 100.0;

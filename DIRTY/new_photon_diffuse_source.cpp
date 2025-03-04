@@ -126,7 +126,7 @@ void new_photon_diffuse_source(photon_data &photon, geometry_struct &geometry,
   int escape = 0;
   double distance_traveled = 0.0;
   double tau_to_surface = 0.0;
-  photon.path_cur_cells = -1; // set to -1 *not* to save cells tranversed
+  photon.path_cur_cells = -1;  // set to -1 *not* to save cells tranversed
 #ifdef DEBUG_NPDS
   cout << "np; start distance traveled" << " ";
   cout.flush();

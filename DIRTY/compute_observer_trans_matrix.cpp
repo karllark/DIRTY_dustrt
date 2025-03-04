@@ -22,8 +22,8 @@ void compute_observer_trans_matrix(output_struct &output,
   if (geometry.num_observers > 1) {
     theta = geometry.observer_angles[0][i];
     phi = geometry.observer_angles[1][i];
-  } else { // handle the case when the number of outputs is set by something
-           // other than multiple lines-of-sight
+  } else {  // handle the case when the number of outputs is set by something
+            // other than multiple lines-of-sight
     theta = geometry.observer_angles[0][0];
     phi = geometry.observer_angles[1][0];
   }

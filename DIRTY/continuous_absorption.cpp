@@ -26,7 +26,7 @@ void deposit_energy(const photon_data &dummy_photon, geometry_struct &geometry,
    *   probability that the photon packet enters/leaves the grid cell
    */
   const double abs_weight_init =
-      (1. - geometry.albedo) * photon_weight; // not the reduced scat_weight
+      (1. - geometry.albedo) * photon_weight;  // not the reduced scat_weight
   double tau_entering = 0.;
   double prob_entering = 1.;
 
@@ -99,7 +99,6 @@ void move_photon(photon_data &photon, const photon_data &dummy_photon,
 
   // walk through the path until we find the scattering cell
   for (int i = 0; i < dummy_photon.path_cur_cells; i++) {
-
     // if (tau_left - photon.path_tau[i] <= ROUNDOFF_ERR_TRIG) {
     if (tau_left <= dummy_photon.path_tau[i]) {
       // photon will scatter in this cell
@@ -114,9 +113,8 @@ void move_photon(photon_data &photon, const photon_data &dummy_photon,
       // figure out the position when the photon enters the scattering cell
       // (if i == 0, the current cell is already the scattering cell)
       if (i != 0) {
-
         // find out the distance traveled
-        int enter_index = -1; // on which side the photon enters this grid cell
+        int enter_index = -1;  // on which side the photon enters this grid cell
         double distance_traveled = -1;
 
         // find the side the photon enters this grid cell
@@ -124,7 +122,6 @@ void move_photon(photon_data &photon, const photon_data &dummy_photon,
           // check criteria: path_pos_index has changed in that direction
           if (dummy_photon.path_pos_index[j + 1][i] !=
               dummy_photon.path_pos_index[j + 1][i - 1]) {
-
 #ifdef DEBUG_CONT_ABS
             // make sure that path_pos_index has not changed in other directions
             assert(i - 1 >= 0);
@@ -166,8 +163,7 @@ void move_photon(photon_data &photon, const photon_data &dummy_photon,
 
         // move the photon in the other two directions
         for (int j = 0; j < 3; j++) {
-          if (j == enter_index)
-            continue;
+          if (j == enter_index) continue;
           photon.position[j] += photon.dir_cosines[j] * distance_traveled;
         }
       }

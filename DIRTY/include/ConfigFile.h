@@ -21,8 +21,7 @@
 using namespace std;
 
 class ConfigFile {
-
-private:
+ private:
   map<string, string> content_;
   string _BadString;
   double _BadDouble;
@@ -30,7 +29,7 @@ private:
   int _BadInt;
   long _BadLong;
 
-public:
+ public:
   ConfigFile(string const &configFile);
 
   bool BValue(string const &section, string const &entry) const;

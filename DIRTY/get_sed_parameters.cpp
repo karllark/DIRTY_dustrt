@@ -48,7 +48,6 @@ void get_sed_parameters(ConfigFile &param_data, runinfo_struct &runinfo,
     vector<double> wavelength, luminosity;
 
     if (runinfo.sed_type == "ssp_file") {
-
       // get the sed parameters
       //   assuming units are in ergs/s/Hz
       vector<double> stellar, nebular, total;
@@ -111,8 +110,7 @@ void get_sed_parameters(ConfigFile &param_data, runinfo_struct &runinfo,
     // will be done by binning or interpolation
     int mapping_bin;
     mapping_bin = param_data.IValue("SED", "sed_bin");
-    if (mapping_bin == -99)
-      mapping_bin = 0;
+    if (mapping_bin == -99) mapping_bin = 0;
     check_input_param("SED mapping_bin", mapping_bin, 0, 1);
 
     // needed for both mapping methods
@@ -178,7 +176,8 @@ void get_sed_parameters(ConfigFile &param_data, runinfo_struct &runinfo,
           cout << wavelength[i] << " ";
           cout << runinfo.wavelength[closeIndex] << " ";
           // 	cout << (wavelength[i] - runinfo.wavelength[closeIndex-1]) << "
-          // "; 	cout << (runinfo.wavelength[closeIndex] - wavelength[i]) << " ";
+          // "; 	cout << (runinfo.wavelength[closeIndex] - wavelength[i])
+          // << " ";
           cout << endl;
 #endif
           temp_sed[closeIndex] += luminosity[i];
@@ -234,7 +233,6 @@ void get_sed_parameters(ConfigFile &param_data, runinfo_struct &runinfo,
       //    runinfo.sed_lum = interpol(luminosity, wavelength, run_wave,2,-2);
 
     } else {
-
       // code to interpolate instead of rebin
 
       vector<double> iwave_log;
@@ -256,16 +254,15 @@ void get_sed_parameters(ConfigFile &param_data, runinfo_struct &runinfo,
   }
 
   if (runinfo.do_global_output) {
-    runinfo.out_sed_lum_offset = 0; // doing stellar direct/scattered storage
+    runinfo.out_sed_lum_offset = 0;  // doing stellar direct/scattered storage
 
     // allocate the vector to store the transmitted stellar/dust luminosity
     int n_out_sed = 1 + runinfo.n_emission_grain_types;
     //     int n_out_sed = 2;
     //     if (runinfo.do_dust_emission)
     //       n_out_sed += 2*CurGrainModel.getNComp();
-    if (runinfo.do_ere_emission)
-      n_out_sed += 1;
-    n_out_sed *= 2; // multiply by 2 to allow for direct and scattered
+    if (runinfo.do_ere_emission) n_out_sed += 1;
+    n_out_sed *= 2;  // multiply by 2 to allow for direct and scattered
 
     runinfo.out_sed_lum.resize(n_out_sed);
     runinfo.out_sed_lum_unc.resize(n_out_sed);

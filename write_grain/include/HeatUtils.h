@@ -9,8 +9,8 @@
 
 using namespace std;
 
-namespace HeatUtils { // Define a namespace to avoid confusion with other
-                      // classes/libraries.
+namespace HeatUtils {  // Define a namespace to avoid confusion with other
+                       // classes/libraries.
 
 // Note that you can call these with any type, the meaning is not
 // intuitively obvious for some.  They were constructed mainly for
@@ -25,7 +25,8 @@ namespace HeatUtils { // Define a namespace to avoid confusion with other
 //  extrapolate with E^(1/4) to get the corresponding temperature.
 // If mean energe is above threshold (destroy the grain?), extrapolate with E^1
 // Otherwise, simply find bracketing values and interpolate.
-template <typename T> T getTmean(vector<T> &Temp, vector<T> &Enth, T &mpe) {
+template <typename T>
+T getTmean(vector<T> &Temp, vector<T> &Enth, T &mpe) {
   int nEnth = Enth.size();
   if (mpe < Enth[0])
     return Temp[0] * sqrt(sqrt(mpe / Enth[0]));
@@ -44,7 +45,8 @@ template <typename T> T getTmean(vector<T> &Temp, vector<T> &Enth, T &mpe) {
 // ****************************************************************************
 template <typename T>
 T getTauAbs(vector<T> &J, vector<T> &C, vector<T> &wave, T &mpe);
-template <typename T> T getTauRad(vector<T> &C, vector<T> &w, T mpe, T Tu);
+template <typename T>
+T getTauRad(vector<T> &C, vector<T> &w, T mpe, T Tu);
 // ****************************************************************************
 // Function 'source' code.
 // ****************************************************************************
@@ -82,8 +84,8 @@ T getTauAbs(vector<T> &J, vector<T> &C, vector<T> &w, T &mpe) {
 
 // ****************************************************************************
 // Compute radiative cooling time from Temperature Tu.
-template <typename T> T getTauRad(vector<T> &C, vector<T> &w, T mpe, T Tu) {
-
+template <typename T>
+T getTauRad(vector<T> &C, vector<T> &w, T mpe, T Tu) {
   T ret;
 
   T mw = (Constant::PLANCKLIGHT / mpe);
@@ -108,7 +110,7 @@ template <typename T> T getTauRad(vector<T> &C, vector<T> &w, T mpe, T Tu) {
 
   integrand = NumUtils::bbodyCGS<T>(tw, Tu);
 
-  iC++; // Now at first CAbs after interpolated postion.
+  iC++;  // Now at first CAbs after interpolated postion.
   typename vector<T>::iterator ii = integrand.begin();
   *(ii) *= midC;
   for (ii = integrand.begin() + 1; ii != integrand.end(); ii++) {
@@ -121,6 +123,6 @@ template <typename T> T getTauRad(vector<T> &C, vector<T> &w, T mpe, T Tu) {
 }
 // ****************************************************************************
 
-} // namespace HeatUtils
+}  // namespace HeatUtils
 
 #endif

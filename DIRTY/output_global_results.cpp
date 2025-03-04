@@ -15,9 +15,8 @@ void output_global_results(runinfo_struct &runinfo, output_struct &output,
   int i, j = 0;
 
   // setup the columns of the output table
-  int tfields = 9; // min number of fields
-  if (runinfo.do_ere_emission)
-    tfields += 4;
+  int tfields = 9;  // min number of fields
+  if (runinfo.do_ere_emission) tfields += 4;
   if (runinfo.do_dust_emission && runinfo.do_emission_grain)
     tfields += 4 * (runinfo.n_emission_grain_types);
   vector<string> sttype(tfields);
@@ -85,8 +84,7 @@ void output_global_results(runinfo_struct &runinfo, output_struct &output,
   for (i = 0; i < tfields; i++) {
     //     cout << "i = " << i << " ";
     stform[i] = "E16.6";
-    if (i > 1)
-      stunit[i] = "ergs s^-1 um^-1";
+    if (i > 1) stunit[i] = "ergs s^-1 um^-1";
     ttype[i] = const_cast<char *>(sttype[i].c_str());
     tform[i] = const_cast<char *>(stform[i].c_str());
     tunit[i] = const_cast<char *>(stunit[i].c_str());
@@ -210,7 +208,7 @@ void output_global_results(runinfo_struct &runinfo, output_struct &output,
   filename += "_global_lum.table.fits";
 
   // output results as a FITS table
-  fitsfile *out_ptr; // pointer to the output fits file
+  fitsfile *out_ptr;  // pointer to the output fits file
   int status = 0;
   fits_create_file(&out_ptr, filename.c_str(), &status);
   check_fits_io(status, "fits_create_file : output_global_results");
@@ -307,10 +305,8 @@ void output_global_results(runinfo_struct &runinfo, output_struct &output,
                 "fits_write_col : output global results, flux_total_unc");
 
   int n_col = 1;
-  if (runinfo.do_ere_emission)
-    n_col += 1;
-  if (runinfo.do_dust_emission)
-    n_col += runinfo.n_emission_grain_types;
+  if (runinfo.do_ere_emission) n_col += 1;
+  if (runinfo.do_dust_emission) n_col += runinfo.n_emission_grain_types;
   for (i = 0; i < n_col; i++) {
     fits_write_col(out_ptr, TDOUBLE, (6 + (4 * i)), 1, 0, runinfo.n_waves,
                    &runinfo.out_sed_lum[2 * i][0], &status);

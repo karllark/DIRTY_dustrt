@@ -26,10 +26,12 @@ const std::string EQ_VECTOR_SIZE_MISMATCH =
     "EqTemp(): Vector size mismatch, J and Q.";
 const std::string EQ_ZEROBOUND =
     "EqTemp(): Zero bound failure - upper and lower limits equal.";
-const std::string EQ_ZEROBOUND_LOLIM = "EqTemp(): Zero bound failure - upper "
-                                       "and lower limits equal at lower bound.";
-const std::string EQ_ZEROBOUND_HILIM = "EqTemp(): Zero bound failure - upper "
-                                       "and lower limits equal at upper bound.";
+const std::string EQ_ZEROBOUND_LOLIM =
+    "EqTemp(): Zero bound failure - upper "
+    "and lower limits equal at lower bound.";
+const std::string EQ_ZEROBOUND_HILIM =
+    "EqTemp(): Zero bound failure - upper "
+    "and lower limits equal at upper bound.";
 
 // StochasticHeating() flags.
 const int FST_EXCEED_MAXBINS = 6;
@@ -84,6 +86,6 @@ const std::string GDTE_NONFINITE_EMITTED_ENERGY_PST =
     "get_dust_thermal_emission(): Computed emitted energy is not finite, post "
     "n_H.";
 
-} // namespace Flags
+}  // namespace Flags
 
 #endif

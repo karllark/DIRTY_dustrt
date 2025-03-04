@@ -16,7 +16,6 @@ void verify_dust_grid(geometry_struct &geometry)
   int subgrid_index = 0;
   if (geometry.grids.size() > 1) {
     for (m = 0; m < int(geometry.grids.size()); m++) {
-
       // loop of the cells in this grid
       for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
         for (j = 0; j < geometry.grids[m].index_dim[1]; j++)

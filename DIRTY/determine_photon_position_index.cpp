@@ -168,7 +168,7 @@ void determine_photon_position_index(geometry_struct &geometry,
                       .positions[i][geometry.grids[cur_grid_num].index_dim[i]]
                << endl;
           //	  cout << "size of cube [pc] = " <<
-          //geometry.grids[cur_grid_num].phys_cube_size[i] << endl;
+          // geometry.grids[cur_grid_num].phys_cube_size[i] << endl;
           // cout << "proposed index = " << int((photon.position[i] -
           // geometry.grids[cur_grid_num].positions[i][0])/
           // 				     geometry.grids[cur_grid_num].phys_cube_size[i])

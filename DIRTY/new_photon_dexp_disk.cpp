@@ -34,8 +34,7 @@ void new_photon_dexp_disk(photon_data &photon, geometry_struct &geometry,
 
   int i = 0;
 #ifdef DEBUG_NPDD
-  for (i = 0; i < 3; i++)
-    cout << photon.dir_cosines[i] << " ";
+  for (i = 0; i < 3; i++) cout << photon.dir_cosines[i] << " ";
   cout << "starting dir cosines" << endl;
 #endif
 
@@ -46,8 +45,7 @@ void new_photon_dexp_disk(photon_data &photon, geometry_struct &geometry,
   photon.position[2] = -1.0 * geometry.stellar_scaleheight *
                        log(1.0 - ran_num / geometry.stellar_emit_constant_z);
   // now determine if this is above or below the plane (using a random number
-  if (random_obj.random_num() > 0.5)
-    photon.position[2] *= -1.0;
+  if (random_obj.random_num() > 0.5) photon.position[2] *= -1.0;
 
   // xy is analytic, but not easily in a simple form
   ran_num = random_obj.random_num();

@@ -12,21 +12,20 @@
 using namespace std;
 
 class DirtyFailure {
-
-private:
-  string sFileName;                  // Output log name
-  long nFailure;                     // Number of failures recorded
-  vector<long> maxis;                // nth Failures m location
-  vector<long> iaxis;                // nth Failures i location
-  vector<long> jaxis;                // nth Failures j location
-  vector<long> kaxis;                // nth Failures k location
-  vector<int> FailureFlag;           // nth Failures integer ID
-  vector<string> FailureDescription; // nth Failures string descriptor
-  string UnknownFailureDescription;  // ...
-  int FailureModeNotFound;           // Unkown failure code
-  int nWave;                         // Number of wavelengths
+ private:
+  string sFileName;                   // Output log name
+  long nFailure;                      // Number of failures recorded
+  vector<long> maxis;                 // nth Failures m location
+  vector<long> iaxis;                 // nth Failures i location
+  vector<long> jaxis;                 // nth Failures j location
+  vector<long> kaxis;                 // nth Failures k location
+  vector<int> FailureFlag;            // nth Failures integer ID
+  vector<string> FailureDescription;  // nth Failures string descriptor
+  string UnknownFailureDescription;   // ...
+  int FailureModeNotFound;            // Unkown failure code
+  int nWave;                          // Number of wavelengths
   vector<double> AbsorbedEnergy;
-  vector<vector<double>> RadiationField; // Radiation field in failed bin
+  vector<vector<double>> RadiationField;  // Radiation field in failed bin
   vector<double>::iterator iter1, iter2;
 
   vector<string> GrainModelName;
@@ -37,16 +36,16 @@ private:
   map<int, string> FlagMap;
   map<int, string>::iterator mIter;
 
-public:
+ public:
   DirtyFailure(string &_FailureLogName, int &_nWave);
   ~DirtyFailure(void) {};
 
   // Given a failure flag, return a string description of the failure
   inline string getFailureDescription(int _flag) {
     mIter = FlagMap.find(_flag);
-    if (mIter != FlagMap.end()) // We've found a defined failure mode
+    if (mIter != FlagMap.end())  // We've found a defined failure mode
       return (mIter->second);
-    else // Don't know what this is...
+    else  // Don't know what this is...
       return UnknownFailureDescription;
   }
   // Given a string description, return the corresponding flag.
@@ -88,6 +87,6 @@ public:
   // Dump the error log
   void WriteFailureLog(void);
 
-}; // End of DirtyFailure class definition
+};  // End of DirtyFailure class definition
 
 #endif

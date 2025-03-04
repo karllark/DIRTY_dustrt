@@ -15,6 +15,7 @@
 //                1/2 the time w/ weighting by the radiation field
 // ======================================================================
 #include "get_dust_thermal_emission.h"
+
 #include "compat.h"
 // #define DEBUG_GDTE
 
@@ -33,11 +34,9 @@ void get_dust_thermal_emission(geometry_struct &geometry,
   int status;
 
   bool DoStochastic = false;
-  if (runinfo.do_stochastic_dust_emission)
-    DoStochastic = true;
+  if (runinfo.do_stochastic_dust_emission) DoStochastic = true;
   // For now, turn off stochastic heating when using effective grain heating.
-  if (runinfo.effective_grain_heating)
-    DoStochastic = false;
+  if (runinfo.effective_grain_heating) DoStochastic = false;
   // define the cutoffs for passing to the dust emission code
   //   float cutoff_frac = 0.05;
   //   float min_energy_frac = 0.001;
@@ -68,8 +67,7 @@ void get_dust_thermal_emission(geometry_struct &geometry,
   } else {
     for (x = 0; x < runinfo.wavelength.size(); x++) {
       geometry.emitted_lum_uniform[x] = 0.0;
-      for (z = 0; z < n_emit_components; z++)
-        runinfo.emitted_lum[z][x] = 0.0;
+      for (z = 0; z < n_emit_components; z++) runinfo.emitted_lum[z][x] = 0.0;
     }
   }
 
@@ -121,11 +119,9 @@ void get_dust_thermal_emission(geometry_struct &geometry,
 
   // loop over all the defined grids
   for (m = 0; m < int(geometry.grids.size()); m++) {
-
     // loop of the cells in this grid
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
       for (j = 0; j < geometry.grids[m].index_dim[1]; j++) {
-
         if (runinfo.verbose > 1) {
           cout << "working on dust emission grid (m,k,j) = " << m << " " << k
                << " " << j;
@@ -134,7 +130,6 @@ void get_dust_thermal_emission(geometry_struct &geometry,
 
         cur_plane_good = 0;
         for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
-
           // setup emitted energy array
           if (!geometry.emitted_energy_grid_initialized) {
             geometry.grids[m].grid(i, j, k).emitted_energy.resize(
@@ -190,11 +185,9 @@ void get_dust_thermal_emission(geometry_struct &geometry,
 #endif
           if ((tot_abs_energy > 0.0) &&
               (tot_nonzero < int(cutoff_frac * runinfo.wavelength.size()))) {
-
             num_cells_too_few_waves++;
 
           } else if (tot_abs_energy >= min_enough_energy) {
-
             num_cells_enough++;
 
             // interoplate the radiative field to fill all the wavelength points
@@ -239,7 +232,8 @@ void get_dust_thermal_emission(geometry_struct &geometry,
                 //  		cout << runinfo.wavelength[x] << " ";
                 // 		cout << tmp_new_j_from_interpol[x] << " ";
                 // 		cout <<
-                // geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " "; 		cout
+                // geometry.grids[m].grid(i,j,k).absorbed_energy[x] << " ";
+                // cout
                 // << endl;
                 geometry.grids[m].grid(i, j, k).absorbed_energy[x] =
                     tmp_new_j_from_interpol[x];
@@ -278,12 +272,12 @@ void get_dust_thermal_emission(geometry_struct &geometry,
               cout << rad_unc << " ";
               if (rad_unc > 0.0)
                 rad_unc = sqrt(
-                    rad_unc); /// geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x];
+                    rad_unc);  /// geometry.grids[m].grid(i,j,k).absorbed_energy_num_photons[x];
               else
                 rad_unc = 0.0;
               cout << rad_unc << " ";
               // 	      rad_unc *=
-              // geometry.grids[m].grid(i,j,k).absorbed_energy[x]; 	      cout <<
+              // geometry.grids[m].grid(i,j,k).absorbed_energy[x]; cout <<
               // rad_unc << " "; the S/N reduces to the below equation (modulo a
               // factor of (N-1)/N)
               cout << geometry.grids[m].grid(i, j, k).absorbed_energy[x] /
@@ -308,8 +302,8 @@ void get_dust_thermal_emission(geometry_struct &geometry,
 #ifdef DEBUG_GDTE
             cout << "...leaving ComputeDustEmission" << endl;
 #endif
-            if (status != Flags::FSUCCESS) { //  Returned a failure from
-                                             //  ComputeDustEmission
+            if (status != Flags::FSUCCESS) {  //  Returned a failure from
+                                              //  ComputeDustEmission
               Failure->AddFailure(status);
               Failure->AddCellBook(m, i, j, k);
               Failure->AddGrainInfo(CurGrainModel.getModelName(), _FailureSz,
@@ -356,7 +350,6 @@ void get_dust_thermal_emission(geometry_struct &geometry,
 
               // add to the emitted energy sums
               for (x = 0; x < runinfo.wavelength.size(); x++) {
-
                 // set the emitted energy for the uniform emission case
                 geometry.grids[m].grid(i, j, k).emitted_energy_uniform[x] = 1.0;
                 geometry.emitted_lum_uniform[x] += 1.0;
@@ -364,7 +357,6 @@ void get_dust_thermal_emission(geometry_struct &geometry,
 
               for (z = 0; z < n_emit_components; z++)
                 for (x = 0; x < runinfo.wavelength.size(); x++) {
-
                   // check things are ok
                   if (!finite(geometry.grids[m]
                                   .grid(i, j, k)
@@ -442,17 +434,14 @@ void get_dust_thermal_emission(geometry_struct &geometry,
                 }
             }
           } else {
-
             num_cells_not_enough++;
-            if (tot_abs_energy == 0)
-              num_cells_zero++;
+            if (tot_abs_energy == 0) num_cells_zero++;
 
             // 	    cout << "not enough energy (min) = " << tot_abs_energy << "
             // (" << min_enough_energy << ")" << endl;
           }
         }
-        if (runinfo.verbose > 1)
-          cout << "; " << cur_plane_good << endl;
+        if (runinfo.verbose > 1) cout << "; " << cur_plane_good << endl;
       }
   }
 

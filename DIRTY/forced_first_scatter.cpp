@@ -11,6 +11,7 @@
 //                   scattering
 // ======================================================================
 #include "forced_first_scatter.h"
+
 #include <unistd.h>
 // #define DEBUG_FFS
 // #define OUTNUM 88
@@ -37,13 +38,13 @@ int forced_first_scatter(geometry_struct &geometry, photon_data &photon,
   double tau_to_surface = 0.0;
   double ran_num = 0.0;
 
-  photon_data dummy_photon; // copy of photon for surface tau calculation
+  photon_data dummy_photon;  // copy of photon for surface tau calculation
 
   // get the optical depth to the edge of the dust in the current direction
   dummy_photon = photon;
   // dummy_photon.path_cur_cells = -1;  // set to -1 *not* to save cells
   // tranversed
-  dummy_photon.path_cur_cells = 0; // set to 0 to save cells transversed
+  dummy_photon.path_cur_cells = 0;  // set to 0 to save cells transversed
 
   distance_traveled =
       calc_photon_trajectory(dummy_photon, geometry, target_tau, target_dist,
@@ -59,8 +60,7 @@ int forced_first_scatter(geometry_struct &geometry, photon_data &photon,
 #ifdef DEBUG_FFS
   if (photon.number == OUTNUM)
     cout << "ffs2: photon.path_cur_cells = " << photon.path_cur_cells << endl;
-  if (photon.number == OUTNUM)
-    cout << "surface tau done; ";
+  if (photon.number == OUTNUM) cout << "surface tau done; ";
   cout.flush();
 #endif
 
@@ -74,7 +74,6 @@ int forced_first_scatter(geometry_struct &geometry, photon_data &photon,
       cout << "photon escaping w/o interacting" << endl;
 #endif
   } else {
-
     // do the weights
     // calculate the stellar weight (part of photon which escapes)
     //    calculation good to very high taus (700+), zero afterwards (KDG 28 Dec
@@ -89,12 +88,12 @@ int forced_first_scatter(geometry_struct &geometry, photon_data &photon,
 
     // calculate the weight which is scattered
     if (random_obj.random_num() >=
-        geometry.scat_bias_fraction) { // classical forced scattering
+        geometry.scat_bias_fraction) {  // classical forced scattering
 
       target_tau =
           -log(1.0 - random_obj.random_num() * (1.0 - new_stellar_weight));
 
-    } else { // uniformaly sampled in optical depth
+    } else {  // uniformaly sampled in optical depth
 
       ran_num = random_obj.random_num();
       target_tau = ran_num * photon.first_tau;
@@ -124,8 +123,7 @@ int forced_first_scatter(geometry_struct &geometry, photon_data &photon,
     // photon.stellar_weight *= new_stellar_weight;
 
 #ifdef DEBUG_FFS
-    if (photon.number == OUTNUM)
-      cout << "target_tau = " << target_tau << endl;
+    if (photon.number == OUTNUM) cout << "target_tau = " << target_tau << endl;
     if (photon.number == OUTNUM)
       cout << "tau_to_surface = " << tau_to_surface << endl;
 #endif
@@ -143,8 +141,8 @@ int forced_first_scatter(geometry_struct &geometry, photon_data &photon,
 
     // move photon to location determined by target_tau and get the distance
     // traveled
-    int escape = 0;            // reset escape
-    photon.path_cur_cells = 0; // set to 0 to save cells tranversed
+    int escape = 0;             // reset escape
+    photon.path_cur_cells = 0;  // set to 0 to save cells tranversed
 #ifdef DEBUG_FFS
     if (photon.number == OUTNUM)
       cout << "tau_traveled in = " << tau_traveled << endl;
@@ -210,7 +208,7 @@ int forced_first_scatter(geometry_struct &geometry, photon_data &photon,
        */
       const double abs_weight_init =
           (1. - geometry.albedo) *
-          dummy_photon.stellar_weight; // not the reduced scat_weight
+          dummy_photon.stellar_weight;  // not the reduced scat_weight
       double tau_entering = 0.;
       double prob_entering = 1.;
 

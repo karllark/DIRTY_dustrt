@@ -114,7 +114,8 @@ void get_dust_parameters(ConfigFile &param_data, GrainModel &CurGrainModel,
       geometry.phi[i] /= save_sum * (2. * Constant::PI);
       geometry.phi_sum[i] /= save_sum;
     }
-    runinfo.g.push_back(-2); // set to -2 to trigger use of model phase function
+    runinfo.g.push_back(
+        -2);  // set to -2 to trigger use of model phase function
 
     float wavelength = param_data.FValue("Dust Grains", "wavelength");
     check_input_param("wavelength", wavelength, 0.001, 1e5);
@@ -186,10 +187,10 @@ void get_dust_parameters(ConfigFile &param_data, GrainModel &CurGrainModel,
 #endif
     runinfo.albedo = CurGrainModel.getAlbedo();
     runinfo.g = CurGrainModel.getphFuncEff();
-    runinfo.tau_to_h = CurGrainModel.getTau(); // getTau returns tau/H I atom
+    runinfo.tau_to_h = CurGrainModel.getTau();  // getTau returns tau/H I atom
     runinfo.tau_to_tau_ref = runinfo.tau_to_h;
     runinfo.ave_C_abs =
-        CurGrainModel.getCAbsEffNorm(); // getCAbsEffNorm returns cm^2/H I atom
+        CurGrainModel.getCAbsEffNorm();  // getCAbsEffNorm returns cm^2/H I atom
     if (runinfo.effective_grain_heating)
       runinfo.n_emission_grain_types = 3;
     else
@@ -200,8 +201,7 @@ void get_dust_parameters(ConfigFile &param_data, GrainModel &CurGrainModel,
 #endif
 
     runinfo.norm_tau_wave = param_data.FValue("Geometry", "tau_wave");
-    if (isnan(runinfo.norm_tau_wave))
-      runinfo.norm_tau_wave = 0.55;
+    if (isnan(runinfo.norm_tau_wave)) runinfo.norm_tau_wave = 0.55;
 
 #ifdef DEBUG_GDP
     cout << "tau_wave = " << runinfo.norm_tau_wave << endl;

@@ -1,7 +1,6 @@
 #include "ISRF.h"
 
 ISRF::ISRF(vector<float> in_wave, float in_XMMP) {
-
   // cout << "Instantiating ISRF Object with scaling " <<  in_XMMP << endl;
 
   float _a[] = {-6.46657e-09, 8.80371e-06, 1.29912e-06,
@@ -27,7 +26,6 @@ ISRF::ISRF(vector<float> in_wave, float in_XMMP) {
   vector<float>::iterator iISRF;
 
   for (iW = _W.begin(); iW != _W.end(); iW++, ++iT) {
-
     // _TempISRF = black body at T_i
     _TempISRF = NumUtils::bbodyCGS<float>(wave, *iT);
     iISRF = theISRF.begin();
@@ -67,8 +65,7 @@ ISRF::ISRF(vector<float> in_wave, float in_XMMP) {
 
     // Make everything below low cutoff equal to 0.0
     if (loIdx >= 0)
-      for (int i = 0; i < loIdx; i++)
-        theISRF[i] = 0.0;
+      for (int i = 0; i < loIdx; i++) theISRF[i] = 0.0;
   }
 
   // If we happen to have snuck some negative numbers in (shouldn't happen)...

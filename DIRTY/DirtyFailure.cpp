@@ -60,7 +60,6 @@ void DirtyFailure::AddFailure(int _flag) {
 }
 
 void DirtyFailure::WriteFailureLog(void) {
-
   // Open the output file.
   ofstream failurelog(sFileName.c_str());
   if (failurelog) {
@@ -87,13 +86,12 @@ void DirtyFailure::WriteFailureLog(void) {
       failurelog << "    ---------------" << endl;
       iter1 = RadiationField[i].begin();
       iter2 = RadiationField[i].end();
-      for (; iter1 != iter2; iter1++)
-        failurelog << "    " << *iter1 << endl;
+      for (; iter1 != iter2; iter1++) failurelog << "    " << *iter1 << endl;
       failurelog << "End failure " << i + 1 << " of " << nFailure << endl;
       failurelog << "**********************************************************"
                     "************"
                  << endl;
     }
     failurelog.close();
-  } // else... I don't know...
+  }  // else... I don't know...
 }

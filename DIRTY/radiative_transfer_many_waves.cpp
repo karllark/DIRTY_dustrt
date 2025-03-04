@@ -25,20 +25,19 @@ void radiative_transfer_many_waves(geometry_struct &geometry,
   // loop over all wavelengths
   int i;
   for (i = 0; i < runinfo.n_waves; i++) {
-
     int do_rt = 1;
     if (rt_type > REG_RT) {
       switch (rt_type) {
-      case ERE_RT:
-        if (runinfo.emitted_ere_lum[0][i] <
-            1e-3 * runinfo.out_sed_lum[0][i] * runinfo.sed_lum[i])
-          do_rt = 0;
-        break;
-      case DE_RT:
-        if (runinfo.emitted_lum[0][i] <
-            1e-20 * runinfo.out_sed_lum[0][i] * runinfo.sed_lum[i])
-          do_rt = 0;
-        break;
+        case ERE_RT:
+          if (runinfo.emitted_ere_lum[0][i] <
+              1e-3 * runinfo.out_sed_lum[0][i] * runinfo.sed_lum[i])
+            do_rt = 0;
+          break;
+        case DE_RT:
+          if (runinfo.emitted_lum[0][i] <
+              1e-20 * runinfo.out_sed_lum[0][i] * runinfo.sed_lum[i])
+            do_rt = 0;
+          break;
       }
     }
 

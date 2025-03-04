@@ -17,6 +17,7 @@
 #include <iostream>
 
 #include "ConfigFile.h"
+#include "DirtyFailure.h"
 #include "GrainModel.h"
 #include "debug.h"
 #include "geometry_def.h"
@@ -25,8 +26,6 @@
 #include "random_dirty.h"
 #include "rt_types.h"
 #include "runinfo_def.h"
-
-#include "DirtyFailure.h"
 
 //**********************************************************************
 // external function definitions

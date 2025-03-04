@@ -32,13 +32,12 @@ void new_photon_discrete_stars(photon_data &photon, geometry_struct &geometry,
 
   int i = 0;
 #ifdef DEBUG_NPDS
-  for (i = 0; i < 3; i++)
-    cout << photon.dir_cosines[i] << " ";
+  for (i = 0; i < 3; i++) cout << photon.dir_cosines[i] << " ";
   cout << "starting dir cosines" << endl;
 #endif
 
   // determine which star the photon will be emitted from
-  int pos_index = 0; // default is first star
+  int pos_index = 0;  // default is first star
   if (geometry.num_stars > 1) {
     double ran_num = random_obj.random_num();
     while ((i < geometry.num_stars) &&

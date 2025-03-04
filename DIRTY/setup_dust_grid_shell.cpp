@@ -223,11 +223,11 @@ void setup_dust_grid_shell(ConfigFile &param_data, geometry_struct &geometry,
         radius /= save_outer_radius;
         if (radius > geometry.radius / save_outer_radius)
           main_grid.grid(i, j, k).dust_tau_per_pc =
-              -0.5; // this means the edge of the dust
+              -0.5;  // this means the edge of the dust
         else if ((radius > outer_radius) &&
                  (radius < geometry.radius / save_outer_radius))
           main_grid.grid(i, j, k).dust_tau_per_pc =
-              1e-20; // negligible amount of dust
+              1e-20;  // negligible amount of dust
         else {
           if (radius < very_inner_radius)
             tmp_density = 0.0;
@@ -241,10 +241,8 @@ void setup_dust_grid_shell(ConfigFile &param_data, geometry_struct &geometry,
             main_grid.grid(i, j, k).dust_tau_per_pc =
                 tmp_density * geometry.clump_densities[0];
           else {
-            if (radius < min_good_radius)
-              min_good_radius = radius;
-            if (radius > max_good_radius)
-              max_good_radius = radius;
+            if (radius < min_good_radius) min_good_radius = radius;
+            if (radius > max_good_radius) max_good_radius = radius;
             main_grid.grid(i, j, k).dust_tau_per_pc =
                 tmp_density * geometry.clump_densities[1];
           }
@@ -308,7 +306,7 @@ void setup_dust_grid_shell(ConfigFile &param_data, geometry_struct &geometry,
          << subdivide_radius << endl;
     int subdivide = 0;
     int subdivide_any = 0;
-    int m = 0; // only main_grid for now
+    int m = 0;  // only main_grid for now
     int cur_subgrid_num = int(geometry.grids.size());
     int poss_index = 0;
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++) {
@@ -402,7 +400,7 @@ void setup_dust_grid_shell(ConfigFile &param_data, geometry_struct &geometry,
             subgrid.grid.CSize(subgrid.index_dim[0], subgrid.index_dim[1],
                                subgrid.index_dim[2]);
 
-            double tradius; // radius of subgrid position in index values
+            double tradius;  // radius of subgrid position in index values
             float tz_val, ty_val, tx_val = 0.;
             int n, o;
             for (o = 0; o < subgrid.index_dim[2]; o++) {
@@ -443,8 +441,8 @@ void setup_dust_grid_shell(ConfigFile &param_data, geometry_struct &geometry,
                     subgrid.grid(l, n, o).dust_tau_per_pc =
                         tmp_density * geometry.clump_densities[0];
                   // 		  if ((subgrid.grid(l,n,o).dust_tau_per_pc ==
-                  // 0.0)) 		    cout << "0 "; 		  else 		    cout <<
-                  // subgrid.grid(l,n,o).dust_tau_per_pc << " / ";
+                  // 0.0)) 		    cout << "0 "; 		  else
+                  // cout << subgrid.grid(l,n,o).dust_tau_per_pc << " / ";
                   //  		    cout << "1 ";
                 }
                 // 		cout << endl;
@@ -463,8 +461,7 @@ void setup_dust_grid_shell(ConfigFile &param_data, geometry_struct &geometry,
         }
       }
     }
-    if (subdivide_any)
-      geometry.max_grid_depth++;
+    if (subdivide_any) geometry.max_grid_depth++;
   }
 
 #ifdef DEBUG_SDG

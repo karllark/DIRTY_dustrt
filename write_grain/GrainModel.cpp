@@ -20,7 +20,6 @@
 GrainModel::GrainModel() {}
 
 void GrainModel::MakeGrainModel(ConfigFile &_mbkcf, vector<float> &MasterWave) {
-
   string _thisSection;
   string _line;
 
@@ -51,7 +50,8 @@ void GrainModel::MakeGrainModel(ConfigFile &_mbkcf, vector<float> &MasterWave) {
   vector<float> _thisphFunc;
   vector<float> _integrand;
 
-  float delta, _CAbsIntegral, _CScaIntegral, _phFuncIntegral; //,_MassConstants;
+  float delta, _CAbsIntegral, _CScaIntegral,
+      _phFuncIntegral;  //,_MassConstants;
 
   typedef vector<float>::iterator iter;
   iter iCAbsEff, iCScaEff, iphFuncEff, iTau, iAlbedo;
@@ -101,7 +101,7 @@ void GrainModel::MakeGrainModel(ConfigFile &_mbkcf, vector<float> &MasterWave) {
   ModelName = _mbkcf.SValue("Model Book Keeping", "Model Name");
 
   // Check that model name exists in pre-defined map.
-  if (ModelID.find(ModelName) == ModelID.end()) { // NO!
+  if (ModelID.find(ModelName) == ModelID.end()) {  // NO!
     cout << "****************************************************" << endl;
     cout << "You are not using a predefined grain model.         " << endl;
     cout << endl << "Pre-deined models are: " << endl;
@@ -112,7 +112,7 @@ void GrainModel::MakeGrainModel(ConfigFile &_mbkcf, vector<float> &MasterWave) {
   }
   // YES! Check and make sure model definition file exists.
   _FullModelDefinitionFile = _TopLevelPath + _ModelDefinitionPath + ModelName;
-  if (!StringManip::FileExists(_FullModelDefinitionFile)) { // NO!
+  if (!StringManip::FileExists(_FullModelDefinitionFile)) {  // NO!
     cout << "****************************************************" << endl;
     cout << "Model Definition File " << _FullModelDefinitionFile
          << " not found." << endl;
@@ -149,7 +149,7 @@ void GrainModel::MakeGrainModel(ConfigFile &_mbkcf, vector<float> &MasterWave) {
   totalnumber = 0;
   number.resize(nComp);
   // Construct the Size distribution for each component.
-  for (int cmp = 0; cmp < nComp; cmp++) { // Loop over all components
+  for (int cmp = 0; cmp < nComp; cmp++) {  // Loop over all components
 
     // Construct section key for this component.
     // Assume key is of the form "Comp i" where i=1,2,...,nComp
@@ -177,9 +177,8 @@ void GrainModel::MakeGrainModel(ConfigFile &_mbkcf, vector<float> &MasterWave) {
     // For a Gaussian (or arbitrary in the future?) size distribution, check
     // that a_min and _amax are correctly defined.
     if (SizeDistID.find(_thisSizeDistribution) != SizeDistID.end()) {
-
       if (_thisSizeDistribution ==
-          "GAUSS") { // Gaussian - add other types as necessary
+          "GAUSS") {  // Gaussian - add other types as necessary
 
         float _a0 = _mcf.FValue(_thisSection, "a0");
         if (_mcf.isBadFloat(_a0)) {
@@ -200,21 +199,17 @@ void GrainModel::MakeGrainModel(ConfigFile &_mbkcf, vector<float> &MasterWave) {
           exit(8);
         }
         _thisClip = _mcf.FValue(_thisSection, "clip");
-        if (_mcf.isBadFloat(_thisClip))
-          _thisClip = 3;
+        if (_mcf.isBadFloat(_thisClip)) _thisClip = 3;
 
-        if (_mcf.isBadFloat(_thisA_min))
-          _thisA_min = _a0 - _thisClip * _as;
-        if (_thisA_min < 0)
-          _thisA_min = 0;
+        if (_mcf.isBadFloat(_thisA_min)) _thisA_min = _a0 - _thisClip * _as;
+        if (_thisA_min < 0) _thisA_min = 0;
 
-        if (_mcf.isBadFloat(_thisA_max))
-          _thisA_max = _a0 + _thisClip * _as;
+        if (_mcf.isBadFloat(_thisA_max)) _thisA_max = _a0 + _thisClip * _as;
 
         _thisA_min *= Constant::UM_CM;
         _thisA_max *= Constant::UM_CM;
       }
-    } else { // Encountered a SizeDist key that is not defined in the map.
+    } else {  // Encountered a SizeDist key that is not defined in the map.
 
       cout << endl;
       cout << "****************************************************" << endl;
@@ -230,103 +225,105 @@ void GrainModel::MakeGrainModel(ConfigFile &_mbkcf, vector<float> &MasterWave) {
     transform(_thisSizeType.begin(), _thisSizeType.end(), _thisSizeType.begin(),
               (int (*)(int))toupper);
     switch (SizeTypeID[_thisSizeType]) {
-    case 0: // Explicit DEF definition as well as key not found
-    {
-      _MasterSize.push_back(-1);
-      break;
-    }
-    case 1: {
-      // Filename
-      // Assumptions:
-      //   - Model configuration file provides the full path to file.
-      //     eg. if the file is in the current directory, the config
-      //     file should have "Size Definition File=MySizeGrid.dat"
-      //     If the file lives in /home/dirty, the config file should have
-      //     "Size Definition File=/home/dirty/MySizeGrid.dat"
-      //   - The units of the size grid are assumed to be in um and are
-      //   converted
-      //     to cm via Constant::UM_CM
-      _thisSizeFile = _mcf.SValue(_thisSection, "Size Definition File");
-      if (_thisSizeFile == _mcf.BadString()) {
-        cout << "Unable to retrieve size grid file name, resorting to default."
-             << endl;
+      case 0:  // Explicit DEF definition as well as key not found
+      {
         _MasterSize.push_back(-1);
-      } else {
-        // ifstream
-        // _file((_TopLevelPath+_ModelDefinitionPath+_thisSizeFile).c_str());
-        ifstream _file((_thisSizeFile).c_str());
-        if (!_file.is_open()) {
-          cout << "Unable to open size grid definition file " << _thisSizeFile
-               << endl;
-          exit(8);
+        break;
+      }
+      case 1: {
+        // Filename
+        // Assumptions:
+        //   - Model configuration file provides the full path to file.
+        //     eg. if the file is in the current directory, the config
+        //     file should have "Size Definition File=MySizeGrid.dat"
+        //     If the file lives in /home/dirty, the config file should have
+        //     "Size Definition File=/home/dirty/MySizeGrid.dat"
+        //   - The units of the size grid are assumed to be in um and are
+        //   converted
+        //     to cm via Constant::UM_CM
+        _thisSizeFile = _mcf.SValue(_thisSection, "Size Definition File");
+        if (_thisSizeFile == _mcf.BadString()) {
+          cout
+              << "Unable to retrieve size grid file name, resorting to default."
+              << endl;
+          _MasterSize.push_back(-1);
+        } else {
+          // ifstream
+          // _file((_TopLevelPath+_ModelDefinitionPath+_thisSizeFile).c_str());
+          ifstream _file((_thisSizeFile).c_str());
+          if (!_file.is_open()) {
+            cout << "Unable to open size grid definition file " << _thisSizeFile
+                 << endl;
+            exit(8);
+          }
+          while (getline(_file, _line)) {
+            if (_line[0] == '#')
+              continue;
+            else {
+              _MasterSize.push_back(atof(_line.c_str()) * Constant::UM_CM);
+            }
+          }
+          _MasterSize.erase(remove_if(_MasterSize.begin(), _MasterSize.end(),
+                                      bind2nd(less<float>(), _thisA_min)),
+                            _MasterSize.end());
+          _MasterSize.erase(remove_if(_MasterSize.begin(), _MasterSize.end(),
+                                      bind2nd(greater<float>(), _thisA_max)),
+                            _MasterSize.end());
+          if (_MasterSize[0] > _thisA_min)
+            _MasterSize.insert(_MasterSize.begin(), _thisA_min);
+          if (_MasterSize[_MasterSize.size() - 1] < _thisA_max)
+            _MasterSize.push_back(_thisA_max);
+          // for (int _sz=0;_sz<_MasterSize.size();++_sz) cout <<
+          // _MasterSize[_sz]
+          // << endl;
         }
-        while (getline(_file, _line)) {
-          if (_line[0] == '#')
-            continue;
-          else {
-            _MasterSize.push_back(atof(_line.c_str()) * Constant::UM_CM);
+        break;
+      }
+      case 2: {
+        // Get the number of sizes
+        _thisSizeIN = _mcf.IValue(_thisSection, "Size Definition Number");
+        // cout << _thisSizeIN << endl;
+        if (_thisSizeIN <= 0) {
+          cout << "Unable to define size grid manually.  Resorting to default."
+               << endl;
+          _thisSizeType = "DEF";
+          _MasterSize.push_back(-1);
+        } else {
+          _MasterSize.resize(_thisSizeIN);
+          // log/linear
+          _thisSizeScale = _mcf.SValue(_thisSection, "Size Definition Scale");
+          if (_thisSizeScale == _mcf.BadString()) {
+            cout << "Did not find size gridding definition - assuming linear"
+                 << endl;
+            _thisSizeScale = "LINEAR";
+          } else {
+            transform(_thisSizeScale.begin(), _thisSizeScale.end(),
+                      _thisSizeScale.begin(), (int (*)(int))toupper);
+          }
+          if (_thisSizeScale == "LINEAR") {  // Generate Linear scale
+            _MasterSize[0] = _thisA_min;
+            _delta =
+                (_thisA_max - _thisA_min) / static_cast<float>(_thisSizeIN - 1);
+
+            for (int _sz = 1; _sz < _thisSizeIN; ++_sz)
+              _MasterSize[_sz] = _MasterSize[_sz - 1] + _delta;
+          }
+          if (_thisSizeScale == "LOG") {  // Generate Log scale.
+            _MasterSize[0] = _thisA_min;
+            _delta = (1.0 / static_cast<float>(_thisSizeIN - 1)) *
+                     log10(_thisA_max / _thisA_min);
+            for (int _sz = 1; _sz < _thisSizeIN; ++_sz)
+              _MasterSize[_sz] = _MasterSize[_sz - 1] * pow(10, _delta);
           }
         }
-        _MasterSize.erase(remove_if(_MasterSize.begin(), _MasterSize.end(),
-                                    bind2nd(less<float>(), _thisA_min)),
-                          _MasterSize.end());
-        _MasterSize.erase(remove_if(_MasterSize.begin(), _MasterSize.end(),
-                                    bind2nd(greater<float>(), _thisA_max)),
-                          _MasterSize.end());
-        if (_MasterSize[0] > _thisA_min)
-          _MasterSize.insert(_MasterSize.begin(), _thisA_min);
-        if (_MasterSize[_MasterSize.size() - 1] < _thisA_max)
-          _MasterSize.push_back(_thisA_max);
-        // for (int _sz=0;_sz<_MasterSize.size();++_sz) cout << _MasterSize[_sz]
-        // << endl;
+        break;
       }
-      break;
-    }
-    case 2: {
-      // Get the number of sizes
-      _thisSizeIN = _mcf.IValue(_thisSection, "Size Definition Number");
-      // cout << _thisSizeIN << endl;
-      if (_thisSizeIN <= 0) {
-        cout << "Unable to define size grid manually.  Resorting to default."
-             << endl;
+      default:  // Unable to identify size grid, use the default.
+      {
         _thisSizeType = "DEF";
         _MasterSize.push_back(-1);
-      } else {
-        _MasterSize.resize(_thisSizeIN);
-        // log/linear
-        _thisSizeScale = _mcf.SValue(_thisSection, "Size Definition Scale");
-        if (_thisSizeScale == _mcf.BadString()) {
-          cout << "Did not find size gridding definition - assuming linear"
-               << endl;
-          _thisSizeScale = "LINEAR";
-        } else {
-          transform(_thisSizeScale.begin(), _thisSizeScale.end(),
-                    _thisSizeScale.begin(), (int (*)(int))toupper);
-        }
-        if (_thisSizeScale == "LINEAR") { // Generate Linear scale
-          _MasterSize[0] = _thisA_min;
-          _delta =
-              (_thisA_max - _thisA_min) / static_cast<float>(_thisSizeIN - 1);
-
-          for (int _sz = 1; _sz < _thisSizeIN; ++_sz)
-            _MasterSize[_sz] = _MasterSize[_sz - 1] + _delta;
-        }
-        if (_thisSizeScale == "LOG") { // Generate Log scale.
-          _MasterSize[0] = _thisA_min;
-          _delta = (1.0 / static_cast<float>(_thisSizeIN - 1)) *
-                   log10(_thisA_max / _thisA_min);
-          for (int _sz = 1; _sz < _thisSizeIN; ++_sz)
-            _MasterSize[_sz] = _MasterSize[_sz - 1] * pow(10, _delta);
-        }
+        break;
       }
-      break;
-    }
-    default: // Unable to identify size grid, use the default.
-    {
-      _thisSizeType = "DEF";
-      _MasterSize.push_back(-1);
-      break;
-    }
     }
 
     // Populate Component[i] with the appropriate Grain object.
@@ -339,127 +336,134 @@ void GrainModel::MakeGrainModel(ConfigFile &_mbkcf, vector<float> &MasterWave) {
 
     // Wrap in a .find since SizeDist[key] will add members.
     if (SizeDistID.find(_thisSizeDistribution) !=
-        SizeDistID.end()) { // Determine which sd to use
+        SizeDistID.end()) {  // Determine which sd to use
 
       switch (SizeDistID[_thisSizeDistribution]) {
+        case 0:  // Zubko, Dwek, & Arendt 2004, ApJS, 152, 211
+        {
+          // So we need to get the co-efficients for a ZDA fit.
+          vector<float> _zda_coeff(15);
+          _zda_coeff[0] = _mcf.FValue(_thisSection, "A");
+          Normalization[cmp] = _zda_coeff[0];
+          _zda_coeff[1] = _mcf.FValue(_thisSection, "c0");
+          _zda_coeff[2] = _mcf.FValue(_thisSection, "b0");
+          _zda_coeff[3] = _mcf.FValue(_thisSection, "b1");
+          _zda_coeff[4] = _mcf.FValue(_thisSection, "a1");
+          _zda_coeff[5] = _mcf.FValue(_thisSection, "m1");
+          _zda_coeff[6] = _mcf.FValue(_thisSection, "b2");
+          _zda_coeff[7] = _mcf.FValue(_thisSection, "a2");
+          _zda_coeff[8] = _mcf.FValue(_thisSection, "m2");
+          _zda_coeff[9] = _mcf.FValue(_thisSection, "b3");
+          _zda_coeff[10] = _mcf.FValue(_thisSection, "a3");
+          _zda_coeff[11] = _mcf.FValue(_thisSection, "m3");
+          _zda_coeff[12] = _mcf.FValue(_thisSection, "b4");
+          _zda_coeff[13] = _mcf.FValue(_thisSection, "a4");
+          _zda_coeff[14] = _mcf.FValue(_thisSection, "m4");
+          // SizeDistribution[cmp].resize(_thisSize.size());
+          SizeDistribution[cmp] = getZDA_sdist(_zda_coeff, cmp);
+        } break;
 
-      case 0: // Zubko, Dwek, & Arendt 2004, ApJS, 152, 211
-      {
-        // So we need to get the co-efficients for a ZDA fit.
-        vector<float> _zda_coeff(15);
-        _zda_coeff[0] = _mcf.FValue(_thisSection, "A");
-        Normalization[cmp] = _zda_coeff[0];
-        _zda_coeff[1] = _mcf.FValue(_thisSection, "c0");
-        _zda_coeff[2] = _mcf.FValue(_thisSection, "b0");
-        _zda_coeff[3] = _mcf.FValue(_thisSection, "b1");
-        _zda_coeff[4] = _mcf.FValue(_thisSection, "a1");
-        _zda_coeff[5] = _mcf.FValue(_thisSection, "m1");
-        _zda_coeff[6] = _mcf.FValue(_thisSection, "b2");
-        _zda_coeff[7] = _mcf.FValue(_thisSection, "a2");
-        _zda_coeff[8] = _mcf.FValue(_thisSection, "m2");
-        _zda_coeff[9] = _mcf.FValue(_thisSection, "b3");
-        _zda_coeff[10] = _mcf.FValue(_thisSection, "a3");
-        _zda_coeff[11] = _mcf.FValue(_thisSection, "m3");
-        _zda_coeff[12] = _mcf.FValue(_thisSection, "b4");
-        _zda_coeff[13] = _mcf.FValue(_thisSection, "a4");
-        _zda_coeff[14] = _mcf.FValue(_thisSection, "m4");
-        // SizeDistribution[cmp].resize(_thisSize.size());
-        SizeDistribution[cmp] = getZDA_sdist(_zda_coeff, cmp);
-      } break;
+        case 1:  // Wiengartner & Draine 2001, ApJ, 548, 296
+        {
+          vector<float> _wd_coeff(8);
+          Normalization[cmp] = 1.0;  // Defined functions already return per H
+          _wd_coeff[0] = _mcf.FValue(_thisSection, "BC");
+          _wd_coeff[1] = _mcf.FValue(_thisSection, "B1");
+          _wd_coeff[2] = _mcf.FValue(_thisSection, "B2");
+          _wd_coeff[3] = _mcf.FValue(_thisSection, "C");
+          _wd_coeff[4] = _mcf.FValue(_thisSection, "at");
+          _wd_coeff[5] = _mcf.FValue(_thisSection, "ac");
+          _wd_coeff[6] = _mcf.FValue(_thisSection, "alpha");
+          _wd_coeff[7] = _mcf.FValue(_thisSection, "beta");
+          SizeDistribution[cmp] = getWD_sdist(_wd_coeff, cmp);
+        } break;
 
-      case 1: // Wiengartner & Draine 2001, ApJ, 548, 296
-      {
-        vector<float> _wd_coeff(8);
-        Normalization[cmp] = 1.0; // Defined functions already return per H
-        _wd_coeff[0] = _mcf.FValue(_thisSection, "BC");
-        _wd_coeff[1] = _mcf.FValue(_thisSection, "B1");
-        _wd_coeff[2] = _mcf.FValue(_thisSection, "B2");
-        _wd_coeff[3] = _mcf.FValue(_thisSection, "C");
-        _wd_coeff[4] = _mcf.FValue(_thisSection, "at");
-        _wd_coeff[5] = _mcf.FValue(_thisSection, "ac");
-        _wd_coeff[6] = _mcf.FValue(_thisSection, "alpha");
-        _wd_coeff[7] = _mcf.FValue(_thisSection, "beta");
-        SizeDistribution[cmp] = getWD_sdist(_wd_coeff, cmp);
-      } break;
-
-      case 2: // Power law
-      {
-        vector<float> _pl_coeff(2);
-      }
-
-      case 3: // Gaussian
-      {
-        vector<float> _gauss_coeff(3);
-        // Get input dust to gas ratio and mean molecular weight
-        // Shouldn't have to do this for every component, but I'm lazy...
-        DustToGasMassRatio = _mcf.FValue("Model", "Dust to Gas Mass Ratio");
-        if (_mcf.isBadFloat(DustToGasMassRatio)) {
-          cout << "Dust to gas mass ratio not defined - required for this size "
-                  "distribution"
-               << endl;
-          cout
-              << "Looked under section 'Model' for key 'Dust to Gas Mass Ratio'"
-              << endl;
-          exit(8);
-        }
-        MeanMolecularWeight = _mcf.FValue("Model", "Mean Molecular Weight");
-        if (_mcf.isBadFloat(MeanMolecularWeight)) {
-          cout << "Mean molecular weight not defined - required for this size "
-                  "distribution"
-               << endl;
-          cout << "Looked under section 'Model' for key 'Mean Molecular Weight'"
-               << endl;
-          exit(8);
+        case 2:  // Power law
+        {
+          vector<float> _pl_coeff(2);
         }
 
-        _gauss_coeff[0] = 1; // Force amplitude to be 1 for now
+        case 3:  // Gaussian
+        {
+          vector<float> _gauss_coeff(3);
+          // Get input dust to gas ratio and mean molecular weight
+          // Shouldn't have to do this for every component, but I'm lazy...
+          DustToGasMassRatio = _mcf.FValue("Model", "Dust to Gas Mass Ratio");
+          if (_mcf.isBadFloat(DustToGasMassRatio)) {
+            cout << "Dust to gas mass ratio not defined - required for this "
+                    "size "
+                    "distribution"
+                 << endl;
+            cout << "Looked under section 'Model' for key 'Dust to Gas Mass "
+                    "Ratio'"
+                 << endl;
+            exit(8);
+          }
+          MeanMolecularWeight = _mcf.FValue("Model", "Mean Molecular Weight");
+          if (_mcf.isBadFloat(MeanMolecularWeight)) {
+            cout
+                << "Mean molecular weight not defined - required for this size "
+                   "distribution"
+                << endl;
+            cout << "Looked under section 'Model' for key 'Mean Molecular "
+                    "Weight'"
+                 << endl;
+            exit(8);
+          }
 
-        // Convert all length units in gaussian parameters to CM - that way, the
-        // size distribution will be returned in cm^(-1) H^(-1)
-        _gauss_coeff[1] = _mcf.FValue(_thisSection, "a0") * Constant::UM_CM;
-        _gauss_coeff[2] = _mcf.FValue(_thisSection, "as") * Constant::UM_CM;
-        SizeDistribution[cmp] = getGauss_sdist(_gauss_coeff, cmp);
+          _gauss_coeff[0] = 1;  // Force amplitude to be 1 for now
 
-        // Now renormalize to assure proper dust mass/tau/etc computations
-        _integrand.resize(Component[cmp].nsize);
+          // Convert all length units in gaussian parameters to CM - that way,
+          // the size distribution will be returned in cm^(-1) H^(-1)
+          _gauss_coeff[1] = _mcf.FValue(_thisSection, "a0") * Constant::UM_CM;
+          _gauss_coeff[2] = _mcf.FValue(_thisSection, "as") * Constant::UM_CM;
+          SizeDistribution[cmp] = getGauss_sdist(_gauss_coeff, cmp);
 
-        // Need to keep track so that we don't exceed 1 for mass frac.
-        float _massfrac = _mcf.FValue(_thisSection, "X");
-        _totalMassFraction += _massfrac;
-        for (int sz = 0; sz < Component[cmp].nsize; sz++)
-          _integrand[sz] = Component[cmp].mass[sz] * SizeDistribution[cmp][sz];
+          // Now renormalize to assure proper dust mass/tau/etc computations
+          _integrand.resize(Component[cmp].nsize);
 
-        // size is in cm, integrand is in grams, _mmw is dimensionless, gdmris
-        // dimensionless, AMU_CGS is gm/H, the dimensions os _newAmp are cm^-1
-        // H^-1 ... float _newAmp =
-        // (DustToGasMassRatio*MeanMolecularWeight*Constant::AMU_CGS)/NumUtils::integrate<float>(Component[cmp].size,_integrand);
-        // ... as are the dim. of SizeDistribution  since SizeDistribution was
-        // previously dimensionless = 1.0 * exp(-z^2/2).
-        Normalization[cmp] =
-            (DustToGasMassRatio * MeanMolecularWeight * Constant::AMU_CGS *
-             _massfrac) /
-            NumUtils::integrate<float>(Component[cmp].size, _integrand);
-        // cout << Normalization[cmp] << endl;
-        //  transform(SizeDistribution[cmp].begin(),SizeDistribution[cmp].end(),SizeDistribution[cmp].begin(),
-        // 		      bind2nd(multiplies<float>(),_newAmp));
-      } break;
+          // Need to keep track so that we don't exceed 1 for mass frac.
+          float _massfrac = _mcf.FValue(_thisSection, "X");
+          _totalMassFraction += _massfrac;
+          for (int sz = 0; sz < Component[cmp].nsize; sz++)
+            _integrand[sz] =
+                Component[cmp].mass[sz] * SizeDistribution[cmp][sz];
 
-      default: {
-        cout << endl;
-        cout << "****************************************************" << endl;
-        cout << "Ooops! Something BROKE defining size distribution   " << endl;
-        cout << "trying to set up " << _thisCrossSectionFile << "!   " << endl;
-        cout << "Key " << _thisSizeDistribution
-             << " exists, but has no corresponding case." << endl;
-        cout << "(Looking for " << SizeDistID[_thisSizeDistribution] << ")"
-             << endl;
-        cout << "This is PROGRAMMER ERROR." << endl;
-        cout << "****************************************************" << endl;
-        exit(8);
-      } break;
+          // size is in cm, integrand is in grams, _mmw is dimensionless, gdmris
+          // dimensionless, AMU_CGS is gm/H, the dimensions os _newAmp are cm^-1
+          // H^-1 ... float _newAmp =
+          // (DustToGasMassRatio*MeanMolecularWeight*Constant::AMU_CGS)/NumUtils::integrate<float>(Component[cmp].size,_integrand);
+          // ... as are the dim. of SizeDistribution  since SizeDistribution was
+          // previously dimensionless = 1.0 * exp(-z^2/2).
+          Normalization[cmp] =
+              (DustToGasMassRatio * MeanMolecularWeight * Constant::AMU_CGS *
+               _massfrac) /
+              NumUtils::integrate<float>(Component[cmp].size, _integrand);
+          // cout << Normalization[cmp] << endl;
+          //  transform(SizeDistribution[cmp].begin(),SizeDistribution[cmp].end(),SizeDistribution[cmp].begin(),
+          // 		      bind2nd(multiplies<float>(),_newAmp));
+        } break;
+
+        default: {
+          cout << endl;
+          cout << "****************************************************"
+               << endl;
+          cout << "Ooops! Something BROKE defining size distribution   "
+               << endl;
+          cout << "trying to set up " << _thisCrossSectionFile << "!   "
+               << endl;
+          cout << "Key " << _thisSizeDistribution
+               << " exists, but has no corresponding case." << endl;
+          cout << "(Looking for " << SizeDistID[_thisSizeDistribution] << ")"
+               << endl;
+          cout << "This is PROGRAMMER ERROR." << endl;
+          cout << "****************************************************"
+               << endl;
+          exit(8);
+        } break;
       }
 
-    } else { // Encountered a SizeDist key that is not defined in the map.
+    } else {  // Encountered a SizeDist key that is not defined in the map.
 
       cout << endl;
       cout << "****************************************************" << endl;
@@ -497,7 +501,7 @@ void GrainModel::MakeGrainModel(ConfigFile &_mbkcf, vector<float> &MasterWave) {
               back_inserter(SizeDistributionNorm[cmp]),
               bind2nd(multiplies<float>(), Normalization[cmp]));
 
-  } // End Component loop.
+  }  // End Component loop.
 
   // Total normalization; this is the denominator for C_abs,sca size integrated,
   // comp summed quantities.
@@ -516,15 +520,15 @@ void GrainModel::MakeGrainModel(ConfigFile &_mbkcf, vector<float> &MasterWave) {
   iCScaEff = CScaEff.begin();
   iphFuncEff = phFuncEff.begin();
 
-  for (int wv = 0; wv < nWave; wv++) { // Loop over wavelength
+  for (int wv = 0; wv < nWave; wv++) {  // Loop over wavelength
 
-    for (int cmp = 0; cmp < nComp; cmp++) { // Loop over Chemical composition
+    for (int cmp = 0; cmp < nComp; cmp++) {  // Loop over Chemical composition
 
       // Get size as well as Cs and g as f(a)
       //_thisSize = Component[cmp].getSize();         // size grid.
-      _thisCAbs = Component[cmp].w_getCAbs(wv);     // CAbs as f(a)
-      _thisCSca = Component[cmp].w_getCSca(wv);     // CSca as f(a)
-      _thisphFunc = Component[cmp].w_getphFunc(wv); // g as f(a)
+      _thisCAbs = Component[cmp].w_getCAbs(wv);      // CAbs as f(a)
+      _thisCSca = Component[cmp].w_getCSca(wv);      // CSca as f(a)
+      _thisphFunc = Component[cmp].w_getphFunc(wv);  // g as f(a)
 
       // Initialize integrals
       _CAbsIntegral = 0.0;
@@ -535,18 +539,18 @@ void GrainModel::MakeGrainModel(ConfigFile &_mbkcf, vector<float> &MasterWave) {
       // Rather than call integrate 3 times and do the size loop 3 times,
       // roll the integration into the loop.  Doesn't allow flexibility in
       // specifying the integrator, but...
-      ithisCAbs = _thisCAbs.begin() + 1;     // begining of CAbs+1
-      ithisCSca = _thisCSca.begin() + 1;     // begining of Csca+1
-      ithisphFunc = _thisphFunc.begin() + 1; // begining of g+1
+      ithisCAbs = _thisCAbs.begin() + 1;      // begining of CAbs+1
+      ithisCSca = _thisCSca.begin() + 1;      // begining of Csca+1
+      ithisphFunc = _thisphFunc.begin() + 1;  // begining of g+1
       ithisSizeDist =
-          SizeDistribution[cmp].begin() + 1; // beginning of SizeDistribution+1
+          SizeDistribution[cmp].begin() + 1;  // beginning of SizeDistribution+1
 
       // for (ithisSize =
       // _thisSize.begin()+1;ithisSize!=_thisSize.end();ithisSize++) { //
       // Integration loop.
       for (ithisSize = Component[cmp].size.begin() + 1;
            ithisSize != Component[cmp].size.end();
-           ithisSize++) { // Integration loop.
+           ithisSize++) {  // Integration loop.
         // 1/2 dx
         delta = 0.5 * ((*ithisSize) - *(ithisSize - 1));
         // C(abs,sca) = int(C(a)*f(a)da)
@@ -609,12 +613,11 @@ void GrainModel::MakeGrainModel(ConfigFile &_mbkcf, vector<float> &MasterWave) {
 // vector <float> GrainModel::getZDA_sdist(vector <float> coeff, vector <float>
 // sz)
 vector<float> GrainModel::getZDA_sdist(vector<float> coeff, int cmp) {
-
-  float thissz; // Hold um copy of size at each point.
+  float thissz;  // Hold um copy of size at each point.
   vector<float> retvec(
-      Component[cmp].size.size()); // The size distribution [cm^-1]
-  vector<float>::iterator isz;     // Iterator through size vector
-  vector<float>::iterator iretvec; // Iterator through size dist vector
+      Component[cmp].size.size());  // The size distribution [cm^-1]
+  vector<float>::iterator isz;      // Iterator through size vector
+  vector<float>::iterator iretvec;  // Iterator through size dist vector
 
   // Set iterator to beginning of size dist vector.
   iretvec = retvec.begin();
@@ -622,21 +625,21 @@ vector<float> GrainModel::getZDA_sdist(vector<float> coeff, int cmp) {
   // for (isz=sz.begin();isz!=sz.end();isz++) {
   for (isz = Component[cmp].size.begin(); isz != Component[cmp].size.end();
        isz++) {
-    thissz = (*isz) * Constant::CM_UM; // size[i] in [um]
-    *iretvec = coeff[1];               // log(g) = c0
-    if (!isnan(coeff[2]))              // b0 is defined
+    thissz = (*isz) * Constant::CM_UM;  // size[i] in [um]
+    *iretvec = coeff[1];                // log(g) = c0
+    if (!isnan(coeff[2]))               // b0 is defined
       *iretvec += coeff[2] * log10(thissz);
-    if (!isnan(coeff[3])) // b1 is defined
+    if (!isnan(coeff[3]))  // b1 is defined
       *iretvec -= coeff[3] * pow(fabs(log10(thissz / coeff[4])), coeff[5]);
-    if (!isnan(coeff[6])) // b2 is defined
+    if (!isnan(coeff[6]))  // b2 is defined
       *iretvec -= coeff[6] * pow(fabs(log10(thissz / coeff[7])), coeff[8]);
-    if (!isnan(coeff[9])) // b3 is defined
+    if (!isnan(coeff[9]))  // b3 is defined
       *iretvec -= coeff[9] * pow(fabs((thissz)-coeff[10]), coeff[11]);
-    if (!isnan(coeff[12])) // b4 is defined
+    if (!isnan(coeff[12]))  // b4 is defined
       *iretvec -= coeff[12] * pow(fabs((thissz)-coeff[13]), coeff[14]);
-    *iretvec = pow(10, (*iretvec)); // g(a) in um^-1
+    *iretvec = pow(10, (*iretvec));  // g(a) in um^-1
     // Zubko et al. functional definitions give g(a) in um^-1, convert to cm.
-    *iretvec *= Constant::CM_UM; // g(a) in cm^-1
+    *iretvec *= Constant::CM_UM;  // g(a) in cm^-1
     iretvec++;
   }
 
@@ -654,12 +657,11 @@ vector<float> GrainModel::getZDA_sdist(vector<float> coeff, int cmp) {
 // Return the size distribution in cm^-1 H^-1
 //  Wiengartner & Draine 2001, ApJ 548, 296
 vector<float> GrainModel::getWD_sdist(vector<float> coeff, int cmp) {
-
   // float thissz;                     // Hold um copy of size at each point.
   vector<float> retvec(
-      Component[cmp].size.size()); // The size distribution [cm^-1]
-  vector<float>::iterator isz;     // Iterator through size vector
-  vector<float>::iterator iretvec; // Iterator through size dist vector
+      Component[cmp].size.size());  // The size distribution [cm^-1]
+  vector<float>::iterator isz;      // Iterator through size vector
+  vector<float>::iterator iretvec;  // Iterator through size dist vector
 
   // Set iterator to beginning of size dist vector.
   iretvec = retvec.begin();
@@ -711,12 +713,11 @@ vector<float> GrainModel::getWD_sdist(vector<float> coeff, int cmp) {
 
 // Return Gaussian size distribution in cm^-1
 vector<float> GrainModel::getGauss_sdist(vector<float> coeff, int cmp) {
-
   vector<float> retvec(
-      Component[cmp].size.size()); // The size distribution [cm^-1]
-  vector<float>::iterator isz;     // Iterator through size vector
-  vector<float>::iterator isze;    // end of size vector
-  vector<float>::iterator iretvec; // Iterator through size dist vector
+      Component[cmp].size.size());  // The size distribution [cm^-1]
+  vector<float>::iterator isz;      // Iterator through size vector
+  vector<float>::iterator isze;     // end of size vector
+  vector<float>::iterator iretvec;  // Iterator through size dist vector
 
   float z;
 
@@ -733,7 +734,6 @@ vector<float> GrainModel::getGauss_sdist(vector<float> coeff, int cmp) {
 }
 
 float GrainModel::getTau(float a_wave) {
-
   if (a_wave < Wave[0] || a_wave > Wave[nWave - 1]) {
     cout << "You are attempting to retrieve \tau_(lam) outside of the defined"
          << endl;
@@ -750,9 +750,9 @@ float GrainModel::getTau(float a_wave) {
   wvIter it_loc = find(Wave.begin(), Wave.end(), a_wave);
   int idx = it_loc - it_beg;
 
-  if (it_loc != Wave.end()) { // Found an exact match.
+  if (it_loc != Wave.end()) {  // Found an exact match.
     return Tau[idx];
-  } else { // weighted average
+  } else {  // weighted average
 
     it_loc = lower_bound(Wave.begin(), Wave.end(), a_wave);
     idx = it_loc - it_beg;

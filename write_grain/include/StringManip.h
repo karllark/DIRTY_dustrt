@@ -4,13 +4,14 @@
 #ifndef __STRINGMANIP_H__
 #define __STRINGMANIP_H__
 
+#include <sys/stat.h>
+
 #include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <sys/stat.h>
 #include <vector>
 
 using namespace std;
@@ -58,12 +59,13 @@ inline string ToLower(string _s) {
   return _s;
 }
 
-template <typename T> string vtos(const T &value) {
+template <typename T>
+string vtos(const T &value) {
   stringstream ss;
   ss << value;
   return ss.str();
 }
 // Dep check
 
-} // namespace StringManip
+}  // namespace StringManip
 #endif

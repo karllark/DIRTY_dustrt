@@ -51,9 +51,7 @@ void setup_emitted_grid_for_montecarlo(geometry_struct &geometry,
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
       for (j = 0; j < geometry.grids[m].index_dim[1]; j++)
         for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
-
           for (x = 0; x < runinfo.wavelength.size(); x++) {
-
             // normalize if there we need the emission by grain/emission type
             if (runinfo.do_emission_grain && runinfo.dust_thermal_emission)
               if (geometry.grids[m].grid(i, j, k).emitted_energy[0][x] > 0) {

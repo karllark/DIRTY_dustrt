@@ -70,8 +70,7 @@ void new_photon_grid_source(photon_data &photon, geometry_struct &geometry,
 
   int i = 0;
 #ifdef DEBUG_NPGS
-  for (i = 0; i < 3; i++)
-    cout << photon.dir_cosines[i] << " ";
+  for (i = 0; i < 3; i++) cout << photon.dir_cosines[i] << " ";
   cout << "starting dir cosines" << endl;
 #endif
 
@@ -83,7 +82,7 @@ void new_photon_grid_source(photon_data &photon, geometry_struct &geometry,
   int x_val, y_val, z_val;
 
   if (random_obj.random_num() >=
-      geometry.emit_bias_fraction) { // sample radiation field
+      geometry.emit_bias_fraction) {  // sample radiation field
     // check which grid are we in
     vector<one_grid>::iterator selected_grid;
     if (ran_val <= geometry.grids[0].grid.back().emitted_energy_weighted[x]) {
@@ -108,7 +107,7 @@ void new_photon_grid_source(photon_data &photon, geometry_struct &geometry,
     // rad field sampling gets a weight of 1 as it is sampling the radiation
     // field "correctly"
     photon.stellar_weight = 1.0;
-  } else { // uniformly sample the grid
+  } else {  // uniformly sample the grid
     // check which grid are we in
     vector<one_grid>::iterator selected_grid;
     if (ran_val <= geometry.grids[0].grid.back().emitted_energy_uniform[x]) {
@@ -202,8 +201,7 @@ void new_photon_grid_source(photon_data &photon, geometry_struct &geometry,
                            (geometry.grids[grid_num].positions[2][z_val + 1] -
                             geometry.grids[grid_num].positions[2][z_val]);
 
-  for (i = 0; i < 3; i++)
-    photon.birth_position[i] = photon.position[i];
+  for (i = 0; i < 3; i++) photon.birth_position[i] = photon.position[i];
 
   // save the birth grain/emission type probabilities if needed for dust thermal
   // emission part of dirty

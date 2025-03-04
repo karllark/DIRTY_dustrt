@@ -31,7 +31,6 @@ int StochasticHeating(vector<float> &wave, vector<float> &cJprod,
                       vector<vector<double>> &StochasticLum)
 
 {
-
   int maxBins = 1000;
   bool converged = false;
   bool IncreaseBins = false;
@@ -52,7 +51,7 @@ int StochasticHeating(vector<float> &wave, vector<float> &cJprod,
   int status;
   int nWave = wave.size();
 
-  int idx; //,idx1,idxp;
+  int idx;  //,idx1,idxp;
   vector<double> _pofTint;
 
   double _pFac;
@@ -78,8 +77,7 @@ int StochasticHeating(vector<float> &wave, vector<float> &cJprod,
   // Size to max - memory inefficient, cpu efficient(?)
   _P.resize(maxBins, 0);
   TM.resize(maxBins);
-  for (int i = 0; i < maxBins; ++i)
-    TM[i].resize(maxBins);
+  for (int i = 0; i < maxBins; ++i) TM[i].resize(maxBins);
 
   // Isolate temperature region.
   _enth.resize(nBins, 0);
@@ -91,8 +89,7 @@ int StochasticHeating(vector<float> &wave, vector<float> &cJprod,
   idx = 1;
   float MaxE = Constant::PLANCKLIGHT / wave[0];
   int idx_max = _tgrid.size() - 1;
-  while (_enth[idx] - _enth[0] < MaxE && idx < idx_max)
-    ++idx;
+  while (_enth[idx] - _enth[0] < MaxE && idx < idx_max) ++idx;
   TMax = _tgrid[idx];
   if (TMax < 1.5 * TEq) {
     if (TEq < 100.)
@@ -111,8 +108,7 @@ int StochasticHeating(vector<float> &wave, vector<float> &cJprod,
                                      _denth, nBins);
     // Setup probability distribution
     status = SolveTransitionMatrix(TM, nBins, _P);
-    if (status != Flags::FSUCCESS)
-      return status;
+    if (status != Flags::FSUCCESS) return status;
     // Adjust temperature
     if (_P[nBins - 1] > Ptol)
       TMax *= 1.5;
@@ -122,7 +118,7 @@ int StochasticHeating(vector<float> &wave, vector<float> &cJprod,
 
   int loop_count = 0;
   // Convergence wrapper...
-  while (!converged) { // convergence bracket
+  while (!converged) {  // convergence bracket
 
     // Compute grid
     _enth.resize(nBins, 0);
@@ -131,17 +127,14 @@ int StochasticHeating(vector<float> &wave, vector<float> &cJprod,
     _tgrid.resize(nBins + 1, 0);
     status = ComputeGrid(_enth, _denth, _temp, _tgrid, Temperature, Enthalpy,
                          TMax, TMin, nBins);
-    if (status != Flags::FSUCCESS)
-      return status;
+    if (status != Flags::FSUCCESS) return status;
     // Compute transition matrix
     status = ComputeTransitionMatrix(TM, wave, _temp, _enth, cabs, cJprod,
                                      _denth, nBins);
-    if (status != Flags::FSUCCESS)
-      return status;
+    if (status != Flags::FSUCCESS) return status;
     // Solve transition matrix
     status = SolveTransitionMatrix(TM, nBins, _P);
-    if (status != Flags::FSUCCESS)
-      return status;
+    if (status != Flags::FSUCCESS) return status;
 
     // integrand.resize(nWave);
     idb = integrand.begin();
@@ -149,40 +142,36 @@ int StochasticHeating(vector<float> &wave, vector<float> &cJprod,
     it = cabs.begin();
     for (int i = 0; i < nWave; i++, idb++, it1++, it++) {
       _pofTint = NumUtils::prod_bbodyCGS<double>(*it1, _temp,
-                                                 _P); // P(T)*B(T) at wv,_sz
+                                                 _P);  // P(T)*B(T) at wv,_sz
       _pFac = 0.0;
       _pFac = accumulate(_pofTint.begin(), _pofTint.end(),
-                         0.0); // Sum_T (P(T)*B(T))
+                         0.0);  // Sum_T (P(T)*B(T))
       *idb = (*it) * _pFac;
       StochasticLum[_sz][i] =
-          *idb; // this is C(lam)*Sum_T (P(T)*B(T,lam)) ~ stochastic L(lam)
+          *idb;  // this is C(lam)*Sum_T (P(T)*B(T,lam)) ~ stochastic L(lam)
     }
     Eemit = NumUtils::integrate<double>(wave, integrand);
     thistol = abs(EAbs - Eemit) / EAbs;
 
-    if (thistol > tol) { // not converged
+    if (thistol > tol) {  // not converged
 
       if (thistol > 100. * lasttol && OnePass) {
         IncreaseBins = true;
         TMin = oldTMin;
         TMax = oldTMax;
       } else {
-        lasttol = thistol; // save current tolerance.
+        lasttol = thistol;  // save current tolerance.
         oldTMin = TMin;
         oldTMax = TMax;
         idx = nBins - 1;
 
         // Work on upper bounds
         if (_P[idx] == 0.0) {
-          while (_P[idx] == 0.0)
-            --idx;
-          if (idx < 0)
-            return Flags::FST_ZERO_PROBABILITY;
+          while (_P[idx] == 0.0) --idx;
+          if (idx < 0) return Flags::FST_ZERO_PROBABILITY;
           if (_P[idx] < Ptol) {
-            while (_P[idx] < Ptol)
-              --idx;
-            if (idx < 0)
-              return Flags::FST_SMALL_PROBABILITY_HI;
+            while (_P[idx] < Ptol) --idx;
+            if (idx < 0) return Flags::FST_SMALL_PROBABILITY_HI;
             TMax = _tgrid[idx + 1];
           } else {
             TMax = _tgrid[nBins];
@@ -190,10 +179,8 @@ int StochasticHeating(vector<float> &wave, vector<float> &cJprod,
         }
 
         if (_P[idx] < Ptol) {
-          while (_P[idx] < Ptol)
-            --idx;
-          if (idx < 0)
-            return Flags::FST_SMALL_PROBABILITY_HI;
+          while (_P[idx] < Ptol) --idx;
+          if (idx < 0) return Flags::FST_SMALL_PROBABILITY_HI;
           TMax = _tgrid[idx + 1];
         }
 
@@ -205,10 +192,8 @@ int StochasticHeating(vector<float> &wave, vector<float> &cJprod,
         // set lower bounds
         idx = 0;
         if (_P[idx] < Ptol) {
-          while (_P[idx] < Ptol)
-            ++idx;
-          if (idx > nBins - 1)
-            return Flags::FST_SMALL_PROBABILITY_LO;
+          while (_P[idx] < Ptol) ++idx;
+          if (idx > nBins - 1) return Flags::FST_SMALL_PROBABILITY_LO;
           if (idx == 0)
             TMin = _tgrid[idx];
           else
@@ -223,9 +208,9 @@ int StochasticHeating(vector<float> &wave, vector<float> &cJprod,
       if (nBins > maxBins) {
         if (lastincrease) {
           // accept a lower tolerance for these cases
-          if (thistol > tol_max_bins) { // still not converged well enough
+          if (thistol > tol_max_bins) {  // still not converged well enough
             return Flags::FST_EXCEED_MAXBINS;
-          } else { // close enough for DIRTY work.
+          } else {  // close enough for DIRTY work.
             converged = true;
           }
         }
@@ -239,24 +224,20 @@ int StochasticHeating(vector<float> &wave, vector<float> &cJprod,
            << loop_count << endl;
       cout << "** Input Parameters:" << endl;
       cout << "wave:\t";
-      for (uint i = 0; i < wave.size(); i++)
-        cout << wave[i] << ' ';
+      for (uint i = 0; i < wave.size(); i++) cout << wave[i] << ' ';
       cout << endl;
       cout << "cJprod:\t";
-      for (uint i = 0; i < cJprod.size(); i++)
-        cout << cJprod[i] << ' ';
+      for (uint i = 0; i < cJprod.size(); i++) cout << cJprod[i] << ' ';
       cout << endl;
       cout << "cabs:\t";
-      for (uint i = 0; i < cabs.size(); i++)
-        cout << cabs[i] << ' ';
+      for (uint i = 0; i < cabs.size(); i++) cout << cabs[i] << ' ';
       cout << endl;
       cout << "Temperature:\t";
       for (uint i = 0; i < Temperature.size(); i++)
         cout << Temperature[i] << ' ';
       cout << endl;
       cout << "Enthalpy:\t";
-      for (uint i = 0; i < Enthalpy.size(); i++)
-        cout << Enthalpy[i] << ' ';
+      for (uint i = 0; i < Enthalpy.size(); i++) cout << Enthalpy[i] << ' ';
       cout << endl;
       cout << "EAbs:\t" << EAbs << endl;
       cout << "TMin:\t" << TMin << endl;
@@ -264,8 +245,7 @@ int StochasticHeating(vector<float> &wave, vector<float> &cJprod,
       cout << "TEq:\t" << TEq << endl;
       cout << "** Calculation variables:" << endl;
       cout << "integrand:\t";
-      for (uint i = 0; i < integrand.size(); i++)
-        cout << integrand[i] << ' ';
+      for (uint i = 0; i < integrand.size(); i++) cout << integrand[i] << ' ';
       cout << endl;
       cout << "Eemit:\t" << Eemit << endl;
       cout << "tol:\t" << tol << endl;
@@ -285,10 +265,9 @@ int StochasticHeating(vector<float> &wave, vector<float> &cJprod,
 int ComputeGrid(vector<float> &enth, vector<float> &denth, vector<float> &temp,
                 vector<float> &tgrid, vector<float> &Temperature,
                 vector<float> &Enthalpy, float &TMax, float &TMin, int &nBins) {
-
   vector<float>::iterator _itb, _ite, _it, _it1, _it2;
   float _DT =
-      (TMax - TMin) / static_cast<float>(nBins); // Linear temperature grid
+      (TMax - TMin) / static_cast<float>(nBins);  // Linear temperature grid
 
   vector<float> _enthgrid(nBins + 1);
 
@@ -324,7 +303,6 @@ int ComputeTransitionMatrix(vector<vector<double>> &TM, vector<float> &wave,
                             vector<float> &temp, vector<float> &enth,
                             vector<float> &cabs, vector<float> &cJprod,
                             vector<float> &denth, int &nBins) {
-
   float _wT, _slp, _icpt, _thiscjprod;
   int _nw = wave.size();
   int idx;
@@ -338,9 +316,9 @@ int ComputeTransitionMatrix(vector<vector<double>> &TM, vector<float> &wave,
 
   _integrand.resize(_nw);
 
-  for (int f = 0; f < nBins; ++f) { // Loop over final energy states
+  for (int f = 0; f < nBins; ++f) {  // Loop over final energy states
 
-    if (f != nBins - 1) { // Cooling transitions - only f+1 to f
+    if (f != nBins - 1) {  // Cooling transitions - only f+1 to f
 
       itb = wave.begin();
       ite = wave.end();
@@ -351,21 +329,19 @@ int ComputeTransitionMatrix(vector<vector<double>> &TM, vector<float> &wave,
                (1.0 / (std::exp(c2 / ((*it) * temp[f + 1])) - 1.0));
       TM[f][f + 1] = c1 / (enth[f + 1] - enth[f]) *
                      NumUtils::integrate<double>(wave, _integrand);
-    } // Done with cooling transitions.
+    }  // Done with cooling transitions.
 
-    for (int i = 0; i < f; ++i) { // Heating transitions - all initial < final.
+    for (int i = 0; i < f; ++i) {  // Heating transitions - all initial < final.
       if ((enth[f] - enth[i]) != 0)
         _wT = Constant::PLANCKLIGHT / (enth[f] - enth[i]);
       else
         return Flags::FST_CTM_ZERO_ENTH_DEN;
       if (_wT < wave[0] || _wT > wave[_nw - 1])
         TM[f][i] = 0.0;
-      else { // Photons exist that will induce this transition
+      else {  // Photons exist that will induce this transition
         idx = 0;
-        while (wave[idx] < _wT)
-          idx++;
-        if (idx > _nw - 1)
-          return Flags::FST_CTM_TRANSITIONID_EXCEEDS_WAVEID;
+        while (wave[idx] < _wT) idx++;
+        if (idx > _nw - 1) return Flags::FST_CTM_TRANSITIONID_EXCEEDS_WAVEID;
         if (idx == 0 || idx == _nw - 1)
           _thiscjprod = cJprod[idx];
         else {
@@ -379,8 +355,8 @@ int ComputeTransitionMatrix(vector<vector<double>> &TM, vector<float> &wave,
         }
         TM[f][i] =
             Constant::IPLANCKLIGHT * _thiscjprod * _wT * _wT * _wT * denth[f];
-        if (f == nBins - 1 && idx > 0) { // Put all transitions out of defined
-                                         // states into last state.
+        if (f == nBins - 1 && idx > 0) {  // Put all transitions out of defined
+                                          // states into last state.
           it0 = wave.begin() + idx;
           it1 = cJprod.begin() + idx;
           _wave.assign(wave.begin(), it0);
@@ -390,28 +366,24 @@ int ComputeTransitionMatrix(vector<vector<double>> &TM, vector<float> &wave,
           TM[f][i] += (_wT * NumUtils::integrate<double>(_wave, _cjprod));
         }
 
-      } // Done with photons that can produce transition.
+      }  // Done with photons that can produce transition.
 
-    } // Done with heating.
-  } // Done with final statues.
+    }  // Done with heating.
+  }  // Done with final statues.
 
-  for (int f = 0; f < nBins; ++f)
-    TM[0][0] -= TM[f][0];
+  for (int f = 0; f < nBins; ++f) TM[0][0] -= TM[f][0];
   for (int i = 1; i < nBins; ++i)
     for (int j = i - 1; j < nBins; ++j)
-      if (i != j)
-        TM[i][i] -= TM[j][i];
+      if (i != j) TM[i][i] -= TM[j][i];
 
   return Flags::FSUCCESS;
 }
 
 int SolveTransitionMatrix(vector<vector<double>> &TM, int &nBins,
                           vector<double> &P) {
-
   vector<vector<double>> _Bij;
   _Bij.resize(nBins);
-  for (int i = 0; i < nBins; ++i)
-    _Bij[i].resize(nBins);
+  for (int i = 0; i < nBins; ++i) _Bij[i].resize(nBins);
   for (int i = 0; i < nBins; ++i) {
     _Bij[nBins - 1][i] = TM[nBins - 1][i];
     for (int j = nBins - 2; j >= 0; --j) {

@@ -46,8 +46,7 @@
 using namespace std;
 
 class GrainModel : protected Grain {
-
-public:
+ public:
   // Empty constructor for vectorization in the case that we want to allow
   // segregation of grains within the model space.
   GrainModel();
@@ -153,7 +152,7 @@ public:
   inline float getDustToGasMassRatio(void) { return DustToGasMassRatio; }
   inline float getMeanMolecularWeight(void) { return MeanMolecularWeight; }
 
-private:
+ private:
   int nComp;
   int nWave;
   vector<float> Wave;
@@ -163,7 +162,8 @@ private:
 
   vector<vector<float>> SizeDistribution;
   vector<vector<float>> SizeDistributionNorm;
-  vector<float> Temperature; // Hold a single component temperature at a time...
+  vector<float>
+      Temperature;  // Hold a single component temperature at a time...
 
   // vector <vector<float> > Temperature;      // Hold a single component
   // temperature at a time...
@@ -201,27 +201,25 @@ private:
   map<string, int>::iterator iMap;
   map<string, int> ModelID;
   void ModelMapping() {
-    if (!ModelID.empty())
-      return;
-    ModelID["MRN"] = 0;           // Standard MRN
-    ModelID["BARE-GR-S"] = 1;     // Zubko et al. bare graphite+silicate
-    ModelID["SMCBAR-WD01"] = 7;   // Wiengartner+Draine SMC
-    ModelID["RV31_BC6-WD01"] = 8; // Wiengartner+Draine MW R_V=3.1
+    if (!ModelID.empty()) return;
+    ModelID["MRN"] = 0;            // Standard MRN
+    ModelID["BARE-GR-S"] = 1;      // Zubko et al. bare graphite+silicate
+    ModelID["SMCBAR-WD01"] = 7;    // Wiengartner+Draine SMC
+    ModelID["RV31_BC6-WD01"] = 8;  // Wiengartner+Draine MW R_V=3.1
   }
   map<string, int> SizeDistID;
   void SizeDistMapping() {
-    if (!SizeDistID.empty())
-      return;
-    SizeDistID["ZDA"] = 0;      // Zubko et al. Size distribution function
-    SizeDistID["WD01"] = 1;     // Wiengartner+Draine Size distribution function
-    SizeDistID["POWERLAW"] = 2; // Power law size distribution.
-    SizeDistID["GAUSS"] = 3; // Appox. single size grain distribution - Guassian
+    if (!SizeDistID.empty()) return;
+    SizeDistID["ZDA"] = 0;   // Zubko et al. Size distribution function
+    SizeDistID["WD01"] = 1;  // Wiengartner+Draine Size distribution function
+    SizeDistID["POWERLAW"] = 2;  // Power law size distribution.
+    SizeDistID["GAUSS"] =
+        3;  // Appox. single size grain distribution - Guassian
     SizeDistID["NULL"] = 99;
   }
   map<string, int> SizeTypeID;
   void SizeTypeMapping() {
-    if (!SizeTypeID.empty())
-      return;
+    if (!SizeTypeID.empty()) return;
     SizeTypeID["NULL"] = 0;
     SizeTypeID["DEF"] = 0;
     SizeTypeID["FILE"] = 1;

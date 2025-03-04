@@ -55,20 +55,20 @@ int main(int argc, char *argv[])
   // in the param file.
   bool OutputFailure = param_data.BValue("Run", "Output Failure Log");
 
-  geometry_struct geometry; // structure with geometry info (dust grid, etc.)
-  output_struct output;     // stucture with the output info (images, etc.)
-  photon_data photon; // structure with the photon info (position, direction,
-                      // weight, etc.)
-  runinfo_struct runinfo; // structure with information about the run
+  geometry_struct geometry;  // structure with geometry info (dust grid, etc.)
+  output_struct output;      // stucture with the output info (images, etc.)
+  photon_data photon;  // structure with the photon info (position, direction,
+                       // weight, etc.)
+  runinfo_struct runinfo;  // structure with information about the run
 
-  runinfo.param_filename = param_filename; // save the filename
+  runinfo.param_filename = param_filename;  // save the filename
 
 #ifdef DEBUG_DIRTY
   cout << "vars; ";
   cout.flush();
 #endif
 
-  GrainModel CurGrainModel; // object for grain model
+  GrainModel CurGrainModel;  // object for grain model
 
 #ifdef DEBUG_DIRTY
   cout << "gmod; ";
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
   // get the run parameters (basic info)
   get_run_parameters(param_data, output, geometry, runinfo);
   random_dirty random_obj(
-      runinfo.ran_seed); // object for random number generator
+      runinfo.ran_seed);  // object for random number generator
 
 #ifdef DEBUG_DIRTY
   cout << "runp; ";
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 
   // temp to reset the random number generator
   random_dirty random_obj2(
-      runinfo.ran_seed); // object for random number generator
+      runinfo.ran_seed);  // object for random number generator
 
   // do the radiative transfer over all the wavelengths
   radiative_transfer_many_waves(geometry, runinfo, output, photon, random_obj2,
@@ -146,14 +146,14 @@ int main(int argc, char *argv[])
   if (runinfo.do_ere_emission) {
     runinfo.emitted_ere_energy_grid_initialized = 0;
     // setup a new output stucture to handle the ere
-    output_struct ere_output; // stucture with the output info (images, etc.)
+    output_struct ere_output;  // stucture with the output info (images, etc.)
 #ifdef DEBUG_DIRTY
     cout << "setup ere output ";
     cout.flush();
 #endif
     setup_ere_dust_emission_output(ere_output, output);
     runinfo.out_sed_lum_offset +=
-        2; // increment to save ERE direct/scattered luminosity
+        2;  // increment to save ERE direct/scattered luminosity
 
     // get ERE emission
 #ifdef DEBUG_DIRTY
@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
 #endif
 
   // setup a new output stucture to handle the different grain types
-  output_struct de_output; // stucture with the output info (images, etc.)
+  output_struct de_output;  // stucture with the output info (images, etc.)
 
 #ifdef DEBUG_DIRTY
   cout << "RT done3; ";
@@ -205,7 +205,6 @@ int main(int argc, char *argv[])
            << endl;
       exit(8);
     } else if (runinfo.do_emission_grain) {
-
       // set this here to allow the DE part to do the initialization (or
       // reinitialize)
       geometry.emitted_energy_grid_initialized = 0;
@@ -230,7 +229,6 @@ int main(int argc, char *argv[])
   string fFailureFilename;
 
   while (!iter_done) {
-
     // Create a DirtyFailure Object
     // Will remain empty if we don't do an output.  Do all the allocations
     // regardless if whether OutputFailure is true or not to avoid compile
@@ -273,15 +271,13 @@ int main(int argc, char *argv[])
       iter_num++;
 
     // If output puting failure log, then do it.
-    if (OutputFailure)
-      Failure->WriteFailureLog();
+    if (OutputFailure) Failure->WriteFailureLog();
     // Destroy the Failure Object.
     delete Failure;
   }
 
   // output model_grid info
-  if (output.do_output_model_grid)
-    output_model_grid(geometry, output, runinfo);
+  if (output.do_output_model_grid) output_model_grid(geometry, output, runinfo);
 
   // output global, multiwavelength luminosities
   if (runinfo.do_global_output) {

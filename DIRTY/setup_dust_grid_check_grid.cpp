@@ -87,10 +87,8 @@ void setup_dust_grid_check_grid(geometry_struct &geometry, int cur_grid,
             errors_found = true;
           }
         } else {
-          if (dust_tau_per_pc < min_tau)
-            min_tau = dust_tau_per_pc;
-          if (dust_tau_per_pc > max_tau)
-            max_tau = dust_tau_per_pc;
+          if (dust_tau_per_pc < min_tau) min_tau = dust_tau_per_pc;
+          if (dust_tau_per_pc > max_tau) max_tau = dust_tau_per_pc;
         }
         // 	cout << endl;
       }
@@ -105,6 +103,5 @@ void setup_dust_grid_check_grid(geometry_struct &geometry, int cur_grid,
   }
 
   // stop if any errors found
-  if (errors_found == true)
-    exit(8);
+  if (errors_found == true) exit(8);
 }

@@ -8,6 +8,7 @@
 //                          absorbed energy, not J units)
 // ======================================================================
 #include "get_dust_ere_emission.h"
+
 #include "compat.h"
 // #define DEBUG_GDEE
 
@@ -69,17 +70,14 @@ void get_dust_ere_emission(geometry_struct &geometry, runinfo_struct &runinfo)
 
   // loop over all the defined grids
   for (m = 0; m < int(geometry.grids.size()); m++) {
-
     // loop of the cells in this grid
     for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
       for (j = 0; j < geometry.grids[m].index_dim[1]; j++) {
-
         if (runinfo.verbose >= 1)
           cout << "working on dust ere emission (m,k,j) = " << m << " " << k
                << " " << j << endl;
 
         for (i = 0; i < geometry.grids[m].index_dim[0]; i++) {
-
           // setup emitted energy array
           if (!geometry.emitted_energy_grid_initialized) {
             geometry.grids[m].grid(i, j, k).emitted_energy.resize(
@@ -130,15 +128,12 @@ void get_dust_ere_emission(geometry_struct &geometry, runinfo_struct &runinfo)
 
             if ((tot_abs_energy > 0.0) &&
                 (tot_nonzero < int(0.5 * runinfo.wavelength.size()))) {
-
               num_cells_too_few_waves++;
 
             } else if (tot_abs_energy == 0.0) {
-
               num_cells_zero++;
 
             } else {
-
               num_cells_enough++;
 
               // interoplate the radiative field to fill all the wavelength

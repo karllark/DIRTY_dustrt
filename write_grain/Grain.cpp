@@ -28,7 +28,6 @@ void Grain::MakeGrain(string const &inComponentName,
                       string const &fCalorimetry, vector<float> &MasterWave,
                       vector<float> &MasterSize, string const &Path,
                       float a_min, float a_max) {
-
   cout << "Instantiating Grain Object for " << fOpticalConstants << endl;
 
   // set the name of this component
@@ -38,10 +37,8 @@ void Grain::MakeGrain(string const &inComponentName,
   // Check if we are going to interpolate onto new wavelength and/or size grids
   bool interpWave = true;
   bool interpSize = true;
-  if (MasterWave[0] == -1)
-    interpWave = false;
-  if (MasterSize[0] == -1)
-    interpSize = false;
+  if (MasterWave[0] == -1) interpWave = false;
+  if (MasterSize[0] == -1) interpSize = false;
   // ***************************************************************************
 
   // ***************************************************************************
@@ -83,8 +80,7 @@ void Grain::MakeGrain(string const &inComponentName,
   // Comments:
   while (!_StartData) {
     getline(_file, _line);
-    if (_line[0] == '#')
-      continue;
+    if (_line[0] == '#') continue;
     _StartData = true;
   }
 
@@ -112,7 +108,7 @@ void Grain::MakeGrain(string const &inComponentName,
   }
 
   // Set the grain sublimation temperature.
-  SubT = 1500.0; // Will want to have this read from input file.
+  SubT = 1500.0;  // Will want to have this read from input file.
   // ***************************************************************************
 
   // ***************************************************************************
@@ -124,17 +120,16 @@ void Grain::MakeGrain(string const &inComponentName,
   _g2d.resize(_nsize);
 
   for (int sz = 0; sz < _nsize; sz++) {
-
-    getline(_file, _line); // Blank line
-    getline(_file, _line); // This Size definition
+    getline(_file, _line);  // Blank line
+    getline(_file, _line);  // This Size definition
     _parts = StringManip::strsplit(_line, "=");
-    _size.push_back(atof(_parts[0].c_str()) * Constant::UM_CM); // Size in cm
+    _size.push_back(atof(_parts[0].c_str()) * Constant::UM_CM);  // Size in cm
     _Const = (Constant::PI)*pow(_size[sz], 2);
-    getline(_file, _line); // column headers
+    getline(_file, _line);  // column headers
     cout.flush();
 
     for (int wv = 0; wv < _nwave; wv++) {
-      getline(_file, _line); // First data line.
+      getline(_file, _line);  // First data line.
       _parts = StringManip::strsplit(_line);
       _offset = _parts.size() - 5;
       if (sz == 0)
@@ -181,7 +176,6 @@ void Grain::MakeGrain(string const &inComponentName,
   // comes in outside the bounds of where Q's are defined, MasterSize
   // WILL BE MODIFIED!
   if (interpSize) {
-
     MasterSize.erase(remove_if(MasterSize.begin(), MasterSize.end(),
                                bind2nd(less<float>(), _size[0])),
                      MasterSize.end());
@@ -205,7 +199,7 @@ void Grain::MakeGrain(string const &inComponentName,
     copy(_size.begin(), _size.end(), back_inserter(size));
 
     // If necessary, modify class size member.
-    if (a_min != -1) { // been set...
+    if (a_min != -1) {  // been set...
       // Stick in the lower limit if it is within defined bounds.
       // Otherwise, keep lower bound as is.
       // if (a_min > size[0])
@@ -222,7 +216,7 @@ void Grain::MakeGrain(string const &inComponentName,
       //  Since we may have modified the size distribution, do interpolate.
       interpSize = true;
     }
-    if (a_max != -1) { // been set...
+    if (a_max != -1) {  // been set...
       // Stick in the upper limit is it is within defined bounds
       // Otherwise, keep upper bound as is.
       // if (a_max < size[size.size()-1])
@@ -254,7 +248,6 @@ void Grain::MakeGrain(string const &inComponentName,
   // Loaded up our temporary 2d array, interpolated onto proper
   // wave length scale.  Now interpolate onto proper size scale.
   for (int wv = 0; wv < nwave; wv++) {
-
     // Populate temp vectors with optical constants as f(size)
     // for each wavelength.
     for (int sz = 0; sz < _nsize; sz++) {
@@ -295,11 +288,10 @@ void Grain::MakeGrain(string const &inComponentName,
   }
 
   // Get Comment lines
-  _StartData = false; // Reset for comment lines
+  _StartData = false;  // Reset for comment lines
   while (!_StartData) {
     getline(_filecal, _line);
-    if (_line[0] == '#')
-      continue;
+    if (_line[0] == '#') continue;
     _StartData = true;
   }
 
@@ -342,7 +334,6 @@ void Grain::MakeGrain(string const &inComponentName,
 vector<float> Grain::getCAbs(float a_size)
 
 {
-
   if (a_size < size[0] || a_size > size[nsize - 1]) {
     cout << "You are attempting to retrieve optical constants outside of the"
          << endl;
@@ -361,9 +352,9 @@ vector<float> Grain::getCAbs(float a_size)
   szIter it_loc = find(size.begin(), size.end(), a_size);
   int idx = it_loc - it_beg;
 
-  if (it_loc != size.end()) { // We have found an exact match
+  if (it_loc != size.end()) {  // We have found an exact match
     return CAbs[idx];
-  } else { // do a weighted average.
+  } else {  // do a weighted average.
     it_loc = lower_bound(size.begin(), size.end(), a_size);
     idx = it_loc - it_beg;
     vector<float> Tmp1(nwave);
@@ -394,7 +385,6 @@ vector<float> Grain::getCAbs(float a_size)
 vector<float> Grain::getCSca(float a_size)
 
 {
-
   if (a_size < size[0] || a_size > size[nsize - 1]) {
     cout << "You are attempting to retrieve optical constants outside of the"
          << endl;
@@ -413,9 +403,9 @@ vector<float> Grain::getCSca(float a_size)
   szIter it_loc = find(size.begin(), size.end(), a_size);
   int idx = it_loc - it_beg;
 
-  if (it_loc != size.end()) { // We have found an exact match
+  if (it_loc != size.end()) {  // We have found an exact match
     return CSca[idx];
-  } else { // do a weighted average.
+  } else {  // do a weighted average.
     it_loc = lower_bound(size.begin(), size.end(), a_size);
     idx = it_loc - it_beg;
     vector<float> Tmp1(nwave);
@@ -447,7 +437,6 @@ vector<float> Grain::getCSca(float a_size)
 vector<float> Grain::getphFunc(float a_size)
 
 {
-
   if (a_size < size[0] || a_size > size[nsize - 1]) {
     cout << "You are attempting to retrieve optical constants outside of the"
          << endl;
@@ -466,9 +455,9 @@ vector<float> Grain::getphFunc(float a_size)
   szIter it_loc = find(size.begin(), size.end(), a_size);
   int idx = it_loc - it_beg;
 
-  if (it_loc != size.end()) { // We have found an exact match
+  if (it_loc != size.end()) {  // We have found an exact match
     return CSca[idx];
-  } else { // do a weighted average.
+  } else {  // do a weighted average.
     it_loc = lower_bound(size.begin(), size.end(), a_size);
     idx = it_loc - it_beg;
     vector<float> Tmp1(nwave);

@@ -1,11 +1,10 @@
 // Jun 3-4 2009: Modified to be DirtyFailure aware.  Dust emission failures will
 // pass failure information
 //               back up the call stack.
+#include "DirtyFailure.h"
 #include "GrainModel.h"
 #include "HeatUtils.h"
 #include "NumUtils.h"
-
-#include "DirtyFailure.h"
 
 // #include "DirtyFlags.h"
 extern int StochasticHeating_bttw(vector<float> &wave, vector<float> &J,
@@ -18,8 +17,8 @@ extern int StochasticHeating_bttw(vector<float> &wave, vector<float> &J,
 
 // int ComputeDustEmission (vector <float> & J, GrainModel & GrainModel,
 // 			 vector <vector<double> > & EmmittedEnergy, bool &
-// DoStochastic, 			 bool & UseEffective_Grain, 			 float & _FailureSz, int &
-// _FailureComp, vector <float> & _transitionSz)
+// DoStochastic, 			 bool & UseEffective_Grain,
+// float & _FailureSz, int & _FailureComp, vector <float> & _transitionSz)
 
 int ComputeDustEmission_igrain(
     vector<float> &J, vector<float> &CAbs, vector<float> &Wave,
@@ -31,7 +30,6 @@ int ComputeDustEmission_igrain(
     float RadiationFieldScale, float RadiationFieldTemperature)
 
 {
-
   int status;
   uint _nw = Wave.size();
   float EAbs, EquilibriumGrainTemperature;
@@ -67,8 +65,7 @@ int ComputeDustEmission_igrain(
   Tu = HeatUtils::getTmean(CalorimetryTGrid, Enthalpy, MeanPhotonEnergy);
   TauCooling = HeatUtils::getTauRad(CAbs, Wave, MeanPhotonEnergy, Tu);
 
-  if (TauScaling * TauHeating > TauCooling)
-    StochasticallyHeated = true;
+  if (TauScaling * TauHeating > TauCooling) StochasticallyHeated = true;
 
   EquilibriumEmission =
       NumUtils::prod_bbodyCGS<double>(Wave, EquilibriumGrainTemperature, CAbs);
@@ -78,8 +75,7 @@ int ComputeDustEmission_igrain(
     status = StochasticHeating_bttw(
         Wave, _cJprod, CAbs, CalorimetryTGrid, Enthalpy, EAbs, _mintemp,
         _maxtemp, StochasticEmission, ProbabilityDistribution, temp);
-    if (status != Flags::FSUCCESS)
-      cout << " Huh..." << status << endl;
+    if (status != Flags::FSUCCESS) cout << " Huh..." << status << endl;
 
     ss << ModelName << "_c_" << ComponentIndex + 1 << "_" << ComponentName
        << "_s_" << SizeIndex + 1 << "_" << RadiationFieldType << "_"
@@ -100,8 +96,7 @@ int ComputeDustEmission_igrain(
       pdistStream << temp[i] << " " << ProbabilityDistribution[i] << endl;
   }
 
-  if (status != Flags::FSUCCESS)
-    return status; // we've had a heating failure.
+  if (status != Flags::FSUCCESS) return status;  // we've had a heating failure.
 
   return Flags::FSUCCESS;
 }

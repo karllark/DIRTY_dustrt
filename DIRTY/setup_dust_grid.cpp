@@ -128,7 +128,6 @@ void setup_dust_grid(ConfigFile &param_data, geometry_struct &geometry,
       }
     }
   } else if (geometry.source_type == "diffuse") {
-
     // set the solid angle
     // assuming the diffuse field convers 4*pi sr
     // if not, then this should be set to the angular area of the emitted
@@ -212,7 +211,6 @@ void setup_dust_grid(ConfigFile &param_data, geometry_struct &geometry,
     geometry.new_photon_source_type = NEW_PHOTON_DEXP_DISK;
 
   } else if (geometry.source_type == "pow_sphere") {
-
     geometry.solid_angle = 4. * M_PI;
     geometry.new_photon_source_type = NEW_PHOTON_POW_SPHERE;
 
@@ -263,12 +261,10 @@ void setup_dust_grid(ConfigFile &param_data, geometry_struct &geometry,
 
   // check if an internal observer position is set
   geometry.internal_observer = param_data.IValue("Geometry", "internal_obs");
-  if (geometry.internal_observer == -99)
-    geometry.internal_observer = 0;
+  if (geometry.internal_observer == -99) geometry.internal_observer = 0;
   check_input_param("internal_obs", geometry.internal_observer, 0, 1);
 
   if (geometry.num_observers == 1) {
-
     // external observer: read in observer angles and convert to radians
     if (geometry.internal_observer == 0) {
       geometry.observer_angles[0][0] =
@@ -279,7 +275,7 @@ void setup_dust_grid(ConfigFile &param_data, geometry_struct &geometry,
       geometry.observer_angles[1][0] = param_data.FValue("Geometry", "obs_phi");
       check_input_param("obs_theta", geometry.observer_angles[1][0], 0., 360.);
       geometry.observer_angles[1][0] *= M_PI / 180.;
-    } else { // internal observer
+    } else {  // internal observer
       geometry.observer_position[0] = param_data.FValue("Geometry", "obs_x");
       check_input_param("obs_x", geometry.observer_position[0],
                         -1.0 * geometry.radius, geometry.radius);
@@ -292,7 +288,6 @@ void setup_dust_grid(ConfigFile &param_data, geometry_struct &geometry,
     }
 
   } else {
-
     // multiple internal observers not implemented (yet)
     if (geometry.internal_observer == 1) {
       cout << "multiple internal observers not implemented (yet)" << endl;
@@ -337,8 +332,7 @@ void setup_dust_grid(ConfigFile &param_data, geometry_struct &geometry,
   // randomize observer position
   geometry.randomize_observer =
       param_data.IValue("Geometry", "randomize_observer");
-  if (geometry.randomize_observer == -99)
-    geometry.randomize_observer = 0;
+  if (geometry.randomize_observer == -99) geometry.randomize_observer = 0;
   check_input_param("ranomize_observer", geometry.randomize_observer, 0, 1);
 
   // setup the photon structure with positions for the maximum grid depth
@@ -352,7 +346,6 @@ void setup_dust_grid(ConfigFile &param_data, geometry_struct &geometry,
   // add in the initialization for the photon path variables
   photon.path_max_cells = 10;
   vector<int> tmp_index(photon.path_max_cells);
-  for (i = 0; i < 4; i++)
-    photon.path_pos_index.push_back(tmp_index);
+  for (i = 0; i < 4; i++) photon.path_pos_index.push_back(tmp_index);
   photon.path_tau.resize(photon.path_max_cells);
 }

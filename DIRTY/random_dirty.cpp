@@ -45,8 +45,7 @@ random_dirty::random_dirty(long seed)
   for (j = (NTAB + 7); j >= 0; j--) {
     k = _idum / IQ1;
     _idum = IA1 * (_idum - k * IQ1) - k * IR1;
-    if (_idum < 0)
-      _idum += IM1;
+    if (_idum < 0) _idum += IM1;
     if (j < NTAB) {
       _iv[j] = _idum;
     }
@@ -60,24 +59,20 @@ random_dirty::random_dirty(long seed)
 double random_dirty::random_num()
 
 {
-
   int j;
   long k;
   double temp;
 
   k = _idum / IQ1;
   _idum = IA1 * (_idum - k * IQ1) - k * IR1;
-  if (_idum < 0)
-    _idum += IM1;
+  if (_idum < 0) _idum += IM1;
   k = idum2 / IQ2;
   idum2 = IA2 * (idum2 - k * IQ2) - k * IR2;
-  if (idum2 < 0)
-    idum2 += IM2;
+  if (idum2 < 0) idum2 += IM2;
   j = int(iy / NDIV);
   iy = _iv[j] - idum2;
   _iv[j] = _idum;
-  if (iy < 1)
-    iy += IMM1;
+  if (iy < 1) iy += IMM1;
   temp = AM * iy;
   if (temp > RNMX) {
     //       cout << "RNMX = " << RNMX << endl;

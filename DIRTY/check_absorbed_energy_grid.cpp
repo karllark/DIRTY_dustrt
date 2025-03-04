@@ -18,7 +18,6 @@ void check_absorbed_energy_grid(geometry_struct &geometry,
     total_abs_energy = 0.0;
 
     for (m = 0; m < int(geometry.grids.size()); m++) {
-
       // loop of the cells in this grid
       for (k = 0; k < geometry.grids[m].index_dim[2]; k++)
         for (j = 0; j < geometry.grids[m].index_dim[1]; j++)
@@ -28,7 +27,7 @@ void check_absorbed_energy_grid(geometry_struct &geometry,
             // << endl; 	      exit(8);
             // 	    }
             //	    abs_energy[x] +=
-            //geometry.grids[m].grid(i,j,k).absorbed_energy[x];
+            // geometry.grids[m].grid(i,j,k).absorbed_energy[x];
             if (geometry.grids[m].grid(i, j, k).dust_tau_per_pc > 0.0) {
               abs_energy[x] +=
                   geometry.grids[m].grid(i, j, k).absorbed_energy[x] *

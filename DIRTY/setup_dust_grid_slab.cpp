@@ -9,6 +9,7 @@
 // KDG 16 Jun 2015 - added reading of different values for x,y,z max cell tau
 // ======================================================================
 #include "setup_dust_grid_slab.h"
+
 #include "compat.h"
 // #define DEBUG_SDG
 
@@ -26,8 +27,7 @@ void setup_dust_grid_slab(ConfigFile &param_data, geometry_struct &geometry,
 
   // radius of geometry (needed for output)
   geometry.radius = size_xy / 2.;
-  if (size_z / 2. > geometry.radius)
-    geometry.radius = size_z / 2.;
+  if (size_z / 2. > geometry.radius) geometry.radius = size_z / 2.;
 
   // angular radius needs to be large enough to allow for any rotation and still
   // have all the photons encompassed in the final image
