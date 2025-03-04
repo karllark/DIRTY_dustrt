@@ -128,6 +128,8 @@ struct geometry_struct {
   double scat_bias_fraction;
   double scat_angle_bias_fraction;
   double emit_bias_fraction;
+
+  int repeat_boundary_xy;
 };
 
 #endif

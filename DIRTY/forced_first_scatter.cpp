@@ -43,7 +43,7 @@ int forced_first_scatter (geometry_struct& geometry,
   //dummy_photon.path_cur_cells = -1;  // set to -1 *not* to save cells tranversed
   dummy_photon.path_cur_cells = 0;  // set to 0 to save cells transversed
 
-  distance_traveled = calc_photon_trajectory(dummy_photon, geometry, target_tau, target_dist, ffs_escape, tau_to_surface);
+  distance_traveled = calc_photon_trajectory(dummy_photon, geometry, target_tau, target_dist, ffs_escape, tau_to_surface, 0);
   photon.first_tau = tau_to_surface;
   photon.prev_tau_surface = tau_to_surface;
 
@@ -134,7 +134,7 @@ int forced_first_scatter (geometry_struct& geometry,
 #ifdef DEBUG_FFS
     if (photon.number == OUTNUM) cout << "tau_traveled in = " << tau_traveled << endl;
 #endif
-    distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, target_dist, escape, tau_traveled);
+    distance_traveled = calc_photon_trajectory(photon, geometry, target_tau, target_dist, escape, tau_traveled, 0);
 
     // cout << photon.number << " ";
     // cout << target_tau << " ";

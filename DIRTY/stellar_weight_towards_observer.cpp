@@ -97,7 +97,7 @@ double stellar_weight_towards_observer(photon_data photon,
 
   double distance_traveled = 0.0;
   distance_traveled = calc_photon_trajectory(
-      photon, geometry, target_tau, target_dist, escape, tau_birth_to_obs);
+      photon, geometry, target_tau, target_dist, escape, tau_birth_to_obs, 0);
 
 #ifdef DEBUG_STWTO
   if (photon.number == OUTNUM) {

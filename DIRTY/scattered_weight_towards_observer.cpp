@@ -83,7 +83,7 @@ double scattered_weight_towards_observer(photon_data photon,
 #endif
   try {
     distance_traveled = calc_photon_trajectory(
-        photon, geometry, target_tau, target_dist, escape, tau_scat_to_obs);
+        photon, geometry, target_tau, target_dist, escape, tau_scat_to_obs, 0);
   } catch (std::out_of_range) {
     cout << "photon # = " << photon.number << endl;
     cout << "num scat = " << photon.num_scat << endl;
