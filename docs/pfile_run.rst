@@ -37,6 +37,23 @@ generator will use the seed to produce random numbers that are used in various
 parts of Monte Carlo simulation. The independence of runs with different random 
 number seeds is not guaranteed.
 
+**repeat_boundary_xy [0,1]**
+
+This adds a repeating boundary condition for photons that exit the model grid in
+the x or y directions. These photons continue along their trajectories, just
+shifted to the opposite side of the model (i.e., if exiting in the positive x
+direction, the photon's x position is set to -x and the photon continues through
+the model grid).
+
+This option only will work correctly for models that fully fill the main grid -
+no cells with -0.5 indicating the edge of the model has been reached. The slab
+geometry meets this criteria. The file geometry can meet this criteria if the
+file is setup with no -0.5 values.
+
+The repeating xy boundary will cause longer run times as the photon trajectories
+are longer. These run times can be much longer depending on the optical depths
+of the model, where low may mean longer than high, depending on the geometry.
+
 Output Details
 ==============
 
