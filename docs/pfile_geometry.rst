@@ -30,7 +30,7 @@ Internal observer (units are pc):
 
 **obs_y=0. [-radius, +radius]**
 
-**obs_y=0. [-radius, +radius]**
+**obs_z=0. [-radius, +radius]**
 
 External obsever (units are degrees):
 
