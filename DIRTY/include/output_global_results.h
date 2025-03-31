@@ -21,8 +21,8 @@
 //**********************************************************************
 // external function definitions
 
-extern int check_fits_io (int status, const char text[100]);
+extern int check_fits_io(int status, const char text[100]);
 
-extern int fits_params_to_header (string param_filename, fitsfile *out_ptr);
+extern int fits_params_to_header(string param_filename, fitsfile *out_ptr);
 
 #endif

@@ -23,9 +23,9 @@
 /* extern void determine_photon_position_index_initial (geometry_struct& geometry, */
 /*   					             photon_data& photon); */
 
-extern double scattered_weight_towards_observer (photon_data photon, geometry_struct &geometry,
-                                                 float observer_position[3]);
+extern double scattered_weight_towards_observer(photon_data photon, geometry_struct &geometry,
+                                                float observer_position[3]);
 
-extern void rotate_zaxis_for_observer (float transform[3][3], photon_data &photon);
+extern void rotate_zaxis_for_observer(float transform[3][3], photon_data &photon);
 
 #endif

@@ -34,6 +34,6 @@ const double U_J = (FPI) / (LIGHT);  // Convert Energy Density to Field
 const double VFAC = (FPI) / 3.0;     // Volume factor (4/3)*pi
 const double ERG_EV = 6.24150974e11; // Ergs -> electron volts
 
-}
+} // namespace Constant
 
 #endif

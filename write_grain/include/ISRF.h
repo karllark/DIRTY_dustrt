@@ -24,36 +24,32 @@ using namespace std;
 class ISRF
 {
 
-private:
-  int nWave;
-  float XMMP;
-  vector<float> theISRF;
-  vector<float> wave;
+  private:
+    int nWave;
+    float XMMP;
+    vector<float> theISRF;
+    vector<float> wave;
 
-public:
-  ISRF (vector<float> in_wave, float in_XMMP);
-  ~ISRF () {};
+  public:
+    ISRF(vector<float> in_wave, float in_XMMP);
+    ~ISRF() {};
 
-  inline vector<float>
-  getISRF (void)
-  {
-    return theISRF;
-  }
-  inline vector<float>
-  getISRFwave (void)
-  {
-    return wave;
-  }
-  inline int
-  getN (void)
-  {
-    return nWave;
-  }
-  inline float
-  getScale (void)
-  {
-    return XMMP;
-  }
+    inline vector<float> getISRF(void)
+    {
+        return theISRF;
+    }
+    inline vector<float> getISRFwave(void)
+    {
+        return wave;
+    }
+    inline int getN(void)
+    {
+        return nWave;
+    }
+    inline float getScale(void)
+    {
+        return XMMP;
+    }
 };
 
 #endif

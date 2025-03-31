@@ -24,73 +24,72 @@
 using namespace std;
 
 // constructor
-random_dirty::random_dirty (long seed)
+random_dirty::random_dirty(long seed)
 
 {
-  int j;
-  long k;
-  // float temp;
-  idum2 = 123456789;
-  iy = 0;
+    int j;
+    long k;
+    // float temp;
+    idum2 = 123456789;
+    iy = 0;
 
-  // setup shuffle array if not done so already
-  assert (seed <= 0);
-  // if (seed <= 0) {
-  _idum = seed;
-  if (-_idum < 1)
-    _idum = 1;
-  else
-    _idum = -_idum;
-  idum2 = _idum;
-  for (j = (NTAB + 7); j >= 0; j--)
+    // setup shuffle array if not done so already
+    assert(seed <= 0);
+    // if (seed <= 0) {
+    _idum = seed;
+    if (-_idum < 1)
+        _idum = 1;
+    else
+        _idum = -_idum;
+    idum2 = _idum;
+    for (j = (NTAB + 7); j >= 0; j--)
     {
-      k = _idum / IQ1;
-      _idum = IA1 * (_idum - k * IQ1) - k * IR1;
-      if (_idum < 0)
-        _idum += IM1;
-      if (j < NTAB)
+        k = _idum / IQ1;
+        _idum = IA1 * (_idum - k * IQ1) - k * IR1;
+        if (_idum < 0)
+            _idum += IM1;
+        if (j < NTAB)
         {
-          _iv[j] = _idum;
+            _iv[j] = _idum;
         }
     }
-  iy = _iv[0];
-  //}
+    iy = _iv[0];
+    //}
 }
 
 /* ====================================================================== */
 
-double
-random_dirty::random_num ()
+double random_dirty::random_num()
 
 {
 
-  int j;
-  long k;
-  double temp;
+    int j;
+    long k;
+    double temp;
 
-  k = _idum / IQ1;
-  _idum = IA1 * (_idum - k * IQ1) - k * IR1;
-  if (_idum < 0)
-    _idum += IM1;
-  k = idum2 / IQ2;
-  idum2 = IA2 * (idum2 - k * IQ2) - k * IR2;
-  if (idum2 < 0)
-    idum2 += IM2;
-  j = int (iy / NDIV);
-  iy = _iv[j] - idum2;
-  _iv[j] = _idum;
-  if (iy < 1)
-    iy += IMM1;
-  temp = AM * iy;
-  if (temp > RNMX)
+    k = _idum / IQ1;
+    _idum = IA1 * (_idum - k * IQ1) - k * IR1;
+    if (_idum < 0)
+        _idum += IM1;
+    k = idum2 / IQ2;
+    idum2 = IA2 * (idum2 - k * IQ2) - k * IR2;
+    if (idum2 < 0)
+        idum2 += IM2;
+    j = int(iy / NDIV);
+    iy = _iv[j] - idum2;
+    _iv[j] = _idum;
+    if (iy < 1)
+        iy += IMM1;
+    temp = AM * iy;
+    if (temp > RNMX)
     {
-      //       cout << "RNMX = " << RNMX << endl;
-      return RNMX;
+        //       cout << "RNMX = " << RNMX << endl;
+        return RNMX;
     }
-  else
+    else
     {
-      //       cout << "temp = " << temp << endl;
-      return temp;
+        //       cout << "temp = " << temp << endl;
+        return temp;
     }
 }
 

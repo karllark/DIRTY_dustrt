@@ -14,6 +14,6 @@
 //**********************************************************************
 // external function definitions
 
-extern void get_wave_grid (ConfigFile &param_data, runinfo_struct &runinfo);
+extern void get_wave_grid(ConfigFile &param_data, runinfo_struct &runinfo);
 
 #endif
