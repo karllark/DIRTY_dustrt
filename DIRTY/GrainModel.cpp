@@ -7,6 +7,7 @@
   //     StringManip
   // 
   // History: 
+  //     Add THEMIS2 model: Jan 2024
   //     Add HD2023 model: Jan 2024
   //     Written by:   Putrid, Winter 2006/2007
   //     Contact: misselt@as.arizona.edu
@@ -317,152 +318,165 @@ void GrainModel::MakeGrainModel(ConfigFile & _mbkcf, vector <float>& MasterWave)
     if (SizeDistID.find(_thisSizeDistribution) != SizeDistID.end()) {  // Determine which sd to use
       
       // SizeDistID is a STRING -> INTEGER map defined in GrainModel.h 
-      // ZDA      = 0;    // Zubko et al. Size distribution function
-      // WD01     = 1;    // Wiengartner+Draine Size distribution function
-      // POWERLAW = 2;    // Power law size distribution.
-      // GAUSS    = 3;    // Appox. single size grain distribution - Guassian
-      // HD23     = 4;    // Hendley & Draine 2023
-      // NULL     = 99;
+      // ZDA    = 0;    // Zubko et al. Size distribution function
+      // WD01   = 1;    // Wiengartner+Draine Size distribution function
+      // PWRLAW = 2;    // Power law size distribution - e.g. THEMIS
+      // GAUSS  = 3;    // Appox. single size grain distribution - Guassian
+      // HD23   = 4;    // Hensley & Draine 2023
+      // LOGNRM = 5;    // Log-Normal size distribution - e.g. THEMIS
+      // NULL   = 99;
       switch (SizeDistID[_thisSizeDistribution]) 
 	    {
 	  
-      	case 0: // Zubko, Dwek, & Arendt 2004, ApJS, 152, 211
-	        {
+      case 0: // Zubko, Dwek, & Arendt 2004, ApJS, 152, 211
+	      {
 	        // So we need to get the co-efficients for a ZDA fit. 
 	        vector <float> _zda_coeff(15); 
 	        _zda_coeff[0] = _mcf.FValue(_thisSection,"A");
 	        Normalization[cmp] = _zda_coeff[0]; 
-	       _zda_coeff[1] = _mcf.FValue(_thisSection,"c0"); 
-	       _zda_coeff[2] = _mcf.FValue(_thisSection,"b0"); 
-	       _zda_coeff[3] = _mcf.FValue(_thisSection,"b1"); 
-	       _zda_coeff[4] = _mcf.FValue(_thisSection,"a1"); 
-	       _zda_coeff[5] = _mcf.FValue(_thisSection,"m1"); 
-	       _zda_coeff[6] = _mcf.FValue(_thisSection,"b2"); 
-	       _zda_coeff[7] = _mcf.FValue(_thisSection,"a2"); 
-	       _zda_coeff[8] = _mcf.FValue(_thisSection,"m2"); 
-	       _zda_coeff[9] = _mcf.FValue(_thisSection,"b3"); 
-	       _zda_coeff[10] = _mcf.FValue(_thisSection,"a3"); 
-	       _zda_coeff[11] = _mcf.FValue(_thisSection,"m3"); 
-	       _zda_coeff[12] = _mcf.FValue(_thisSection,"b4"); 
-	       _zda_coeff[13] = _mcf.FValue(_thisSection,"a4"); 
-	       _zda_coeff[14] = _mcf.FValue(_thisSection,"m4");
-	       //SizeDistribution[cmp].resize(_thisSize.size()); 
-	       SizeDistribution[cmp] = getZDA_sdist(_zda_coeff,cmp);
-	       }
-	       break; 
+	        _zda_coeff[1] = _mcf.FValue(_thisSection,"c0"); 
+	        _zda_coeff[2] = _mcf.FValue(_thisSection,"b0"); 
+	        _zda_coeff[3] = _mcf.FValue(_thisSection,"b1"); 
+	        _zda_coeff[4] = _mcf.FValue(_thisSection,"a1"); 
+	        _zda_coeff[5] = _mcf.FValue(_thisSection,"m1"); 
+	        _zda_coeff[6] = _mcf.FValue(_thisSection,"b2"); 
+	        _zda_coeff[7] = _mcf.FValue(_thisSection,"a2"); 
+	        _zda_coeff[8] = _mcf.FValue(_thisSection,"m2"); 
+	        _zda_coeff[9] = _mcf.FValue(_thisSection,"b3"); 
+	        _zda_coeff[10] = _mcf.FValue(_thisSection,"a3"); 
+	        _zda_coeff[11] = _mcf.FValue(_thisSection,"m3"); 
+	        _zda_coeff[12] = _mcf.FValue(_thisSection,"b4"); 
+	        _zda_coeff[13] = _mcf.FValue(_thisSection,"a4"); 
+	        _zda_coeff[14] = _mcf.FValue(_thisSection,"m4");
+	        SizeDistribution[cmp] = getZDA_sdist(_zda_coeff,cmp);
+	      }
+	      break; 
 	  
 	    case 1: // Wiengartner & Draine 2001, ApJ, 548, 296
 	      {
-	      vector <float> _wd_coeff(8); 
-	      Normalization[cmp] = 1.0;  // Defined functions already return per H
-	      _wd_coeff[0] = _mcf.FValue(_thisSection,"BC"); 
-	      _wd_coeff[1] = _mcf.FValue(_thisSection,"B1"); 
-	      _wd_coeff[2] = _mcf.FValue(_thisSection,"B2");
-	      _wd_coeff[3] = _mcf.FValue(_thisSection,"C");
-	      _wd_coeff[4] = _mcf.FValue(_thisSection,"at");
-	      _wd_coeff[5] = _mcf.FValue(_thisSection,"ac");
-	      _wd_coeff[6] = _mcf.FValue(_thisSection,"alpha");
-	      _wd_coeff[7] = _mcf.FValue(_thisSection,"beta");
-	      SizeDistribution[cmp] = getWD_sdist(_wd_coeff,cmp); 
+	        vector <float> _wd_coeff(8); 
+	        Normalization[cmp] = 1.0;  // Defined functions already return per H
+	        _wd_coeff[0] = _mcf.FValue(_thisSection,"BC"); 
+	        _wd_coeff[1] = _mcf.FValue(_thisSection,"B1"); 
+	        _wd_coeff[2] = _mcf.FValue(_thisSection,"B2");
+	        _wd_coeff[3] = _mcf.FValue(_thisSection,"C");
+	        _wd_coeff[4] = _mcf.FValue(_thisSection,"at");
+	        _wd_coeff[5] = _mcf.FValue(_thisSection,"ac");
+	        _wd_coeff[6] = _mcf.FValue(_thisSection,"alpha");
+	        _wd_coeff[7] = _mcf.FValue(_thisSection,"beta");
+	        SizeDistribution[cmp] = getWD_sdist(_wd_coeff,cmp); 
 	      }
 	      break; 
 
-	    case 2: // Power law  - UNDEFINED!
+	    case 2: // Power law e.g. THEMIS-2 implement only necessary coefficients for THEMIS (pl + exp cutoff)
+              // - add terms as necessary for other forms.  We will need to update model definition files for
+              // e.g. 'incomplete' (less complex) power laws when we add terms
+              // POWER LAW definition:  A (normalization), alpha (slope of power law), at, ac, gamma (for a 
+              // cutoff term, and au, zeta, zxp, gama (curvature)
+              // cutoff: exp(-((a-at)/aC)^gamma)        
+              // curvature: (1 + zeta*(a/au)^gamma)^zxp  - NOT IMPLEMENTED!
 	      {
-	        vector <float> _pl_coeff(2); 
+	        vector <float> _pwrlaw_coeff(5); 
+          Normalization[cmp] = 1.0; // Defined functions already return per H
+          _pwrlaw_coeff[0] = _mcf.FValue(_thisSection,"A");
+          _pwrlaw_coeff[1] = _mcf.FValue(_thisSection,"alpha");
+          _pwrlaw_coeff[2] = _mcf.FValue(_thisSection,"at")*Constant::UM_CM; // at and ac are defined in um in input file.
+          _pwrlaw_coeff[3] = _mcf.FValue(_thisSection,"ac")*Constant::UM_CM;
+          _pwrlaw_coeff[4] = _mcf.FValue(_thisSection,"gamma");
+          SizeDistribution[cmp] = getPwrLaw_sdist(_pwrlaw_coeff,cmp);
 	      }
         break; 
 
 	    case 3: // Gaussian 
 	      { 
-        vector <float> _gauss_coeff(3); 
-        // Get input dust to gas ratio and mean molecular weight
-        // Shouldn't have to do this for every component, but I'm lazy...
-        DustToGasMassRatio = _mcf.FValue("Model","Dust to Gas Mass Ratio");
-        if (_mcf.isBadFloat(DustToGasMassRatio)) { 
-          cout << "Dust to gas mass ratio not defined - required for this size distribution" << endl ;
-          cout << "Looked under section 'Model' for key 'Dust to Gas Mass Ratio'" << endl; 
-          exit(8);
-        }
-        MeanMolecularWeight = _mcf.FValue("Model","Mean Molecular Weight"); 
-        if (_mcf.isBadFloat(MeanMolecularWeight)) { 
-          cout << "Mean molecular weight not defined - required for this size distribution" << endl ;
-          cout << "Looked under section 'Model' for key 'Mean Molecular Weight'" << endl; 
-          exit(8);
-        }
+          vector <float> _gauss_coeff(3); 
+          // Get input dust to gas ratio and mean molecular weight
+          // Shouldn't have to do this for every component, but I'm lazy...
+          DustToGasMassRatio = _mcf.FValue("Model","Dust to Gas Mass Ratio");
+          if (_mcf.isBadFloat(DustToGasMassRatio)) { 
+            cout << "Dust to gas mass ratio not defined - required for this size distribution" << endl ;
+            cout << "Looked under section 'Model' for key 'Dust to Gas Mass Ratio'" << endl; 
+            exit(8);
+          }
+          MeanMolecularWeight = _mcf.FValue("Model","Mean Molecular Weight"); 
+          if (_mcf.isBadFloat(MeanMolecularWeight)) { 
+            cout << "Mean molecular weight not defined - required for this size distribution" << endl ;
+            cout << "Looked under section 'Model' for key 'Mean Molecular Weight'" << endl; 
+            exit(8);
+          }
 
-   	    _gauss_coeff[0] = 1; // Force amplitude to be 1 for now
+   	      _gauss_coeff[0] = 1; // Force amplitude to be 1 for now
 
-        // Convert all length units in gaussian parameters to CM - that way, the 
-        // size distribution will be returned in cm^(-1) H^(-1)
-        _gauss_coeff[1] = _mcf.FValue(_thisSection,"a0")*Constant::UM_CM; 
-        _gauss_coeff[2] = _mcf.FValue(_thisSection,"as")*Constant::UM_CM; 
-        SizeDistribution[cmp] = getGauss_sdist(_gauss_coeff,cmp); 
-    
-        // Now renormalize to assure proper dust mass/tau/etc computations
-        _integrand.resize(Component[cmp].nsize); 
-    
-        // Need to keep track so that we don't exceed 1 for mass frac. 
-        float _massfrac = _mcf.FValue(_thisSection,"X"); 
-        _totalMassFraction += _massfrac; 
-        for (int sz=0;sz<Component[cmp].nsize;sz++)
-          _integrand[sz] = Component[cmp].mass[sz]*SizeDistribution[cmp][sz]; 
-	             
-        // size is in cm, integrand is in grams, _mmw is dimensionless, gdmris dimensionless, 
-        // AMU_CGS is gm/H, the dimensions os _newAmp are cm^-1 H^-1 ... 
-        // float _newAmp = (DustToGasMassRatio*MeanMolecularWeight*Constant::AMU_CGS)/NumUtils::integrate<float>(Component[cmp].size,_integrand); 
-        // ... as are the dim. of SizeDistribution  since SizeDistribution was previously 
-        // dimensionless = 1.0 * exp(-z^2/2). 
-        Normalization[cmp] = (DustToGasMassRatio*MeanMolecularWeight*Constant::AMU_CGS*_massfrac)/NumUtils::integrate<float>(Component[cmp].size,_integrand);
+          // Convert all length units in gaussian parameters to CM - that way, the 
+          // size distribution will be returned in cm^(-1) H^(-1)
+          _gauss_coeff[1] = _mcf.FValue(_thisSection,"a0")*Constant::UM_CM; 
+          _gauss_coeff[2] = _mcf.FValue(_thisSection,"as")*Constant::UM_CM; 
+          SizeDistribution[cmp] = getGauss_sdist(_gauss_coeff,cmp); 
+      
+          // Now renormalize to assure proper dust mass/tau/etc computations
+          _integrand.resize(Component[cmp].nsize); 
+      
+          // Need to keep track so that we don't exceed 1 for mass frac. 
+          float _massfrac = _mcf.FValue(_thisSection,"X"); 
+          _totalMassFraction += _massfrac; 
+          for (int sz=0;sz<Component[cmp].nsize;sz++)
+            _integrand[sz] = Component[cmp].mass[sz]*SizeDistribution[cmp][sz]; 
+	               
+          // size is in cm, integrand is in grams, _mmw is dimensionless, gdmris dimensionless, 
+          // AMU_CGS is gm/H, the dimensions os _newAmp are cm^-1 H^-1 ... 
+          // float _newAmp = (DustToGasMassRatio*MeanMolecularWeight*Constant::AMU_CGS)/NumUtils::integrate<float>(Component[cmp].size,_integrand); 
+          // ... as are the dim. of SizeDistribution  since SizeDistribution was previously 
+          // dimensionless = 1.0 * exp(-z^2/2). 
+          Normalization[cmp] = (DustToGasMassRatio*MeanMolecularWeight*Constant::AMU_CGS*_massfrac)/NumUtils::integrate<float>(Component[cmp].size,_integrand);
 	      }
 	      break; 
 
-        case 4: // Hensley & Draine 2023, ApJ, 948, 55
+      case 4: // Hensley & Draine 2023, ApJ, 948, 55
         {
-        vector <float> _hd_coeff(11);
-        Normalization[cmp] = 1.0;  // Defined functions already return per H
-        _hd_coeff[0]  = _mcf.FValue(_thisSection,"B1");
-        _hd_coeff[1]  = _mcf.FValue(_thisSection,"B2");
-        _hd_coeff[2]  = _mcf.FValue(_thisSection,"a1");
-        _hd_coeff[3]  = _mcf.FValue(_thisSection,"a2");
-        _hd_coeff[4]  = _mcf.FValue(_thisSection,"sig");
-        _hd_coeff[5]  = _mcf.FValue(_thisSection,"A0");
-        _hd_coeff[6]  = _mcf.FValue(_thisSection,"A1");
-        _hd_coeff[7]  = _mcf.FValue(_thisSection,"A2");
-        _hd_coeff[8]  = _mcf.FValue(_thisSection,"A3");
-        _hd_coeff[9]  = _mcf.FValue(_thisSection,"A4");
-        _hd_coeff[10] = _mcf.FValue(_thisSection,"A5");
-        /*
-        cout << _hd_coeff[0] << endl;
-        cout << _hd_coeff[1] << endl;
-        cout << _hd_coeff[2] << endl;
-        cout << _hd_coeff[3] << endl;
-        cout << _hd_coeff[4] << endl;
-        cout << _hd_coeff[5] << endl;
-        cout << _hd_coeff[6] << endl;
-        cout << _hd_coeff[7] << endl;
-        cout << _hd_coeff[8] << endl;
-        cout << _hd_coeff[9] << endl;
-        cout << _hd_coeff[10] << endl;
-        */
-        SizeDistribution[cmp] = getHD_sdist(_hd_coeff,cmp);
+          vector <float> _hd_coeff(11);
+          Normalization[cmp] = 1.0;  // Defined functions already return per H
+          _hd_coeff[0]  = _mcf.FValue(_thisSection,"B1");
+          _hd_coeff[1]  = _mcf.FValue(_thisSection,"B2");
+          _hd_coeff[2]  = _mcf.FValue(_thisSection,"a1");
+          _hd_coeff[3]  = _mcf.FValue(_thisSection,"a2");
+          _hd_coeff[4]  = _mcf.FValue(_thisSection,"sig");
+          _hd_coeff[5]  = _mcf.FValue(_thisSection,"A0");
+          _hd_coeff[6]  = _mcf.FValue(_thisSection,"A1");
+          _hd_coeff[7]  = _mcf.FValue(_thisSection,"A2");
+          _hd_coeff[8]  = _mcf.FValue(_thisSection,"A3");
+          _hd_coeff[9]  = _mcf.FValue(_thisSection,"A4");
+          _hd_coeff[10] = _mcf.FValue(_thisSection,"A5");
+          SizeDistribution[cmp] = getHD_sdist(_hd_coeff,cmp);
         }
         break;
 
+        case 5: // Log-Normal distribution e.g. THEMIS-2 implement only necessary coefficients for THEMIS
+                // - add terms as necessary for other forms.  We will need to update model definition files for
+                // e.g. 'incomplete' (less complex) log-normal when we add terms
+                // A*(1/size)*exp(-1/2 *[ln(size/a0)/sigma]^2)
+          {
+            vector <float> _logn_coeff(3);
+            Normalization[cmp] = 1.0;  // Defined functions already return per H
+            _logn_coeff[0] = _mcf.FValue(_thisSection,"A"); 
+            _logn_coeff[1] = _mcf.FValue(_thisSection,"a0")*Constant::UM_CM;  // a0 is in um in the config file. 
+            _logn_coeff[2] = _mcf.FValue(_thisSection,"sigma"); 
+            SizeDistribution[cmp] = getLogN_sdist(_logn_coeff,cmp);
+          }
+          break; 
 	  
-	    default: 
-	      {
-	        cout << endl;
-	        cout << "****************************************************" << endl;
-	        cout << "Ooops! Something BROKE defining size distribution   " << endl; 
-	        cout << "trying to set up " << _thisCrossSectionFile << "!   " << endl; 
-	        cout << "Key " << _thisSizeDistribution << " exists, but has no corresponding case." << endl; 
-	        cout << "(Looking for " << SizeDistID[_thisSizeDistribution] << ")" << endl; 
-	        cout << "This is PROGRAMMER ERROR." << endl;
-	        cout << "****************************************************" << endl; 
-	        exit(8);
-	      } 
-	      break; 
+	      default: 
+	        {
+	          cout << endl;
+	          cout << "****************************************************" << endl;
+	          cout << "Ooops! Something BROKE defining size distribution   " << endl; 
+	          cout << "trying to set up " << _thisCrossSectionFile << "!   " << endl; 
+	          cout << "Key " << _thisSizeDistribution << " exists, but has no corresponding case." << endl; 
+	          cout << "(Looking for " << SizeDistID[_thisSizeDistribution] << ")" << endl; 
+	          cout << "This is PROGRAMMER ERROR." << endl;
+	          cout << "****************************************************" << endl; 
+	          exit(8);
+	        } 
+	        break; 
 	    }
 	
     } else { // Encountered a SizeDist key that is not defined in the map. 
@@ -691,18 +705,6 @@ vector <float> GrainModel::getWD_sdist(vector <float> coeff, int cmp)
 
 // Return the size distribution in cm^-1 H^-1
 //  Hensley & Draine 2023, ApJ, 948, 55
-//        _hd_coeff[0]  = _mcf.FValue(_thisSection,"B1");
-//        _hd_coeff[1]  = _mcf.FValue(_thisSection,"B2");
-        //_hd_coeff[2]  = _mcf.FValue(_thisSection,"a1");
-        //_hd_coeff[3]  = _mcf.FValue(_thisSection,"a2");
-        //_hd_coeff[4]  = _mcf.FValue(_thisSection,"sig");
-        //_hd_coeff[5]  = _mcf.FValue(_thisSection,"A0");
-        //_hd_coeff[6]  = _mcf.FValue(_thisSection,"A1");
-        //_hd_coeff[7]  = _mcf.FValue(_thisSection,"A2");
-        //_hd_coeff[8]  = _mcf.FValue(_thisSection,"A3");
-        //_hd_coeff[9]  = _mcf.FValue(_thisSection,"A4");
-        //_hd_coeff[10] = _mcf.FValue(_thisSection,"A5");
-
 vector <float> GrainModel::getHD_sdist(vector <float> coeff, int cmp)
 {
     
@@ -743,19 +745,72 @@ vector <float> GrainModel::getHD_sdist(vector <float> coeff, int cmp)
 
   return retvec;
 }
-// Return a power law size distribution in cm^-1
-// vector <float> GrainModel::getPL_sdist(vector <float> coeff, int cmp) 
-// {  
-//   vector <float> retvec(Component[cmp].size.size()); // The size distribution [cm^-1]
-//   vector <float>::iterator isz;     // Iterator through size vector
-//   vector <float>::iterator iretvec; // Iterator through size dist vector
-  
-//   // Set iterator to beginning of size dist vector. 
-//   iretvec = retvec.begin(); 
-  
-//   return retvec; 
 
-// }
+// Return size distribution in cm^-1 H^-1
+//   Power-law type distribution (e.g. specifically added for THEMIS2, Ysard et al 2024 preprint
+//                // POWER LAW definition:  A (normalization), alpha (slope of power law), at, ac, gamma (for a
+//                1/n_H dn/da = A * sz^alpha * cutoff * curvature
+//                // cutoff: exp(-((a-at)/aC)^gamma)
+//                // curvature: (1 + zeta*(a/au)^gamma)^zxp  - NOT IMPLEMENTED!
+//          _pwrlaw_coeff[0] = _mcf.FValue(_thisSection,"A");
+//          _pwrlaw_coeff[1] = _mcf.FValue(_thisSection,"alpha");
+//          _pwrlaw_coeff[2] = _mcf.FValue(_thisSection,"at");
+//          _pwrlaw_coeff[3] = _mcf.FValue(_thisSection,"ac");
+//          _pwrlaw_coeff[4] = _mcf.FValue(_thisSection,"gamma");
+
+vector <float> GrainModel::getPwrLaw_sdist(vector <float> coeff, int cmp) 
+{  
+   vector <float> retvec(Component[cmp].size.size()); // The size distribution [cm^-1]
+   vector <float>::iterator isz;     // Iterator through size vector
+   vector <float>::iterator iretvec; // Iterator through size dist vector
+  
+   // Set iterator to beginning of size dist vector. 
+   iretvec = retvec.begin(); 
+ 
+   // We assume coefficients are in cm where appropriate - either defined as such in 
+   // the model definition file or converted as necessary in the read code.
+   for (isz=Component[cmp].size.begin();isz!=Component[cmp].size.end();isz++,iretvec++) { 
+     *iretvec = coeff[0]*pow(*isz,coeff[1]);  // this is the power law
+     if (*isz >= coeff[3]) {  // this is the exponential cutoff
+       *iretvec *= ( exp( (-1.0)*pow((*isz-coeff[2])/coeff[3],coeff[4]) ));
+     }
+   }
+   // Test this! But we don't need an extra 'loop' even if 'optimized
+   //transform(retvec.begin(),retvec.end(),retvec.begin(), [&](float elm) {return elm *= (coeff[0]); }); 
+   return retvec; 
+
+} 
+
+// Retrun size distribution in cm^-1 H^-1 (or whatever you normalization or lack thereof isj from "A" constant
+// Log-Normal distribution e.g. THEMIS-2 implement only necessary coefficients for THEMIS, Ysard et al 2024 preprint
+//         Log-Normal defintion: 1/n_H dn/da = A*(1/size)*exp(-1/2 *[ln(size/a0)/sigma]^2)
+//             _logn_coeff[0] = _mcf.FValue(_thisSection,"A");
+//             _logn_coeff[1] = _mcf.FValue(_thisSection,"a0");
+//             _logn_coeff[2] = _mcf.FValue(_thisSection,"sigma");
+//
+// - add terms as necessary for other forms.  Will need to update Model definition files
+vector <float> GrainModel::getLogN_sdist(vector <float> coeff, int cmp)
+{
+   vector <float> retvec(Component[cmp].size.size()); // The size distribution [cm^-1]
+   vector <float>::iterator isz;                      // Iterator through size vector
+   vector <float>::iterator iretvec;                  // Iterator through size dist vector
+
+   float _temp;
+
+   // Set iterator to beginning of size dist vector.
+   iretvec = retvec.begin();
+
+   // We assume coefficients are in cm where appropriate - either defined as such in
+   // the model definition file or converted as necessary in the read code.
+   for (isz=Component[cmp].size.begin();isz!=Component[cmp].size.end();isz++,iretvec++) {
+     *iretvec = coeff[0]/(*isz)*exp( (-0.5)*pow(log(*isz/coeff[1])/coeff[2],2));
+   }
+   // Test this! But we don't need an extra 'loop' even if 'optimized
+   //transform(retvec.begin(),retvec.end(),retvec.begin(), [&](float elm) {return elm *= (coeff[0]); }); 
+   return retvec;
+
+}
+
 
 // Return Gaussian size distribution in cm^-1
 vector <float> GrainModel::getGauss_sdist( vector <float> coeff, int cmp) 
