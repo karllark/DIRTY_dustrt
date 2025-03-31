@@ -158,6 +158,8 @@ private:
   vector <float> getWD_sdist(vector <float> coeff, int cmp); 
   vector <float> getHD_sdist(vector <float> coeff, int cmp);
   vector <float> getGauss_sdist(vector <float> coeff, int cmp); 
+  vector <float> getPwrLaw_sdist(vector <float> coeff, int cmp);
+  vector <float> getLogN_sdist(vector <float> coeff, int cmp);
 
   // for cases we need to specify an input Dust to gas mass ratio: 
   float DustToGasMassRatio;
@@ -183,9 +185,10 @@ private:
     if (!SizeDistID.empty()) return; 
     SizeDistID["ZDA"]      = 0;  // Zubko et al. Size distribution function
     SizeDistID["WD01"]     = 1;  // Wiengartner+Draine Size distribution function
-    SizeDistID["POWERLAW"] = 2;  // Power law size distribution. 
+    SizeDistID["PWRLAW"]   = 2;  // Power law size distribution a la THEMIS2
     SizeDistID["GAUSS"]    = 3;  // Appox. single size grain distribution - Guassian 
     SizeDistID["HD23"]     = 4;  // Hensley+Draine 2023 Size distribution function
+    SizeDistID["LOGNRM"]   = 5;  // Log-normal a la THEMIS2
     SizeDistID["NULL"]     = 99;
   }
   map<string,int> SizeTypeID; 
@@ -200,13 +203,3 @@ private:
 }; 
 
 #endif
-
-
-
-
-
-
-
-
-
-
