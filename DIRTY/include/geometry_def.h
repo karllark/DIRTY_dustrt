@@ -12,7 +12,7 @@
 #define _DIRTY_GEOMETRY_DEF_
 
 #include "NumUtils.h"
-//#include "vect_utils.h"
+// #include "vect_utils.h"
 #include "grid_cell.h"
 
 #define MAX_OBSERVERS 100
@@ -27,7 +27,8 @@
 #define NEW_PHOTON_POW_SPHERE 6
 
 // info defining a single grid (can be nested inside of other single grids)
-struct one_grid {
+struct one_grid
+{
   int parent_grid_num;
   long index_dim[3];
   double phys_grid_size[3];
@@ -37,50 +38,53 @@ struct one_grid {
 };
 
 // info fully defining a geometry
-struct geometry_struct {
-  vector<one_grid> grids;  // vector of grids
-  int max_grid_depth;   // maximum number of nesting grids
+struct geometry_struct
+{
+  vector<one_grid> grids; // vector of grids
+  int max_grid_depth;     // maximum number of nesting grids
 
   long num_cells; // number of cells
 
   // absorbed energy storage info
-  int abs_energy_storage_type;  // how to store the absorbed energy
-                                // 0 = memory, 1 = disk
+  int abs_energy_storage_type; // how to store the absorbed energy
+                               // 0 = memory, 1 = disk
   int abs_energy_grid_initialized;
-  int abs_energy_wave_index;    // wavelength index of absorbed energy grid
-                                // 0 if disk is used, otherwise equal to wavelength index
+  int abs_energy_wave_index; // wavelength index of absorbed energy grid
+                             // 0 if disk is used, otherwise equal to wavelength index
 
   int emitted_energy_grid_initialized;
   vector<double> emitted_lum_uniform;
 
   // global dust properties
   //   at a later date, may want to make these cell dependent
-  double albedo;   // dust scattering albedo
-  double g;        // dust scattering phase function asymmetry (g = <cos(theta)>)
+  double albedo; // dust scattering albedo
+  double g;      // dust scattering phase function asymmetry (g = <cos(theta)>)
 
-  vector<double> phi_angle;  // input model scattering phase function cos(angle)
-  vector<double> phi;  // input model scattering phase function
-  vector<double> phi_sum;  // input model scattering phase function (running sum)
+  vector<double> phi_angle; // input model scattering phase function cos(angle)
+  vector<double> phi;       // input model scattering phase function
+  vector<double> phi_sum;   // input model scattering phase function (running sum)
 
   double total_h_mass; // total hydrogen mass (where dust emission was done)
 
-  int wave_index;  // wavelength index (needed for new_photon_grid_source)
+  int wave_index; // wavelength index (needed for new_photon_grid_source)
 
-  float distance;  // distance of model from observer
-  int num_observers;  // number of different observer directions
+  float distance;                          // distance of model from observer
+  int num_observers;                       // number of different observer directions
   float observer_angles[2][MAX_OBSERVERS]; // theta,phi for each observer
 
-  int internal_observer; // 1=yes, 0=no
+  int internal_observer;       // 1=yes, 0=no
   double observer_position[3]; // location of observer in grid
 
-  string source_type;   // type of source (stars, diffuse, etc.)
-  double total_source_luminosity;  // in ergs s^-1 A^-1
-  int new_photon_source_type; // integer to control how to emit photons
+  string source_type;             // type of source (stars, diffuse, etc.)
+  double total_source_luminosity; // in ergs s^-1 A^-1
+  int new_photon_source_type;     // integer to control how to emit photons
 
-  int num_stars;   // number of stars
-  double star_positions[5][MAX_MULTIPLE_STARS];  // position of stars in physical units
-          // luminosity is the 4th element, 5th element the running sum of the luminosity
-          // between 0 and 1 for the determination of which star emits the current photon
+  int num_stars;                                // number of stars
+  double star_positions[5][MAX_MULTIPLE_STARS]; // position of stars in physical units
+                                                // luminosity is the 4th element, 5th element the
+                                                // running sum of the luminosity between 0 and 1 for
+                                                // the determination of which star emits the current
+                                                // photon
 
   // dexp stellar variables
   double stellar_scaleheight;
@@ -98,32 +102,32 @@ struct geometry_struct {
   double pow_sphere_constant2;
   double pow_sphere_constant3;
 
-  int randomize_observer;  // randomize observer position to integrate over 4pi
+  int randomize_observer; // randomize observer position to integrate over 4pi
 
   // vectors for the diffuse source (ISRF)
-  vector<double> diffuse_source_theta;  // in radians
-  vector<double> diffuse_source_phi;    // cos(phi)
-  vector<double> diffuse_source_intensity;  // assumed to be in ergs s^-1 sr^-1 A^-1 cm^-2
+  vector<double> diffuse_source_theta;         // in radians
+  vector<double> diffuse_source_phi;           // cos(phi)
+  vector<double> diffuse_source_intensity;     // assumed to be in ergs s^-1 sr^-1 A^-1 cm^-2
   vector<double> diffuse_source_sum_intensity; // between 0 and 1
 
-  string type;   // type of geometry [controls which routine is called to setup dust grid]
-  float radius;   // radius of model
-  double angular_radius; // radius of model in angular units
-  float tau;      // radial optical depth of model at reference wavelength
-  float tau_wave;  // reference wavelength for tau
+  string type;            // type of geometry [controls which routine is called to setup dust grid]
+  float radius;           // radius of model
+  double angular_radius;  // radius of model in angular units
+  float tau;              // radial optical depth of model at reference wavelength
+  float tau_wave;         // reference wavelength for tau
   double tau_to_tau_ref;  // ratio of current tau to reference tau
-  float wavelength;   // wavelenght of current tau
-  float max_tau_per_cell;  // the maximum tau per cell (used in subdividing cells)
+  float wavelength;       // wavelenght of current tau
+  float max_tau_per_cell; // the maximum tau per cell (used in subdividing cells)
   float max_tau_per_cell_x;  // the maximum tau per cell (used in subdividing cells)
   float max_tau_per_cell_y;  // the maximum tau per cell (used in subdividing cells)
   float max_tau_per_cell_z;  // the maximum tau per cell (used in subdividing cells)
-  float filling_factor;  // filling factor of high density clumps;
-  float density_ratio;   // density ratio of low/high clumps
-  double clump_densities[2];  // densities of clumps in tau/pc
-  float solid_angle;  // solid angle for scattering probabilities
+  float filling_factor;      // filling factor of high density clumps;
+  float density_ratio;       // density ratio of low/high clumps
+  double clump_densities[2]; // densities of clumps in tau/pc
+  float solid_angle;         // solid angle for scattering probabilities
 
-  long n_photons;  // number of photons to run
-  long max_num_scat;  // maximum number of scatterings
+  long n_photons;    // number of photons to run
+  long max_num_scat; // maximum number of scatterings
 
   double scat_bias_fraction;
   double scat_angle_bias_fraction;

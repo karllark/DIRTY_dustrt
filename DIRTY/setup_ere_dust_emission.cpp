@@ -6,9 +6,9 @@
 
 #include "setup_ere_dust_emission_output.h"
 
-void setup_ere_dust_emission_output (output_struct& ere_output, 
-				     output_struct& output)
-  
+void
+setup_ere_dust_emission_output (output_struct &ere_output, output_struct &output)
+
 {
   int i = 0;
   for (i = 0; i < 2; i++)

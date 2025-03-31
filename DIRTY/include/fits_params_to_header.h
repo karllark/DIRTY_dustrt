@@ -8,12 +8,11 @@
 #define _DIRTY_FITS_PARAM_TO_HEADER_
 
 #include <fstream>
-//#include <stdlib>
+// #include <stdlib>
 #include "fitsio.h"
 
 using namespace std;
 
-extern int check_fits_io(int status,
-			 const char text[100]);
+extern int check_fits_io (int status, const char text[100]);
 
 #endif

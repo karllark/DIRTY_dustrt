@@ -14,21 +14,21 @@
 // #define OUTNUM 0
 // #define DEBUG_CPT
 
-double calc_photon_trajectory(photon_data& photon, geometry_struct& geometry,
-                              double target_tau, double target_dist,
-                              int& escape, double& tau_traveled,
-                              int repeat_boundary)
+double
+calc_photon_trajectory (photon_data &photon, geometry_struct &geometry, double target_tau,
+                        double target_dist, int &escape, double &tau_traveled, int repeat_boundary)
 
 {
-  double tau_left = target_tau;    // reduce till zero = done
-  double dist_left = target_dist;  // reduce till zero = done
+  double tau_left = target_tau;   // reduce till zero = done
+  double dist_left = target_dist; // reduce till zero = done
 #ifdef DEBUG_CPT
-  if (photon.number == OUTNUM) {
-    cout << "oooooooooooooooooooooooooooooooooo" << endl;
-    cout << "start cpt; ";
-    cout << "tau_left = " << tau_left << endl;
-    cout.flush();
-  }
+  if (photon.number == OUTNUM)
+    {
+      cout << "oooooooooooooooooooooooooooooooooo" << endl;
+      cout << "start cpt; ";
+      cout << "tau_left = " << tau_left << endl;
+      cout.flush ();
+    }
 #endif
   double distance_traveled = 0.0;
   double delta_tau = 0.0;
@@ -37,92 +37,99 @@ double calc_photon_trajectory(photon_data& photon, geometry_struct& geometry,
   // move through the grid until escaping or reaching the target tau
   //   need to also handle the case where the photon starts several subgrids
   //   down multiple calls to calc_photon_trajectory needed
-  while ((tau_left > ROUNDOFF_ERR_TRIG) && (dist_left > ROUNDOFF_ERR_TRIG) &&
-         (!escape)) {
+  while ((tau_left > ROUNDOFF_ERR_TRIG) && (dist_left > ROUNDOFF_ERR_TRIG) && (!escape))
+    {
 #ifdef DEBUG_CPT
-    if (photon.number == OUTNUM) {
-      cout << "before delta distance & tau_left & delta_tau & escape = ";
-      cout << delta_dist << " ";
-      cout << tau_left << " ";
-      cout << delta_tau << " ";
-      cout << escape << endl;
-      cout << "current_grid_num, num_current grids = ";
-      cout << photon.current_grid_num << " ";
-      cout << photon.num_current_grids << endl;
-    }
-#endif
-    delta_dist = calc_delta_dist(photon, geometry, tau_left, dist_left, escape,
-                                 delta_tau);
-#ifdef PHOTON_POS
-    int i = 0;
-    for (i = 0; i < 3; i++) cout << photon.position[i] << " ";
-    cout << endl;
-#endif
-    tau_traveled += delta_tau;
-    tau_left -= delta_tau;
-    distance_traveled += delta_dist;
-    dist_left -= delta_dist;
-#ifdef DEBUG_CPT
-    if (photon.number == OUTNUM) {
-      cout << "cpt: photon.path_cur_cells = " << photon.path_cur_cells << endl;
-      cout << "delta distance & tau_left & delta_tau & escape = ";
-      cout << delta_dist << " ";
-      cout << tau_left << " ";
-      cout << delta_tau << " ";
-      cout << escape << endl;
-      cout << "current_grid_num, num_current grids = ";
-      cout << photon.current_grid_num << " ";
-      cout << photon.num_current_grids << endl;
-    }
-#endif
-
-    // if the photon has escaped the main grid and if repeat boundary option is
-    // set, then move the photon to the opposite side of the main grid
-    if ((repeat_boundary) && (geometry.repeat_boundary_xy) && (escape) &&
-        (photon.current_grid_num == 0)) {
-      int i;
-      // cout << photon.number << " " << tau_left << " " << dist_left << endl;
-      // cout << "escaped main grid." << endl;
-      // for (i = 0; i < 3; i++) cout << photon.position[i] << " ";ls
-
-      // cout << endl;
-      // for (i = 0; i < 3; i++) cout << photon.position_index[0][i] << " ";
-      // cout << endl;
-
-      // for (i = 0; i < 3; i++)
-      //   cout << i << " " << geometry.grids[0].positions[i][0] << " "
-      //        <<
-      //        geometry.grids[0].positions[i][geometry.grids[0].index_dim[i]]
-      //        << endl;
-      // cout << endl;
-
-      // only check x and y, do not repeat z boundary
-      int found_repeat = 0;
-      for (i = 0; i < 2; i++) {
-        if (photon.position[i] == geometry.grids[0].positions[i][0]) {
-          photon.position[i] *= -1.0;
-          found_repeat = 1;
-        } else if (photon.position[i] ==
-                   geometry.grids[0]
-                       .positions[i][geometry.grids[0].index_dim[i]]) {
-          photon.position[i] *= -1.0;
-          found_repeat = 1;
+      if (photon.number == OUTNUM)
+        {
+          cout << "before delta distance & tau_left & delta_tau & escape = ";
+          cout << delta_dist << " ";
+          cout << tau_left << " ";
+          cout << delta_tau << " ";
+          cout << escape << endl;
+          cout << "current_grid_num, num_current grids = ";
+          cout << photon.current_grid_num << " ";
+          cout << photon.num_current_grids << endl;
         }
-      }
+#endif
+      delta_dist = calc_delta_dist (photon, geometry, tau_left, dist_left, escape, delta_tau);
+#ifdef PHOTON_POS
+      int i = 0;
+      for (i = 0; i < 3; i++)
+        cout << photon.position[i] << " ";
+      cout << endl;
+#endif
+      tau_traveled += delta_tau;
+      tau_left -= delta_tau;
+      distance_traveled += delta_dist;
+      dist_left -= delta_dist;
+#ifdef DEBUG_CPT
+      if (photon.number == OUTNUM)
+        {
+          cout << "cpt: photon.path_cur_cells = " << photon.path_cur_cells << endl;
+          cout << "delta distance & tau_left & delta_tau & escape = ";
+          cout << delta_dist << " ";
+          cout << tau_left << " ";
+          cout << delta_tau << " ";
+          cout << escape << endl;
+          cout << "current_grid_num, num_current grids = ";
+          cout << photon.current_grid_num << " ";
+          cout << photon.num_current_grids << endl;
+        }
+#endif
 
-      if (found_repeat) {
-        determine_photon_position_index(geometry, photon);
-        escape = 0;
+      // if the photon has escaped the main grid and if repeat boundary option is
+      // set, then move the photon to the opposite side of the main grid
+      if ((repeat_boundary) && (geometry.repeat_boundary_xy) && (escape)
+          && (photon.current_grid_num == 0))
+        {
+          int i;
+          // cout << photon.number << " " << tau_left << " " << dist_left << endl;
+          // cout << "escaped main grid." << endl;
+          // for (i = 0; i < 3; i++) cout << photon.position[i] << " ";ls
 
-        // cout << photon.number << " " << tau_left << " " << dist_left << endl;
-        // cout << "new positions" << endl;
-        // for (i = 0; i < 3; i++) cout << photon.position[i] << " ";
-        // cout << endl;
-        // for (i = 0; i < 3; i++) cout << photon.position_index[0][i] << " ";
-        // cout << endl;
-      }
+          // cout << endl;
+          // for (i = 0; i < 3; i++) cout << photon.position_index[0][i] << " ";
+          // cout << endl;
+
+          // for (i = 0; i < 3; i++)
+          //   cout << i << " " << geometry.grids[0].positions[i][0] << " "
+          //        <<
+          //        geometry.grids[0].positions[i][geometry.grids[0].index_dim[i]]
+          //        << endl;
+          // cout << endl;
+
+          // only check x and y, do not repeat z boundary
+          int found_repeat = 0;
+          for (i = 0; i < 2; i++)
+            {
+              if (photon.position[i] == geometry.grids[0].positions[i][0])
+                {
+                  photon.position[i] *= -1.0;
+                  found_repeat = 1;
+                }
+              else if (photon.position[i]
+                       == geometry.grids[0].positions[i][geometry.grids[0].index_dim[i]])
+                {
+                  photon.position[i] *= -1.0;
+                  found_repeat = 1;
+                }
+            }
+
+          if (found_repeat)
+            {
+              determine_photon_position_index (geometry, photon);
+              escape = 0;
+
+              // cout << photon.number << " " << tau_left << " " << dist_left << endl;
+              // cout << "new positions" << endl;
+              // for (i = 0; i < 3; i++) cout << photon.position[i] << " ";
+              // cout << endl;
+              // for (i = 0; i < 3; i++) cout << photon.position_index[0][i] << " ";
+              // cout << endl;
+            }
+        }
     }
-  }
 
   // check if the photon is in the right grid cell
   // this should be a temporary check...
