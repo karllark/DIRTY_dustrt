@@ -4,14 +4,13 @@
 #include <algorithm>
 #include <functional>
 
-#include "runinfo_def.h"
-#include "GrainModel.h"   
 #include "ConfigFile.h"
-#include "DataFile.h"
-#include "NumUtils.h"
 #include "Constants.h"
+#include "DataFile.h"
+#include "GrainModel.h"
+#include "NumUtils.h"
 #include "check_input_param.h"
-
+#include "runinfo_def.h"
 
 //**********************************************************************
 // external function definitions
