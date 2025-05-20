@@ -103,12 +103,12 @@ double calc_photon_trajectory(photon_data &photon, geometry_struct &geometry, do
             {
                 if (photon.position[i] == geometry.grids[0].positions[i][0])
                 {
-                    photon.position[i] *= -1.0;
+                    photon.position[i] = geometry.grids[0].positions[i][geometry.grids[0].index_dim[i]];
                     found_repeat = 1;
                 }
                 else if (photon.position[i] == geometry.grids[0].positions[i][geometry.grids[0].index_dim[i]])
                 {
-                    photon.position[i] *= -1.0;
+                    photon.position[i] = geometry.grids[0].positions[i][0];
                     found_repeat = 1;
                 }
             }

@@ -1,5 +1,5 @@
 #ifndef _DIRTY_ROUNDOFF_ERR_
-#define _DIRTY_ROUNDOFF_ERR__
+#define _DIRTY_ROUNDOFF_ERR_
 
 // roundoff error threshold for trig functions
 #define ROUNDOFF_ERR_TRIG 5e-14
