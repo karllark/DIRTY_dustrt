@@ -5,8 +5,8 @@
 // 2006 Apr/KDG - written
 // ======================================================================
 #include "scattered_weight_towards_observer.h"
-// #define OUTNUM 73145
-// #define DEBUG_SWTO
+//#define OUTNUM 22
+//#define DEBUG_SWTO
 
 double scattered_weight_towards_observer(photon_data photon, geometry_struct &geometry, float observer_position[3])
 
@@ -57,11 +57,19 @@ double scattered_weight_towards_observer(photon_data photon, geometry_struct &ge
     double cos_alpha = 0.0;
     for (i = 0; i < 3; i++)
         cos_alpha += dir_cosines_scat_to_obs[i] * photon.dir_cosines[i];
+    // check for the case of cos(alpha) being roundoff error above 1 or below -1
+    if ((cos_alpha < -1.0) & (fabs(cos_alpha + 1.0) < ROUNDOFF_ERR_TRIG)) {
+        cos_alpha = -1.0;
+    } else if ((cos_alpha > 1.0) & (fabs(cos_alpha - 1.0) < ROUNDOFF_ERR_TRIG)) {
+        cos_alpha = 1.0;
+    }
     // check the resulting value is reasonable
     if (fabs(cos_alpha) > 1.0)
     {
         cout << "ERROR: scattered_weight_towards_observer" << endl;
+        cout << "photon # = " << photon.number << endl;
         cout << "cos_alpha = " << cos_alpha << " is out of bounds [-1,1]" << endl;
+        cout << cos_alpha + 1 << " " << cos_alpha - 1 << endl;
         exit(8);
     }
 

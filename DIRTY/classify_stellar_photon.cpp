@@ -4,7 +4,7 @@
 //
 // 2005 May/KDG - written
 // 2006 Apr/KDG - updated to include rotate_zaxis_for_observe
-// 2007 Feb/KDG - added calcuations of stellar weight (correct for observer
+// 2007 Feb/KDG - added calculations of stellar weight (correct for observer
 // position)
 // 2007 Dec/KDG - changed denominator of atan from d-z to d
 // 2008 Mar/KDG - added output for emission/grain types 2008 May/KDG - changed
@@ -67,7 +67,7 @@ void classify_stellar_photon(output_struct &output, photon_data &photon, geometr
 
             if (geometry.internal_observer == 0)
             {
-                // if averging over the entire 4pi steradians is desired, randomize the
+                // if avenging over the entire 4pi steradians is desired, randomize the
                 // observer position
                 if (geometry.randomize_observer)
                 {
@@ -137,16 +137,23 @@ void classify_stellar_photon(output_struct &output, photon_data &photon, geometr
                     dist_obs_to_birth += pow(obs_to_birth[k], 2);
                 }
                 dist_obs_to_birth = sqrt(dist_obs_to_birth);
-                for (k = 0; k < 3; k++)
-                    dir_obs_to_birth[k] = obs_to_birth[k] / dist_obs_to_birth;
+                if (dist_obs_to_birth == 0.0) {
+                    // observer and photon at the same place, randomly put photon in image as this is better than just dropping it
+                    image_indxs[0] = int(output.image_size[0] * random_obj.random_num());
+                    image_indxs[1] = int(output.image_size[1] * random_obj.random_num());
+                } else {
 
-                double theta = acos(dir_obs_to_birth[2]);
-                double phi = acos(dir_obs_to_birth[0] / sin(theta));
-                if ((dir_obs_to_birth[1] / sin(theta)) < 0.)
-                    phi *= -1.0;
+                    for (k = 0; k < 3; k++)
+                        dir_obs_to_birth[k] = obs_to_birth[k] / dist_obs_to_birth;
 
-                image_indxs[0] = int(output.image_size[0] * ((phi + M_PI) / (2.0 * M_PI)));
-                image_indxs[1] = int(output.image_size[1] * (1. - dir_obs_to_birth[2]) / 2.0);
+                    double theta = acos(dir_obs_to_birth[2]);
+                    double phi = acos(dir_obs_to_birth[0] / sin(theta));
+                    if ((dir_obs_to_birth[1] / sin(theta)) < 0.)
+                        phi *= -1.0;
+
+                    image_indxs[0] = int(output.image_size[0] * ((phi + M_PI) / (2.0 * M_PI)));
+                    image_indxs[1] = int(output.image_size[1] * (1. - dir_obs_to_birth[2]) / 2.0);
+                }
             }
 #ifdef DEBUG_CSP
             if (photon.number == OUTNUM)

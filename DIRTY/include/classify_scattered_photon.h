@@ -15,6 +15,7 @@
 #include "geometry_def.h"
 #include "output_def.h"
 #include "photon_data.h"
+#include "random_dirty.h"
 #include "runinfo_def.h"
 
 //**********************************************************************
