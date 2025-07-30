@@ -15,7 +15,7 @@
 // #define DEBUG_CSCP
 
 void classify_scattered_photon(output_struct &output, photon_data &photon, geometry_struct &geometry,
-                               runinfo_struct &runinfo)
+                               runinfo_struct &runinfo, random_dirty &random_obj)
 
 {
 #ifdef DEBUG_CSCP
@@ -127,16 +127,22 @@ void classify_scattered_photon(output_struct &output, photon_data &photon, geome
                     dist_obs_to_scat += pow(obs_to_scat[k], 2);
                 }
                 dist_obs_to_scat = sqrt(dist_obs_to_scat);
-                for (k = 0; k < 3; k++)
-                    dir_obs_to_scat[k] = obs_to_scat[k] / dist_obs_to_scat;
+                if (dist_obs_to_scat == 0.0) {
+                    // observer and photon at the same place, randomly put photon in image as this is better than just dropping it
+                    image_indxs[0] = int(output.image_size[0] * random_obj.random_num());
+                    image_indxs[1] = int(output.image_size[1] * random_obj.random_num());
+                } else {
+                    for (k = 0; k < 3; k++)
+                        dir_obs_to_scat[k] = obs_to_scat[k] / dist_obs_to_scat;
 
-                double theta = acos(dir_obs_to_scat[2]);
-                double phi = acos(dir_obs_to_scat[0] / sin(theta));
-                if ((dir_obs_to_scat[1] / sin(theta)) < 0.)
-                    phi *= -1.0;
+                    double theta = acos(dir_obs_to_scat[2]);
+                    double phi = acos(dir_obs_to_scat[0] / sin(theta));
+                    if ((dir_obs_to_scat[1] / sin(theta)) < 0.)
+                        phi *= -1.0;
 
-                image_indxs[0] = int(output.image_size[0] * ((phi + M_PI) / (2.0 * M_PI)));
-                image_indxs[1] = int(output.image_size[1] * (1. - dir_obs_to_scat[2]) / 2.0);
+                    image_indxs[0] = int(output.image_size[0] * ((phi + M_PI) / (2.0 * M_PI)));
+                    image_indxs[1] = int(output.image_size[1] * (1. - dir_obs_to_scat[2]) / 2.0);
+                }
             }
 
 #ifdef DEBUG_CSCP

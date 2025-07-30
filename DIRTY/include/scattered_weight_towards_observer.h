@@ -7,6 +7,7 @@
 #include "debug.h"
 #include "geometry_def.h"
 #include "photon_data.h"
+#include "roundoff_err.h"
 
 // determines the photon trajectory (returns the distance and tau traveled)
 
