@@ -108,9 +108,13 @@ void setup_dust_grid_slab(ConfigFile &param_data, geometry_struct &geometry, ran
         //     cout << "new filling factor = " << geometry.filling_factor << endl;
     }
 
-    // size of grid on one side (x,y dimensions)
-    int grid_size = param_data.IValue("Geometry", "grid_size");
-    check_input_param("grid_size", grid_size, 0, 1000);
+    // get the number of bins for each axis
+    int nbins_x = param_data.IValue("Geometry", "slab_nbins_x");
+    check_input_param("slab_nbins_x", nbins_x, 1, 1000);
+    int nbins_y = param_data.IValue("Geometry", "slab_nbins_y");
+    check_input_param("slab_nbins_y", nbins_y, 1, 1000);
+    int nbins_z = param_data.IValue("Geometry", "slab_nbins_z");
+    check_input_param("slab_nbins_z", nbins_z, 1, 1000);
 
     // set the maximum grid depth
     geometry.max_grid_depth = 1;
@@ -119,10 +123,9 @@ void setup_dust_grid_slab(ConfigFile &param_data, geometry_struct &geometry, ran
     one_grid main_grid;
 
     // setup size of main grid
-    main_grid.index_dim[0] = grid_size;
-    main_grid.index_dim[1] = grid_size;
-    // adjust z grid size to account keep grid cells roughly cubical
-    main_grid.index_dim[2] = grid_size * int(size_z / size_xy);
+    main_grid.index_dim[0] = nbins_x;
+    main_grid.index_dim[1] = nbins_y;
+    main_grid.index_dim[2] = nbins_z + 1; // add one for the non-slab region
 
     // fill position arrays with
     vector<double> x_pos(main_grid.index_dim[0] + 1);
@@ -130,28 +133,33 @@ void setup_dust_grid_slab(ConfigFile &param_data, geometry_struct &geometry, ran
     vector<double> z_pos(main_grid.index_dim[2] + 1);
     int i;
     double tmp_val;
+
+    // x values
     for (i = 0; i <= main_grid.index_dim[0]; i++)
+        x_pos[i] = double(i) * (size_xy) / double(main_grid.index_dim[0]) - size_xy / 2.;
+
+    // y values
+    for (i = 0; i <= main_grid.index_dim[1]; i++)
+        y_pos[i] = double(i) * (size_xy) / double(main_grid.index_dim[1]) - size_xy / 2.;
+
+    // choose between linear and log spacing (log spacing used for TRUST slab benchmark)
+    string slab_zspacing = param_data.SValue("Geometry", "slab_zspacing");
+    if (slab_zspacing == "log")
     {
-        tmp_val = double(i) * (size_xy) / double(main_grid.index_dim[0]) - size_xy / 2.;
-        x_pos[i] = tmp_val;
-        y_pos[i] = tmp_val;
+        float log_slab_z1 = log10(fabs(slab_z1));
+        float log_slab_z2 = log10(fabs(slab_z2));
+        float log_deltaz = (log_slab_z2 - log_slab_z1) / double(main_grid.index_dim[2] - 1);
+        for (i = 0; i <= (main_grid.index_dim[2] - 1); i++)
+            z_pos[i] = -1.0 * pow(10.0, log_slab_z1 + double(i) * log_deltaz);
+        z_pos[main_grid.index_dim[2]] = size_z / 2.;
     }
-    for (i = 0; i <= main_grid.index_dim[2]; i++)
+    else
     {
-        tmp_val = double(i) * (size_z) / double(main_grid.index_dim[2]) - size_z / 2.;
-        z_pos[i] = tmp_val;
-#ifdef DEBUG_SDG
-        if (i <= main_grid.index_dim[0])
-        {
-            cout << "xyz grid position = ";
-            cout << x_pos[i] << " ";
-            cout << y_pos[i] << " ";
-        }
-        else
-            cout << "z grid position = ";
-        cout << z_pos[i] << " ";
-        cout << "; i = " << i << endl;
-#endif
+        float deltaz = slab_z2 - slab_z1;
+        for (i = 0; i <= main_grid.index_dim[2]-1; i++)
+            z_pos[i] = slab_z1 +
+            double(i)*(deltaz)/double(main_grid.index_dim[2]-1);
+         z_pos[main_grid.index_dim[2]] = size_z/2.;
     }
 
     // add position arrays to main grid
