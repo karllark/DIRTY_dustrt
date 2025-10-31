@@ -62,7 +62,6 @@ dirty_SOURCES= \
     setup_dust_grid_file.cpp \
     setup_dust_grid_shell.cpp \
     setup_dust_grid_slab.cpp \
-    setup_dust_grid_slab_trust.cpp \
     setup_dust_grid_sphere.cpp \
     setup_dust_grid_subdivide_overdense_cells.cpp \
     setup_emitted_grid_for_montecarlo.cpp \

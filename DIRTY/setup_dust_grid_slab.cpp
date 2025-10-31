@@ -132,7 +132,6 @@ void setup_dust_grid_slab(ConfigFile &param_data, geometry_struct &geometry, ran
     vector<double> y_pos(main_grid.index_dim[1] + 1);
     vector<double> z_pos(main_grid.index_dim[2] + 1);
     int i;
-    double tmp_val;
 
     // x values
     for (i = 0; i <= main_grid.index_dim[0]; i++)

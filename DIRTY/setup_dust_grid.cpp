@@ -34,10 +34,6 @@ void setup_dust_grid(ConfigFile &param_data, geometry_struct &geometry, photon_d
     {
         setup_dust_grid_slab(param_data, geometry, random_obj);
     }
-    else if (geometry.type == "slab_trust")
-    {
-        setup_dust_grid_slab_trust(param_data, geometry, random_obj);
-    }
     else if (geometry.type == "dexp_disk")
     {
         setup_dust_grid_dexp_disk(param_data, geometry, random_obj);
