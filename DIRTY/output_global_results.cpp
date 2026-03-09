@@ -88,7 +88,7 @@ void output_global_results(runinfo_struct &runinfo, output_struct &output, geome
         //     cout << "i = " << i << " ";
         stform[i] = "E16.6";
         if (i > 1)
-            stunit[i] = "ergs s^-1 um^-1";
+            stunit[i] = "erg s^-1 um^-1";
         ttype[i] = const_cast<char *>(sttype[i].c_str());
         tform[i] = const_cast<char *>(stform[i].c_str());
         tunit[i] = const_cast<char *>(stunit[i].c_str());
