@@ -159,7 +159,7 @@ void get_dust_parameters(ConfigFile &param_data, GrainModel &CurGrainModel, geom
             check_input_param("empirical dust albedo", albedo[i], 0.0, 1.0);
             check_input_param("empirical dust g", g[i], -1.0, 1.0);
 
-            runinfo.wavelength.push_back(wavelength[i]);
+            runinfo.wavelength.push_back(wavelength[i] * 1e-4);
             runinfo.tau_to_tau_ref.push_back(tau[i]);
             runinfo.albedo.push_back(albedo[i]);
             runinfo.g.push_back(g[i]);
