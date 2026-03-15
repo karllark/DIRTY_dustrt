@@ -1,5 +1,5 @@
 // ======================================================================
-// Check a grid to make sure that all subdivided cells have an assocaited
+// Check a grid to make sure that all subdivided cells have an associated
 // subgrid.  Use recursion to search subgrids of subgrids, etc.
 //
 // KDG Oct 2009 - written

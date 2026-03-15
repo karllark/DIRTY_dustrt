@@ -116,7 +116,7 @@ struct geometry_struct
     float tau;                 // radial optical depth of model at reference wavelength
     float tau_wave;            // reference wavelength for tau
     double tau_to_tau_ref;     // ratio of current tau to reference tau
-    float wavelength;          // wavelenght of current tau
+    float wavelength;          // wavelength of current tau
     float max_tau_per_cell;    // the maximum tau per cell (used in subdividing cells)
     float max_tau_per_cell_x;  // the maximum tau per cell (used in subdividing cells)
     float max_tau_per_cell_y;  // the maximum tau per cell (used in subdividing cells)

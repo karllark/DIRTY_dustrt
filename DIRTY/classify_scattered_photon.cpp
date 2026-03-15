@@ -11,7 +11,7 @@
 // current_grid_num = 0)
 // ======================================================================
 #include "classify_scattered_photon.h"
-// #define OUTNUM 25994
+// #define OUTNUM 132
 // #define DEBUG_CSCP
 
 void classify_scattered_photon(output_struct &output, photon_data &photon, geometry_struct &geometry,

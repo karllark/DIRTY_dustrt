@@ -347,6 +347,16 @@ void setup_dust_grid(ConfigFile &param_data, geometry_struct &geometry, photon_d
         }
     }
 
+    // check to make sure that all subgrids designated exist
+    if (geometry.max_grid_depth > 1)
+    {
+        vector<int> par_idim;
+        par_idim.reserve(3);
+        for (int i = 0; i < 3; i++)
+            par_idim[i] = 0;
+        setup_dust_grid_check_grid(geometry, 0, -1, par_idim);
+    }
+
     // randomize observer position
     geometry.randomize_observer = param_data.IValue("Geometry", "randomize_observer");
     if (geometry.randomize_observer == -99)

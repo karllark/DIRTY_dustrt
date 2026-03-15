@@ -27,6 +27,8 @@ extern void setup_dust_grid_dexp_disk(ConfigFile &param_data, geometry_struct &g
 
 extern void setup_dust_grid_file(ConfigFile &param_data, geometry_struct &geometry);
 
+extern void setup_dust_grid_check_grid(geometry_struct &geometry, int cur_grid, int par_grid, vector<int> &par_idim);
+
 extern void verify_dust_grid(geometry_struct &geometry);
 
 #endif

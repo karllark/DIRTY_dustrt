@@ -8,7 +8,7 @@
 // subdivision for different axes
 // ======================================================================
 #include "setup_dust_grid_subdivide_overdense_cells.h"
-// #define DEBUG_SDGSOC
+#define DEBUG_SDGSOC
 
 void setup_dust_grid_subdivide_overdense_cells(geometry_struct &geometry, int spherical_clumps)
 
@@ -169,6 +169,7 @@ void setup_dust_grid_subdivide_overdense_cells(geometry_struct &geometry, int sp
                         subgrid.grid.CSize(subgrid.index_dim[0], subgrid.index_dim[1], subgrid.index_dim[2]);
 
                         float dust_tau_per_pc = geometry.grids[m].grid(i, j, k).dust_tau_per_pc;
+                        // cout << "dust_tau_per_pc = " << dust_tau_per_pc << endl;
                         float index_radius; // radius of subgrid position in index values
                         int n, o;
                         for (o = 0; o < subgrid.index_dim[2]; o++)
@@ -195,6 +196,7 @@ void setup_dust_grid_subdivide_overdense_cells(geometry_struct &geometry, int sp
 
                         // setup ties to parent grid
                         subgrid.parent_grid_num = m;
+                        // cout << "cur_subgrid_num = " << cur_subgrid_num << endl;
                         geometry.grids[m].grid(i, j, k).dust_tau_per_pc = -cur_subgrid_num;
                         cur_subgrid_num++;
 
