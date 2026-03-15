@@ -10,7 +10,7 @@
 #include "radiative_transfer.h"
 // #define DEBUG_RT
 // #define OUTNUM -1
-// #define OUTNUM 453
+// #define OUTNUM 132
 #define DEBUG_OUTRANGE
 
 void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo, output_struct &output, photon_data &photon,
@@ -116,9 +116,9 @@ void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo, outp
         cout.flush();
 #endif
 #ifdef DEBUG_RT
-        if (photon.number > OUTNUM)
+        if (photon.number >= OUTNUM)
             cout << photon.number << " ";
-        if (photon.number > OUTNUM)
+        if (photon.number >= OUTNUM)
             cout << "np1* done; ";
         cout.flush();
 #endif
@@ -200,7 +200,7 @@ void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo, outp
 
             // classify the scattered photon
 #ifdef DEBUG_RT
-            if (photon.number > OUTNUM)
+            if (photon.number >= OUTNUM)
                 cout << "cscp begin; ";
             cout.flush();
 #endif
@@ -220,12 +220,17 @@ void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo, outp
             }
 #endif
 #ifdef DEBUG_RT
-            if (photon.number > OUTNUM)
+            if (photon.number >= OUTNUM)
                 cout << "cscp done; ";
             cout.flush();
 #endif
 
             // scatter the photon into a new direction
+#ifdef DEBUG_RT
+            if (photon.number >= OUTNUM)
+                cout << "sp begin; ";
+            cout.flush();
+#endif
 #ifdef DEBUG_OUTRANGE
             try
             {
@@ -242,7 +247,7 @@ void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo, outp
             }
 #endif
 #ifdef DEBUG_RT
-            if (photon.number > OUTNUM)
+            if (photon.number >= OUTNUM)
                 cout << "sp done; ";
             cout.flush();
 #endif
@@ -265,7 +270,7 @@ void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo, outp
             }
 #endif
 #ifdef DEBUG_RT
-            if (photon.number > OUTNUM)
+            if (photon.number >= OUTNUM)
                 cout << "ns done; ";
             cout.flush();
 #endif
@@ -286,7 +291,7 @@ void radiative_transfer(geometry_struct &geometry, runinfo_struct &runinfo, outp
 #endif
 
 #ifdef DEBUG_RT
-            if (photon.number > OUTNUM)
+            if (photon.number >= OUTNUM)
                 cout << endl;
 #endif
         }

@@ -7,6 +7,7 @@
 // 2013 Oct/KDG - updated to work with subgrids
 // ======================================================================
 #include "scatter_photon.h"
+// #define OUTNUM 132
 // #define DEBUG_SP
 
 void scatter_photon(geometry_struct &geometry, photon_data &photon, random_dirty &random_obj)
@@ -129,8 +130,10 @@ void scatter_photon(geometry_struct &geometry, photon_data &photon, random_dirty
         photon.dir_cosines[i] = new_dir_cosines[i];
 
 #ifdef DEBUG_SP
-    cout << "# scat = " << photon.num_scat << endl;
-    cout << "total tau = " << photon.target_tau << endl;
+    if (photon.number == OUTNUM) {
+        cout << "# scat = " << photon.num_scat << endl;
+        cout << "total tau = " << photon.target_tau << endl;
+    }
 #endif
 
     // update the scattered weight
@@ -173,9 +176,8 @@ void scatter_photon(geometry_struct &geometry, photon_data &photon, random_dirty
         double tau_entering = 0.;
         double prob_entering = 1.;
 
-#ifdef DEBUG_SP
+        // for debugging
         double tot_abs_temp = 0.;
-#endif
 
         double tau_leaving = 0.0;
         double prob_leaving = 0.0;
@@ -189,14 +191,15 @@ void scatter_photon(geometry_struct &geometry, photon_data &photon, random_dirty
             abs_weight = abs_weight_init * (prob_entering - prob_leaving);
 
 #ifdef DEBUG_SP
-            cout << i << " ";
-            cout << tau_entering << " ";
-            cout << tau_leaving << " ";
-            cout << prob_entering << " ";
-            cout << prob_leaving << " ";
-            cout << abs_weight << endl;
-
-            tot_abs_temp += abs_weight;
+            if (photon.number == OUTNUM) {
+                cout << i << " ";
+                cout << tau_entering << " ";
+                cout << tau_leaving << " ";
+                cout << prob_entering << " ";
+                cout << prob_leaving << " ";
+                cout << abs_weight << endl;
+                tot_abs_temp += abs_weight;
+            }
 #endif
 
             // deposit the energy
@@ -229,10 +232,12 @@ void scatter_photon(geometry_struct &geometry, photon_data &photon, random_dirty
         }
 
 #ifdef DEBUG_SP
-        cout << abs_weight_init << " ";
-        cout << tot_abs_temp << endl;
-        if (photon.target_tau > 0.5)
-            exit(8);
+        if (photon.number == OUTNUM) {
+            cout << abs_weight_init << " ";
+            cout << tot_abs_temp << endl;
+            // if (photon.target_tau > 0.5)
+            //     exit(8);
+        }
 #endif
     }
 }

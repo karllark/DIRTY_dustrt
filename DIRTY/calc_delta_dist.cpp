@@ -7,7 +7,7 @@
 // 2008 Aug/KDG - added saving of trajectory for continous absorption
 // ======================================================================
 #include "calc_delta_dist.h"
-#define OUTNUM 33
+// #define OUTNUM 132
 // #define DEBUG_CDD
 
 double calc_delta_dist(photon_data &photon, geometry_struct &geometry, double target_tau, double target_dist,
@@ -95,9 +95,11 @@ double calc_delta_dist(photon_data &photon, geometry_struct &geometry, double ta
             cout << "k, num_current_grids, dust_tau_per_pc, dust_tau_ref_per_pc = " << k << " "
                  << photon.num_current_grids;
             cout << " " << dust_tau_per_pc << " " << dust_tau_ref_per_pc << endl;
+            cout << "current grid num = " << photon.current_grid_num << endl;
             cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nRow() << " ";
             cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.nCol() << " ";
             cout << geometry.grids[photon.grid_number[photon.current_grid_num]].grid.n3rd() << endl;
+            cout << "num current grids = " << photon.num_current_grids << endl;
         }
 #endif
         photon.current_grid_num++;
@@ -108,7 +110,7 @@ double calc_delta_dist(photon_data &photon, geometry_struct &geometry, double ta
 #ifdef DEBUG_CDD
             if (photon.number == OUTNUM)
             {
-                cout << "new ";
+                cout << "new subgrid; ";
                 cout.flush();
             }
 #endif
@@ -117,7 +119,6 @@ double calc_delta_dist(photon_data &photon, geometry_struct &geometry, double ta
             // check if photon has already been in this grid
             // basically, are we restarting the photon tracking in a subgrid?
             photon.grid_number[photon.current_grid_num] = -int(dust_tau_ref_per_pc);
-
             // check that the grid number is an actual integer
             // can have problems if tau is accidently set negative
             if ((photon.grid_number[photon.current_grid_num] + dust_tau_ref_per_pc) != 0.0)
@@ -137,8 +138,10 @@ double calc_delta_dist(photon_data &photon, geometry_struct &geometry, double ta
                 cout << "dust_tau_ref_per_pc = " << dust_tau_ref_per_pc << endl;
                 exit(8);
             }
-
+        
+            cout << "dppi begin: in calc_delta_dist" << endl;
             determine_photon_position_index(geometry, photon);
+            cout << "dppi end: in calc_delta_dist" << endl;
         }
 #ifdef DEBUG_CDD
         if (photon.number == OUTNUM)
