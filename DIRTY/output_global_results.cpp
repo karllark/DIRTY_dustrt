@@ -120,6 +120,7 @@ void output_global_results(runinfo_struct &runinfo, output_struct &output, geome
         flux_total.push_back(runinfo.out_sed_lum[0][i] + runinfo.out_sed_lum[1][i]);
         flux_total_unc.push_back(runinfo.out_sed_lum_unc[0][i] * runinfo.out_sed_lum_unc[0][i] +
                                  runinfo.out_sed_lum_unc[1][i] * runinfo.out_sed_lum_unc[1][i]);
+        flux_total_unc[i] = pow(flux_total_unc[i], 0.5);
         out_sed_lum_offset = 2;
         if (runinfo.do_ere_emission)
         {
