@@ -139,9 +139,9 @@ double calc_delta_dist(photon_data &photon, geometry_struct &geometry, double ta
                 exit(8);
             }
         
-            cout << "dppi begin: in calc_delta_dist" << endl;
+            // cout << "dppi begin: in calc_delta_dist" << endl;
             determine_photon_position_index(geometry, photon);
-            cout << "dppi end: in calc_delta_dist" << endl;
+            // cout << "dppi end: in calc_delta_dist" << endl;
         }
 #ifdef DEBUG_CDD
         if (photon.number == OUTNUM)
