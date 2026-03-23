@@ -142,6 +142,23 @@ void classify_scattered_photon(output_struct &output, photon_data &photon, geome
 
                     image_indxs[0] = int(output.image_size[0] * ((phi + M_PI) / (2.0 * M_PI)));
                     image_indxs[1] = int(output.image_size[1] * (1. - dir_obs_to_scat[2]) / 2.0);
+
+                    for (k = 0; k < 2; k++) {
+                        if ((image_indxs[k] < 0) || (image_indxs[k] > (output.image_size[k] - 1)))
+                        {
+                            cout << "classify_scattered_photon: image_indxs[" << k << "] = " << image_indxs[k]
+                                << " (beyond image bounds)" << endl;
+                            cout << "k = " << k << endl;
+                            cout << "image_size[i] = " << output.image_size[k] << endl;
+                            cout << "photon # = " << photon.number << endl;
+                            int m = 0;
+                            cout << "tmp_photon.position[] = ";
+                            for (m = 0; m < 3; m++)
+                                cout << tmp_photon.position[m] << " ";
+                            cout << endl;
+                            exit(8);
+                        }
+                    }
                 }
             }
 
