@@ -156,6 +156,7 @@ void classify_scattered_photon(output_struct &output, photon_data &photon, geome
                             for (m = 0; m < 3; m++)
                                 cout << tmp_photon.position[m] << " ";
                             cout << endl;
+                            cout.flush();
                             exit(8);
                         }
                     }
